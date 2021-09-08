@@ -1,0 +1,40 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    def versions = rootProject.ext.projectVersions
+
+    compileSdkVersion versions.compileSdkV
+    buildToolsVersion versions.buildToolsV
+
+    defaultConfig {
+        minSdkVersion versions.minSdkV
+        targetSdkVersion versions.targetSdkV
+        versionCode versions.VCode
+        versionName versions.VName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    //依赖于Common  作为Lib
+    implementation project(path: ':common')
+
+    //other
+    implementation files('libs/poishadow-all.jar')
+
+}

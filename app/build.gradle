@@ -33,4 +33,8 @@ android {
 dependencies {
     //依赖于Common  作为Lib
     implementation project(path: ':common')
+
+    implementation project(path: ':CameraCommon')
+
+    implementation project(path: ':LibUvcCamera')
 }
