@@ -1,0 +1,3 @@
+rootProject.name = "DYTPIRCamera"
+include ':app'
+include ':common'

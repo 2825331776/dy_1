@@ -1,0 +1,61 @@
+ext{
+    projectVersions = [
+            //编译及其构建版本
+            compileSdkV     :29,
+            buildToolsV     :"29.0.3",
+            //支持的sdk范围23-30
+            minSdkV         :23,
+            targetSdkV      :29,
+            //版本号和名字
+            VCode           :1,
+            VName           :"1.0",
+
+            supportV        :"29.0.0"
+    ]
+
+    //依赖库的版本  common
+    def appcompat_version = "1.2.0"
+    def material_version = "1.2.1"
+    def constraintLayout_version = "2.0.1"
+    def junit_version = "4.+"
+    def extJunit_version = "1.1.2"
+    def espresso_version = "3.3.0"
+
+    //lifecycle and navigation
+    def lifecycle_version = "2.3.1"
+    def navigation_version = "2.3.5"
+
+    def permissionX_version = "1.5.0"
+    def glide_version = "4.12.0"
+
+
+    projectDependencies = [
+            //common
+            appcompat               :"androidx.appcompat:appcompat:$appcompat_version",
+            material                :"com.google.android.material:material:$material_version",
+            constraintlayout        :"androidx.constraintlayout:constraintlayout:$constraintLayout_version",
+            junit                   :"junit:junit:$junit_version",
+            extjunit                :"androidx.test.ext:junit:$extJunit_version",
+            espresso                :"androidx.test.espresso:espresso-core:$espresso_version",
+
+            // navigation_fragment
+            navigation_fragment     :"androidx.navigation:navigation-fragment:$navigation_version",
+            navigation_ui           :"androidx.navigation:navigation-ui:$navigation_version",
+            //viewmodel
+            lifecycle_viewmodel     :"androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version",
+            // LiveData
+            lifecycle_livedata      :"androidx.lifecycle:lifecycle-livedata:$lifecycle_version",
+            // Lifecycles only (without ViewModel or LiveData)
+            lifecycle_runtime       :"androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
+//
+//permissionX             :"com.guolindev.permissionx:permissionx:$permissionX_version",
+//
+//
+
+//
+//glide                   :"com.github.bumptech.glide:glide:${glide_version}",
+//glide_compiler          :"com.github.bumptech.glide:compiler:${glide_version}"
+    ]
+
+
+}
