@@ -16,9 +16,9 @@ import androidx.databinding.ViewDataBinding;
  * <p>PackgePath: com.dyt.wcc.common.base.ui     </p>
  */
 public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatActivity {
-	private final String  TAG = this.getClass().getSimpleName();
+	protected final String  TAG = this.getClass().getSimpleName();
 
-	private       Context mContext;
+	protected       Context mContext;
 	protected     T       mDataBinding;//绑定的布局View
 	@Override
 	protected void onCreate (@Nullable Bundle savedInstanceState) {

@@ -29,6 +29,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    //此处加了 依赖的module也要加
     buildFeatures {
         dataBinding true
     }
@@ -47,7 +48,6 @@ dependencies {
     androidTestImplementation libraries.espresso
 
     //other
-
     api libraries.navigation_fragment
     api libraries.navigation_ui
     api libraries.lifecycle_viewmodel

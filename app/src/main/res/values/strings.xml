@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">DYTPIRCamera</string>
+    <string name="Gallery">Gallery</string>
+    <string name="Welcome">Welcome</string>
+
+
+
+
 </resources>

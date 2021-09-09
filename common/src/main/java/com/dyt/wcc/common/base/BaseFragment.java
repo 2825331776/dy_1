@@ -22,10 +22,10 @@ import com.dyt.wcc.common.BuildConfig;
  * <p>PackgePath: com.dyt.wcc.common.base.ui     </p>
  */
 public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
-	private       Context mContext;
-	private final String  TAG = this.getClass().getSimpleName();
-	private T mDataBinding;
-	private boolean isDebug = BuildConfig.DEBUG;
+	protected       Context mContext;
+	protected final String  TAG = this.getClass().getSimpleName();
+	protected T mDataBinding;
+	protected boolean isDebug = BuildConfig.DEBUG;
 
 	@Nullable
 	@Override

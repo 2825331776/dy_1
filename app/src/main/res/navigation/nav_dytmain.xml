@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_dytmain"
+    app:startDestination="@id/nav_welcomeFg">
+
+    <fragment
+        android:id="@+id/nav_welcomeFg"
+        android:name="com.dyt.wcc.dytpir.ui.welcome.WelComeFragment"
+        tools:layout="@layout/fragment_welcome_main">
+        <action
+            android:id="@+id/action_welcomeFg_to_previewFg"
+            app:destination="@id/nav_previewFg">
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_previewFg"
+        android:name="com.dyt.wcc.dytpir.ui.preview.PreviewFragment"
+        tools:layout="@layout/fragment_preview_main">
+        <action
+            android:id="@+id/action_previewFg_to_galleryFg"
+            app:destination="@id/nav_galleryFg">
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_galleryFg"
+        android:name="com.dyt.wcc.dytpir.ui.gallry.GalleryFragment"
+        tools:layout="@layout/fragment_gallery_main">
+
+<!--        用回退替换掉此处-->
+<!--        <action-->
+<!--            android:id="@+id/action_galleryFg_to_previewFg"-->
+<!--            app:destination="@id/nav_previewFg">-->
+<!--        </action>-->
+
+        <action
+            android:id="@+id/action_galleryFg_to_lookFileFg"
+            app:destination="@id/nav_lookFileFg">
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_lookFileFg"
+        android:name="com.dyt.wcc.dytpir.ui.lookfile.LookFileFragment"
+        tools:layout="@layout/fragment_lookfile_main">
+<!--        <action-->
+<!--            android:id="@+id/action_lookFileFg_to_galleryFg"-->
+<!--            app:destination="@id/nav_galleryFg">-->
+<!--        </action>-->
+    </fragment>
+
+</navigation>
