@@ -2,7 +2,12 @@
     <string name="app_name">DYTPIRCamera</string>
     <string name="Gallery">Gallery</string>
     <string name="Welcome">Welcome</string>
+    <string name="MediaBrowser">Media Browser</string>
 
+    <string name="MediaBrowser_all">All</string>
+    <string name="MediaBrowser_pic">Picture</string>
+    <string name="MediaBrowser_video">Video</string>
+    <string name="MediaBrowser_delete">Delete</string>
 
 
 

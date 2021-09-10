@@ -6,13 +6,93 @@
     </data>
 
     <RelativeLayout
-        android:gravity="center"
+        android:background="@color/bg_preview_right"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/include_gallery"
+            layout="@layout/gallery_actionbar"/>
+
         <TextView
-            android:text="@string/Gallery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:id="@+id/cutoff_rule_gallery"
+            android:layout_below="@id/include_gallery"
+            android:layout_marginTop="2dp"
+            android:background="@color/bg_cutoff_rule"
+            android:layout_width="match_parent"
+            android:layout_height="1px"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView_gallery"
+            android:layout_below="@id/cutoff_rule_gallery"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/rl_gallery_right"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_gallery_right"
+            android:layout_below="@id/cutoff_rule_gallery"
+            android:layout_width="150dp"
+            android:layout_alignParentEnd="true"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/tv_cutLine_rightRl"
+                android:background="@color/bg_cutoff_rule"
+                android:layout_width="2dp"
+                android:layout_height="match_parent"/>
+            <LinearLayout
+                android:id="@+id/ll_container_gallery_rightRL"
+                android:gravity="center"
+                android:padding="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/bt_all_gallery_rightRl"
+                    android:text="@string/MediaBrowser_all"
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="0dp"/>
+                <Button
+                    android:id="@+id/bt_pic_gallery_rightRl"
+                    android:text="@string/MediaBrowser_pic"
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="0dp"/>
+                <Button
+                    android:id="@+id/bt_video_gallery_rightRl"
+                    android:text="@string/MediaBrowser_video"
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="0dp"/>
+                <Button
+                    android:layout_marginTop="10dp"
+                    android:text="@string/MediaBrowser_delete"
+                    android:id="@+id/bt_delete_gallery_rightRl"
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="0dp"/>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/iv_gallery_shared_rightRl_1"
+                android:layout_below="@id/ll_container_gallery_rightRL"
+                android:src="@mipmap/appicon"
+                android:layout_marginStart="25dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"/>
+            <ImageView
+                android:id="@+id/iv_gallery_shared_rightRl_2"
+                android:layout_below="@id/ll_container_gallery_rightRL"
+                android:layout_toEndOf="@id/iv_gallery_shared_rightRl_1"
+                android:src="@mipmap/appicon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"/>
+
+        </RelativeLayout>
+
+
 
     </RelativeLayout>
 </layout>

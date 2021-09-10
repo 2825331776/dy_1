@@ -1,18 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <variable
+            name="pf"
+            type="com.dyt.wcc.dytpir.ui.preview.PreviewFragment" />
 
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <TextView
-            android:text="@string/app_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+<!--左侧按钮布局-->
+        <RelativeLayout
+            android:id="@+id/rl_left_container"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/fl_preview"
+            android:layout_width="100dp"
+            android:background="@color/bg_preview_right"
+            android:layout_height="match_parent">
 
-    </RelativeLayout>
+            <Button
+                android:text="xiangce"
+                android:onClick="@{pf.toGallery}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </RelativeLayout>
+<!--视频预览页面布局-->
+        <FrameLayout
+            android:id="@+id/fl_preview"
+            app:layout_constraintLeft_toRightOf="@id/rl_left_container"
+            app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+        </FrameLayout>
+<!--        拖动条布局-->
+        <LinearLayout
+            android:id="@+id/ll_container_preview_seekbar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/fl_preview"
+            app:layout_constraintRight_toLeftOf="@id/rl_right_container"
+            android:layout_width="80dp"
+            android:orientation="vertical"
+            android:layout_height="match_parent"
+            android:background="@color/bg_preview_right">
+
+        </LinearLayout>
+
+<!--        右侧按钮布局-->
+        <RelativeLayout
+            android:id="@+id/rl_right_container"
+            app:layout_constraintLeft_toRightOf="@id/ll_container_preview_seekbar"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:background="@color/bg_preview_right">
+
+        </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

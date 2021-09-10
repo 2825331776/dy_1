@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
+import java.lang.ref.WeakReference;
+
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
  * <p>Author：stefan cheng        </p>
@@ -18,14 +20,14 @@ import androidx.databinding.ViewDataBinding;
 public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatActivity {
 	protected final String  TAG = this.getClass().getSimpleName();
 
-	protected       Context mContext;
+	protected WeakReference<Context> mContext;
 	protected     T       mDataBinding;//绑定的布局View
 	@Override
 	protected void onCreate (@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mDataBinding = DataBindingUtil.setContentView(this,bindingLayout());//绑定布局
 
-		mContext = this;
+		mContext = new WeakReference<>(this);
 		initView();
 	}
 	////设置绑定布局

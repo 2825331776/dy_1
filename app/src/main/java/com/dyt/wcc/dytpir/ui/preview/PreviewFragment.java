@@ -1,5 +1,9 @@
 package com.dyt.wcc.dytpir.ui.preview;
 
+import android.view.View;
+
+import androidx.navigation.Navigation;
+
 import com.dyt.wcc.common.base.BaseFragment;
 import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.databinding.FragmentPreviewMainBinding;
@@ -17,8 +21,17 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		return R.layout.fragment_preview_main;
 	}
 
+
 	@Override
 	protected void initView () {
+		mDataBinding.setPf(this);
+
 
 	}
+
+	public void toGallery(View view){
+		Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
+	}
+
+
 }

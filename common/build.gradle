@@ -54,4 +54,7 @@ dependencies {
     api libraries.lifecycle_livedata
     api libraries.lifecycle_runtime
 
+    api libraries.glide
+    api libraries.glide_compiler
+    api libraries.permissionX
 }

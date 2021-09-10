@@ -14,6 +14,8 @@ import androidx.fragment.app.Fragment;
 
 import com.dyt.wcc.common.BuildConfig;
 
+import java.lang.ref.WeakReference;
+
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
  * <p>Author：stefan cheng        </p>
@@ -22,7 +24,7 @@ import com.dyt.wcc.common.BuildConfig;
  * <p>PackgePath: com.dyt.wcc.common.base.ui     </p>
  */
 public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
-	protected       Context mContext;
+	protected WeakReference <Context> mContext;
 	protected final String  TAG = this.getClass().getSimpleName();
 	protected T mDataBinding;
 	protected boolean isDebug = BuildConfig.DEBUG;
@@ -32,7 +34,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
 	public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		mDataBinding = DataBindingUtil.inflate(inflater,bindingLayout(),container,false);
 		View view = mDataBinding.getRoot();
-		mContext = getActivity();
+		mContext = new WeakReference<>(getActivity());
 		initView();
 		return view;
 	}

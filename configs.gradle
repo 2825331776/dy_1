@@ -46,15 +46,12 @@ ext{
             // LiveData
             lifecycle_livedata      :"androidx.lifecycle:lifecycle-livedata:$lifecycle_version",
             // Lifecycles only (without ViewModel or LiveData)
-            lifecycle_runtime       :"androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
-//
-//permissionX             :"com.guolindev.permissionx:permissionx:$permissionX_version",
-//
-//
-
-//
-//glide                   :"com.github.bumptech.glide:glide:${glide_version}",
-//glide_compiler          :"com.github.bumptech.glide:compiler:${glide_version}"
+            lifecycle_runtime       :"androidx.lifecycle:lifecycle-runtime:$lifecycle_version",
+            //
+            permissionX             :"com.guolindev.permissionx:permissionx:$permissionX_version",
+            //
+            glide                   :"com.github.bumptech.glide:glide:${glide_version}",
+            glide_compiler          :"com.github.bumptech.glide:compiler:${glide_version}"
     ]
 
 
