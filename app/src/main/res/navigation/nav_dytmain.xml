@@ -7,16 +7,21 @@
 
     <fragment
         android:id="@+id/nav_welcomeFg"
+        android:label="nav_welcome_fragment"
         android:name="com.dyt.wcc.dytpir.ui.welcome.WelComeFragment"
         tools:layout="@layout/fragment_welcome_main">
         <action
             android:id="@+id/action_welcomeFg_to_previewFg"
-            app:destination="@id/nav_previewFg">
+            app:destination="@id/nav_previewFg"
+            app:popUpTo="@id/nav_dytmain"
+            app:launchSingleTop="true"
+            app:popUpToInclusive="true">
         </action>
     </fragment>
 
     <fragment
         android:id="@+id/nav_previewFg"
+        android:label="nav_preview_fragment"
         android:name="com.dyt.wcc.dytpir.ui.preview.PreviewFragment"
         tools:layout="@layout/fragment_preview_main">
         <action
@@ -27,6 +32,7 @@
 
     <fragment
         android:id="@+id/nav_galleryFg"
+        android:label="nav_gallery_fragment"
         android:name="com.dyt.wcc.dytpir.ui.gallry.GalleryFragment"
         tools:layout="@layout/fragment_gallery_main">
 
@@ -44,6 +50,7 @@
 
     <fragment
         android:id="@+id/nav_lookFileFg"
+        android:label="nav_lookfile_fragment"
         android:name="com.dyt.wcc.dytpir.ui.lookfile.LookFileFragment"
         tools:layout="@layout/fragment_lookfile_main">
 <!--        <action-->

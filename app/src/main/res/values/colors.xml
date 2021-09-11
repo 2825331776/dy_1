@@ -10,6 +10,8 @@
 
     <color name="bg_cutoff_rule">#ff303030</color>
 
+    <color name="bg_preview_left_cutoff_rule">#FF666666</color>
+
 <!--    整体背景颜色-->
     <color name="bg_preview_right">#FF000033</color>
 <!--    布局右侧按钮颜色-->

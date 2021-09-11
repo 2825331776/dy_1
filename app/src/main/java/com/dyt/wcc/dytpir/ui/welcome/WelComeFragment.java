@@ -29,7 +29,9 @@ public class WelComeFragment extends BaseFragment<FragmentWelcomeMainBinding> {
 		new Handler().postDelayed(new Runnable() {
 			@Override
 			public void run () {
+//				NavOptions options = new NavOptions.Builder().build();
 				Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_welcomeFg_to_previewFg);
+//				Navigation.findNavController(mDataBinding.getRoot()).setGraph(R.navigation.nav_dytmain);
 			}
 		},500);
 	}

@@ -26,12 +26,22 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	protected void initView () {
 		mDataBinding.setPf(this);
 
+//		mDataBinding.getRoot().setOnKeyListener(new View.OnKeyListener() {
+//			@Override
+//			public boolean onKey (View v, int keyCode, KeyEvent event) {
+//				if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK){
+//					Toast.makeText(mContext.get(),"back press",Toast.LENGTH_SHORT).show();
+//					return true;
+//				}
+//				return false;
+//			}
+//		});
 
+//		Navigation.findNavController(mDataBinding.getRoot()).setGraph(R.navigation.nav_dytmain,R.id.nav_previewFg);
 	}
 
 	public void toGallery(View view){
 		Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
 	}
-
 
 }

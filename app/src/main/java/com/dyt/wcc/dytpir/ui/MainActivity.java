@@ -17,4 +17,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 	}
 
 
+//	@Override
+//	public void onBackPressed () {
+
+//		if (Navigation.findNavController(mDataBinding.getRoot()).getCurrentDestination().getLabel().toString().equals("nav_preview_fragment")){
+//			finish();
+//		}else {
+//			Navigation.findNavController((Activity) mContext.get(),R.id.navigation_main).navigateUp();
+//		}l
+
+//		Toast.makeText(mContext.get(),"Activity BackPress" ,Toast.LENGTH_SHORT).show();
+
+//	}
 }
