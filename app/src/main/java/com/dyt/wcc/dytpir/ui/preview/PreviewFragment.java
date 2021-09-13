@@ -1,12 +1,14 @@
 package com.dyt.wcc.dytpir.ui.preview;
 
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.navigation.Navigation;
 
 import com.dyt.wcc.common.base.BaseFragment;
 import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.databinding.FragmentPreviewMainBinding;
+import com.dyt.wcc.dytpir.widget.MyToggle;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -38,6 +40,14 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //		});
 
 //		Navigation.findNavController(mDataBinding.getRoot()).setGraph(R.navigation.nav_dytmain,R.id.nav_previewFg);
+
+//		mDataBinding.togglePreview.
+		mDataBinding.toggleHighLowTemp.setWidgetStateCheckedListener(new MyToggle.OnWidgetStateCheckedListener() {
+			@Override
+			public void onStateChecked (boolean widgetState) {
+				Toast.makeText(mContext.get(),"toggle is click"+widgetState,Toast.LENGTH_SHORT).show();
+			}
+		});
 	}
 
 	public void toGallery(View view){

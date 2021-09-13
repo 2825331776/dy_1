@@ -131,6 +131,64 @@
                 android:layout_width="1dp"
                 android:layout_height="match_parent"/>
 
+
+            <com.dyt.wcc.dytpir.widget.MyToggle
+                android:id="@+id/toggle_high_low_temp"
+                app:toggle_text_info="高低温追踪"
+                app:toggle_text_size="14"
+                android:layout_width="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_height="45dp"/>
+
+            <com.dyt.wcc.dytpir.widget.MyToggle
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/toggle_high_low_temp"
+                android:id="@+id/toggle_show_high_low_temp"
+                app:toggle_text_info="框内细查"
+                app:toggle_text_size="14"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"/>
+
+            <com.dyt.wcc.dytpir.widget.MyToggle
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/toggle_show_high_low_temp"
+                android:id="@+id/toggle_high_temp_alarm"
+                app:toggle_text_info="高温报警"
+                app:toggle_text_size="14"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"/>
+
+            <EditText
+                android:id="@+id/et_rightRL_container"
+                android:layout_below="@id/toggle_high_temp_alarm"
+                android:layout_width="wrap_content"
+                android:textColorHint="@color/white"
+                android:hint="输入框"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:singleLine="true"
+                android:layout_height="wrap_content"/>
+
+            <ImageView
+                android:id="@+id/iv_togo"
+                android:layout_alignTop="@id/et_rightRL_container"
+                android:layout_toEndOf="@id/et_rightRL_container"
+                android:layout_alignBottom="@id/et_rightRL_container"
+                android:src="@drawable/permissionx_ic_alert"
+                android:scaleType="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <com.dyt.wcc.dytpir.widget.MyToggle
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/et_rightRL_container"
+                android:layout_margin="3dp"
+                android:id="@+id/toggle_temp"
+                app:toggle_text_info="固定温度条"
+                app:toggle_text_size="14"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"/>
+
             <ImageView
                 android:id="@+id/iv_preview_right_temp_mode"
                 android:layout_above="@id/iv_preview_right_setting"

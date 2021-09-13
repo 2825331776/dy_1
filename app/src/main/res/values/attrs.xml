@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="MyToggle">
+        <attr name="toggle_text_size" format="integer"/>
+        <attr name="toggle_text_default_color" format="color"/>
+        <attr name="toggle_text_select_color" format="color"/>
+        <attr name="toggle_text_info" format="string"/>
+    </declare-styleable>
+</resources>
