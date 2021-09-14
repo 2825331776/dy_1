@@ -37,4 +37,6 @@ dependencies {
     //other
     implementation files('libs/poishadow-all.jar')
 
+    implementation project(path: ':LibUvcCamera')
+
 }

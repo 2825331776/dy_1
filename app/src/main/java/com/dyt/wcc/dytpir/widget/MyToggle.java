@@ -39,17 +39,30 @@ public class MyToggle extends LinearLayout {
 	private OnWidgetStateCheckedListener widgetStateCheckedListener;
 
 	public MyToggle (Context context) {
-		this(context,null);
+		super(context,null);
+		initView(context,null);
 	}
 	public MyToggle (Context context, @Nullable AttributeSet attrs) {
-		this(context, attrs,0);
+		super(context, attrs);
+		initView(context,attrs);
+		initData();
 	}
-	public MyToggle (Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-		this(context, attrs, defStyleAttr,0);
-	}
-	public MyToggle (Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-		super(context, attrs, defStyleAttr, defStyleRes);
+	private void initData(){
+		tv_toggle_define.setTextSize(textSize);
+		tv_toggle_define.setText(defaultString);
+		tv_toggle_define.setTextColor(textDefaultColor);
 
+		Log.e(TAG, "initView: "+ clickEnable);
+		switch_toggle_define.setChecked(clickEnable);
+
+		if (clickEnable){
+			tv_toggle_define.setTextColor(textSelectColor);
+		}else {
+			tv_toggle_define.setTextColor(textDefaultColor);
+		}
+	}
+
+	private void initView(Context context ,AttributeSet attrs){
 		TypedArray typedArray  = context.obtainStyledAttributes(attrs, R.styleable.MyToggle);
 
 		textDefaultColor = typedArray.getColor(R.styleable.MyToggle_toggle_text_default_color,Color.WHITE);
@@ -58,22 +71,95 @@ public class MyToggle extends LinearLayout {
 		defaultString = typedArray.getString(R.styleable.MyToggle_toggle_text_info);
 
 		typedArray.recycle();
-		initView(context);
+
+		LayoutInflater.from(context).inflate(R.layout.layout_define_my_toggle,this,true);
+		tv_toggle_define = findViewById(R.id.tv_toggle_ll_define);
+		switch_toggle_define = findViewById(R.id.switch_toggle_ll_define);
+		ll_toggle_define = findViewById(R.id.ll_toggle_define);
+
+		ll_toggle_define.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick (View v) {
+				clickEnable = !clickEnable;
+				if (clickEnable){
+					tv_toggle_define.setTextColor(textSelectColor);
+				}else {
+					tv_toggle_define.setTextColor(textDefaultColor);
+				}
+				switch_toggle_define.setChecked(clickEnable);
+				switch_toggle_define.setSaveEnabled(true);
+
+				if (widgetStateCheckedListener!= null){
+					widgetStateCheckedListener.onStateChecked(clickEnable);
+				}
+			}
+		});
+
+		//		Log.e(TAG, "initView: ");
+
+		//		ll_toggle_define.setClickable(clickEnable);
+
+
 	}
+
+//	public MyToggle (Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+//		super(context, attrs, defStyleAttr);
+//		initView(context,attrs);
+//	}
+//	public MyToggle (Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+//		super(context, attrs, defStyleAttr, defStyleRes);
+//
+//		initView(context,attrs);
+//	}
 
 	public void setWidgetStateCheckedListener (OnWidgetStateCheckedListener checkedListener) {
 		this.widgetStateCheckedListener = checkedListener;
 	}
 
 	public void setClickEnable (boolean clickEnable) {
-		ll_toggle_define.setClickable(clickEnable);
+//		ll_toggle_define.setClickable(clickEnable);
 		this.clickEnable = clickEnable;
+//		invalidate();
 	}
+
+//	@Override
+//	protected void onRestoreInstanceState (Parcelable state) {
+//		Log.e(TAG, "onRestoreInstanceState: ");
+//
+//		Bundle bundle = (Bundle) state;
+//		Parcelable superParcelable = bundle.getParcelable("toggleData");
+//
+//		clickEnable = bundle.getBoolean("toggleSelect");
+//
+//		Log.e(TAG, "onRestoreInstanceState: " + clickEnable);
+//		switch_toggle_define.setChecked(clickEnable);
+//		if (clickEnable) {
+//			tv_toggle_define.setTextColor(textSelectColor);
+//		} else {
+//			tv_toggle_define.setTextColor(textDefaultColor);
+//			//			switch_toggle_define.setSaveEnabled(clickEnable);
+//		}
+//		super.onRestoreInstanceState(superParcelable);
+//	}
+//
+//	@Nullable
+//	@Override
+//	protected Parcelable onSaveInstanceState () {
+//		Log.e(TAG, "onSaveInstanceState: ");
+//
+//		Bundle bundle = new Bundle();
+//		Parcelable parcelable = super.onSaveInstanceState();
+//		bundle.putParcelable("toggleData",parcelable);
+//		bundle.putBoolean("toggleSelect",clickEnable);
+//
+//		switch_toggle_define.setSaveEnabled(true);
+//		return bundle;
+//	}
 
 	@Override
 	protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-		Log.e(TAG, "onMeasure: ");
+//		Log.e(TAG, "onMeasure: ");
 
 		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
 		int heightMode = MeasureSpec.getMode(heightMeasureSpec);
@@ -96,45 +182,7 @@ public class MyToggle extends LinearLayout {
 		switch_toggle_define.setSwitchMinWidth(tv_toggle_define.getMeasuredWidth());
 	}
 
-	@Override
-	protected void onLayout (boolean changed, int l, int t, int r, int b) {
-		super.onLayout(changed, l, t, r, b);
 
-	}
-
-	private void initView(Context context){
-		LayoutInflater.from(context).inflate(R.layout.layout_define_my_toggle,this,true);
-		tv_toggle_define = findViewById(R.id.tv_toggle_ll_define);
-		switch_toggle_define = findViewById(R.id.switch_toggle_ll_define);
-		ll_toggle_define = findViewById(R.id.ll_toggle_define);
-
-		tv_toggle_define.setTextSize(textSize);
-		tv_toggle_define.setText(defaultString);
-		tv_toggle_define.setTextColor(textDefaultColor);
-
-//		switch_toggle_define.setClickable(false);
-		switch_toggle_define.setChecked(false);
-
-//		ll_toggle_define.setClickable(clickEnable);
-		ll_toggle_define.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick (View v) {
-				clickEnable = !clickEnable;
-				if (clickEnable){
-					tv_toggle_define.setTextColor(textSelectColor);
-				}else {
-					tv_toggle_define.setTextColor(textDefaultColor);
-				}
-
-				switch_toggle_define.setChecked(clickEnable);
-
-				if (widgetStateCheckedListener!= null){
-					widgetStateCheckedListener.onStateChecked(clickEnable);
-				}
-			}
-		});
-
-	}
 	public interface OnWidgetStateCheckedListener{
 		void onStateChecked(boolean widgetState);
 	}

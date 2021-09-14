@@ -1,5 +1,9 @@
 package com.dyt.wcc.dytpir.ui.gallry;
 
+import android.view.View;
+
+import androidx.navigation.Navigation;
+
 import com.dyt.wcc.common.base.BaseFragment;
 import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.databinding.FragmentGalleryMainBinding;
@@ -19,6 +23,12 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 
 	@Override
 	protected void initView () {
-
+		mDataBinding.setFgGallery(this);
+		mDataBinding.includeGallery.ivBackGallery.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick (View v) {
+				Navigation.findNavController(mDataBinding.getRoot()).navigateUp();
+			}
+		});
 	}
 }

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageButton
+        android:id="@+id/palette_layout_Tiehong"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@mipmap/temp_mode_bg_tempback"
+        android:src="@mipmap/temp_mode_tiehong"/>
+
+    <ImageButton
+        android:id="@+id/palette_layout_Caihong"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@mipmap/temp_mode_bg_tempback"
+        android:src="@mipmap/temp_mode_caihong"/>
+
+    <ImageButton
+        android:id="@+id/palette_layout_Hongre"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@mipmap/temp_mode_bg_tempback"
+        android:src="@mipmap/temp_mode_hongre"/>
+
+    <ImageButton
+        android:id="@+id/palette_layout_Heire"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@mipmap/temp_mode_bg_tempback"
+        android:src="@mipmap/temp_mode_heire"/>
+
+    <ImageButton
+        android:id="@+id/palette_layout_Baire"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@mipmap/temp_mode_bg_tempback"
+        android:src="@mipmap/temp_mode_baire"/>
+
+    <ImageButton
+        android:id="@+id/palette_layout_Lenglan"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@mipmap/temp_mode_bg_tempback"
+        android:src="@mipmap/temp_mode_lenglan"/>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@mipmap/temp_mode_bg_tempback"
+        android:layout_weight="1"/>
+</LinearLayout>

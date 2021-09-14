@@ -41,7 +41,7 @@ ext{
             // navigation_fragment
             navigation_fragment     :"androidx.navigation:navigation-fragment:$navigation_version",
             navigation_ui           :"androidx.navigation:navigation-ui:$navigation_version",
-            //viewmodel
+            //viewModel
             lifecycle_viewmodel     :"androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version",
             // LiveData
             lifecycle_livedata      :"androidx.lifecycle:lifecycle-livedata:$lifecycle_version",
