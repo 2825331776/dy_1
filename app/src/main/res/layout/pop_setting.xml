@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/dimen_20dp"
+        android:background="@drawable/shape_bg_pop_temp_mode_chioce">
+
+        <TextView
+            android:id="@+id/tv_general_info"
+            android:textColor="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:text="@string/SettingGeneral"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv1"
+            app:layout_constraintTop_toBottomOf="@id/tv_general_info"
+            android:background="@color/bg_cutoff_rule"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_1dp"/>
+        <TextView
+            android:id="@+id/tv2"
+            app:layout_constraintTop_toBottomOf="@id/tv1"
+            android:layout_marginTop="@dimen/dimen_1dp"
+            android:background="@color/bg_cutoff_rule"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_1dp"/>
+
+        <TextView
+            android:id="@+id/tv_language"
+            app:layout_constraintLeft_toLeftOf="@id/tv_general_info"
+            app:layout_constraintTop_toBottomOf="@id/tv2"
+            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:layout_marginStart="@dimen/dimen_30dp"
+            android:text="@string/SettingLanguage"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv_temp_unit_choice_info"
+            app:layout_constraintLeft_toLeftOf="@id/tv_general_info"
+            app:layout_constraintTop_toBottomOf="@id/tv_language"
+            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:layout_marginStart="@dimen/dimen_30dp"
+            android:text="@string/SettingTemperatureUnit"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+<!--        <include-->
+<!--            app:layout_constraintLeft_toRightOf="@id/tv_temp_unit_choice_info"-->
+<!--            app:layout_constraintTop_toTopOf="@id/tv_temp_unit_choice_info"-->
+<!--            app:layout_constraintBottom_toBottomOf="@id/tv_temp_unit_choice_info"-->
+<!--            layout="@layout/pop_widget_setting_three_choice_one"/>-->
+
+
+        <TextView
+            android:id="@+id/tv_camera_setting"
+            app:layout_constraintLeft_toLeftOf="@id/tv_general_info"
+            app:layout_constraintTop_toBottomOf="@id/tv_temp_unit_choice_info"
+            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:text="@string/SettingCameraParams"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv3"
+            app:layout_constraintTop_toBottomOf="@id/tv_camera_setting"
+            android:background="@color/bg_cutoff_rule"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_1dp"/>
+        <TextView
+            android:id="@+id/tv4"
+            app:layout_constraintTop_toBottomOf="@id/tv3"
+            android:layout_marginTop="@dimen/dimen_1dp"
+            android:background="@color/bg_cutoff_rule"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_1dp"/>
+
+
+        <TextView
+            android:id="@+id/tv_camera_setting_radiance"
+            app:layout_constraintLeft_toLeftOf="@id/tv_general_info"
+            app:layout_constraintTop_toBottomOf="@id/tv4"
+            android:layout_marginStart="@dimen/dimen_30dp"
+            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:text="@string/SettingCameraParams_Radiance"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv_camera_setting_distance"
+            app:layout_constraintLeft_toLeftOf="@id/tv_general_info"
+            app:layout_constraintTop_toBottomOf="@id/tv_camera_setting_radiance"
+            android:layout_marginStart="@dimen/dimen_30dp"
+            android:layout_marginTop="@dimen/dimen_15dp"
+            android:textColor="@color/white"
+            android:text="@string/SettingCameraParams_Distance"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv_camera_setting_freeAirTemp"
+            app:layout_constraintLeft_toLeftOf="@id/tv_camera_setting_distance"
+            app:layout_constraintTop_toTopOf="@id/tv_camera_setting_distance"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginStart="@dimen/dimen_30dp"
+            android:textColor="@color/white"
+            android:text="@string/SettingCameraParams_FreeAirTemp"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv_camera_setting_reflect"
+            app:layout_constraintLeft_toLeftOf="@id/tv_general_info"
+            app:layout_constraintTop_toBottomOf="@id/tv_camera_setting_distance"
+            android:layout_marginStart="@dimen/dimen_30dp"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:textColor="@color/white"
+            android:text="@string/SettingCameraParams_Reflect"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+<!--        <TextView-->
+<!--            app:layout_constraintTop_toBottomOf="@id/tv_camera_setting_reflect"-->
+<!--            android:text="1123123"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:layout_marginTop="@dimen/dimen_360dp"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"/>-->
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

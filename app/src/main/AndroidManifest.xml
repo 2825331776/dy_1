@@ -8,6 +8,18 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+<!--    Android usb 主机模式-->
+    <uses-feature android:name="android.hardware.usb.host"/>
+
+    <!--   告诉系统需要的OpenGL ES的版本为 2.0（用于过滤）  true代表是必须的，不写也是代表必须的。false代表非必须-->
+    <!-- Tell the system this app requires OpenGL ES 3.2. -->
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
 
     <application
         android:name=".ui.DYTApplication"
@@ -26,6 +38,14 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/dy_device_filter" />
+
         </activity>
     </application>
 

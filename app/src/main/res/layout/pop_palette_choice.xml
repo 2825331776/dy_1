@@ -1,59 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageButton
-        android:id="@+id/palette_layout_Tiehong"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@mipmap/temp_mode_bg_tempback"
-        android:src="@mipmap/temp_mode_tiehong"/>
 
-    <ImageButton
-        android:id="@+id/palette_layout_Caihong"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@mipmap/temp_mode_bg_tempback"
-        android:src="@mipmap/temp_mode_caihong"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:background="@drawable/shape_bg_pop_palette_choice"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_50dp">
 
-    <ImageButton
-        android:id="@+id/palette_layout_Hongre"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@mipmap/temp_mode_bg_tempback"
-        android:src="@mipmap/temp_mode_hongre"/>
+        <ImageButton
+            android:id="@+id/palette_layout_Tiehong"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            android:layout_width="@dimen/dimen_50dp"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_marginStart="@dimen/dimen_5dp"
+            android:background="@mipmap/temp_mode_tiehong"
+             />
 
-    <ImageButton
-        android:id="@+id/palette_layout_Heire"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@mipmap/temp_mode_bg_tempback"
-        android:src="@mipmap/temp_mode_heire"/>
+        <ImageButton
+            android:id="@+id/palette_layout_Caihong"
+            app:layout_constraintLeft_toRightOf="@id/palette_layout_Tiehong"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            android:layout_width="@dimen/dimen_50dp"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_marginStart="@dimen/dimen_5dp"
+            android:background="@mipmap/temp_mode_caihong"/>
 
-    <ImageButton
-        android:id="@+id/palette_layout_Baire"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@mipmap/temp_mode_bg_tempback"
-        android:src="@mipmap/temp_mode_baire"/>
+        <ImageButton
+            android:id="@+id/palette_layout_Hongre"
+            app:layout_constraintLeft_toRightOf="@id/palette_layout_Caihong"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            android:scaleType="center"
+            android:layout_width="@dimen/dimen_50dp"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_marginStart="@dimen/dimen_5dp"
+            android:background="@mipmap/temp_mode_hongre"/>
 
-    <ImageButton
-        android:id="@+id/palette_layout_Lenglan"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@mipmap/temp_mode_bg_tempback"
-        android:src="@mipmap/temp_mode_lenglan"/>
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:background="@mipmap/temp_mode_bg_tempback"
-        android:layout_weight="1"/>
-</LinearLayout>
+        <ImageButton
+            android:id="@+id/palette_layout_Heire"
+            app:layout_constraintLeft_toRightOf="@id/palette_layout_Hongre"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            android:scaleType="center"
+            android:layout_width="@dimen/dimen_50dp"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_marginStart="@dimen/dimen_5dp"
+            android:background="@mipmap/temp_mode_heire"/>
+
+        <ImageButton
+            android:id="@+id/palette_layout_Baire"
+            app:layout_constraintLeft_toRightOf="@id/palette_layout_Heire"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            android:scaleType="center"
+            android:layout_width="@dimen/dimen_50dp"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_marginStart="@dimen/dimen_5dp"
+            android:background="@mipmap/temp_mode_baire"/>
+
+        <ImageButton
+            android:id="@+id/palette_layout_Lenglan"
+            app:layout_constraintLeft_toRightOf="@id/palette_layout_Baire"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            android:scaleType="center"
+            android:layout_width="@dimen/dimen_50dp"
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_marginStart="@dimen/dimen_5dp"
+            android:background="@mipmap/temp_mode_lenglan"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

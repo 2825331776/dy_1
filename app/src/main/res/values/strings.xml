@@ -1,4 +1,5 @@
 <resources>
+    <string name="CompanyName">Shenzhen DianYang Technology Co., LTD</string>
     <string name="app_name">DYTPIRCamera</string>
     <string name="Gallery">Gallery</string>
     <string name="Welcome">Welcome</string>
@@ -9,5 +10,24 @@
     <string name="MediaBrowser_video">Video</string>
     <string name="MediaBrowser_delete">Delete</string>
 
+    <string name="ShowHighLowTemp">ShowHighLowTemp</string>
+    <string name="AreaCheck">AreaCheck</string>
+    <string name="HighTempAlarm">HighTempAlarm</string>
+    <string name="FixeTempBar">FixeTempBar</string>
+    <string name="DynamicTempBar">DynamicTempBar</string>
 
+    <string name="AlarmTempInput">Input</string>
+
+    <string name="CheckLatestVersion">Check the latest version</string>
+    <string name="VersionName">Version Name：</string>
+
+<!--    设置页-->
+    <string name="SettingGeneral">General</string>
+    <string name="SettingLanguage">Language</string>
+    <string name="SettingTemperatureUnit">Temperature Unit</string>
+    <string name="SettingCameraParams">Camera Params</string>
+    <string name="SettingCameraParams_Radiance">Radiance</string>
+    <string name="SettingCameraParams_Distance">Distance</string>
+    <string name="SettingCameraParams_Reflect">Reflect</string>
+    <string name="SettingCameraParams_FreeAirTemp">Free Air Temperature</string>
 </resources>

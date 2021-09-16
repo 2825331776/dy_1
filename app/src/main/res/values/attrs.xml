@@ -5,6 +5,6 @@
         <attr name="toggle_text_size" format="integer"/>
         <attr name="toggle_text_default_color" format="color"/>
         <attr name="toggle_text_select_color" format="color"/>
-        <attr name="toggle_text_info" format="string"/>
+        <attr name="toggle_text_info" format="reference"/>
     </declare-styleable>
 </resources>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ll_toggle_define"
     android:orientation="vertical"
     android:gravity="center"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <Switch
+    <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/switch_toggle_ll_define"
         android:track="@drawable/switch_custom_track_selector"
         android:thumb="@drawable/switch_custom_thumb_selector"
@@ -15,7 +15,6 @@
         android:clickable="false"
         android:layout_height="wrap_content"/>
     <TextView
-        android:text="时间上有一个人"
         android:id="@+id/tv_toggle_ll_define"
         android:gravity="center"
         android:layout_gravity="center"

@@ -12,8 +12,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.Fragment;
 
-import com.dyt.wcc.common.BuildConfig;
-
 import java.lang.ref.WeakReference;
 
 /**
@@ -27,7 +25,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
 	protected WeakReference <Context> mContext;
 	protected final String  TAG = this.getClass().getSimpleName();
 	protected T mDataBinding;
-	protected boolean isDebug = BuildConfig.DEBUG;
+	protected boolean isDebug = true;
 
 	@Nullable
 	@Override

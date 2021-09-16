@@ -8,10 +8,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.dyt.wcc.dytpir.R;
 
@@ -23,10 +23,10 @@ import com.dyt.wcc.dytpir.R;
  * <p>PackgePath: com.dyt.wcc.dytpir.widget     </p>
  */
 public class MyToggle extends LinearLayout {
-	private static final String TAG = "MyToggle.TAG";
-	private Switch switch_toggle_define;
-	private TextView     tv_toggle_define;
-	private LinearLayout ll_toggle_define;
+	private static final String       TAG = "MyToggle.TAG";
+	private              SwitchCompat switch_toggle_define;
+	private              TextView     tv_toggle_define;
+	private              LinearLayout ll_toggle_define;
 
 	private boolean clickEnable = false;
 
@@ -39,13 +39,16 @@ public class MyToggle extends LinearLayout {
 	private OnWidgetStateCheckedListener widgetStateCheckedListener;
 
 	public MyToggle (Context context) {
-		super(context,null);
-		initView(context,null);
+		this(context,null);
+//		initView(context,null);
+//		initData();
+		Log.e(TAG, "MyToggle: 000");
 	}
 	public MyToggle (Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
 		initView(context,attrs);
 		initData();
+		Log.e(TAG, "MyToggle: 111");
 	}
 	private void initData(){
 		tv_toggle_define.setTextSize(textSize);
@@ -72,10 +75,10 @@ public class MyToggle extends LinearLayout {
 
 		typedArray.recycle();
 
-		LayoutInflater.from(context).inflate(R.layout.layout_define_my_toggle,this,true);
-		tv_toggle_define = findViewById(R.id.tv_toggle_ll_define);
-		switch_toggle_define = findViewById(R.id.switch_toggle_ll_define);
-		ll_toggle_define = findViewById(R.id.ll_toggle_define);
+		View view = LayoutInflater.from(context).inflate(R.layout.layout_define_my_toggle,this,true);
+		tv_toggle_define = view.findViewById(R.id.tv_toggle_ll_define);
+		switch_toggle_define = view.findViewById(R.id.switch_toggle_ll_define);
+		ll_toggle_define = view.findViewById(R.id.ll_toggle_define);
 
 		ll_toggle_define.setOnClickListener(new OnClickListener() {
 			@Override
@@ -87,7 +90,7 @@ public class MyToggle extends LinearLayout {
 					tv_toggle_define.setTextColor(textDefaultColor);
 				}
 				switch_toggle_define.setChecked(clickEnable);
-				switch_toggle_define.setSaveEnabled(true);
+//				switch_toggle_define.setSaveEnabled(true);
 
 				if (widgetStateCheckedListener!= null){
 					widgetStateCheckedListener.onStateChecked(clickEnable);
@@ -116,11 +119,11 @@ public class MyToggle extends LinearLayout {
 		this.widgetStateCheckedListener = checkedListener;
 	}
 
-	public void setClickEnable (boolean clickEnable) {
-//		ll_toggle_define.setClickable(clickEnable);
-		this.clickEnable = clickEnable;
-//		invalidate();
-	}
+//	public void setClickEnable (boolean clickEnable) {
+////		ll_toggle_define.setClickable(clickEnable);
+//		this.clickEnable = clickEnable;
+////		invalidate();
+//	}
 
 //	@Override
 //	protected void onRestoreInstanceState (Parcelable state) {

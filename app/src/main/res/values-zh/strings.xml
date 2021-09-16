@@ -1,4 +1,5 @@
 <resources>
+    <string name="CompanyName">深圳市点扬科技有限公司</string>
     <string name="app_name">点扬红外</string>
     <string name="Gallery">相册</string>
     <string name="Welcome">欢迎</string>
@@ -9,5 +10,24 @@
     <string name="MediaBrowser_video">视频</string>
     <string name="MediaBrowser_delete">删除</string>
 
+    <string name="ShowHighLowTemp">高低温追踪</string>
+    <string name="AreaCheck">框内细查</string>
+    <string name="HighTempAlarm">超温报警</string>
+    <string name="FixeTempBar">固定温度条</string>
+    <string name="DynamicTempBar">动态温度条</string>
 
+    <string name="AlarmTempInput">输入框</string>
+
+    <string name="CheckLatestVersion">检查最新版本</string>
+    <string name="VersionName">版本号：</string>
+
+    <!--    设置页-->
+    <string name="SettingGeneral">通用</string>
+    <string name="SettingLanguage">语言</string>
+    <string name="SettingTemperatureUnit">温度单位</string>
+    <string name="SettingCameraParams">参数</string>
+    <string name="SettingCameraParams_Radiance">辐射率</string>
+    <string name="SettingCameraParams_Distance">距离</string>
+    <string name="SettingCameraParams_Reflect">反射</string>
+    <string name="SettingCameraParams_FreeAirTemp">大气温度</string>
 </resources>

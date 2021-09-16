@@ -22,6 +22,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 
 	protected WeakReference<Context> mContext;
 	protected     T       mDataBinding;//绑定的布局View
+	protected boolean isDebug = true;
 	@Override
 	protected void onCreate (@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

@@ -25,7 +25,7 @@ public class WelComeFragment extends BaseFragment<FragmentWelcomeMainBinding> {
 
 	@Override
 	protected void initView () {
-		mDataBinding.setWelcomeImg(R.mipmap.welcome);
+		mDataBinding.setWelcomeImg(R.mipmap.ic_welcome);
 		new Handler().postDelayed(new Runnable() {
 			@Override
 			public void run () {

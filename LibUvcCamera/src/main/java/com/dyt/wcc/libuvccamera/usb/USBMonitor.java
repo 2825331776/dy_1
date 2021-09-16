@@ -56,7 +56,7 @@ import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 
 public final class USBMonitor {
 
-	private static final boolean DEBUG = false;	// TODO set false on production
+	private static final boolean DEBUG = true;	// TODO set false on production
 	private static final String TAG = "USBMonitor";
 
 	private static final String ACTION_USB_PERMISSION_BASE = "com.serenegiant.USB_PERMISSION.";
@@ -96,7 +96,7 @@ public final class USBMonitor {
 		 * called when device dettach(after onDisconnect)
 		 * @param device
 		 */
-		public void onDettach(UsbDevice device);
+		public void onDetach(UsbDevice device);
 		/**
 		 * called after device opend
 		 * @param device
@@ -169,7 +169,7 @@ public final class USBMonitor {
 	public synchronized void register() throws IllegalStateException {
 		if (destroyed) throw new IllegalStateException("already destroyed");
 		if (mPermissionIntent == null) {
-			if (DEBUG) Log.i(TAG, "register:");
+			if (DEBUG) Log.e(TAG, "register:");
 			final Context context = mWeakContext.get();
 			LogUtils.e("=====register============before==========PendingIntent.getBroadcast=======");
 			if (context != null) {
@@ -639,7 +639,7 @@ public final class USBMonitor {
 			mAsyncHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					mOnDeviceConnectListener.onDettach(device);
+					mOnDeviceConnectListener.onDetach(device);
 				}
 			});
 		}

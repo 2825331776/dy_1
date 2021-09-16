@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ToggleView">
+        <attr name="showTextEnable" format="boolean"/>
+        <attr name="textSize" format="integer"/>
+        <attr name="textColor" format="reference"/>
+        <attr name="bg_select"  format="reference"/>
+        <attr name="bg_unselect" format="reference"/>
+        <attr name="button_pic" format="reference"/>
+
+        <attr name="enterAnimate" format="reference"/>
+        <attr name="exitAnimate" format="reference"/>
+    </declare-styleable>
+
+</resources>

@@ -18,5 +18,7 @@
     <color name="bg_preview_toggle_select">#FF4AD662</color>
     <color name="bg_preview_toggle_unselect">#FFDDDDDD</color>
 
+    <color name="bg_three_choice_one">#FF41C7DB</color>
+
 
 </resources>
