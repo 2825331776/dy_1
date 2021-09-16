@@ -24,7 +24,7 @@
     <!--    设置页-->
     <string name="SettingGeneral">通用</string>
     <string name="SettingLanguage">语言</string>
-    <string name="SettingTemperatureUnit">温度单位</string>
+    <string name="SettingTemperatureUnit">温度单位 : </string>
     <string name="SettingCameraParams">参数</string>
     <string name="SettingCameraParams_Radiance">辐射率</string>
     <string name="SettingCameraParams_Distance">距离</string>

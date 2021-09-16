@@ -24,7 +24,7 @@
 <!--    设置页-->
     <string name="SettingGeneral">General</string>
     <string name="SettingLanguage">Language</string>
-    <string name="SettingTemperatureUnit">Temperature Unit</string>
+    <string name="SettingTemperatureUnit">Temperature Unit : </string>
     <string name="SettingCameraParams">Camera Params</string>
     <string name="SettingCameraParams_Radiance">Radiance</string>
     <string name="SettingCameraParams_Distance">Distance</string>

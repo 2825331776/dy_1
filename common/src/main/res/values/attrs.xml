@@ -12,4 +12,16 @@
         <attr name="exitAnimate" format="reference"/>
     </declare-styleable>
 
+<!--    自定义三选一switchButton 样式-->
+    <declare-styleable name="SwitchMultiButton">
+        <attr name="strokeRadius" format="dimension" />
+        <attr name="stroke_Width" format="dimension" />
+        <attr name="text_Size" format="dimension" />
+        <attr name="selectedTab" format="integer" />
+        <attr name="selectedColor" format="color|reference" />
+        <attr name="switchTabs" format="reference" />
+        <attr name="typeface" format="string" />
+        <attr name="disableColor" format="color|reference" />
+    </declare-styleable>
+
 </resources>
