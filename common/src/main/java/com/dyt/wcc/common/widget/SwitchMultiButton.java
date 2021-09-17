@@ -3,6 +3,7 @@ package com.dyt.wcc.common.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -22,14 +23,14 @@ import com.dyt.wcc.common.R;
 * <p>Author：stefan cheng    </p>
 * <p>Create Date：2021/9/16  16:46 </p>
 * <p>Description：@todo describe         </p>
-* <p>PackgePath: com.dyt.wcc.common.widget     </p>
+* <p>PackagePath: com.dyt.wcc.common.widget     </p>
 */
 public class SwitchMultiButton extends View {
 
     private static final String TAG = "SwitchMultiButton";
     //默认值
     private String[] mTabTexts = {"开", "关"};
-    private int mTabNum = mTabTexts.length;
+    private int mTabNum = mTabTexts.length;//tab的个数
     private static final float STROKE_RADIUS = 0;
     private static final float STROKE_WIDTH = 2;
     private static final float TEXT_SIZE = 14;
@@ -44,18 +45,20 @@ public class SwitchMultiButton extends View {
     //宽高
     private int mWidth;
     private int mHeight;
-    private TextPaint mSelectedTextPaint;
-    private TextPaint mUnselectedTextPaint;
-    private OnSwitchListener onSwitchListener;
-    private float mStrokeRadius;
-    private float mStrokeWidth;
-    private int mSelectedColor;
-    private int mDisableColor;
-    private float mTextSize;
-    private int mSelectedTab;
-    private float perWidth;
+    private TextPaint mSelectedTextPaint;//选中 字体 画笔
+    private TextPaint mUnselectedTextPaint;//未选中 字体 画笔
+    private OnSwitchListener onSwitchListener; //回调监听器
+    private float mStrokeRadius;    //描边的圆角半径
+    private float mStrokeWidth;//描边宽度
+    private int mSelectedColor;//选择的颜色
+    private int mDisableColor;//未选中的颜色
+    private float mTextSize;//字体大小
+    private int mSelectedTab;//选中的坐标
+
+    private float perWidth;//每个的宽度
     private float mTextHeightOffset;
     private Paint.FontMetrics mFontMetrics;
+
     private Typeface typeface;
     private boolean mEnable = true;
 
@@ -100,7 +103,7 @@ public class SwitchMultiButton extends View {
     }
 
     /**
-     * define paints
+     * 初始化画笔
      */
     private void initPaint() {
         // round rectangle paint
@@ -117,13 +120,14 @@ public class SwitchMultiButton extends View {
         // selected text paint
         mSelectedTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mSelectedTextPaint.setTextSize(mTextSize);
-        mSelectedTextPaint.setColor(0xffffffff);
+        mSelectedTextPaint.setColor(Color.BLACK);
         mStrokePaint.setAntiAlias(true);
         // unselected text paint
         mUnselectedTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mUnselectedTextPaint.setTextSize(mTextSize);
-        mUnselectedTextPaint.setColor(mSelectedColor);
+        mUnselectedTextPaint.setColor(Color.WHITE);
         mStrokePaint.setAntiAlias(true);
+
         mTextHeightOffset = -(mSelectedTextPaint.ascent() + mSelectedTextPaint.descent()) * 0.5f;
         mFontMetrics = mSelectedTextPaint.getFontMetrics();
         if (typeface != null) {
@@ -156,6 +160,7 @@ public class SwitchMultiButton extends View {
         for (int i = 0; i < tabs; i++) {
             tabTextWidth = Math.max(tabTextWidth, mSelectedTextPaint.measureText(mTabTexts[i]));
         }
+
         float totalTextWidth = tabTextWidth * tabs;
         float totalStrokeWidth = (mStrokeWidth * tabs);
         int totalPadding = (getPaddingRight() + getPaddingLeft()) * tabs;
@@ -204,10 +209,10 @@ public class SwitchMultiButton extends View {
         float right = mWidth - mStrokeWidth * 0.5f;
         float bottom = mHeight - mStrokeWidth * 0.5f;
 
-        //draw rounded rectangle
+        //绘制一个外围的圆框//没有绘制背景的
         canvas.drawRoundRect(new RectF(left, top, right, bottom), mStrokeRadius, mStrokeRadius, mStrokePaint);
 
-        //draw line
+        //绘制每个tab之间的分割线
         for (int i = 0; i < mTabNum - 1; i++) {
             canvas.drawLine(perWidth * (i + 1), top, perWidth * (i + 1), bottom, mStrokePaint);
         }
@@ -294,7 +299,7 @@ public class SwitchMultiButton extends View {
     }
 
     /**
-     * check attribute whehere suitable
+     * 描边的圆角 半径 最大为高度一半
      */
     private void checkAttrs() {
         if (mStrokeRadius > 0.5f * mHeight) {
@@ -347,7 +352,7 @@ public class SwitchMultiButton extends View {
     /*=========================================Interface=========================================*/
 
     /**
-     * called when swtiched
+     * 回调方法，返回选中的 position 及其对应的文本
      */
     public interface OnSwitchListener {
         void onSwitch(int position, String tabText);
@@ -361,15 +366,14 @@ public class SwitchMultiButton extends View {
     /*=========================================Set and Get=========================================*/
 
     /**
-     * get position of selected tab
+     * 返回选择的tab
      */
     public int getSelectedTab() {
         return mSelectedTab;
     }
 
     /**
-     * set selected tab
-     *
+     * 设置选择的Tab的 position.从0开始
      * @param mSelectedTab
      * @return
      */
@@ -388,7 +392,7 @@ public class SwitchMultiButton extends View {
     }
 
     /**
-     * set data for the switchbutton
+     * 设置Tab 的数据
      *
      * @param tagTexts
      * @return

@@ -9,5 +9,6 @@
             android:right="@dimen/dimen_10dp"
             android:bottom="@dimen/dimen_5dp"
             android:top="@dimen/dimen_5dp"/>
+
         <solid android:color="@color/bg_preview_right"/>
 </shape>

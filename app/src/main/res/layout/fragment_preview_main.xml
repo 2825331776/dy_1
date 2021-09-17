@@ -45,7 +45,7 @@
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
                 android:layout_marginTop="@dimen/dimen_10dp"
-                android:background="@mipmap/temp_mode_choice"
+                android:background="@drawable/ic_user_vector_palette_24px"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -87,6 +87,7 @@
                     android:id="@+id/iv_preview_left_takePhoto"
                     android:layout_width="@dimen/dimen_50dp"
                     android:layout_height="@dimen/dimen_0dp"
+                    android:maxWidth="@dimen/dimen_50dp"
                     android:layout_weight="1"
                     android:background="@drawable/ic_user_vector_take_photo_24px"/>
 
@@ -94,6 +95,7 @@
                     android:id="@+id/iv_preview_left_record"
                     android:layout_width="@dimen/dimen_50dp"
                     android:layout_height="@dimen/dimen_0dp"
+                    android:maxWidth="@dimen/dimen_50dp"
                     android:layout_weight="1"
                     android:background="@drawable/ic_user_vector_record_24px"/>
 
@@ -101,6 +103,7 @@
                     android:id="@+id/iv_preview_left_gallery"
                     android:layout_width="@dimen/dimen_50dp"
                     android:layout_height="@dimen/dimen_0dp"
+                    android:maxWidth="@dimen/dimen_50dp"
                     android:layout_weight="1"
                     android:background="@drawable/ic_user_vector_gallery_24px"
                     android:onClick="@{pf::toGallery}"/>
@@ -115,9 +118,15 @@
             android:layout_width="@dimen/dimen_0dp"
             android:layout_height="match_parent">
 
-            <com.dyt.wcc.cameracommon.widget.UVCCameraTextureView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+<!--            <com.dyt.wcc.cameracommon.widget.UVCCameraTextureView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"/>-->
+
+            <com.dyt.wcc.common.widget.MyToggleView
+                android:layout_margin="@dimen/dimen_20dp"
+                android:layout_width="@dimen/dimen_60dp"
+                android:layout_height="@dimen/dimen_30dp"/>
+
         </FrameLayout>
 
 <!--        拖动条布局-->
@@ -280,7 +289,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@id/et_inputTemp_rightRL_container"
                 app:layout_constraintBottom_toBottomOf="@id/et_inputTemp_rightRL_container"
-                android:background="@mipmap/right_container_input_confirm"
+                android:background="@drawable/ic_user_vector_confirm_24px"
                 android:layout_width="@dimen/dimen_32dp"
                 android:layout_height="@dimen/dimen_32dp"
                 tools:ignore="ContentDescription"
@@ -331,18 +340,20 @@
                 android:layout_height="0dp">
                 <ImageView
                     android:id="@+id/iv_preview_right_temp_mode"
-                    android:background="@drawable/ic_user_vector_temp_mode_24px"
-                    android:layout_width="@dimen/dimen_45dp"
+                    android:background="@drawable/ic_user_vector_draw_temp_mode_24px"
+                    android:layout_width="@dimen/dimen_40dp"
                     android:layout_height="@dimen/dimen_0dp"
+                    android:maxWidth="@dimen/dimen_40dp"
                     android:layout_weight="1"
                     android:layout_margin="@dimen/dimen_5dp"
                     tools:ignore="ContentDescription" />
                 <!--        右侧底部设置-->
                 <ImageView
                     android:id="@+id/iv_preview_right_setting"
-                    android:background="@drawable/ic_user_vector_setting_24px"
-                    android:layout_width="@dimen/dimen_45dp"
+                    android:background="@drawable/ic_user_vector_setting_new_24px"
+                    android:layout_width="@dimen/dimen_40dp"
                     android:layout_height="@dimen/dimen_0dp"
+                    android:maxWidth="@dimen/dimen_40dp"
                     android:layout_weight="1"
                     android:layout_margin="@dimen/dimen_5dp"
                     tools:ignore="ContentDescription" />
@@ -350,8 +361,9 @@
                 <ImageView
                     android:id="@+id/iv_preview_right_chart"
                     android:background="@mipmap/right_container_chart_info"
-                    android:layout_width="@dimen/dimen_45dp"
+                    android:layout_width="@dimen/dimen_40dp"
                     android:layout_height="@dimen/dimen_0dp"
+                    android:maxWidth="@dimen/dimen_40dp"
                     android:layout_weight="1"
                     android:layout_margin="@dimen/dimen_5dp"
                     tools:ignore="ContentDescription"/>

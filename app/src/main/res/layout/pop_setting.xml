@@ -166,7 +166,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_distance"
                 app:layout_constraintLeft_toRightOf="@id/et_camera_setting_distance"
                 android:layout_marginStart="@dimen/dimen_5dp"
-                android:background="@mipmap/right_container_input_confirm"
+                android:background="@drawable/ic_user_vector_confirm_24px"
                 android:layout_width="@dimen/dimen_25dp"
                 android:layout_height="@dimen/dimen_25dp"/>
 
@@ -203,7 +203,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_freeAirTemp"
                 app:layout_constraintLeft_toRightOf="@id/et_camera_setting_freeAirTemp"
                 android:layout_marginStart="@dimen/dimen_5dp"
-                android:background="@mipmap/right_container_input_confirm"
+                android:background="@drawable/ic_user_vector_confirm_24px"
                 android:layout_width="@dimen/dimen_25dp"
                 android:layout_height="@dimen/dimen_25dp"/>
 
@@ -240,7 +240,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_reflect"
                 app:layout_constraintLeft_toRightOf="@id/et_camera_setting_reflect"
                 android:layout_marginStart="@dimen/dimen_5dp"
-                android:background="@mipmap/right_container_input_confirm"
+                android:background="@drawable/ic_user_vector_confirm_24px"
                 android:layout_width="@dimen/dimen_25dp"
                 android:layout_height="@dimen/dimen_25dp"/>
 

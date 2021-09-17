@@ -24,4 +24,9 @@
         <attr name="disableColor" format="color|reference" />
     </declare-styleable>
 
+<!--    自定义ToggleView extends View-->
+    <declare-styleable name="MyToggleViewA">
+
+    </declare-styleable>
+
 </resources>

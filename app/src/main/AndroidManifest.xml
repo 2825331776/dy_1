@@ -33,6 +33,7 @@
         <activity android:name=".ui.MainActivity"
             android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
             android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustPan|adjustResize"
             android:screenOrientation="sensorLandscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
