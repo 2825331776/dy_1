@@ -1,5 +1,6 @@
 package com.dyt.wcc.dytpir.ui.preview;
 
+import android.Manifest;
 import android.hardware.usb.UsbDevice;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -12,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -25,6 +27,10 @@ import com.dyt.wcc.dytpir.databinding.PopDrawChartBinding;
 import com.dyt.wcc.dytpir.databinding.PopSettingBinding;
 import com.dyt.wcc.dytpir.databinding.PopTempModeChoiceBinding;
 import com.dyt.wcc.libuvccamera.usb.USBMonitor;
+import com.permissionx.guolindev.PermissionX;
+import com.permissionx.guolindev.callback.RequestCallback;
+
+import java.util.List;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -48,6 +54,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	public void onResume () {
 		super.onResume();
 		if (isDebug)Log.e(TAG, "onResume: ");
+
+
 //		if (!mUsbMonitor.isRegistered()){
 //			mUsbMonitor.register();
 //		}
@@ -134,6 +142,13 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 		mUsbMonitor = new USBMonitor(mContext.get(),deviceConnectListener);
 
+		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
+				,Manifest.permission.WRITE_EXTERNAL_STORAGE).request(new RequestCallback() {
+			@Override
+			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+			}
+		});
+
 		DisplayMetrics metrics = new DisplayMetrics();
 		metrics = getResources().getDisplayMetrics();
 		if (isDebug)Log.e(TAG, "initView: " + metrics.heightPixels + "wid = " + metrics.widthPixels);
@@ -141,30 +156,32 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		fl = mDataBinding.flPreview;
 		mViewModel = new ViewModelProvider(this,new ViewModelProvider.NewInstanceFactory()).get(PreViewViewModel.class);
 
+		mDataBinding.toggleShowHighLowTemp.setOnClickChangedState(checkState -> Toast.makeText(mContext.get(), "v"+ checkState,Toast.LENGTH_SHORT).show());
+		mDataBinding.toggleAreaCheck.setOnClickChangedState(checkState -> Toast.makeText(mContext.get(), "v"+ checkState,Toast.LENGTH_SHORT).show());
+		mDataBinding.toggleFixedTempBar.setOnClickChangedState(checkState -> Toast.makeText(mContext.get(), "v"+ checkState,Toast.LENGTH_SHORT).show());
+		mDataBinding.toggleHighTempAlarm.setOnClickChangedState(checkState -> Toast.makeText(mContext.get(), "v"+ checkState,Toast.LENGTH_SHORT).show());
+
 		//绘制  温度模式 切换  弹窗
-		mDataBinding.ivPreviewRightTempMode.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick (View v) {
+		mDataBinding.ivPreviewRightTempMode.setOnClickListener(v -> {
 
-				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_temp_mode_choice,null);
-				PopTempModeChoiceBinding tempModeChoiceBinding = DataBindingUtil.bind(view);
-				assert tempModeChoiceBinding != null;
-				tempModeChoiceBinding.ivTempModeLine.setOnClickListener(tempModeCheckListener);
-				tempModeChoiceBinding.ivTempModePoint.setOnClickListener(tempModeCheckListener);
-				tempModeChoiceBinding.ivTempModeRectangle.setOnClickListener(tempModeCheckListener);
+			View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_temp_mode_choice,null);
+			PopTempModeChoiceBinding tempModeChoiceBinding = DataBindingUtil.bind(view);
+			assert tempModeChoiceBinding != null;
+			tempModeChoiceBinding.ivTempModeLine.setOnClickListener(tempModeCheckListener);
+			tempModeChoiceBinding.ivTempModePoint.setOnClickListener(tempModeCheckListener);
+			tempModeChoiceBinding.ivTempModeRectangle.setOnClickListener(tempModeCheckListener);
 
-				PopupWindow popupWindow = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-				popupWindow.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
-				popupWindow.setHeight(popupWindow.getContentView().getMeasuredHeight());
-				popupWindow.setWidth(fl.getWidth()- 60);
+			PopupWindow popupWindow = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+			popupWindow.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
+			popupWindow.setHeight(popupWindow.getContentView().getMeasuredHeight());
+			popupWindow.setWidth(fl.getWidth()- 60);
 
-				popupWindow.setFocusable(true);
+			popupWindow.setFocusable(true);
 //				popupWindow.setBackgroundDrawable(getResources().getDrawable(R.mipmap.temp_mode_bg_tempback));
-				popupWindow.setOutsideTouchable(true);
-				popupWindow.setTouchable(true);
+			popupWindow.setOutsideTouchable(true);
+			popupWindow.setTouchable(true);
 
-				popupWindow.showAsDropDown(mDataBinding.flPreview,30,-popupWindow.getHeight()-20, Gravity.CENTER);
-			}
+			popupWindow.showAsDropDown(mDataBinding.flPreview,30,-popupWindow.getHeight()-20, Gravity.CENTER);
 		});
 
 		//切换色板
@@ -305,7 +322,15 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	};
 
 	public void toGallery(View view){
-		Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
+		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
+				,Manifest.permission.WRITE_EXTERNAL_STORAGE).request(new RequestCallback() {
+			@Override
+			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+				if (allGranted){
+					Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
+				}
+			}
+		});
 	}
 
 }

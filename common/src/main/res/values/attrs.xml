@@ -25,8 +25,27 @@
     </declare-styleable>
 
 <!--    自定义ToggleView extends View-->
-    <declare-styleable name="MyToggleViewA">
+    <declare-styleable name="MyToggleView">
+<!--        圆圈颜色是否选中、背景填充色、描边颜色、文字颜色-->
+        <attr name="ColorCirSelect" format="reference|color"/>
+        <attr name="ColorCirUnselect" format="reference|color"/>
+        <attr name="ColorFillSelect" format="reference|color"/>
+        <attr name="ColorFillUnselect" format="reference|color"/>
+        <attr name="ColorStroke" format="reference|color"/>
+        <attr name="ColorTextSelect" format="reference|color"/>
+        <attr name="ColorTextUnselect" format="reference|color"/>
+<!--        是否显示文字、文字大小、文字内容、整体描边宽度-->
+        <attr name="isShowText" format="boolean"/>
+        <attr name="showTextSize" format="dimension"/>
+        <attr name="showTextContent" format="string|reference"/>
+        <attr name="mStrokeWith" format="integer|dimension"/>
+    </declare-styleable>
 
+    <declare-styleable name="MyToggle">
+        <attr name="toggle_text_size" format="integer"/>
+        <attr name="toggle_text_default_color" format="color"/>
+        <attr name="toggle_text_select_color" format="color"/>
+        <attr name="toggle_text_info" format="reference"/>
     </declare-styleable>
 
 </resources>

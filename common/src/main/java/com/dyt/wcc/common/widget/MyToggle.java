@@ -1,4 +1,4 @@
-package com.dyt.wcc.dytpir.widget;
+package com.dyt.wcc.common.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -13,7 +13,8 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 
-import com.dyt.wcc.dytpir.R;
+import com.dyt.wcc.common.R;
+
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>

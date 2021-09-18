@@ -30,6 +30,16 @@
         android:supportsRtl="true"
         android:theme="@style/MyTheme">
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.dyt.wcc.dytpir.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <activity android:name=".ui.MainActivity"
             android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
             android:launchMode="singleTask"
