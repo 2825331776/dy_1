@@ -8,6 +8,10 @@
             name="pf"
             type="com.dyt.wcc.dytpir.ui.preview.PreviewFragment" />
 
+        <variable
+            name="previewViewModel"
+            type="com.dyt.wcc.dytpir.ui.preview.PreViewViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -46,6 +50,7 @@
                 android:layout_height="@dimen/dimen_40dp"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:background="@drawable/ic_user_vector_palette_24px"
+                android:onClick="@{previewViewModel::showPaletteWindow}"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -57,6 +62,7 @@
                 android:layout_height="@dimen/dimen_40dp"
                 android:layout_margin="@dimen/dimen_5dp"
                 android:background="@mipmap/delete_all"
+                android:onClick="@{pf::toClear}"
                 tools:ignore="ContentDescription"/>
 
 <!--            公司信息-->

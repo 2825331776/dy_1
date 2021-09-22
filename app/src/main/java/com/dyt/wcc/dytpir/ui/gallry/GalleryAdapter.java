@@ -23,7 +23,7 @@ import java.util.List;
  * <p>Author：stefan cheng        </p>
  * <p>Create Date：2021/9/3  13:55     </p>
  * <p>Description：@todo         </p>
- * <p>PackgePath: com.wcc.dytfourbie.main.photo     </p>
+ * <p>PackagePath: com.wcc.dytfourbie.main.photo     </p>
  */
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryHolder> {
 	private List<String> photoList;

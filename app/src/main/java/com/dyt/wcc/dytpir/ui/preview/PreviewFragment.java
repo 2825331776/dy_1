@@ -1,7 +1,9 @@
 package com.dyt.wcc.dytpir.ui.preview;
 
 import android.Manifest;
+import android.app.Application;
 import android.hardware.usb.UsbDevice;
+import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -14,6 +16,7 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -37,16 +40,29 @@ import java.util.List;
  * <p>Author：stefan cheng        </p>
  * <p>Create Date：2021/9/9  16:17     </p>
  * <p>Description：@todo         </p>
- * <p>PackgePath: com.dyt.wcc.dytpir.ui.main     </p>
+ * <p>PackagePath: com.dyt.wcc.dytpir.ui.main     </p>
  */
 public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private PreViewViewModel mViewModel;
+
 	private USBMonitor mUsbMonitor ;
 
 	private FrameLayout fl;
 
 	@Override
+	protected boolean isInterceptBackPress () {
+		return false;
+	}
+
+	@Override
+	public void onCreate (@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+//		NavHostFragment.findNavController(PreviewFragment.this).navigate(R.id.action_previewFg_to_welcomeFg);
+	}
+
+	@Override
 	protected int bindingLayout () {
+//		Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
 		return R.layout.fragment_preview_main;
 	}
 
@@ -139,6 +155,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	@Override
 	protected void initView () {
 		mDataBinding.setPf(this);
+		mViewModel = new ViewModelProvider(getViewModelStore(),
+				new ViewModelProvider.AndroidViewModelFactory((Application) mContext.get().getApplicationContext())).get(PreViewViewModel.class);
+		mDataBinding.setPreviewViewModel(mViewModel);
 
 		mUsbMonitor = new USBMonitor(mContext.get(),deviceConnectListener);
 
@@ -154,7 +173,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		if (isDebug)Log.e(TAG, "initView: " + metrics.heightPixels + "wid = " + metrics.widthPixels);
 
 		fl = mDataBinding.flPreview;
-		mViewModel = new ViewModelProvider(this,new ViewModelProvider.NewInstanceFactory()).get(PreViewViewModel.class);
+//		mViewModel = new ViewModelProvider(this,new ViewModelProvider.NewInstanceFactory()).get(PreViewViewModel.class);
 
 		mDataBinding.toggleShowHighLowTemp.setOnClickChangedState(checkState -> Toast.makeText(mContext.get(), "v"+ checkState,Toast.LENGTH_SHORT).show());
 		mDataBinding.toggleAreaCheck.setOnClickChangedState(checkState -> Toast.makeText(mContext.get(), "v"+ checkState,Toast.LENGTH_SHORT).show());
@@ -244,9 +263,36 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				popSettingBinding.switchChoiceTempUnit.setText(new String[]{"℃","℉","K"}).setSelectedTab(0).setOnSwitchListener(new SwitchMultiButton.OnSwitchListener() {
 					@Override
 					public void onSwitch (int position, String tabText) {
-						Toast.makeText(mContext.get(),""+position,Toast.LENGTH_SHORT).show();
+//						Toast.makeText(mContext.get(),""+position,Toast.LENGTH_SHORT).show();
+
+
 					}
 				});
+
+//				popSettingBinding.btLanguage.setOnClickListener(new View.OnClickListener() {
+//					@Override
+//					public void onClick (View v) {
+//						Toast.makeText(mContext.get(), "btLanguage ",Toast.LENGTH_SHORT).show();
+//						AlertDialog alertDialog = new AlertDialog.Builder(mContext.get()).setTitle("ssss").setMessage("1111").create();
+//
+//						alertDialog.show();
+//						LayoutInflater inflater = (LayoutInflater) mContext.get().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//						View viewBt = inflater.from(mContext.get()).inflate(R.layout.pop_palette_choice,null );
+//						PopupWindow popBt = new PopupWindow(viewBt,LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//						popBt.setFocusable(true);
+//						popBt.setOutsideTouchable(true);
+//						popBt.setTouchable(true);
+//
+//						popBt.showAsDropDown(popSettingBinding.btLanguage,15,-popBt.getHeight()-20, Gravity.CENTER);
+//					}
+//				});
+//				popSettingBinding.spinnerLanguage.attachDataSource(DYConstants.languageArray);
+//				popSettingBinding.spinnerLanguage.setOnSpinnerItemSelectedListener(new OnSpinnerItemSelectedListener() {
+//					@Override
+//					public void onItemSelected (MySpinner parent, View view, int position, long id) {
+////						Toast.makeText(mContext.get(), " "+position,Toast.LENGTH_SHORT).show();
+//					}
+//				});
 
 				PopupWindow popupWindow = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 				popupWindow.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
@@ -262,6 +308,24 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				popupWindow.setTouchable(true);
 
 				popupWindow.showAsDropDown(mDataBinding.flPreview,15,-popupWindow.getHeight()-20, Gravity.CENTER);
+
+
+//				ArrayAdapter<String> adapterSpinner = new ArrayAdapter<String>(mContext.get(),R.layout.item_select, DYConstants.languageArray);
+//				adapterSpinner.setDropDownViewResource(R.layout.item_dropdown);
+//				popSettingBinding.spinnerSettingLanguage.setAdapter(adapterSpinner);
+//				popSettingBinding.spinnerSettingLanguage.setSelection(0);
+//				popSettingBinding.spinnerSettingLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//					@Override
+//					public void onItemSelected (AdapterView<?> parent, View view, int position, long id) {
+//						Toast.makeText(mContext.get(),"spinner item  = "+position,Toast.LENGTH_SHORT).show();
+//					}
+//
+//					@Override
+//					public void onNothingSelected (AdapterView<?> parent) {
+//						Toast.makeText(mContext.get(),"spinner item  = onNothingSelected",Toast.LENGTH_SHORT).show();
+//					}
+//				});
+
 			}
 		});
 	}
@@ -332,5 +396,13 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			}
 		});
 	}
+
+	public void toClear(View view){
+		Toast.makeText(mContext.get(),"toClear ", Toast.LENGTH_SHORT).show();
+//		NavHostFragment.findNavController(PreviewFragment.this).popBackStack();
+//		Navigation.findNavController(mDataBinding.getRoot()).popBackStack();
+
+	}
+
 
 }

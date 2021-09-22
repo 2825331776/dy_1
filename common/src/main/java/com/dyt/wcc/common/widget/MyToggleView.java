@@ -26,7 +26,7 @@ import com.dyt.wcc.common.R;
  * <p>Create Date：2021/9/16  15:07     </p>
  * <p>Description：@开关底部加文字  切换效果自定义         </p>
  * 支持：设置描边颜色， 切换颜色，圆按钮颜色，字体颜色
- * <p>PackgePath: com.dyt.wcc.dytpir.widget     </p>
+ * <p>PackagePath: com.dyt.wcc.dytpir.widget     </p>
  *
  * 可以做动画滑动效果，但未做。
  * 字体自适应效果未做
@@ -248,10 +248,6 @@ public class MyToggleView extends View {
 	@Override
 	protected void onDraw (Canvas canvas) {
 		super.onDraw(canvas);
-//		Log.e(TAG, "onDraw: "+ textPaint.measureText(textContent));
-//		Log.e(TAG, "onDraw: mViewWidth" +mViewWidth);
-//
-//		Log.e(TAG, "onDraw: ");
 		//总体描边
 		canvas.drawRoundRect(new RectF(0  ,0 ,mViewWidth ,
 				mViewHeight * 0.5f ),mViewHeight*0.25f+1,mViewHeight*0.25f+1,toggleStrokePaint);
@@ -264,7 +260,6 @@ public class MyToggleView extends View {
 					,mViewHeight*0.25f-mStrokeWith,mViewHeight*0.25f-mStrokeWith,toggleFillPaint);
 //			//绘制圆形滑动按钮
 			canvas.drawCircle(mViewWidth-mViewHeight * 0.25f ,mViewHeight * 0.25f  ,mViewHeight*0.25f-2*mStrokeWith,toggleCirPaint);
-
 		}else {
 			toggleFillPaint.setColor(mColorFillUnselect);
 			toggleCirPaint.setColor(mColorCirUnselect);
@@ -273,7 +268,6 @@ public class MyToggleView extends View {
 					,mViewHeight*0.25f-mStrokeWith,mViewHeight*0.25f-mStrokeWith,toggleFillPaint);
 //			//绘制圆形滑动按钮
 			canvas.drawCircle(mViewHeight * 0.25f ,mViewHeight * 0.25f ,mViewHeight*0.25f-2*mStrokeWith,toggleCirPaint);
-
 		}
 		float textWidth = textPaint.measureText(textContent);//文字的宽度
 		textWidth = Math.min(textWidth,mViewWidth );

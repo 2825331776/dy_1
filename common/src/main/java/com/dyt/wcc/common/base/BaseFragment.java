@@ -19,7 +19,7 @@ import java.lang.ref.WeakReference;
  * <p>Author：stefan cheng        </p>
  * <p>Create Date：2021/9/8  14:59     </p>
  * <p>Description：@todo         </p>
- * <p>PackgePath: com.dyt.wcc.common.base.ui     </p>
+ * <p>PackagePath: com.dyt.wcc.common.base.ui     </p>
  */
 public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
 	protected WeakReference <Context> mContext;
@@ -41,4 +41,8 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
 	protected abstract int bindingLayout();
 	//初始化控件
 	protected abstract void initView();
+
+	//是否拦截系统的返回事件
+	protected abstract boolean isInterceptBackPress();
+
 }

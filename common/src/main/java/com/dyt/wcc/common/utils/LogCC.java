@@ -5,7 +5,7 @@ package com.dyt.wcc.common.utils;
  * <p>Author：stefan cheng        </p>
  * <p>Create Date：2021/9/8  15:36     </p>
  * <p>Description：@todo         </p>
- * <p>PackgePath: com.dyt.wcc.common.utils     </p>
+ * <p>PackagePath: com.dyt.wcc.common.utils     </p>
  */
 public class LogCC {
 

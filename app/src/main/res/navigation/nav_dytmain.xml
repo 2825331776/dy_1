@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_dytmain"
-    app:startDestination="@id/nav_welcomeFg">
+    app:startDestination="@id/nav_previewFg">
+
 
     <fragment
         android:id="@+id/nav_welcomeFg"
@@ -12,11 +13,10 @@
         tools:layout="@layout/fragment_welcome_main">
         <action
             android:id="@+id/action_welcomeFg_to_previewFg"
-            app:destination="@id/nav_previewFg"
-            app:popUpTo="@id/nav_dytmain"
-            app:launchSingleTop="true"
-            app:popUpToInclusive="true">
+
+            app:destination="@id/nav_previewFg">
         </action>
+
     </fragment>
 
     <fragment
@@ -27,6 +27,18 @@
         <action
             android:id="@+id/action_previewFg_to_galleryFg"
             app:destination="@id/nav_galleryFg">
+        </action>
+
+        <action
+            android:id="@+id/action_previewFg_to_welcomeFg"
+            app:destination="@id/nav_welcomeFg"
+            app:popUpTo="@id/nav_welcomeFg"
+            app:launchSingleTop="true"
+            >
+<!--&lt;!&ndash;            android:id="@+id/action_previewFg_to_welcomeFg"&ndash;&gt;-->
+<!--&lt;!&ndash;            app:popUpTo="@id/nav_dytmain"&ndash;&gt;-->
+<!--&lt;!&ndash;            app:launchSingleTop="true"&ndash;&gt;-->
+<!--&lt;!&ndash;            app:popUpToInclusive="true"&ndash;&gt;-->
         </action>
     </fragment>
 

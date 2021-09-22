@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * <p>Author：stefan cheng        </p>
  * <p>Create Date：2021/9/9  17:53     </p>
  * <p>Description：@todo         </p>
- * <p>PackgePath: com.dyt.wcc.dytpir.ui.lookfile     </p>
+ * <p>PackagePath: com.dyt.wcc.dytpir.ui.lookfile     </p>
  */
 public class LookFileFragment extends BaseFragment<FragmentLookfileMainBinding> {
 	private ArrayList<String > imageList ;
@@ -30,5 +30,10 @@ public class LookFileFragment extends BaseFragment<FragmentLookfileMainBinding> 
 		assert receiverArgs != null;
 		imageList.addAll(receiverArgs.getStringArrayList("pathList"));
 		Glide.with(mContext.get()).load(imageList.get(receiverArgs.getInt("position"))).into(mDataBinding.ivCheckPhoto);
+	}
+
+	@Override
+	protected boolean isInterceptBackPress () {
+		return false;
 	}
 }

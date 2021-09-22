@@ -28,7 +28,7 @@ import java.util.ArrayList;
  * <p>Author：stefan cheng        </p>
  * <p>Create Date：2021/9/9  16:15     </p>
  * <p>Description：@todo         </p>
- * <p>PackgePath: com.dyt.wcc.dytpir.ui.gallry     </p>
+ * <p>PackagePath: com.dyt.wcc.dytpir.ui.gallry     </p>
  */
 public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 	private GridLayoutManager gridLayoutManager ;
@@ -137,6 +137,10 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 		return isImageFile;
 	}
 
+	@Override
+	protected boolean isInterceptBackPress () {
+		return false;
+	}
 
 	@Override
 	protected int bindingLayout () {

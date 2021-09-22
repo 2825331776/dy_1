@@ -7,7 +7,7 @@ import android.app.Application;
  * <p>Author：stefan cheng        </p>
  * <p>Create Date：2021/9/8  15:36     </p>
  * <p>Description：@todo         </p>
- * <p>PackgePath: com.dyt.wcc.common.base     </p>
+ * <p>PackagePath: com.dyt.wcc.common.base     </p>
  */
 public abstract class BaseApplication extends Application {
 	public static String deviceName="";

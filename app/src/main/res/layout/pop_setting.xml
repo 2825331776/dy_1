@@ -55,6 +55,38 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
+<!--            <Button-->
+<!--                android:id="@+id/bt_language"-->
+<!--                android:text="btLanguage"-->
+<!--                app:layout_constraintLeft_toRightOf="@id/tv_language"-->
+<!--                app:layout_constraintTop_toTopOf="@id/tv_language"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/tv_language"-->
+<!--                android:layout_marginStart="@dimen/dimen_20dp"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"/>-->
+
+            <Spinner
+                android:id="@+id/spinner_setting_language"
+                app:layout_constraintLeft_toRightOf="@id/tv_language"
+                app:layout_constraintTop_toTopOf="@id/tv_language"
+                app:layout_constraintBottom_toBottomOf="@id/tv_language"
+                android:layout_marginStart="@dimen/dimen_20dp"
+                android:layout_width="@dimen/dimen_70dp"
+                android:layout_height="@dimen/dimen_25dp"/>
+
+
+
+<!--            <com.dyt.wcc.common.widget.mySpinner.MySpinner-->
+<!--                android:id="@+id/spinner_language"-->
+<!--                app:layout_constraintLeft_toRightOf="@id/tv_language"-->
+<!--                app:layout_constraintTop_toTopOf="@id/tv_language"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/tv_language"-->
+<!--                android:layout_marginStart="@dimen/dimen_20dp"-->
+<!--                android:layout_width="@dimen/dimen_90dp"-->
+<!--                app:textTint="@color/white"-->
+<!--                app:backgroundSelector="@color/bg_preview_right"-->
+<!--                android:layout_height="@dimen/dimen_25dp"/>-->
+
             <TextView
                 android:id="@+id/tv_temp_unit_choice_info"
                 app:layout_constraintLeft_toLeftOf="@id/tv_general_info"
@@ -130,6 +162,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_radiance"
                 app:layout_constraintLeft_toRightOf="@id/tv_camera_setting_radiance"
                 android:layout_marginStart="@dimen/dimen_10dp"
+                android:progressBackgroundTint="@color/white"
                 android:layout_width="@dimen/dimen_150dp"
                 android:layout_height="0dp"/>
 

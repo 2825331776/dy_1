@@ -3,6 +3,9 @@ package com.dyt.wcc.dytpir.constans;
 import android.os.Environment;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -17,4 +20,7 @@ public class DYConstants {
 
 	public static final String PIC_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()
 			+ File.separator+"DYTCamera";
+
+
+	public static final List<String> languageArray = new CopyOnWriteArrayList<>(Arrays.asList("中文", "英文"));
 }

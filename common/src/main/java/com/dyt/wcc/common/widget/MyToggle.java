@@ -2,6 +2,7 @@ package com.dyt.wcc.common.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -21,7 +22,7 @@ import com.dyt.wcc.common.R;
  * <p>Author：stefan cheng        </p>
  * <p>Create Date：2021/9/11  11:11     </p>
  * <p>Description：自定义开关控件         </p>
- * <p>PackgePath: com.dyt.wcc.dytpir.widget     </p>
+ * <p>PackagePath: com.dyt.wcc.dytpir.widget     </p>
  */
 public class MyToggle extends LinearLayout {
 	private static final String       TAG = "MyToggle.TAG";
@@ -186,6 +187,11 @@ public class MyToggle extends LinearLayout {
 		switch_toggle_define.setSwitchMinWidth(tv_toggle_define.getMeasuredWidth());
 	}
 
+
+	@Override
+	protected void onDraw (Canvas canvas) {
+		super.onDraw(canvas);
+	}
 
 	public interface OnWidgetStateCheckedListener{
 		void onStateChecked(boolean widgetState);

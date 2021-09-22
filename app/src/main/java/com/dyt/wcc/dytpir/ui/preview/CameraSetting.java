@@ -5,7 +5,7 @@ package com.dyt.wcc.dytpir.ui.preview;
  * <p>Author：stefan cheng        </p>
  * <p>Create Date：2021/9/14  15:36     </p>
  * <p>Description：@todo         </p>
- * <p>PackgePath: com.dyt.wcc.dytpir.ui.preview     </p>
+ * <p>PackagePath: com.dyt.wcc.dytpir.ui.preview     </p>
  */
 public class CameraSetting {
 	private boolean isShowHighLowTemp;
