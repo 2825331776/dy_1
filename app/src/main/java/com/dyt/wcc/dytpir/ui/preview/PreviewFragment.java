@@ -3,33 +3,33 @@ package com.dyt.wcc.dytpir.ui.preview;
 import android.Manifest;
 import android.app.Application;
 import android.hardware.usb.UsbDevice;
-import android.os.Bundle;
-import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.dyt.wcc.common.base.BaseApplication;
 import com.dyt.wcc.common.base.BaseFragment;
 import com.dyt.wcc.common.widget.SwitchMultiButton;
 import com.dyt.wcc.dytpir.R;
+import com.dyt.wcc.dytpir.constans.DYConstants;
 import com.dyt.wcc.dytpir.databinding.FragmentPreviewMainBinding;
 import com.dyt.wcc.dytpir.databinding.PopCompanyInfoBinding;
 import com.dyt.wcc.dytpir.databinding.PopDrawChartBinding;
 import com.dyt.wcc.dytpir.databinding.PopSettingBinding;
 import com.dyt.wcc.dytpir.databinding.PopTempModeChoiceBinding;
-import com.dyt.wcc.libuvccamera.usb.USBMonitor;
 import com.permissionx.guolindev.PermissionX;
 import com.permissionx.guolindev.callback.RequestCallback;
 
@@ -45,7 +45,7 @@ import java.util.List;
 public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private PreViewViewModel mViewModel;
 
-	private USBMonitor mUsbMonitor ;
+//	private USBMonitor mUsbMonitor ;
 
 	private FrameLayout fl;
 
@@ -55,37 +55,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	}
 
 	@Override
-	public void onCreate (@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-//		NavHostFragment.findNavController(PreviewFragment.this).navigate(R.id.action_previewFg_to_welcomeFg);
-	}
-
-	@Override
 	protected int bindingLayout () {
 //		Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
 		return R.layout.fragment_preview_main;
-	}
-
-	@Override
-	public void onResume () {
-		super.onResume();
-		if (isDebug)Log.e(TAG, "onResume: ");
-
-
-//		if (!mUsbMonitor.isRegistered()){
-//			mUsbMonitor.register();
-//		}
-//
-//		List<UsbDevice> mUsbDeviceList = mUsbMonitor.getDeviceList();
-//		for (UsbDevice udv : mUsbDeviceList) {
-//			//指定设备的连接，获取设备的名字，当前usb摄像头名为Xmodule-S0
-//			Log.e(TAG, "udv.getProductName()" + udv.getProductName());
-//			if (udv.getProductName().contains("Xtherm") || udv.getProductName().contains("Xmodule") ||
-//					udv.getProductName().contains("T3") || udv.getProductName().contains("DL13") || udv.getProductName().contentEquals("DV")) {
-//				//CameraAlreadyConnected = true;//标志红外摄像头是否已经连接上
-//				BaseApplication.deviceName = udv.getProductName();
-//			}
-//		}
 	}
 
 	@Override
@@ -110,47 +82,31 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	public void onDestroyView () {
 		super.onDestroyView();
 		if (isDebug)Log.e(TAG, "onDestroyView: ");
-//		if (mUsbMonitor.isRegistered()){
-//			mUsbMonitor.unregister();
-//		}
+		if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
+			mViewModel.getMUsbMonitor().getValue().unregister();
+		}
 	}
 
-	USBMonitor.OnDeviceConnectListener deviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
-		@Override
-		public void onAttach (UsbDevice device) {
-			if (isDebug)Log.e(TAG, "onAttach: ");
-			if (device.getDeviceClass() == 239 && device.getDeviceSubclass() == 2) {
-				Handler handler = new Handler();
-				handler.postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						if (isDebug)Log.e(TAG, "检测到设备罢了");
-						mUsbMonitor.requestPermission(device);
-					}
-				}, 100);
+	@Override
+	public void onResume () {
+		super.onResume();
+		if (isDebug)Log.e(TAG, "onResume: ");
+
+		if (!mViewModel.getMUsbMonitor().getValue().isRegistered()){
+			mViewModel.getMUsbMonitor().getValue().register();
+		}
+		//		Spinner
+		//
+		List<UsbDevice> mUsbDeviceList = mViewModel.getMUsbMonitor().getValue().getDeviceList();
+		for (UsbDevice udv : mUsbDeviceList) {
+			//指定设备的连接，获取设备的名字，当前usb摄像头名为Xmodule-S0
+//			if (isDebug)Log.e(TAG, "udv.getProductName()" + udv.getProductName());
+			if (udv.getProductName().contains("S0") ) {
+				//CameraAlreadyConnected = true;//标志红外摄像头是否已经连接上
+				BaseApplication.deviceName = udv.getProductName();
 			}
 		}
-
-		@Override
-		public void onDetach (UsbDevice device) {
-			if (isDebug)Log.e(TAG, "onDetach: ");
-		}
-
-		@Override
-		public void onConnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock, boolean createNew) {
-			if (isDebug)Log.e(TAG, "onConnect: ");
-		}
-
-		@Override
-		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
-			if (isDebug)Log.e(TAG, "onDisconnect: ");
-		}
-
-		@Override
-		public void onCancel (UsbDevice device) {
-			if (isDebug)Log.e(TAG, "onCancel: ");
-		}
-	};
+	}
 
 	@Override
 	protected void initView () {
@@ -159,7 +115,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				new ViewModelProvider.AndroidViewModelFactory((Application) mContext.get().getApplicationContext())).get(PreViewViewModel.class);
 		mDataBinding.setPreviewViewModel(mViewModel);
 
-		mUsbMonitor = new USBMonitor(mContext.get(),deviceConnectListener);
+//		mUsbMonitor = new USBMonitor(mContext.get(),deviceConnectListener);
 
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
 				,Manifest.permission.WRITE_EXTERNAL_STORAGE).request(new RequestCallback() {
@@ -167,6 +123,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 			}
 		});
+
 
 		DisplayMetrics metrics = new DisplayMetrics();
 		metrics = getResources().getDisplayMetrics();
@@ -309,22 +266,21 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 				popupWindow.showAsDropDown(mDataBinding.flPreview,15,-popupWindow.getHeight()-20, Gravity.CENTER);
 
-
-//				ArrayAdapter<String> adapterSpinner = new ArrayAdapter<String>(mContext.get(),R.layout.item_select, DYConstants.languageArray);
-//				adapterSpinner.setDropDownViewResource(R.layout.item_dropdown);
-//				popSettingBinding.spinnerSettingLanguage.setAdapter(adapterSpinner);
-//				popSettingBinding.spinnerSettingLanguage.setSelection(0);
-//				popSettingBinding.spinnerSettingLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//					@Override
-//					public void onItemSelected (AdapterView<?> parent, View view, int position, long id) {
+				ArrayAdapter<String> adapterSpinner = new ArrayAdapter<String>(mContext.get(),R.layout.item_select, DYConstants.languageArray);
+				adapterSpinner.setDropDownViewResource(R.layout.item_dropdown);
+				popSettingBinding.spinnerSettingLanguage.setAdapter(adapterSpinner);
+				popSettingBinding.spinnerSettingLanguage.setSelection(0);//从本地拿
+				popSettingBinding.spinnerSettingLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+					@Override
+					public void onItemSelected (AdapterView<?> parent, View view, int position, long id) {
 //						Toast.makeText(mContext.get(),"spinner item  = "+position,Toast.LENGTH_SHORT).show();
-//					}
-//
-//					@Override
-//					public void onNothingSelected (AdapterView<?> parent) {
-//						Toast.makeText(mContext.get(),"spinner item  = onNothingSelected",Toast.LENGTH_SHORT).show();
-//					}
-//				});
+					}
+
+					@Override
+					public void onNothingSelected (AdapterView<?> parent) {
+//						if (isDebug)Toast.makeText(mContext.get(),"spinner item  = onNothingSelected",Toast.LENGTH_SHORT).show();
+					}
+				});
 
 			}
 		});

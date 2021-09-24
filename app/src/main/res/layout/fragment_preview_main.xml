@@ -214,7 +214,7 @@
                 app:layout_constraintTop_toBottomOf="@id/toggle_high_temp_alarm"
                 app:layout_constraintBottom_toTopOf="@id/toggle_fixed_tempBar"
                 android:layout_width="@dimen/dimen_0dp"
-                android:layout_height="@dimen/dimen_0dp"
+                android:layout_height="@dimen/dimen_30dp"
                 android:maxHeight="@dimen/dimen_30dp"
                 android:layout_marginStart="@dimen/dimen_4dp"
                 android:layout_marginEnd="@dimen/dimen_4dp"
@@ -235,8 +235,8 @@
                 app:layout_constraintTop_toTopOf="@id/et_inputTemp_rightRL_container"
                 app:layout_constraintBottom_toBottomOf="@id/et_inputTemp_rightRL_container"
                 android:background="@drawable/ic_user_vector_confirm_24px"
-                android:layout_width="@dimen/dimen_30dp"
-                android:layout_height="@dimen/dimen_30dp"
+                android:layout_width="@dimen/dimen_25dp"
+                android:layout_height="@dimen/dimen_25dp"
                 tools:ignore="ContentDescription"
                 android:scaleType="fitXY"/>
 

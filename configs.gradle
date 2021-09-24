@@ -3,7 +3,7 @@ ext{
             //编译及其构建版本
             compileSdkV     :29,
             buildToolsV     :"29.0.3",
-            //支持的sdk范围23-30
+            //支持的sdk范围21-29
             minSdkV         :23,
             targetSdkV      :29,
             //版本号和名字
