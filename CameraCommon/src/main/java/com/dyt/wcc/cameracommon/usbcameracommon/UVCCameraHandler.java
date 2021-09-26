@@ -26,8 +26,8 @@ package com.dyt.wcc.cameracommon.usbcameracommon;
 import android.app.Activity;
 
 import com.dyt.wcc.cameracommon.widget.UVCCameraTextureView;
-import com.dyt.wcc.libuvccamera.usb.ITemperatureCallback;
-import com.dyt.wcc.libuvccamera.usb.UVCCamera;
+import com.serenegiant.usb.ITemperatureCallback;
+import com.serenegiant.usb.UVCCamera;
 
 
 public class UVCCameraHandler extends AbstractUVCCameraHandler {
@@ -100,7 +100,7 @@ public class UVCCameraHandler extends AbstractUVCCameraHandler {
 	 */
 	public static final UVCCameraHandler createHandler(
 			final Activity parent, final UVCCameraTextureView cameraView,
-            final int encoderType, final int width, final int height, final int format, ITemperatureCallback temperatureCallback, int androidVersion) {
+			final int encoderType, final int width, final int height, final int format, ITemperatureCallback temperatureCallback, int androidVersion) {
 		return createHandler(parent, cameraView, encoderType, width, height, format, UVCCamera.DEFAULT_BANDWIDTH,temperatureCallback,androidVersion);
 	}
 

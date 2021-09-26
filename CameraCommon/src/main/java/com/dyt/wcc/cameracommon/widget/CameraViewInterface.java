@@ -28,7 +28,7 @@ import android.graphics.SurfaceTexture;
 import android.view.Surface;
 
 import com.dyt.wcc.cameracommon.encoder.IVideoEncoder;
-import com.dyt.wcc.libuvccamera.usb.ITemperatureCallback;
+import com.serenegiant.usb.ITemperatureCallback;
 import com.serenegiant.widget.IAspectRatioView;
 
 /**

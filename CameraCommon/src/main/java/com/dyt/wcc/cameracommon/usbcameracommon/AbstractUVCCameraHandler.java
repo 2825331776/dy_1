@@ -54,10 +54,10 @@ import com.dyt.wcc.cameracommon.utils.ByteUtil;
 import com.dyt.wcc.cameracommon.widget.TouchArea;
 import com.dyt.wcc.cameracommon.widget.UVCCameraTextureView;
 import com.dyt.wcc.common.base.BaseApplication;
-import com.dyt.wcc.libuvccamera.usb.IFrameCallback;
-import com.dyt.wcc.libuvccamera.usb.ITemperatureCallback;
-import com.dyt.wcc.libuvccamera.usb.USBMonitor;
-import com.dyt.wcc.libuvccamera.usb.UVCCamera;
+import com.serenegiant.usb.IFrameCallback;
+import com.serenegiant.usb.ITemperatureCallback;
+import com.serenegiant.usb.USBMonitor;
+import com.serenegiant.usb.UVCCamera;
 import com.serenegiant.utils.LogUtils;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;

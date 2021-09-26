@@ -40,5 +40,6 @@ dependencies {
 
     implementation project(path: ':CameraCommon')
 
-    implementation project(path: ':LibUvcCamera')
+//    implementation project(path: ':LibUvcCamera')
+    implementation project(path: ':UvcConnect')
 }

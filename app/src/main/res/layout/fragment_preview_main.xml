@@ -124,9 +124,10 @@
             android:layout_width="@dimen/dimen_0dp"
             android:layout_height="match_parent">
 
-<!--            <com.dyt.wcc.cameracommon.widget.UVCCameraTextureView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent"/>-->
+            <com.dyt.wcc.cameracommon.widget.UVCCameraTextureView
+                android:id="@+id/textureView_preview_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
 
         </FrameLayout>
@@ -141,6 +142,13 @@
             app:layout_constraintRight_toLeftOf="@id/rl_right_container"
             android:orientation="vertical"
             android:background="@color/bg_preview_right">
+
+            <com.dyt.wcc.cameracommon.widget.CustomRangeSeekBar
+                android:id="@+id/custom_seekbar_preview_fragment"
+                android:layout_marginTop="@dimen/dimen_20dp"
+                android:layout_marginBottom="@dimen/dimen_20dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
         </LinearLayout>
 
 <!--        右侧按钮布局-->

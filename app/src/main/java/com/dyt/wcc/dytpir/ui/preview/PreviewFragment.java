@@ -1,12 +1,18 @@
 package com.dyt.wcc.dytpir.ui.preview;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Application;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.SurfaceTexture;
 import android.hardware.usb.UsbDevice;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,8 +26,12 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.dyt.wcc.cameracommon.usbcameracommon.UVCCameraHandler;
 import com.dyt.wcc.common.base.BaseApplication;
 import com.dyt.wcc.common.base.BaseFragment;
+import com.dyt.wcc.common.utils.AssetCopyer;
+import com.dyt.wcc.common.utils.CreateBitmap;
+import com.dyt.wcc.common.utils.FontUtils;
 import com.dyt.wcc.common.widget.SwitchMultiButton;
 import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.constans.DYConstants;
@@ -32,7 +42,10 @@ import com.dyt.wcc.dytpir.databinding.PopSettingBinding;
 import com.dyt.wcc.dytpir.databinding.PopTempModeChoiceBinding;
 import com.permissionx.guolindev.PermissionX;
 import com.permissionx.guolindev.callback.RequestCallback;
+import com.serenegiant.usb.USBMonitor;
+import com.serenegiant.usb.UVCCamera;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -43,11 +56,21 @@ import java.util.List;
  * <p>PackagePath: com.dyt.wcc.dytpir.ui.main     </p>
  */
 public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
-	private PreViewViewModel mViewModel;
+	private PreViewViewModel                   mViewModel;
+	private USBMonitor.OnDeviceConnectListener onDeviceConnectListener;
+	private UVCCameraHandler                   mUvcCameraHandler;
 
 //	private USBMonitor mUsbMonitor ;
+	private int mTextureViewWidth,mTextureViewHeight;
 
 	private FrameLayout fl;
+
+	private int mFontSize;
+	private int paletteType , isWatermark ,isTempShow;
+	private String palettePath;
+	private Bitmap mCursorBlue, mCursorRed, mCursorYellow, mCursorGreen, mWatermarkLogo;//显示温度的数据(基础温度数据：最高,最低,中心,LOGO)
+	//customSeekBar
+	private Bitmap tiehong = null, caihong = null, baire = null, heire = null, hongre = null, lenglan = null;
 
 	@Override
 	protected boolean isInterceptBackPress () {
@@ -107,13 +130,120 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			}
 		}
 	}
+	private int setValue(final int flag, final int value) {//设置机芯参数,调用JNI层
+		return mUvcCameraHandler != null ? mUvcCameraHandler.setValue(flag, value) : 0;
+	}
+
+	private void startPreview () {//打开连接 调用预览图像的设置
+		mTextureViewWidth = mDataBinding.textureViewPreviewFragment.getWidth();
+		mTextureViewHeight = mDataBinding.textureViewPreviewFragment.getHeight();
+		if (isDebug)Log.e(TAG,"height =="+ mTextureViewHeight + " width==" + mTextureViewWidth);
+
+		mDataBinding.textureViewPreviewFragment.iniTempBitmap(mTextureViewWidth, mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
+		mDataBinding.textureViewPreviewFragment.iniTempFontsize(mFontSize);
+		mDataBinding.textureViewPreviewFragment.setUnitTemperature(0);//0 摄氏度 ; 1 华氏度
+		mDataBinding.textureViewPreviewFragment.setBindSeekBar(mDataBinding.customSeekbarPreviewFragment);
+
+		paletteType =1;
+		mUvcCameraHandler.PreparePalette(palettePath,paletteType);
+		mUvcCameraHandler.setAreaCheck(0);
+		mUvcCameraHandler.watermarkOnOff(isWatermark);//是否显示水印
+		mUvcCameraHandler.setPalette(0);
+
+		//是否进行温度的绘制
+		isTempShow = 0;
+		mUvcCameraHandler.tempShowOnOff(isTempShow);//是否显示绘制的温度 0不显示，1显示。最终调用的是UVCCameraTextureView的绘制线程。
+		mDataBinding.textureViewPreviewFragment.setBitmap(mCursorRed, mCursorGreen, mCursorBlue, mCursorYellow, mWatermarkLogo);//红色最高温，绿色？， 蓝色最低温，黄色中心温，LOGO
+		// 注意显示水印的时候要设置这个水印图片
+
+		SurfaceTexture stt = mDataBinding.textureViewPreviewFragment.getSurfaceTexture();
+		mUvcCameraHandler.startPreview(new Surface(stt));
+
+		mUvcCameraHandler.startTemperaturing();//温度回调
+
+	}
 
 	@Override
 	protected void initView () {
-		mDataBinding.setPf(this);
-		mViewModel = new ViewModelProvider(getViewModelStore(),
-				new ViewModelProvider.AndroidViewModelFactory((Application) mContext.get().getApplicationContext())).get(PreViewViewModel.class);
-		mDataBinding.setPreviewViewModel(mViewModel);
+		DisplayMetrics dm = getResources().getDisplayMetrics();
+		int screenWidth = dm.widthPixels;
+		int screenHeight = dm.heightPixels;
+		mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);//
+		AssetCopyer.copyAllAssets(requireActivity().getApplicationContext(), requireActivity().getExternalFilesDir(null).getAbsolutePath());
+		//		Log.e(TAG,"===========getExternalFilesDir=========="+this.getExternalFilesDir(null).getAbsolutePath());
+		palettePath = requireActivity().getExternalFilesDir(null).getAbsolutePath();
+
+		//测温点标志
+		mWatermarkLogo = BitmapFactory.decodeResource(getResources(), R.mipmap.logo);//水印
+		mCursorYellow = BitmapFactory.decodeResource(getResources(), R.mipmap.cursoryellow);
+		mCursorRed = BitmapFactory.decodeResource(getResources(), R.mipmap.cursorred);
+		mCursorBlue = BitmapFactory.decodeResource(getResources(), R.mipmap.cursorblue);
+		mCursorGreen = BitmapFactory.decodeResource(getResources(), R.mipmap.cursorgreen);
+
+		CreateBitmap createBitmap = new CreateBitmap();
+		try {
+			tiehong = createBitmap.GenerateBitmap(mContext.get(), "1.dat");
+			caihong = createBitmap.GenerateBitmap(mContext.get(), "2.dat");
+			hongre = createBitmap.GenerateBitmap(mContext.get(), "3.dat");
+			heire = createBitmap.GenerateBitmap(mContext.get(), "4.dat");
+			baire = createBitmap.GenerateBitmap(mContext.get(), "5.dat");
+			lenglan = createBitmap.GenerateBitmap(mContext.get(), "6.dat");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		mDataBinding.customSeekbarPreviewFragment.setBackBitmap(tiehong, caihong, hongre, heire, baire, lenglan);
+		mDataBinding.customSeekbarPreviewFragment.setBackcolor(1);
+
+		mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
+				mDataBinding.textureViewPreviewFragment,1,
+				384,292,1,null,0);
+
+		onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
+			@Override
+			public void onAttach (UsbDevice device) {
+				if (isDebug)Log.e(TAG, "onAttach: "+ device.toString());
+				if (device.getProductId() == 1 && device.getVendorId() == 5396) {
+					Handler handler = new Handler();
+					handler.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							if (isDebug)Log.e(TAG, "检测到设备========");
+							mViewModel.getMUsbMonitor().getValue().requestPermission(device);
+						}
+					}, 100);
+				}
+			}
+			@Override
+			public void onConnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock, boolean createNew) {
+				//			if (isDebug)Log.e(TAG, "onConnect: ");
+				if (isDebug)Toast.makeText(mContext.get(),"onConnect========",Toast.LENGTH_SHORT).show();
+				mUvcCameraHandler.open(ctrlBlock);
+				startPreview();
+
+				Handler handler = new Handler();
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
+					}
+				}, 300);
+
+//				currentDevice = device;
+			}
+			@Override
+			public void onDetach (UsbDevice device) {
+				if (isDebug)Log.e(TAG, "onDetach: ");
+			}
+			@Override
+			public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
+				if (isDebug)Log.e(TAG, "onDisconnect: ");
+			}
+			@Override
+			public void onCancel (UsbDevice device) {
+				if (isDebug)Log.e(TAG, "onCancel: ");
+			}
+		};
 
 //		mUsbMonitor = new USBMonitor(mContext.get(),deviceConnectListener);
 
@@ -130,7 +260,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		if (isDebug)Log.e(TAG, "initView: " + metrics.heightPixels + "wid = " + metrics.widthPixels);
 
 		fl = mDataBinding.flPreview;
-//		mViewModel = new ViewModelProvider(this,new ViewModelProvider.NewInstanceFactory()).get(PreViewViewModel.class);
 
 		mDataBinding.toggleShowHighLowTemp.setOnClickChangedState(checkState -> Toast.makeText(mContext.get(), "v"+ checkState,Toast.LENGTH_SHORT).show());
 		mDataBinding.toggleAreaCheck.setOnClickChangedState(checkState -> Toast.makeText(mContext.get(), "v"+ checkState,Toast.LENGTH_SHORT).show());
@@ -173,14 +302,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //				popupWindow.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
 //				popupWindow.setHeight(popupWindow.getContentView().getMeasuredHeight());
 //				popupWindow.setWidth(fl.getWidth()-20);
-//
 //				popupWindow.setFocusable(true);
 ////				popupWindow.setBackgroundDrawable(getResources().getDrawable(R.mipmap.temp_mode_bg_tempback));
 //				popupWindow.setOutsideTouchable(true);
 //				popupWindow.setTouchable(true);
-//
 //				popupWindow.showAsDropDown(mDataBinding.flPreview,10,-popupWindow.getHeight()-20, Gravity.CENTER);
-
 			}
 		});
 		//公司信息弹窗   监听器使用的图表的监听器对象
@@ -284,6 +410,14 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 			}
 		});
+
+
+		mDataBinding.setPf(this);
+		mViewModel = new ViewModelProvider(getViewModelStore(),
+				new ViewModelProvider.AndroidViewModelFactory((Application) mContext.get().getApplicationContext())).get(PreViewViewModel.class);
+		mDataBinding.setPreviewViewModel(mViewModel);
+
+		mViewModel.setDeviceConnectListener(onDeviceConnectListener);
 	}
 
 	/**

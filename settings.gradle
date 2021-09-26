@@ -2,4 +2,4 @@ rootProject.name = "DYTPIRCamera"
 include ':app'
 include ':common'
 include ':CameraCommon'
-include ':LibUvcCamera'
+include ':UvcConnect'

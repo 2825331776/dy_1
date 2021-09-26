@@ -46,8 +46,8 @@ import com.dyt.wcc.cameracommon.encoder.IVideoEncoder;
 import com.dyt.wcc.cameracommon.encoder.MediaEncoder;
 import com.dyt.wcc.cameracommon.encoder.MediaVideoEncoder;
 import com.dyt.wcc.common.base.BaseApplication;
-import com.dyt.wcc.libuvccamera.usb.ITemperatureCallback;
 import com.serenegiant.glutils.EGLBase;
+import com.serenegiant.usb.ITemperatureCallback;
 import com.serenegiant.utils.FpsCounter;
 
 import java.text.DecimalFormat;

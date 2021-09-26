@@ -23,4 +23,8 @@ public class DYConstants {
 
 
 	public static final List<String> languageArray = new CopyOnWriteArrayList<>(Arrays.asList("中文", "英文"));
+
+
+	public static final int CAMERA_DATA_MODE_8004 = 0x8004;
+	public static final int CAMERA_DATA_MODE_8005 = 0x8005;
 }
