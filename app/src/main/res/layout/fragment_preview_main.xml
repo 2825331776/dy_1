@@ -40,17 +40,17 @@
                 android:layout_height="match_parent"/>
 
 <!--        左侧按钮-->
+<!--            android:onClick="@{previewViewModel::showPaletteWindow}"-->
             <ImageView
+                android:id="@+id/iv_preview_left_palette"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/iv_preview_left_clear"
-                android:id="@+id/iv_preview_left_palette"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:background="@drawable/ic_user_vector_palette_24px"
-                android:onClick="@{previewViewModel::showPaletteWindow}"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -72,8 +72,8 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_width="@dimen/dimen_50dp"
-                android:layout_height="@dimen/dimen_50dp"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="@dimen/dimen_40dp"
                 android:layout_margin="@dimen/dimen_5dp"
                 android:background="@mipmap/left_container_company_info"
                 android:layout_centerInParent="true"/>
@@ -84,33 +84,32 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/iv_preview_left_company_info"
                 android:orientation="vertical"
-                android:gravity="center"
+                android:gravity="center|bottom"
                 android:layout_width="match_parent"
                 android:layout_marginTop="@dimen/dimen_5dp"
-                android:layout_marginBottom="@dimen/dimen_2dp"
+                android:layout_marginBottom="@dimen/dimen_5dp"
                 android:layout_height="0dp">
                 <ImageView
                     android:id="@+id/iv_preview_left_takePhoto"
-                    android:layout_width="@dimen/dimen_50dp"
-                    android:layout_height="@dimen/dimen_0dp"
-                    android:maxWidth="@dimen/dimen_50dp"
-                    android:layout_weight="1"
+                    android:layout_width="@dimen/dimen_40dp"
+                    android:layout_height="@dimen/dimen_40dp"
+                    android:maxWidth="@dimen/dimen_40dp"
+                    android:onClick="@{pf::toImage}"
                     android:background="@drawable/ic_user_vector_take_photo_24px"/>
 
                 <ImageView
                     android:id="@+id/iv_preview_left_record"
-                    android:layout_width="@dimen/dimen_50dp"
-                    android:layout_height="@dimen/dimen_0dp"
-                    android:maxWidth="@dimen/dimen_50dp"
-                    android:layout_weight="1"
+                    android:layout_width="@dimen/dimen_40dp"
+                    android:layout_height="@dimen/dimen_40dp"
+                    android:maxWidth="@dimen/dimen_40dp"
+                    android:onClick="@{pf::toRecord}"
                     android:background="@drawable/ic_user_vector_record_24px"/>
 
                 <ImageButton
                     android:id="@+id/iv_preview_left_gallery"
-                    android:layout_width="@dimen/dimen_50dp"
-                    android:layout_height="@dimen/dimen_0dp"
-                    android:maxWidth="@dimen/dimen_50dp"
-                    android:layout_weight="1"
+                    android:layout_width="@dimen/dimen_40dp"
+                    android:layout_height="@dimen/dimen_40dp"
+                    android:maxWidth="@dimen/dimen_40dp"
                     android:background="@drawable/ic_user_vector_gallery_24px"
                     android:onClick="@{pf::toGallery}"/>
             </LinearLayout>
@@ -136,11 +135,12 @@
         <LinearLayout
             android:id="@+id/ll_container_preview_seekbar"
             android:layout_height="match_parent"
-            android:layout_width="@dimen/dimen_65dp"
+            android:layout_width="@dimen/dimen_60dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toRightOf="@id/fl_preview"
             app:layout_constraintRight_toLeftOf="@id/rl_right_container"
             android:orientation="vertical"
+            android:gravity="center"
             android:background="@color/bg_preview_right">
 
             <com.dyt.wcc.cameracommon.widget.CustomRangeSeekBar
@@ -270,37 +270,32 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:layout_margin="@dimen/dimen_5dp"
                 android:layout_width="match_parent"
                 android:layout_height="0dp">
                 <ImageView
                     android:id="@+id/iv_preview_right_temp_mode"
                     android:background="@drawable/ic_user_vector_draw_temp_mode_24px"
                     android:layout_width="@dimen/dimen_40dp"
-                    android:layout_height="@dimen/dimen_0dp"
-                    android:maxWidth="@dimen/dimen_40dp"
-                    android:layout_weight="1"
-                    android:layout_margin="@dimen/dimen_5dp"
+                    android:layout_height="@dimen/dimen_40dp"
+                    android:layout_margin="@dimen/dimen_2dp"
                     tools:ignore="ContentDescription" />
                 <!--        右侧底部设置-->
                 <ImageView
                     android:id="@+id/iv_preview_right_setting"
                     android:background="@drawable/ic_user_vector_setting_new_24px"
                     android:layout_width="@dimen/dimen_40dp"
-                    android:layout_height="@dimen/dimen_0dp"
+                    android:layout_height="@dimen/dimen_40dp"
                     android:maxWidth="@dimen/dimen_40dp"
-                    android:layout_weight="1"
-                    android:layout_margin="@dimen/dimen_5dp"
+                    android:layout_margin="@dimen/dimen_2dp"
                     tools:ignore="ContentDescription" />
                 <!--        右侧底部图表-->
                 <ImageView
                     android:id="@+id/iv_preview_right_chart"
                     android:background="@mipmap/right_container_chart_info"
                     android:layout_width="@dimen/dimen_40dp"
-                    android:layout_height="@dimen/dimen_0dp"
+                    android:layout_height="@dimen/dimen_40dp"
                     android:maxWidth="@dimen/dimen_40dp"
-                    android:layout_weight="1"
-                    android:layout_margin="@dimen/dimen_5dp"
+                    android:layout_margin="@dimen/dimen_2dp"
                     tools:ignore="ContentDescription"/>
             </LinearLayout>
 

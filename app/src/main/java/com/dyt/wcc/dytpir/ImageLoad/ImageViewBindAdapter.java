@@ -8,12 +8,12 @@ import androidx.databinding.BindingAdapter;
 import com.bumptech.glide.Glide;
 
 /**
- * <p>Copyright (C), 2018.08.08-?       </p>
- * <p>Author：stefan cheng        </p>
- * <p>Create Date：2021/9/10  10:53     </p>
- * <p>Description：@todo         </p>
- * <p>PackgePath: com.dyt.wcc.dytpir.ImageLoad     </p>
- */
+* <p>Copyright (C), 2021.04.01-? , DY Technology    </p>
+* <p>Author：stefan cheng    </p>
+* <p>Create Date：2021/9/26  16:17 </p>
+* <p>Description：@todo describe         </p>
+* <p>PackagePath: com.dyt.wcc.dytpir.ImageLoad     </p>
+*/
 public class ImageViewBindAdapter {
 	/**
 	 * 欢迎页面加载图片

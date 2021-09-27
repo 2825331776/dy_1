@@ -59,6 +59,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private PreViewViewModel                   mViewModel;
 	private USBMonitor.OnDeviceConnectListener onDeviceConnectListener;
 	private UVCCameraHandler                   mUvcCameraHandler;
+	private Surface stt;
 
 //	private USBMonitor mUsbMonitor ;
 	private int mTextureViewWidth,mTextureViewHeight;
@@ -79,7 +80,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 	@Override
 	protected int bindingLayout () {
-//		Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
 		return R.layout.fragment_preview_main;
 	}
 
@@ -98,6 +98,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	@Override
 	public void onDestroy () {
 		super.onDestroy();
+
 		if (isDebug)Log.e(TAG, "onDestroy: ");
 	}
 
@@ -105,6 +106,13 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	public void onDestroyView () {
 		super.onDestroyView();
 		if (isDebug)Log.e(TAG, "onDestroyView: ");
+
+		if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened()){
+			Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
+			mUvcCameraHandler.stopTemperaturing();
+			mUvcCameraHandler.stopPreview();
+			mUvcCameraHandler.release();
+		}
 		if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
 			mViewModel.getMUsbMonitor().getValue().unregister();
 		}
@@ -119,7 +127,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			mViewModel.getMUsbMonitor().getValue().register();
 		}
 		//		Spinner
-		//
 		List<UsbDevice> mUsbDeviceList = mViewModel.getMUsbMonitor().getValue().getDeviceList();
 		for (UsbDevice udv : mUsbDeviceList) {
 			//指定设备的连接，获取设备的名字，当前usb摄像头名为Xmodule-S0
@@ -135,6 +142,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	}
 
 	private void startPreview () {//打开连接 调用预览图像的设置
+		stt = new Surface(mDataBinding.textureViewPreviewFragment.getSurfaceTexture());
+
+
 		mTextureViewWidth = mDataBinding.textureViewPreviewFragment.getWidth();
 		mTextureViewHeight = mDataBinding.textureViewPreviewFragment.getHeight();
 		if (isDebug)Log.e(TAG,"height =="+ mTextureViewHeight + " width==" + mTextureViewWidth);
@@ -156,9 +166,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.textureViewPreviewFragment.setBitmap(mCursorRed, mCursorGreen, mCursorBlue, mCursorYellow, mWatermarkLogo);//红色最高温，绿色？， 蓝色最低温，黄色中心温，LOGO
 		// 注意显示水印的时候要设置这个水印图片
 
-		SurfaceTexture stt = mDataBinding.textureViewPreviewFragment.getSurfaceTexture();
-		mUvcCameraHandler.startPreview(new Surface(stt));
-
+		mUvcCameraHandler.startPreview(stt);
 		mUvcCameraHandler.startTemperaturing();//温度回调
 
 	}
@@ -202,7 +210,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
 			@Override
 			public void onAttach (UsbDevice device) {
-				if (isDebug)Log.e(TAG, "onAttach: "+ device.toString());
+				if (isDebug)Log.e(TAG, "DD  onAttach: "+ device.toString());
 				if (device.getProductId() == 1 && device.getVendorId() == 5396) {
 					Handler handler = new Handler();
 					handler.postDelayed(new Runnable() {
@@ -233,15 +241,25 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			}
 			@Override
 			public void onDetach (UsbDevice device) {
-				if (isDebug)Log.e(TAG, "onDetach: ");
+				if (isDebug)Log.e(TAG, "DD  onDetach: ");
 			}
 			@Override
 			public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
-				if (isDebug)Log.e(TAG, "onDisconnect: ");
+				if (isDebug)Log.e(TAG, " DD  onDisconnect: ");
+
+
+				if (mUvcCameraHandler != null){
+					Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
+					SurfaceTexture stt = mDataBinding.textureViewPreviewFragment.getSurfaceTexture();
+					mUvcCameraHandler.stopTemperaturing();
+					mUvcCameraHandler.stopPreview();
+					mUvcCameraHandler.release();
+				}
+
 			}
 			@Override
 			public void onCancel (UsbDevice device) {
-				if (isDebug)Log.e(TAG, "onCancel: ");
+				if (isDebug)Log.e(TAG, "DD  onCancel: ");
 			}
 		};
 
@@ -295,7 +313,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			public void onClick (View v) {
 
 				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_palette_choice,null);
-
 
 				showPopWindows(view,20,10,20);
 //				PopupWindow popupWindow = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -488,11 +505,36 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	}
 
 	public void toClear(View view){
-		Toast.makeText(mContext.get(),"toClear ", Toast.LENGTH_SHORT).show();
+		if (mUvcCameraHandler != null){
+			Toast.makeText(mContext.get(),"toClear ", Toast.LENGTH_SHORT).show();
+			mUvcCameraHandler.stopTemperaturing();
+			mUvcCameraHandler.stopPreview();
+		}
 //		NavHostFragment.findNavController(PreviewFragment.this).popBackStack();
 //		Navigation.findNavController(mDataBinding.getRoot()).popBackStack();
 
 	}
+	//拍照
+	public void toImage(View view){
+
+		if (mUvcCameraHandler != null){
+			Toast.makeText(mContext.get(),"toImage ", Toast.LENGTH_SHORT).show();
+			mUvcCameraHandler.startPreview(stt);
+			mUvcCameraHandler.startTemperaturing();
+		}
+		//		NavHostFragment.findNavController(PreviewFragment.this).popBackStack();
+		//		Navigation.findNavController(mDataBinding.getRoot()).popBackStack();
+
+	}
+	//录制
+	public void toRecord(View view){
+
+		//		NavHostFragment.findNavController(PreviewFragment.this).popBackStack();
+		//		Navigation.findNavController(mDataBinding.getRoot()).popBackStack();
+
+	}
+
+
 
 
 }

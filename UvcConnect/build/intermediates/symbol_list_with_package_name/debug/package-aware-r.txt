@@ -2497,6 +2497,8 @@ layout design_text_input_start_icon
 layout dialog_camera
 layout layout_define_my_toggle
 layout listitem_device
+layout move_widget_content
+layout move_widget_tools
 layout mtrl_alert_dialog
 layout mtrl_alert_dialog_actions
 layout mtrl_alert_dialog_title

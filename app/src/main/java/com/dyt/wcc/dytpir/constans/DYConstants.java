@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * <p>Copyright (C), 2018.08.08-?       </p>
- * <p>Author：stefan cheng        </p>
- * <p>Create Date：2021/9/18  15:13     </p>
- * <p>Description：@todo         </p>
- * <p>PackgePath: com.dyt.wcc.dytpir.constans     </p>
- */
+* <p>Copyright (C), 2021.04.01-? , DY Technology    </p>
+* <p>Author：stefan cheng    </p>
+* <p>Create Date：2021/9/26  16:04 </p>
+* <p>Description：@todo describe         </p>
+* <p>PackagePath: com.dyt.wcc.dytpir.constans     </p>
+*/
 public class DYConstants {
 
 	public static final int IMAGE_READY = 100;

@@ -2496,6 +2496,8 @@ int layout design_text_input_start_icon 0x0
 int layout dialog_camera 0x0
 int layout layout_define_my_toggle 0x0
 int layout listitem_device 0x0
+int layout move_widget_content 0x0
+int layout move_widget_tools 0x0
 int layout mtrl_alert_dialog 0x0
 int layout mtrl_alert_dialog_actions 0x0
 int layout mtrl_alert_dialog_title 0x0

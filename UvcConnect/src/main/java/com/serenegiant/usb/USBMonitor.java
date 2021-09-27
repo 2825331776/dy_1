@@ -481,7 +481,7 @@ public final class USBMonitor {
 			if (destroyed) return;
 			final String action = intent.getAction();
 			if (ACTION_USB_PERMISSION.equals(action)) {
-				LogUtils.e("=====register============before==========BroadcastReceiver mUsbReceiver processConnect device=======");
+				if (DEBUG)Log.e(TAG, "onReceive: Define"+action);
 				// when received the result of requesting USB permission
 				synchronized (USBMonitor.this) {
 					final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
@@ -498,11 +498,13 @@ public final class USBMonitor {
 					}
 				}
 			} else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
+				if (DEBUG)Log.e(TAG, "onReceive: ACTION_USB_DEVICE_ATTACHED");
 				final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 				updatePermission(device, hasPermission(device));
 				processAttach(device);
 			} else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
 				// when device removed
+				if (DEBUG)Log.e(TAG, "onReceive: ACTION_USB_DEVICE_DETACHED");
 				final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 				if (device != null) {
 					UsbControlBlock ctrlBlock = mCtrlBlocks.remove(device);

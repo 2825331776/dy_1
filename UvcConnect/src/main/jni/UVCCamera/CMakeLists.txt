@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.10.2)
 
 
-
+project("UvcConnect")
 
 if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
     include_directories(${ANDROID_SYSROOT}/usr/include/arm-linux-androideabi)
@@ -148,7 +148,7 @@ target_link_libraries(UVCCamera dyjpegext)#通过jpegext.cpp源文件生成 这�
 
 # 设置生成的so动态库最后输出的路径，set后面两个参数，
 # 前面一个是命令，后面是路径。
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../oplibs/${ANDROID_ABI})
 
 
 

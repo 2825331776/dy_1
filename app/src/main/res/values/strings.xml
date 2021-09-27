@@ -21,7 +21,7 @@
     <string name="CheckLatestVersion">Check the latest version</string>
     <string name="VersionName">Version Name：</string>
 
-<!--    设置页-->
+    <!--    设置页-->
     <string name="SettingGeneral">General</string>
     <string name="SettingLanguage">Language</string>
     <string name="SettingTemperatureUnit">Temperature Unit : </string>

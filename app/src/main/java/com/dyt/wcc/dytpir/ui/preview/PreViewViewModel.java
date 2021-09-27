@@ -2,8 +2,6 @@ package com.dyt.wcc.dytpir.ui.preview;
 
 import android.app.Application;
 import android.content.Context;
-import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -65,9 +63,9 @@ public class PreViewViewModel extends AndroidViewModel {
 		}
 		return connectState;
 	}
-	//点击切换色板弹窗按钮
-	public void showPaletteWindow(View view){
-		Toast.makeText(mContext.get(),"1111",Toast.LENGTH_SHORT).show();
-	}
+//	//点击切换色板弹窗按钮
+//	public void showPaletteWindow(View view){
+//		Toast.makeText(mContext.get(),"1111",Toast.LENGTH_SHORT).show();
+//	}
 
 }
