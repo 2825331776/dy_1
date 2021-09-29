@@ -17,6 +17,8 @@ package com.dyt.wcc.common.widget.dragView;
 public class MyDefineView {
 	private int id;
 
+	private boolean isSelect;
+
 	private int startPointX;
 	private int startPointY;
 	private int endPointX;
@@ -28,9 +30,32 @@ public class MyDefineView {
 	private int maxTextColor;
 	private int minTextSize ;//字体大小
 
+	private int [] toolsPicRes;
+	private int toolsNumber;
+
+	public int[] getToolsPicRes () {
+		return toolsPicRes;
+	}
+
+	public void setToolsPicRes (int[] toolsPicRes) {
+		this.toolsPicRes = toolsPicRes;
+		this.toolsNumber = toolsPicRes.length;
+	}
+	public int getToolsNumber () {
+		return toolsNumber;
+	}
+
 	private String textSuffix;//温度后缀 ℃  ℉ K
 
 	private int drawType;//点类型
+
+	public boolean isSelect () {
+		return isSelect;
+	}
+
+	public void setSelect (boolean select) {
+		isSelect = select;
+	}
 
 	public int getId () {
 		return id;

@@ -43,10 +43,25 @@
             android:layout_height="wrap_content"/>
 
         <com.dyt.wcc.common.widget.dragView.MyDragContainer
+            android:layout_below="@+id/ll_test"
             android:id="@+id/myDragContainer"
+            android:layout_alignParentStart="true"
             android:layout_above="@id/bt_point"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+
+        <LinearLayout
+            android:id="@+id/ll_test"
+            android:orientation="vertical"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_100dp">
+<!--            <com.dyt.wcc.common.widget.dragView.MyMoveWidget-->
+<!--                android:background="@color/green"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"/>-->
+        </LinearLayout>
 
     </RelativeLayout>
 </layout>

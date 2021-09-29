@@ -21,4 +21,10 @@
     <color name="bg_three_choice_one">#FF41C7DB</color>
 
 
+    <color name="bg_move_layout_round_bg">#66797B78</color>
+
+    <color name="min_temp_text_color_blue">#FF0000FF</color>
+
+    <color name="max_temp_text_color_red">#FFFF0000</color>
+
 </resources>

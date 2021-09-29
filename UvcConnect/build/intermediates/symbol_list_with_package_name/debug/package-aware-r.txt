@@ -1001,6 +1001,7 @@ color background_floating_material_light
 color background_material_dark
 color background_material_light
 color bg_cutoff_rule
+color bg_move_layout_round_bg
 color bg_preview_left_cutoff_rule
 color bg_preview_right
 color bg_preview_toggle_select
@@ -1101,6 +1102,8 @@ color material_slider_halo_color
 color material_slider_inactive_tick_marks_color
 color material_slider_inactive_track_color
 color material_slider_thumb_color
+color max_temp_text_color_red
+color min_temp_text_color_blue
 color mtrl_bottom_nav_colored_item_tint
 color mtrl_bottom_nav_colored_ripple_color
 color mtrl_bottom_nav_item_tint
@@ -2010,6 +2013,7 @@ drawable design_ic_visibility_off
 drawable design_password_eye
 drawable design_snackbar_background
 drawable ic_arrow_drop_down_black_24dp
+drawable ic_move_tools
 drawable ic_mtrl_checked_circle
 drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
@@ -2152,6 +2156,8 @@ id chip3
 id chip_group
 id chronometer
 id clear_text
+id conLayout_content
+id conLayout_tools
 id confirm_button
 id container
 id content
@@ -2496,9 +2502,8 @@ layout design_text_input_password_icon
 layout design_text_input_start_icon
 layout dialog_camera
 layout layout_define_my_toggle
+layout layout_move_widget
 layout listitem_device
-layout move_widget_content
-layout move_widget_tools
 layout mtrl_alert_dialog
 layout mtrl_alert_dialog_actions
 layout mtrl_alert_dialog_title
@@ -2556,6 +2561,10 @@ layout text_view_with_line_height_from_layout
 layout text_view_with_line_height_from_style
 layout text_view_with_theme_line_height
 layout text_view_without_line_height
+mipmap cursorblue
+mipmap cursorgreen
+mipmap cursorred
+mipmap cursoryellow
 mipmap spinner_down
 mipmap spinner_up
 plurals mtrl_badge_content_description

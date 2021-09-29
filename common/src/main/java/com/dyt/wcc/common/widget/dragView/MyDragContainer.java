@@ -8,10 +8,15 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 
+import com.dyt.wcc.common.R;
+
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,9 +39,14 @@ public class MyDragContainer extends RelativeLayout {
 
 	private int screenWidth , screenHeight;
 
-	private int drawTempMode = -1;
+	private int           drawTempMode = -1;
+	private WeakReference<Context> mContext;
 
-	private MyDefineView addDefineView ;
+	private AddTempWidget addDefineView ;
+
+
+
+	private boolean enabled = true;//设置是否可用,为false时不能添加view 不能进行任何操作
 
 	//设置点温度 最高 最低温度
 
@@ -56,7 +66,7 @@ public class MyDragContainer extends RelativeLayout {
 	}
 	public MyDragContainer (Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 		super(context, attrs, defStyleAttr, defStyleRes);
-
+		mContext = new WeakReference<>(context) ;
 		initAttrs();
 		initView();
 	}
@@ -65,8 +75,8 @@ public class MyDragContainer extends RelativeLayout {
 	}
 	private void initView(){
 		viewLists = new ArrayList<>();
-		addDefineView = new MyDefineView();
-		addDefineView.setDrawType(drawTempMode);
+		addDefineView = new AddTempWidget();
+		addDefineView.setType(drawTempMode);
 	}
 
 	//对象方法 去增加一个 点 线 矩阵视图
@@ -101,6 +111,8 @@ public class MyDragContainer extends RelativeLayout {
 		screenHeight = getHeight();
 
 
+
+
 	}
 
 	public int getDrawTempMode () {
@@ -112,6 +124,10 @@ public class MyDragContainer extends RelativeLayout {
 
 	@Override
 	public boolean dispatchTouchEvent (MotionEvent ev) {
+		if (!enabled){
+			return true;
+		}
+		//判断点是否在子View中
 		if (drawTempMode == -1){//不分发事件
 			//判断是否要  移动已有的子View（判断焦点在哪个View）  否则直接消费
 			//或者是删除子View ||  或者移动  缩放VIew
@@ -125,54 +141,79 @@ public class MyDragContainer extends RelativeLayout {
 
 	@Override
 	public boolean onInterceptTouchEvent (MotionEvent ev) {
-		if (isDebug) Log.e(TAG, "onInterceptTouchEvent: ");
-		if(isControlItem){//判断ev在不在子item 边界内
-			return super.onInterceptTouchEvent(ev);
-		}
-		return true;
+		if (isDebug) Log.e(TAG, "onInterceptTouchEvent: "+ ev.getAction());
 
-
-	}
-
-	@Override
-	public boolean onTouchEvent (MotionEvent event) {//消费的具体
-		//down 0  up 1 move 2
-		if (isDebug)Log.e(TAG, "MyDragContainer.onTouchEvent: ==>" + event.getAction());
-		switch (event.getAction()){
+		switch (ev.getAction()){
 			case MotionEvent.ACTION_DOWN:
 				if (drawTempMode != -1) {
 					if (isDebug)Log.e(TAG, "MyDragContainer.onTouchEvent: " + "Down ==  set start point " );
+					//					Toast.makeText(mContext.get(),"XY " + event.getX() + "  Y " + event.getY(),Toast.LENGTH_SHORT).show();
 					//todo 绘制模式
-					addDefineView.setStartPointX(((int) event.getX()));
-					addDefineView.setStartPointY(((int) event.getY()));
-					addDefineView.setDrawType(drawTempMode);
+					PointTempWidget pointTempWidget = new PointTempWidget();
 
+
+					pointTempWidget.setStartPointX(((int) ev.getX()));
+					pointTempWidget.setStartPointY(((int) ev.getY()));
+					pointTempWidget.setTemp(111.0f);
+
+					addDefineView.setType(drawTempMode);
+					addDefineView.setTextSuffix("℃");
+					addDefineView.setTempTextSize(20);
+					addDefineView.setSelect(true);
+
+					addDefineView.setPointTemp(pointTempWidget);
 				}
 				break;
 			case MotionEvent.ACTION_MOVE:
-				 if (drawTempMode == 2 || drawTempMode ==3) {
-					 addDefineView.setEndPointX(((int) event.getX()));
-					 addDefineView.setEndPointY(((int) event.getY()));
-				 }else if (drawTempMode ==1){
-					 if (isDebug)Log.e(TAG, "MyDragContainer.onTouchEvent: Move = " + drawTempMode);
-				 }
+				if (drawTempMode == 2 || drawTempMode ==3) {
+//					addDefineView.setEndPointX(((int) ev.getX()));
+//					addDefineView.setEndPointY(((int) ev.getY()));
+				}else if (drawTempMode ==1){
+					if (isDebug)Log.e(TAG, "MyDragContainer.onTouchEvent: Move = " + drawTempMode);
+				}
 				break;
 			case MotionEvent.ACTION_UP:
 				if (drawTempMode == 2 || drawTempMode ==3){
 					if (isDebug)Log.e(TAG, "MyDragContainer.onTouchEvent: up = " + drawTempMode);
 
-					addDefineView.setEndPointX(((int) event.getX()));
-					addDefineView.setEndPointY(((int) event.getY()));
+//					addDefineView.setEndPointX(((int) ev.getX()));
+//					addDefineView.setEndPointY(((int) ev.getY()));
 					drawTempMode = -1;
-					return true;
 				}else if (drawTempMode ==1) {
 					//todo 添加点视图
+					MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),addDefineView,screenWidth,screenHeight);
+					moveWidget.setClickable(true);
+					LinearLayout.LayoutParams  layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+					moveWidget.setLayoutParams(layoutParams);
+//					moveWidget.setClickable(true);
+
+
+					moveWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_left_cutoff_rule));
+					addView(moveWidget);
+					viewLists.add(moveWidget);
+					invalidate();
 					if (isDebug)Log.e(TAG, "MyDragContainer.onTouchEvent: up = " + drawTempMode);
 				}
 				break;
 		}
-		return true;
+		Log.e(TAG, "onInterceptTouchEvent:  continue =====");
+//		if(isControlItem){//判断ev在不在子item 边界内
+//			return false;
+//		}else {
+//
+//		}
+		return super.onInterceptTouchEvent(ev);
+
+
 	}
+
+//	@Override
+//	public boolean onTouchEvent (MotionEvent event) {//消费的具体
+//		//down 0  up 1 move 2
+//		if (isDebug)Log.e(TAG, "MyDragContainer.onTouchEvent: ==>" + event.getAction());
+//
+//		return true;
+//	}
 
 	private Handler handler = new Handler(new Handler.Callback() {
 		@Override

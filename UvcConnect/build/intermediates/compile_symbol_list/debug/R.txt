@@ -1000,6 +1000,7 @@ int color background_floating_material_light 0x0
 int color background_material_dark 0x0
 int color background_material_light 0x0
 int color bg_cutoff_rule 0x0
+int color bg_move_layout_round_bg 0x0
 int color bg_preview_left_cutoff_rule 0x0
 int color bg_preview_right 0x0
 int color bg_preview_toggle_select 0x0
@@ -1100,6 +1101,8 @@ int color material_slider_halo_color 0x0
 int color material_slider_inactive_tick_marks_color 0x0
 int color material_slider_inactive_track_color 0x0
 int color material_slider_thumb_color 0x0
+int color max_temp_text_color_red 0x0
+int color min_temp_text_color_blue 0x0
 int color mtrl_bottom_nav_colored_item_tint 0x0
 int color mtrl_bottom_nav_colored_ripple_color 0x0
 int color mtrl_bottom_nav_item_tint 0x0
@@ -2009,6 +2012,7 @@ int drawable design_ic_visibility_off 0x0
 int drawable design_password_eye 0x0
 int drawable design_snackbar_background 0x0
 int drawable ic_arrow_drop_down_black_24dp 0x0
+int drawable ic_move_tools 0x0
 int drawable ic_mtrl_checked_circle 0x0
 int drawable ic_mtrl_chip_checked_black 0x0
 int drawable ic_mtrl_chip_checked_circle 0x0
@@ -2151,6 +2155,8 @@ int id chip3 0x0
 int id chip_group 0x0
 int id chronometer 0x0
 int id clear_text 0x0
+int id conLayout_content 0x0
+int id conLayout_tools 0x0
 int id confirm_button 0x0
 int id container 0x0
 int id content 0x0
@@ -2495,9 +2501,8 @@ int layout design_text_input_password_icon 0x0
 int layout design_text_input_start_icon 0x0
 int layout dialog_camera 0x0
 int layout layout_define_my_toggle 0x0
+int layout layout_move_widget 0x0
 int layout listitem_device 0x0
-int layout move_widget_content 0x0
-int layout move_widget_tools 0x0
 int layout mtrl_alert_dialog 0x0
 int layout mtrl_alert_dialog_actions 0x0
 int layout mtrl_alert_dialog_title 0x0
@@ -2555,6 +2560,10 @@ int layout text_view_with_line_height_from_layout 0x0
 int layout text_view_with_line_height_from_style 0x0
 int layout text_view_with_theme_line_height 0x0
 int layout text_view_without_line_height 0x0
+int mipmap cursorblue 0x0
+int mipmap cursorgreen 0x0
+int mipmap cursorred 0x0
+int mipmap cursoryellow 0x0
 int mipmap spinner_down 0x0
 int mipmap spinner_up 0x0
 int plurals mtrl_badge_content_description 0x0
