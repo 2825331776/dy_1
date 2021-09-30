@@ -62,14 +62,17 @@ public class TestActivity extends BaseActivity<ActivityTestBinding> implements V
 
 				pointTempWidget.setStartPointY(100);
 				pointTempWidget.setStartPointX(200);
-				pointTempWidget.setTemp(123456);
+				pointTempWidget.setTemp(1234);
+				view.setCanMove(true);
 				view.setType(1);
 				view.setSelect(true);
+				view.setTempTextSize(40);
 				view.setTextSuffix("℃");
 				view.setPointTemp(pointTempWidget);
+				view.setToolsPicRes(new int[]{com.dyt.wcc.common.R.drawable.permissionx_ic_location, com.dyt.wcc.common.R.mipmap.spinner_up});
 
 				moveWidget = new MyMoveWidget(mContext.get(),view,mDataBinding.myDragContainer.getWidth(),mDataBinding.myDragContainer.getHeight());
-				moveWidget.setBackgroundColor(getResources().getColor(R.color.green));
+				moveWidget.setBackgroundColor(getResources().getColor(R.color.white));
 				moveWidget.setLayoutParams(layoutParams);
 
 				mDataBinding.myDragContainer.addView(moveWidget);

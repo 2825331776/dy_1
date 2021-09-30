@@ -156,10 +156,13 @@ public class MyDragContainer extends RelativeLayout {
 					pointTempWidget.setStartPointY(((int) ev.getY()));
 					pointTempWidget.setTemp(111.0f);
 
+					addDefineView.setToolsPicRes(new int[]{R.drawable.permissionx_ic_location,R.mipmap.spinner_up});
 					addDefineView.setType(drawTempMode);
 					addDefineView.setTextSuffix("℃");
 					addDefineView.setTempTextSize(20);
+					addDefineView.setCanMove(true);
 					addDefineView.setSelect(true);
+
 
 					addDefineView.setPointTemp(pointTempWidget);
 				}
@@ -188,7 +191,7 @@ public class MyDragContainer extends RelativeLayout {
 //					moveWidget.setClickable(true);
 
 
-					moveWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_left_cutoff_rule));
+					moveWidget.setBackgroundColor(getResources().getColor(R.color.white));
 					addView(moveWidget);
 					viewLists.add(moveWidget);
 					invalidate();
