@@ -229,25 +229,25 @@ public class MyMoveWidget extends ConstraintLayout {
 	private int getToolsAndTextState(){
 		int stateTools = WIDGET_TOOLS_STATE_LEFT_TOP, stateText = WIDGET_TEXT_STATE_LEFT_TOP;
 		//tools_state
-		if ((contentBgRight + toolsNeedWidth >= moveMaxWidth) && ((contentTop+contentBottom)/2.0f + toolsNeedHeight > moveMaxHeight)){//tools_left_top
+		if ((contentBgRight + toolsNeedWidth >= moveMaxWidth)
+				&& ((contentTop+contentBottom)/2.0f - toolsNeedHeight >= 0)){//tools_left_top
 			stateTools = WIDGET_TOOLS_STATE_LEFT_TOP;//从顶部向底部绘制
 		}else if ((contentBgRight + toolsNeedWidth >= moveMaxWidth) && ((contentTop+contentBottom)/2.0f + toolsNeedHeight <= moveMaxHeight)){//tools_left_bottom
 			stateTools = WIDGET_TOOLS_STATE_LEFT_BOTTOM;//从底部 向 顶部绘制
-		}else if ((contentBgRight + toolsNeedWidth < moveMaxWidth) && ((contentTop+contentBottom)/2.0f + toolsNeedHeight > moveMaxHeight)){//tools_right_top
+		}else if ((contentBgRight + toolsNeedWidth < moveMaxWidth) && ((contentTop+contentBottom)/2.0f - toolsNeedHeight >= 0)){//tools_right_top
 			stateTools = WIDGET_TOOLS_STATE_RIGHT_TOP;
 		}else if ((contentBgRight + toolsNeedWidth < moveMaxWidth) && ((contentTop+contentBottom)/2.0f + toolsNeedHeight <= moveMaxHeight)){//tools_right_bottom
 			stateTools = WIDGET_TOOLS_STATE_RIGHT_BOTTOM;
 		}
 
-
 		//text state
-		if ((contentBgRight + textNeedWidth >= moveMaxWidth) && ((contentTop+contentBottom)/2.0f+textNeedHeight < moveMaxHeight)){//text_left_top
+		if ((contentBgRight + textNeedWidth >= moveMaxWidth) && (contentTop - 2.0f*textNeedHeight >= 0)){//text_left_top
 			stateText = WIDGET_TEXT_STATE_LEFT_TOP;
-		}else if ((contentBgRight + textNeedWidth >= moveMaxWidth) && ((contentTop+contentBottom)/2.0f+textNeedHeight >= moveMaxHeight)){//text_left_bottom
+		}else if ((contentBgRight + textNeedWidth >= moveMaxWidth) && ((contentTop+contentBottom)/2.0f + textNeedHeight <= moveMaxHeight)){//text_left_bottom
 			stateText = WIDGET_TEXT_STATE_LEFT_BOTTOM;//从底部 向 顶部绘制
-		}else if ((contentBgRight + textNeedWidth < moveMaxWidth) && ((contentTop+contentBottom)/2.0f+textNeedHeight < moveMaxHeight)){//text_right_top
+		}else if ((contentBgRight + textNeedWidth < moveMaxWidth) && (contentTop- 2.0f*textNeedHeight >= 0)){//text_right_top
 			stateText = WIDGET_TEXT_STATE_RIGHT_TOP;
-		}else if ((contentBgRight + textNeedWidth < moveMaxWidth) && ((contentTop+contentBottom)/2.0f+textNeedHeight >= moveMaxHeight)){//text_right_bottom
+		}else if ((contentBgRight + textNeedWidth < moveMaxWidth) && ((contentTop+contentBottom)/2.0f+textNeedHeight <= moveMaxHeight)){//text_right_bottom
 			stateText = WIDGET_TEXT_STATE_RIGHT_BOTTOM;
 		}
 
@@ -274,8 +274,8 @@ public class MyMoveWidget extends ConstraintLayout {
 		}else if (toolsDirectionState == WIDGET_TOOLS_STATE_LEFT_BOTTOM){
 			toolsBgLeft = contentBgLeft - toolsNeedWidth;
 			toolsBgRight = contentBgLeft;
-			toolsBgTop = (contentBgTop+contentBgBottom) / 2.0f;
-			toolsBgBottom = (contentBgTop+contentBgBottom) / 2.0f + toolsNeedHeight;
+			toolsBgTop = (contentBgTop + contentBgBottom) / 2.0f;
+			toolsBgBottom = (contentBgTop + contentBgBottom) / 2.0f + toolsNeedHeight;
 
 		}else if (toolsDirectionState == WIDGET_TOOLS_STATE_RIGHT_TOP){
 			toolsBgLeft = contentBgRight ;
@@ -305,8 +305,6 @@ public class MyMoveWidget extends ConstraintLayout {
 			pointTempTextY = contentBgBottom  - textNeedHeight/2.0f;
 		}
 	}
-
-
 
 
 	public boolean isSelectedState () {
