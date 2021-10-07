@@ -189,7 +189,7 @@ public class MyMoveWidget extends ConstraintLayout {
 			minTempTextPaint.getTextBounds(minTempStr,0 , minTempStr.length(),minTempStrRect);
 //			minTempTextPaint.measureText(minTempStr);
 			//点温度文字 所需要的长宽
-			textNeedWidth = minTempStrRect.width();
+			textNeedWidth = pointTextPaint.measureText(minTempStr);
 			textNeedHeight = minTempStrRect.height();
 
 			if (isDebug)Log.e(TAG, "===Text NeedWith : " + textNeedWidth +  "textNeedHeight" + textNeedHeight + " measureWidth" + minTempTextPaint.measureText(minTempStr));
@@ -209,10 +209,24 @@ public class MyMoveWidget extends ConstraintLayout {
 			getToolsAndTextLocation(widgetLocationState);
 
 		}else if (mDefineView.getType()==2 || mDefineView.getType() ==3){
+			//获取 点 图片 周围四个点
+			contentLeft = mDefineView.getOtherTemp().getStartPointX();
+			contentRight = mDefineView.getOtherTemp().getStartPointY();
+			contentTop = mDefineView.getOtherTemp().getEndPointX();
+			contentBottom = mDefineView.getOtherTemp().getEndPointY() ;
+			//获取 点 背景四个点周彪
+			contentBgLeft = contentLeft - padLeft;
+			contentBgRight = contentRight + padRight;
+			contentBgTop = contentTop - padTop;
+			contentBgBottom = contentBottom + padBottom;
+
 
 			//计算文字需要的长宽
 			minTempStr = mDefineView.getOtherTemp().getMinTemp() + mDefineView.getTextSuffix();
 			maxTempStr = mDefineView.getOtherTemp().getMaxTemp() + mDefineView.getTextSuffix();
+
+
+
 
 			minTempTextPaint.getTextBounds(minTempStr,0 , minTempStr.length(),minTempStrRect);
 			maxTempTextPaint.getTextBounds(maxTempStr,0 , maxTempStr.length(),maxTempStrRect);
