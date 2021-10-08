@@ -153,6 +153,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.textureViewPreviewFragment.iniTempFontsize(mFontSize);
 		mDataBinding.textureViewPreviewFragment.setUnitTemperature(0);//0 摄氏度 ; 1 华氏度
 		mDataBinding.textureViewPreviewFragment.setBindSeekBar(mDataBinding.customSeekbarPreviewFragment);
+		mDataBinding.textureViewPreviewFragment.setDragTempContainer(mDataBinding.dragTempContainerPreviewFragment);
 
 		paletteType =1;
 		mUvcCameraHandler.PreparePalette(palettePath,paletteType);

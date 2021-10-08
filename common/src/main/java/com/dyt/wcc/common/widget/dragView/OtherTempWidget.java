@@ -16,12 +16,12 @@ public class OtherTempWidget {
 	private int endPointY;
 
 	private float minTemp;
-	private float minTempX;
-	private float minTempY;
+	private int minTempX;
+	private int minTempY;
 
 	private float maxTemp;
-	private float maxTempX;
-	private float maxTempY;
+	private int maxTempX;
+	private int maxTempY;
 
 	public int getStartPointX () {
 		return startPointX;
@@ -63,19 +63,19 @@ public class OtherTempWidget {
 		this.minTemp = minTemp;
 	}
 
-	public float getMinTempX () {
+	public int getMinTempX () {
 		return minTempX;
 	}
 
-	public void setMinTempX (float minTempX) {
+	public void setMinTempX (int minTempX) {
 		this.minTempX = minTempX;
 	}
 
-	public float getMinTempY () {
+	public int getMinTempY () {
 		return minTempY;
 	}
 
-	public void setMinTempY (float minTempY) {
+	public void setMinTempY (int minTempY) {
 		this.minTempY = minTempY;
 	}
 
@@ -87,19 +87,19 @@ public class OtherTempWidget {
 		this.maxTemp = maxTemp;
 	}
 
-	public float getMaxTempX () {
+	public int getMaxTempX () {
 		return maxTempX;
 	}
 
-	public void setMaxTempX (float maxTempX) {
+	public void setMaxTempX (int maxTempX) {
 		this.maxTempX = maxTempX;
 	}
 
-	public float getMaxTempY () {
+	public int getMaxTempY () {
 		return maxTempY;
 	}
 
-	public void setMaxTempY (float maxTempY) {
+	public void setMaxTempY (int maxTempY) {
 		this.maxTempY = maxTempY;
 	}
 }

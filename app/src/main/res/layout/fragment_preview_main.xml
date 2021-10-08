@@ -128,6 +128,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
+            <com.dyt.wcc.common.widget.dragView.DragTempContainer
+                android:id="@+id/dragTempContainer_preview_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
         </FrameLayout>
 

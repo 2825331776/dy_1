@@ -2013,6 +2013,8 @@ drawable design_ic_visibility_off
 drawable design_password_eye
 drawable design_snackbar_background
 drawable ic_arrow_drop_down_black_24dp
+drawable ic_define_view_tools_delete
+drawable ic_define_view_tools_other
 drawable ic_move_tools
 drawable ic_mtrl_checked_circle
 drawable ic_mtrl_chip_checked_black
@@ -2565,6 +2567,8 @@ mipmap cursorblue
 mipmap cursorgreen
 mipmap cursorred
 mipmap cursoryellow
+mipmap define_view_tools_delete
+mipmap define_view_tools_other
 mipmap spinner_down
 mipmap spinner_up
 plurals mtrl_badge_content_description

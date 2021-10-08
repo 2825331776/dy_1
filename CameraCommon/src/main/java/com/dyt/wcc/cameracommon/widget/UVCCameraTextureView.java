@@ -46,6 +46,7 @@ import com.dyt.wcc.cameracommon.encoder.IVideoEncoder;
 import com.dyt.wcc.cameracommon.encoder.MediaEncoder;
 import com.dyt.wcc.cameracommon.encoder.MediaVideoEncoder;
 import com.dyt.wcc.common.base.BaseApplication;
+import com.dyt.wcc.common.widget.dragView.DragTempContainer;
 import com.serenegiant.glutils.EGLBase;
 import com.serenegiant.usb.ITemperatureCallback;
 import com.serenegiant.utils.FpsCounter;
@@ -314,6 +315,12 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
         }
     }
 
+    public void setDragTempContainer(DragTempContainer dragTempContainer){
+        if (mRenderHandler != null) {
+            mRenderHandler.setDragTempContainer(dragTempContainer);
+        }
+    }
+
     public void setBitmap(Bitmap r, Bitmap g, Bitmap b, Bitmap y, Bitmap l) {
         mRenderHandler.setBitmap(r, g, b, y, l);
     }
@@ -577,6 +584,11 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                 mThread.setBindSeekBar(SeekBar);
             }
         }
+        public void setDragTempContainer(DragTempContainer dragTempContainer){
+            if (mThread != null) {
+                mThread.setDragTempContainer(dragTempContainer);
+            }
+        }
 
         @Override
         public final void handleMessage(final Message msg) {
@@ -632,6 +644,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
             private final FpsCounter mFpsCounter;
             private Camera2Helper mCamera2Helper;
             private CustomRangeSeekBar mBindSeekBar;
+            private DragTempContainer mDragTempContainer;
 
             /**
              * 高温报警相关变量
@@ -699,6 +712,10 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 
             public void setBindSeekBar(CustomRangeSeekBar SeekBar) {
                 this.mBindSeekBar = SeekBar;
+            }
+
+            public void setDragTempContainer(DragTempContainer dragTempContainer){
+                    this.mDragTempContainer = dragTempContainer;
             }
 
             public final RenderHandler getHandler() {
@@ -1019,6 +1036,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //                }
 
                 mBindSeekBar.Update(maxtemperature,mintemperature);//更新seekbar
+                mDragTempContainer.upDateTemp(temperature1);
 
             }
 

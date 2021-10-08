@@ -4,18 +4,18 @@ package com.dyt.wcc.common.widget.dragView;
  * <p>Copyright (C), 2018.08.08-?       </p>
  * <p>Author：stefan cheng        </p>
  * <p>Create Date：2021/9/29  16:48     </p>
- * <p>Description：绘制模式 对象         </p>
+ * <p>Description：具体数据 对象         </p>
  * <p>PackagePath: com.dyt.wcc.common.widget.dragView     </p>
  */
 public class AddTempWidget {
 	private int id;//必须
-	private int type; // 必须
-	private boolean isSelect;//是否被选中
-	private boolean isCanMove;//是否用户控制移动    /是否有工具栏 ==== 必须
+	private int type; // 必须  1为点  2为线  3矩形  4 高低温
+	private boolean isSelect;//是否显示工具栏和背景色
+	private boolean isCanMove;//是否响应用户控制    /是否有工具栏 ==== 必须
 
 	private int tempTextSize ;//温度字体大小      非必须
 
-	private String textSuffix;//温度后缀 ℃  ℉  K 必须
+	private String textSuffix;//温度后缀 ℃  ℉  K 必须 从本地读
 
 	private int [] toolsPicRes;//工具栏图片集合
 	private int toolsNumber;
