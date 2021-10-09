@@ -8,21 +8,26 @@ package com.dyt.wcc.common.widget.dragView;
  * <p>PackagePath: com.dyt.wcc.common.widget.dragView     </p>
  */
 public class OtherTempWidget {
-	private int lineColor;//绘制的线和 矩阵边框颜色
-
 	private int startPointX;
 	private int startPointY;
 	private int endPointX;
 	private int endPointY;
 
+	//可用点对象概括 默认type 为2
 	private float minTemp;
 	private int minTempX;
 	private int minTempY;
+	private int minTempDirection;//绘制前通过计算坐标初始化 方位
 
 	private float maxTemp;
 	private int maxTempX;
 	private int maxTempY;
+	private int maxTempDirection;//绘制前通过计算坐标初始化  方位
 
+	public int getMinTempDirection () { return minTempDirection; }
+	public void setMinTempDirection (int minTempDirection) { this.minTempDirection = minTempDirection; }
+	public int getMaxTempDirection () {return maxTempDirection; }
+	public void setMaxTempDirection (int maxTempDirection) { this.maxTempDirection = maxTempDirection; }
 	public int getStartPointX () {
 		return startPointX;
 	}

@@ -12,13 +12,28 @@ package com.dyt.wcc.common.widget.dragView;
  * <p>    线/矩阵 测温模式       范围内 最高最低 温度值和坐标    都改（温度依靠查询温度表）</p>
  */
 public class PointTempWidget {
+	private int type;// 点测温，高低温追踪 、线矩形内高低温 0 1 2
 
 	private int startPointX;
 	private int startPointY;
 
 	private float temp;//温度值
+	private int tempDirection;////绘制前通过计算坐标初始化 方位
 
+	public int getType () {
+		return type;
+	}
 
+	public void setType (int type) {
+		this.type = type;
+	}
+
+	public int getTempDirection () {
+		return tempDirection;
+	}
+	public void setTempDirection (int tempDirection) {
+		this.tempDirection = tempDirection;
+	}
 	public int getStartPointX () {
 		return startPointX;
 	}

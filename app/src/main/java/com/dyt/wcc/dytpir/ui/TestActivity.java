@@ -62,7 +62,7 @@ public class TestActivity extends BaseActivity<ActivityTestBinding> implements V
 
 				pointTempWidget.setStartPointY(100);
 				pointTempWidget.setStartPointX(200);
-				pointTempWidget.setTemp(1234);
+				pointTempWidget.setTemp(2222);
 				view.setCanMove(true);
 				view.setType(1);
 				view.setSelect(true);

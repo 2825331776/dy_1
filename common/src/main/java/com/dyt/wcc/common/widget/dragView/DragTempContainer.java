@@ -158,18 +158,18 @@ public class DragTempContainer extends RelativeLayout {
 
 					pointTempWidget.setStartPointX(((int) ev.getX()));
 					pointTempWidget.setStartPointY(((int) ev.getY()));
-					pointTempWidget.setTemp(111.0f);
+					pointTempWidget.setTemp(333.0f);
 
 					addDefineView.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete,R.mipmap.define_view_tools_other});
 					addDefineView.setType(drawTempMode);
 					addDefineView.setTextSuffix("℃");
 					addDefineView.setTempTextSize(15);
-					addDefineView.setCanMove(true);
+					addDefineView.setCanMove(false);
 					addDefineView.setSelect(true);
 
 
 					addDefineView.setPointTemp(pointTempWidget);
-				}else if (drawTempMode ==2){
+				}else if (drawTempMode ==2 || drawTempMode == 3){
 
 					OtherTempWidget otherTempWidget = new OtherTempWidget();
 
@@ -178,8 +178,6 @@ public class DragTempContainer extends RelativeLayout {
 					otherTempWidget.setEndPointY(((int) ev.getY()));
 					otherTempWidget.setMaxTemp(100.0f);
 					otherTempWidget.setMinTemp(15.0f);
-					otherTempWidget.setMinTempX((int) (ev.getX()+10));
-					otherTempWidget.setMinTempY((int) ev.getY());
 
 
 					addDefineView.setOtherTemp(otherTempWidget);
@@ -203,48 +201,62 @@ public class DragTempContainer extends RelativeLayout {
 				break;
 			case MotionEvent.ACTION_UP:
 				if (drawTempMode == 2){
-					if (isDebug)Log.e(TAG, "MyDragContainer.onTouchEvent: up = " + drawTempMode +" x = " + ev.getX());
 
 					//todo 判定谁是起始点  未做
 //					Math.min(addDefineView.getOtherTemp().getStartPointX(),ev.getX());
 //					Math.max(addDefineView.getOtherTemp().getStartPointX(),ev.getX());
 //					Math.min(addDefineView.getOtherTemp().getStartPointX(),ev.getY());
 //					Math.max(addDefineView.getOtherTemp().getStartPointX(),ev.getX());
-					addDefineView.getOtherTemp().setStartPointX(Math.min(addDefineView.getOtherTemp().getStartPointX(),(int)ev.getX()));
-					addDefineView.getOtherTemp().setEndPointX(Math.max(addDefineView.getOtherTemp().getStartPointX(),(int)ev.getX()));
+					if (isDebug)
+						Log.e(TAG, ": ");
 
-					Log.e(TAG, "drawTempMode == 2: "+ addDefineView.getOtherTemp().getStartPointX() + "  endX " + addDefineView.getOtherTemp().getEndPointX());
+					addDefineView.getOtherTemp().setEndPointX(Math.max(addDefineView.getOtherTemp().getStartPointX(),(int)ev.getX()));
+					addDefineView.getOtherTemp().setStartPointX(Math.min(addDefineView.getOtherTemp().getStartPointX(),(int)ev.getX()));
+					//设置最短像素长度为25
+					if (addDefineView.getOtherTemp().getEndPointX()-addDefineView.getOtherTemp().getStartPointX() <25){
+						addDefineView.getOtherTemp().setEndPointX(addDefineView.getOtherTemp().getStartPointX() + 25);
+					}
+
+					//设置最高最低温
+					addDefineView.getOtherTemp().setMinTempX(addDefineView.getOtherTemp().getStartPointX()+10);
+					addDefineView.getOtherTemp().setMinTempY(addDefineView.getOtherTemp().getStartPointY());
 					addDefineView.getOtherTemp().setMaxTempX(addDefineView.getOtherTemp().getEndPointX()-10);
 					addDefineView.getOtherTemp().setMaxTempY(addDefineView.getOtherTemp().getStartPointY());
 //					drawTempMode = -1;
 
-					MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),addDefineView,screenWidth,screenHeight);
-					moveWidget.setClickable(true);
-					LinearLayout.LayoutParams  layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-					moveWidget.setLayoutParams(layoutParams);
-					//					moveWidget.setClickable(true);
-
-					moveWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
-					addView(moveWidget);
-					viewLists.add(moveWidget);
-					invalidate();
-
 				}else if (drawTempMode ==1) {
-					//todo 添加点视图
-					MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),addDefineView,screenWidth,screenHeight);
-					moveWidget.setClickable(true);
-					LinearLayout.LayoutParams  layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-					moveWidget.setLayoutParams(layoutParams);
-//					moveWidget.setClickable(true);
 
-					moveWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
-					addView(moveWidget);
-					viewLists.add(moveWidget);
-					invalidate();
-					if (isDebug)Log.e(TAG, "MyDragContainer.onTouchEvent: up = " + drawTempMode);
+
+					//todo 添加点视图
 				}else if (drawTempMode ==3){
+					if (isDebug)
+						Log.e(TAG, ": ");
+					//todo 添加完点 之后归置点的先后顺序
+					addDefineView.getOtherTemp().setEndPointX((int) ev.getX());
+					addDefineView.getOtherTemp().setEndPointY((int)ev.getY());
+					//设置最短像素长度为25
+					if (addDefineView.getOtherTemp().getEndPointX()-addDefineView.getOtherTemp().getStartPointX() <100){
+						addDefineView.getOtherTemp().setEndPointX(addDefineView.getOtherTemp().getStartPointX() + 100);
+					}
+
+					//设置最高最低温
+					addDefineView.getOtherTemp().setMinTempX(addDefineView.getOtherTemp().getStartPointX()+20);
+					addDefineView.getOtherTemp().setMinTempY(addDefineView.getOtherTemp().getStartPointY()+20);
+					addDefineView.getOtherTemp().setMaxTempX(addDefineView.getOtherTemp().getEndPointX()-50);
+					addDefineView.getOtherTemp().setMaxTempY(addDefineView.getOtherTemp().getEndPointY()-50);
 					//todo 绘制矩形
 				}
+
+				MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),addDefineView,screenWidth,screenHeight);
+				moveWidget.setClickable(true);
+				LinearLayout.LayoutParams  layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+				moveWidget.setLayoutParams(layoutParams);
+				//					moveWidget.setClickable(true);
+
+				moveWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
+				addView(moveWidget);
+				viewLists.add(moveWidget);
+				invalidate();
 				break;
 		}
 		Log.e(TAG, "onInterceptTouchEvent:  continue =====");
