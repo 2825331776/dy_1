@@ -2,6 +2,7 @@ package com.dyt.wcc.common.widget.dragView;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.os.Handler;
 import android.os.Message;
@@ -44,7 +45,7 @@ public class DragTempContainer extends RelativeLayout {
 	private List<MyMoveWidget> viewLists;
 	private Bitmap pointBt, maxTempBt, minTempBt;//三张图片 ：单点温度、线和矩阵的 最高、最低温的图片
 
-	private int screenWidth , screenHeight;
+
 
 	private int           drawTempMode = -1;
 	private WeakReference<Context> mContext;
@@ -57,7 +58,10 @@ public class DragTempContainer extends RelativeLayout {
 	private int lineNum = 0;
 	private int recNum = 0;
 
+	private int screenWidth , screenHeight;
 	private int startPressX, startPressY, endPressX, endPressY;
+	private int addWidgetMarginX, addWidgetMarginY;
+	private int minAddWidgetWidth, minAddWidgetHeight;//添加控件的最小宽高  约束添加的线和矩形
 
 	private boolean enabled = true;//设置是否可用,为false时不能添加view 不能进行任何操作
 
@@ -93,6 +97,11 @@ public class DragTempContainer extends RelativeLayout {
 	private void initView(){
 		viewLists = new ArrayList<>();
 		tempSource = new float[256*196+10];
+		minAddWidgetWidth = minAddWidgetHeight = 100;
+
+		pointBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorgreen);
+		minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorblue);
+		maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorred);
 	}
 
 	//对象方法 去增加一个 点 线 矩阵视图 , int type
@@ -135,6 +144,114 @@ public class DragTempContainer extends RelativeLayout {
 		this.drawTempMode = drawTempMode;
 	}
 
+	//根据每帧数据源去更新数据，刷新子View
+	private void updateChildViewData(){
+
+	}
+	//校正每次添加的控件的宽高是否符合规范,大于最小值，否则无效添加
+	private boolean reviseCoordinate(int type){
+		int min ,max ;
+		min = Math.min(startPressX,endPressX);
+		max = Math.max(startPressX,endPressX);
+		startPressX = min;
+		endPressX = max;
+		if (endPressX - startPressX < minAddWidgetWidth){
+			return endPressX - startPressX < minAddWidgetWidth;
+		}
+
+		if (type ==2){
+			endPressY = startPressY;
+		}else {//type =3;
+			min = Math.min(startPressY,endPressY);
+			max = Math.max(startPressY,endPressY);
+			startPressY = min;
+			endPressY = max;
+			return endPressY - startPressY >= minAddWidgetHeight;
+		}
+		return true;
+	}
+	private void createPointView(){
+		AddTempWidget widget = new AddTempWidget();
+
+		PointTempWidget pointTempWidget = new PointTempWidget();
+		pointTempWidget.setStartPointX(startPressX);
+		pointTempWidget.setStartPointY(startPressY);
+		pointTempWidget.setTemp(100);
+
+		widget.setId(pointNum);
+		widget.setType(drawTempMode);
+		widget.setCanMove(true);
+		widget.setSelect(true);
+		widget.setTempTextSize(20);
+		widget.setTextSuffix("℃");
+		widget.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete, R.mipmap.define_view_tools_other});
+		widget.setPointTemp(pointTempWidget);
+
+		calculateWidthHeight(drawTempMode,true,true);
+
+		MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),widget,screenWidth,screenHeight);
+		ConstraintLayout.LayoutParams  layoutParams = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		layoutParams.setMargins(addWidgetMarginX,addWidgetMarginY,0,0);
+
+		moveWidget.setLayoutParams(layoutParams);
+		moveWidget.setAlpha(0.6f);
+		moveWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_right));
+		addView(moveWidget);
+		pointNum++;
+		viewLists.add(moveWidget);
+	}
+	private void createLineOrRecView(){
+		if (reviseCoordinate(drawTempMode)){
+			AddTempWidget tempWidget = new AddTempWidget();
+			//校正起始点坐标
+			OtherTempWidget otherTempWidget = new OtherTempWidget();
+
+			otherTempWidget.setStartPointX(startPressX);
+			otherTempWidget.setStartPointY(startPressY);
+			otherTempWidget.setEndPointX(endPressX);
+			otherTempWidget.setEndPointY(endPressY);
+
+			otherTempWidget.setMinTempX(otherTempWidget.getStartPointX()+20);
+			otherTempWidget.setMinTempY(otherTempWidget.getStartPointY());
+			otherTempWidget.setMinTemp(50);
+			otherTempWidget.setMaxTempX(otherTempWidget.getEndPointX()-20);
+			otherTempWidget.setMaxTempY(otherTempWidget.getEndPointY());
+			otherTempWidget.setMaxTemp(131);
+
+			tempWidget.setType(drawTempMode);
+			tempWidget.setCanMove(true);
+			tempWidget.setSelect(true);
+			tempWidget.setTempTextSize(16);
+			tempWidget.setTextSuffix("℃");
+			tempWidget.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete, R.mipmap.define_view_tools_other});
+			tempWidget.setOtherTemp(otherTempWidget);
+			calculateWidthHeight(drawTempMode,true,true);
+
+			MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),tempWidget,screenWidth,screenHeight);
+			RelativeLayout.LayoutParams  layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+			layoutParams.setMargins(addWidgetMarginX,addWidgetMarginY,0,0);
+			moveWidget.setLayoutParams(layoutParams);
+			moveWidget.setAlpha(0.6f);
+			moveWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_right));
+			addView(moveWidget);
+			viewLists.add(moveWidget);
+		}
+	}
+	//计算子控件 工具栏及文字放置的方位
+	private void calculateWidthHeight(int type , boolean canMove , boolean isSelect){
+		switch (type){
+			case 1://点
+				addWidgetMarginX =  startPressX - minTempBt.getWidth()/2;
+				addWidgetMarginY =  startPressY - minTempBt.getHeight()/2;
+				break;
+			case 2:
+			case 3:
+				addWidgetMarginX =  startPressX;
+				addWidgetMarginY =  startPressY;
+				break;
+		}
+	}
+
 	@Override
 	public boolean dispatchTouchEvent (MotionEvent ev) {
 		if (!enabled){
@@ -151,95 +268,66 @@ public class DragTempContainer extends RelativeLayout {
 			return super.dispatchTouchEvent(ev);
 		}
 	}
-
 	@Override
 	public boolean onInterceptTouchEvent (MotionEvent ev) {
 		if (isDebug) Log.e(TAG, "onInterceptTouchEvent: "+ ev.getAction());
+		boolean state = false;
 		switch (ev.getAction()){
 			case MotionEvent.ACTION_DOWN:
-//				addDefineView = new AddTempWidget();
 				if (drawTempMode != -1){
-					startPressX = (int) ev.getX();
-					startPressY = (int) ev.getY();
+					state = false;
+				}else {
+					state = super.onInterceptTouchEvent(ev);
 				}
 				break;
 			case MotionEvent.ACTION_MOVE:
 				if (drawTempMode == 2 || drawTempMode ==3) {
-					endPressX = (int) ev.getX();
-					endPressY = (int) ev.getY();
+					state = true;
+				}else {
+					state = super.onInterceptTouchEvent(ev);
 				}
 				//todo 移动可以移动的控件， 或实时缩放
 				break;
 			case MotionEvent.ACTION_UP:
-				endPressX = (int) ev.getX();
-				endPressY = (int) ev.getY();
-
-				if (drawTempMode == 2 || drawTempMode ==3){
-					AddTempWidget tempWidget = new AddTempWidget();
-
-					OtherTempWidget otherTempWidget = new OtherTempWidget();
-					otherTempWidget.setStartPointX(Math.min(startPressX,endPressX));
-					otherTempWidget.setStartPointY(Math.min(startPressY,endPressY));
-					otherTempWidget.setEndPointX(Math.max(startPressX,endPressX));
-					if (drawTempMode ==2){
-						otherTempWidget.setEndPointY(Math.min(startPressY,endPressY));
-					}else {
-						otherTempWidget.setEndPointY(Math.max(startPressY,endPressY));
-					}
-					otherTempWidget.setMinTempX(otherTempWidget.getStartPointX()+20);
-					otherTempWidget.setMinTempY(otherTempWidget.getStartPointY());
-					otherTempWidget.setMinTemp(50);
-					otherTempWidget.setMaxTempX(otherTempWidget.getEndPointX()-20);
-					otherTempWidget.setMaxTempY(otherTempWidget.getEndPointY());
-					otherTempWidget.setMaxTemp(131);
-
-					tempWidget.setType(drawTempMode);
-					tempWidget.setCanMove(true);
-					tempWidget.setSelect(true);
-					tempWidget.setTempTextSize(16);
-					tempWidget.setTextSuffix("℃");
-					tempWidget.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete, R.mipmap.define_view_tools_other});
-					tempWidget.setOtherTemp(otherTempWidget);
-
-
-					MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),tempWidget,screenWidth,screenHeight);
-					ConstraintLayout.LayoutParams  layoutParams = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-					layoutParams.setMargins(tempWidget.getOtherTemp().getStartPointX(),tempWidget.getOtherTemp().getStartPointY(),0,0);
-					moveWidget.setLayoutParams(layoutParams);
-					moveWidget.setAlpha(0.4f);
-					moveWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
-					addView(moveWidget);
-					viewLists.add(moveWidget);
-				}else if (drawTempMode ==1) {
-					AddTempWidget widget = new AddTempWidget();
-
-					PointTempWidget pointTempWidget = new PointTempWidget();
-					pointTempWidget.setStartPointX(startPressX);
-					pointTempWidget.setStartPointY(startPressY);
-					pointTempWidget.setTemp(100);
-
-					widget.setType(drawTempMode);
-					widget.setCanMove(true);
-					widget.setSelect(true);
-					widget.setTempTextSize(20);
-					widget.setTextSuffix("℃");
-					widget.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete, R.mipmap.define_view_tools_other});
-					widget.setPointTemp(pointTempWidget);
-
-					MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),widget,screenWidth,screenHeight);
-					ConstraintLayout.LayoutParams  layoutParams = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-					layoutParams.setMargins(widget.getPointTemp().getStartPointX(),widget.getPointTemp().getStartPointY(),0,0);
-					moveWidget.setLayoutParams(layoutParams);
-					moveWidget.setAlpha(0.4f);
-					moveWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_right));
-					addView(moveWidget);
-					viewLists.add(moveWidget);
+				if (drawTempMode != -1){
+					state = true;
+				}else {
+					state = super.onInterceptTouchEvent(ev);
 				}
 				break;
 		}
-		return super.onInterceptTouchEvent(ev);
+		return state;
 	}
 
+	@Override
+	public boolean onTouchEvent (MotionEvent event) {
+		boolean touchState = true;
+		switch (event.getAction()){
+			case MotionEvent.ACTION_DOWN:
+				if (drawTempMode != -1){
+					startPressX = (int) event.getX();
+					startPressY = (int) event.getY();
+				}
+				break;
+			case MotionEvent.ACTION_MOVE:
+					endPressX = (int) event.getX();
+					endPressY = (int) event.getY();
+
+				break;
+			case MotionEvent.ACTION_UP:
+				endPressX = (int) event.getX();
+				endPressY = (int) event.getY();
+
+				if (drawTempMode == 2 || drawTempMode ==3){
+					createLineOrRecView();
+				}else if (drawTempMode ==1) {
+					createPointView();
+				}
+				break;
+		}
+
+		return true;
+	}
 
 	private Handler handler = new Handler(new Handler.Callback() {
 		@Override
