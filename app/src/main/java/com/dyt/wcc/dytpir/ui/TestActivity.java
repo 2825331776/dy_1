@@ -48,7 +48,7 @@ public class TestActivity extends BaseActivity<ActivityTestBinding> implements V
 			case R.id.bt_rectangle:
 				drawMode = 3;
 				mDataBinding.myDragContainer.setDrawTempMode(drawMode);
-				moveWidget.setSelectedState(!moveWidget.getView().isSelect());
+//				moveWidget.setSelectedState(!moveWidget.getView().isSelect());
 
 				break;
 			case R.id.bt_reset:

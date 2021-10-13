@@ -191,11 +191,18 @@ public class MyMoveWidget extends View {
 				updateContentCoordinate();//更新所有的坐标
 				break;
 			case 2://线
+				minTempStr = addTempWidget.getOtherTemp().getMinTemp() + addTempWidget.getTextSuffix();
+				maxTempStr = addTempWidget.getOtherTemp().getMaxTemp() + addTempWidget.getTextSuffix();
+
+				doMeasure();
+				updateContentCoordinate();//更新所有的坐标
+				break;
 			case 3://矩形
 				minTempStr = addTempWidget.getOtherTemp().getMinTemp() + addTempWidget.getTextSuffix();
 				maxTempStr = addTempWidget.getOtherTemp().getMaxTemp() + addTempWidget.getTextSuffix();
 
 				doMeasure();
+				updateContentCoordinate();//更新所有的坐标
 				break;
 			default://-1 或其他
 
@@ -291,16 +298,12 @@ public class MyMoveWidget extends View {
 	 * 根据本地内容背景的四个边，及工具栏的宽高 确定工具栏绘制的位置
 	 * 确定规则：以中心横线为基准去计算方位
 	 * 一个Y轴的确定点
-	 * @param endPointX 参照物左边
-	 * @param endPointY 参照物右边
-	 * @param width   参照点X轴
-	 * @param height    参照点Y轴
 	 * @param toolsWidth 工具栏宽度
 	 * @param toolsHeight   工具栏高度
 	 * @param type 额外添加的距离，针对于绘制线 和矩形时 温度图片的边界在边缘
 	 * @return 左上 左对齐 右上 右对齐
 	 */
-	private void getToolsDirection(int endPointX , int endPointY , int width , int height , int toolsWidth , int toolsHeight , int type){
+	private void getToolsDirection(int toolsWidth , int toolsHeight , int type){
 		//tools Direction
 //		if (type ==1 || type ==2){
 			if ((contentBgRight + toolsWidth <moveMaxWidth) && ((contentBgTop) - toolsHeight >= 0)){               //tools right top
@@ -375,118 +378,32 @@ public class MyMoveWidget extends View {
 //		xOffset += (contentBgRight + contentBgLeft)/2;
 //		yOffset += (contentBottom + contentBgTop)/2;
 
-//		if (select){//选中状态
-//			//工具栏方位修改内容坐标
-//			boolean toolsIsMax = toolsNeedHeight >= contentBgBottom;
-//			if (toolsDirection == WIDGET_DIRECTION_STATE_RIGHT_TOP){
-//				contentBgLeft = 0;
-//				contentBgRight = minTempBt.getWidth() + padLeft + padRight;
-//				if (toolsIsMax){
-//					contentBgTop = toolsNeedHeight - padTop - minTempBt.getHeight()/2;
-//					contentBgBottom = toolsNeedHeight + minTempBt.getHeight()/2 + padBottom;
-//				}else {
-//					contentBgTop = 0;
-//					contentBgBottom =  minTempBt.getHeight() + padTop + padBottom;
-//				}
-//			}else if(toolsDirection == WIDGET_DIRECTION_STATE_RIGHT_BOTTOM){
-//				contentBgLeft = 0;
-//				contentBgRight = minTempBt.getWidth() + padLeft + padRight;
-//				contentBgTop = 0;
-//				contentBgBottom =  minTempBt.getHeight() + padTop + padBottom;
-//			}else if (toolsDirection == WIDGET_DIRECTION_STATE_LEFT_TOP){
-//				contentBgLeft = toolsNeedWidth;
-//				contentBgRight = toolsNeedWidth+ minTempBt.getWidth() + padLeft + padRight;
-//				if (toolsIsMax){
-//					contentBgTop = toolsNeedHeight - padTop - minTempBt.getHeight()/2;
-//					contentBgBottom = toolsNeedHeight + minTempBt.getHeight()/2 + padBottom;
-//				}else {
-//					contentBgTop = 0;
-//					contentBgBottom =  minTempBt.getHeight() + padTop + padBottom;
-//				}
-//			}else if (toolsDirection == WIDGET_DIRECTION_STATE_LEFT_BOTTOM){
-//				contentBgLeft = toolsNeedWidth;
-//				contentBgRight = toolsNeedWidth+ minTempBt.getWidth() + padLeft + padRight;
-//				contentBgTop = 0;
-//				contentBgBottom =  minTempBt.getHeight() + padTop + padBottom;
-//			}
-//			//含工具栏 以及 文字
-//			boolean textIsMax = textNeedWidth > toolsNeedWidth;
-//			if (strDirection == WIDGET_DIRECTION_STATE_RIGHT_TOP){
-//
-//			}else if (strDirection == WIDGET_DIRECTION_STATE_RIGHT_BOTTOM){
-//
-//			}else if (strDirection == WIDGET_DIRECTION_STATE_LEFT_TOP){
-//				if (textIsMax){
-//					contentBgLeft = textNeedWidth;
-//					contentBgRight = textNeedWidth+ minTempBt.getWidth() + padLeft + padRight;
-//				}
-//			}else if (strDirection == WIDGET_DIRECTION_STATE_LEFT_BOTTOM){
-//				if (textIsMax){
-//					contentBgLeft = textNeedWidth;
-//					contentBgRight = textNeedWidth+ minTempBt.getWidth() + padLeft + padRight;
-//				}
-//			}
-//			contentLeft = contentBgLeft + padLeft;
-//			contentRight = contentBgRight + padRight;
-//			contentTop = contentBgTop + padTop;
-//			contentBottom = contentBgBottom + padBottom;
-//
-//		}else {//只含文字 修整内容的坐标
-//			if (strDirection == WIDGET_DIRECTION_STATE_RIGHT_TOP){
-//				contentBgLeft = contentLeft = 0;
-//				contentBgTop = contentTop = 0;
-//				contentBgRight = contentRight = minTempBt.getWidth();
-//				contentBgBottom = contentBottom = minTempBt.getHeight();
-//			}else if (strDirection == WIDGET_DIRECTION_STATE_RIGHT_BOTTOM){
-//				contentBgLeft = contentLeft = 0;
-//				contentBgTop = contentTop = 0;
-//				contentBgRight = contentRight = minTempBt.getWidth();
-//				contentBgBottom = contentBottom = minTempBt.getHeight();
-//			}else if (strDirection == WIDGET_DIRECTION_STATE_LEFT_TOP){
-//				contentBgLeft = contentLeft = textNeedWidth;
-//				contentBgTop = contentTop = 0;
-//				contentBgRight = contentRight = textNeedWidth + minTempBt.getWidth();
-//				contentBgBottom = contentBottom = minTempBt.getHeight();
-//			}else if (strDirection == WIDGET_DIRECTION_STATE_LEFT_BOTTOM){
-//				contentBgLeft = contentLeft = 0;
-//				contentBgTop = contentTop = 0;
-//				contentBgRight = contentRight = textNeedWidth + minTempBt.getWidth();
-//				contentBgBottom = contentBottom = minTempBt.getHeight();
-//			}
-//		}
 	}
 
 	//得到所需的总宽高
 	private void doMeasure(){
-		int toolTextMaxW = Math.max(textNeedWidth, toolsNeedWidth);
-		int halfContentToolHeight = Math.max(contentBgBottom, toolsNeedHeight);
-
-
-		int minLeft, minTop , maxBottom, maxRight;
 		//用于计算坐标原点偏移量
-//		boolean toolsIsHeight = toolsNeedHeight > contentBgBottom/2;//是否工具栏高度比内容背景的一半高
-//		boolean textIsWidth = textNeedWidth > toolsNeedWidth;//是否文字比工具栏更宽
+		int minLeft, minTop , maxBottom, maxRight;
 		if (hasBackGroundAndTools){//有工具栏
 			if (addTempWidget.getType()==1){
 				int min,max ;
-				//点模式，计算最左的坐标
+				//点模式，计算最左 及 最顶部 坐标值为整体偏移量
 				min = Math.min(contentBgLeft,toolsBgLeft);
 				min = Math.min(min,strLeft);
 				minLeft = min;
 				min = Math.min(contentBgTop,toolsBgTop);
 				min = Math.min(min,strTop);
 				minTop = min;
-
+				//计算最底部最右侧的值，与最左 最顶部之差 为大小
 				max = Math.max(contentBgRight,toolsBgRight);
 				max = Math.max(max,strRight);
 				maxRight = max;
 				max = Math.max(contentBgBottom,toolsBgBottom);
 				max = Math.max(max,strBottom);
 				maxBottom = max;
-
 				xOffset = minLeft;
 				yOffset = minTop;
-
+				//整体大小
 				hMeasureSpecSize = maxBottom - minTop;
 				wMeasureSpecSize = maxRight - minLeft;
 
@@ -497,8 +414,25 @@ public class MyMoveWidget extends View {
 				}
 
 			}else if (addTempWidget.getType()==2){
-				wMeasureSpecSize = contentRight + Math.max((minTempBt.getWidth()+textNeedWidth),toolsNeedWidth);
-				hMeasureSpecSize = contentBgBottom*2 + toolsNeedHeight;
+				//点 温度坐标 加上温度文字长宽是否超过内容边界
+				int min,max ;
+				//点模式，计算最左的坐标
+				min = Math.min(contentBgLeft,toolsBgLeft);
+				minLeft = min;
+				min = Math.min(contentBgTop,toolsBgTop);
+				minTop = min;
+
+				max = Math.max(contentBgRight,toolsBgRight);
+				maxRight = max;
+				max = Math.max(contentBgBottom,toolsBgBottom);
+				maxBottom = max;
+				//线及矩形的偏移量不是这样算
+				xOffset = minLeft;
+				yOffset = minTop;
+
+				hMeasureSpecSize = maxBottom - minTop;
+				wMeasureSpecSize = maxRight - minLeft;
+
 			}else if (addTempWidget.getType() ==3){
 				wMeasureSpecSize = contentRight + Math.max((minTempBt.getWidth()+textNeedWidth),toolsNeedWidth);
 				hMeasureSpecSize = contentBgBottom/2 + toolsNeedHeight;
@@ -547,10 +481,6 @@ public class MyMoveWidget extends View {
 				contentTop = addTempWidget.getPointTemp().getStartPointY() - bp.getHeight()/2;
 				contentBottom = addTempWidget.getPointTemp().getStartPointY() + bp.getHeight()/2;
 
-				contentBgLeft = contentLeft - padLeft;
-				contentBgRight = contentRight + padRight;
-				contentBgTop = contentTop - padTop;
-				contentBgBottom = contentBottom + padBottom;
 				if (isDebug){
 					Log.e(TAG, "contentLeft " + contentLeft + " contentRight " + contentRight +
 							" contentTop " + contentTop+ " contentBottom " + contentBottom);
@@ -560,21 +490,17 @@ public class MyMoveWidget extends View {
 
 				if (isDebug)
 					Log.e(TAG, "步骤二: 得到内容及其工具栏方位及其坐标 ");
-				//工具栏的放置方位计算
-				getToolsDirection(0,0, 0,0,toolsNeedWidth,toolsNeedHeight,1);
 			}else if (tempWidget.getType() ==2 ||tempWidget.getType() ==3){
 				contentLeft = addTempWidget.getOtherTemp().getStartPointX();
 				contentRight = addTempWidget.getOtherTemp().getEndPointX();
 				contentTop = addTempWidget.getOtherTemp().getStartPointY();
 				contentBottom = addTempWidget.getOtherTemp().getEndPointY();
-
-				contentBgLeft = contentLeft - padLeft;
-				contentBgRight = contentRight + padRight;
-				contentBgTop = contentTop - padTop;
-				contentBgBottom = contentBottom + padBottom;
-				//工具栏的放置方位计算
-				getToolsDirection(0,0, 0,0,toolsNeedWidth,toolsNeedHeight,1);
 			}
+			contentBgLeft = contentLeft - padLeft;
+			contentBgRight = contentRight + padRight;
+			contentBgTop = contentTop - padTop;
+			contentBgBottom = contentBottom + padBottom;
+			getToolsDirection(toolsNeedWidth,toolsNeedHeight,1);
 			//初始化工具栏坐标
 			getToolsCoordinate();
 		}else {//无工具栏及内容背景
@@ -744,11 +670,11 @@ public class MyMoveWidget extends View {
 					addTempWidget.getPointTemp().getTempDirection(),textNeedHeight);
 			canvas.drawText(minTempStr,textX,textY,pointTextPaint);
 		}else if (addTempWidget.getType() == 2){
-			canvas.drawLine(addTempWidget.getOtherTemp().getStartPointX(),addTempWidget.getOtherTemp().getStartPointY()
-					,addTempWidget.getOtherTemp().getEndPointX(),addTempWidget.getOtherTemp().getEndPointY(),linePaint);
+			canvas.drawLine(contentLeft,(contentBottom + contentTop)/2.0f
+					,contentRight,(contentBottom + contentTop)/2.0f,linePaint);
 			//todo 绘制两个点温度 (计算两个点放置的方位)
-			int startX  = addTempWidget.getOtherTemp().getMinTempX(), startY = addTempWidget.getOtherTemp().getMinTempY();
-			int endX = addTempWidget.getOtherTemp().getMaxTempX() , endY = addTempWidget.getOtherTemp().getMaxTempY();
+			int startX  = addTempWidget.getOtherTemp().getMinTempX() - xOffset, startY = addTempWidget.getOtherTemp().getMinTempY() - yOffset;
+			int endX = addTempWidget.getOtherTemp().getMaxTempX() - xOffset, endY = addTempWidget.getOtherTemp().getMaxTempY() - yOffset;
 
 			drawMinMaxTemp(canvas,startX,startY,minTempStr,minTempBt,minTempTextPaint);
 			drawMinMaxTemp(canvas,endX,endY,maxTempStr,maxTempBt,maxTempTextPaint);
@@ -827,12 +753,12 @@ public class MyMoveWidget extends View {
 		switch (event.getAction()){
 			case MotionEvent.ACTION_DOWN:
 				Log.e(TAG, "onTouchEvent:child action down");
-				return true;
+				break;
 			case MotionEvent.ACTION_MOVE:
 				Log.e(TAG, "onTouchEvent:child action move");
-				return true;
+				break;
 		}
-		if (isDebug)Log.e(TAG, "onTouchEvent: child default" );
+//		if (isDebug)Log.e(TAG, "onTouchEvent: child default" );
 		return true;
 	}
 }
