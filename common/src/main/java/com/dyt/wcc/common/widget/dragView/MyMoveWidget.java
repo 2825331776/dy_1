@@ -49,6 +49,7 @@ public class MyMoveWidget extends View {
 
 	private int moveMaxWidth;//能移动的最大宽度和高度（即父控件的长宽）
 	private int moveMaxHeight;
+	private boolean hasBackGroundAndTools = false;
 
 	private RectF pointBgRectF;
 	private int wMeasureSpecSize, hMeasureSpecSize;
@@ -58,10 +59,10 @@ public class MyMoveWidget extends View {
 	public static final int WIDGET_DIRECTION_STATE_RIGHT = 0x001;
 	public static final int WIDGET_DIRECTION_STATE_TOP = 0x010;
 	public static final int WIDGET_DIRECTION_STATE_BOTTOM = 0x011;
-	public static final int WIDGET_DIRECTION_STATE_LEFT_TOP = 0x100;
-	public static final int WIDGET_DIRECTION_STATE_LEFT_BOTTOM = 0x101;
-	public static final int WIDGET_DIRECTION_STATE_RIGHT_TOP = 0x110;
-	public static final int WIDGET_DIRECTION_STATE_RIGHT_BOTTOM = 0x111;
+	public static final int WIDGET_DIRECTION_STATE_LEFT_TOP = 0x100;//256
+	public static final int WIDGET_DIRECTION_STATE_LEFT_BOTTOM = 0x101;//257
+	public static final int WIDGET_DIRECTION_STATE_RIGHT_TOP = 0x110;//272
+	public static final int WIDGET_DIRECTION_STATE_RIGHT_BOTTOM = 0x111;//273
 
 	//内容的矩形、内容背景矩形、 工具图片绘制的矩形、 工具图片的背景 矩形、 文字矩形
 	private RectF rectContent , rectContentBg , rectTool , rectToolsBg , textRectBg;
@@ -73,7 +74,7 @@ public class MyMoveWidget extends View {
 
 	private int textNeedWidth ,textNeedHeight  ,  toolsNeedWidth , toolsNeedHeight;
 
-//	private int toolsLeft,toolsRight, toolsTop, toolsBottom;
+	private int strLeft,strRight, strTop, strBottom;
 	private int toolsBgLeft,toolsBgRight, toolsBgTop, toolsBgBottom;
 
 	private String minTempStr , maxTempStr;//记录最小最高温度
@@ -110,6 +111,7 @@ public class MyMoveWidget extends View {
 			minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorgreen);
 			maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorgreen);
 		}else {
+			addTempWidget.setCanMove(true);
 			minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorblue);
 			maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorred);
 		}
@@ -163,10 +165,11 @@ public class MyMoveWidget extends View {
 		if (!addTempWidget.isCanMove()){//不管什么类型，不能移动绝对不能选中
 			addTempWidget.setSelect(false);
 		}
-		//计算工具栏的所需宽高
+		hasBackGroundAndTools = addTempWidget.isCanMove()&& addTempWidget.isSelect();//初始化是否有工具栏及其背景
+		//√计算工具栏的所需宽高
 		toolsNeedWidth = DragTempContainer.perToolsWidthHeightSet + DragTempContainer.perToolsMargin*2;
 		toolsNeedHeight = addTempWidget.getToolsNumber() * toolsNeedWidth;//包含了 margin
-		//计算内容布局的坐标//不管是否选中 内容的大小为contentBgRight宽，contentBgBottom高
+		//有无工具栏情况下，以左上角为坐标原点的 内容及其背景的坐标。确定工具栏的方位
 		getContentAndBgCoordinate(addTempWidget,minTempBt);
 
 		//得到文字的所需宽高,并计算文字方位
@@ -177,70 +180,46 @@ public class MyMoveWidget extends View {
 				// 通过方位及其 内容坐标或 文字的坐标设置 ，温度文字基准绘制点
 				textNeedWidth = (int) getStrWidth(pointTextPaint,minTempStr);
 				textNeedHeight = (int) getStrHeight(pointTextPaint,minTempStr);
+				//得到文字绘制方位
 				int strDirection = getStrDirection(WIDGET_DIRECTION_STATE_RIGHT_BOTTOM,textNeedWidth,textNeedHeight,2);
+				getStrCoordinate(textNeedWidth,textNeedHeight,strDirection,addTempWidget.getType());
+				//文字方向时 工具方位，计算出内容的坐标值
 				addTempWidget.getPointTemp().setTempDirection(strDirection);//保存当前文字绘制的方位
+				//求完内容 背景内容 工具栏文字方位，及其坐标
+
+				doMeasure();
+				updateContentCoordinate();//更新所有的坐标
 				break;
 			case 2://线
-
 			case 3://矩形
-//				getContentAndBg(addTempWidget.getOtherTemp().getStartPointX(),addTempWidget.getOtherTemp().getStartPointY(),
-//						addTempWidget.getOtherTemp().getEndPointX(),addTempWidget.getOtherTemp().getEndPointY(),null,addTempWidget.getType(),addTempWidget.isCanMove());
-				addTempWidget.setCanMove(true);
-
 				minTempStr = addTempWidget.getOtherTemp().getMinTemp() + addTempWidget.getTextSuffix();
 				maxTempStr = addTempWidget.getOtherTemp().getMaxTemp() + addTempWidget.getTextSuffix();
+
+				doMeasure();
 				break;
 			default://-1 或其他
 
 				break;
 		}
-		//是否计算工具栏
-		if (addTempWidget.isCanMove()&&addTempWidget.isSelect()){
-			//工具栏的放置方位计算
-			getToolsDirection(0,contentBgRight,0,contentBgBottom,toolsNeedWidth,toolsNeedHeight,0);
-		}
-		doMeasure();//算出所需要的宽高，之后要更新内容的坐标系。
-		updateALLCoordinate();//更新内容的坐标系
-
 		rectContentBg = new RectF(contentBgLeft, contentBgTop, contentBgRight, contentBgBottom);
 		rectToolsBg = new RectF(toolsBgLeft,toolsBgTop,toolsBgRight,toolsBgBottom);
 		rectContent = new RectF(contentLeft,contentTop, contentRight,contentBottom);
 		//得到了所有的宽高 则可以计算所需总宽高了
-
 	}
+
 
 	/**
 	 * 计算中心偏移量
 	 */
-	protected float getXOffset(){
-
-		return 0.0f;
+	protected int getXOffset(){
+		return xOffset;
 	}
 	/**
 	 * 计算中心偏移量
 	 */
-	protected float getYOffset(){
-
-		return 0.0f;
+	protected int getYOffset(){
+		return yOffset;
 	}
-
-
-//	/**
-//	 * 计算文字的宽高
-//	 * 通过计算后的宽高，得到该绘制的方位
-//	 * 及其储存所能放置的方位 、 最小 |最大。
-//	 */
-//	private int getTempTextMeasure(@NonNull TextPaint textPaint,@NonNull String tempMsg){
-//		Rect minTempStrRect = new Rect();
-////		int w , h ;
-//		textPaint.getTextBounds(tempMsg,0 , tempMsg.length(),minTempStrRect);
-//		//点温度文字 所需要的长宽
-//		textNeedWidth = (int) Math.max(minTempStrRect.width(),textPaint.measureText(tempMsg));
-//		textNeedHeight = minTempStrRect.height();
-//
-//		return getDirection(WIDGET_DIRECTION_STATE_RIGHT_BOTTOM,textNeedWidth,textNeedHeight,2);
-//	}
-
 	private float getStrWidth(@NonNull TextPaint textPaint,@NonNull String tempMsg){
 		int w;
 		Rect minTempStrRect = new Rect();
@@ -267,174 +246,348 @@ public class MyMoveWidget extends View {
 	 */
 	private int getStrDirection(int defaultValue, int useWidth ,int useHeight, int rate){
 		int direction = defaultValue;//文字默认在右底绘制
-		float halfWidth , halfHeight ;
-		halfWidth = contentRight/2.0f;
-		halfHeight = contentBottom/2.0f;
-		if ((addTempWidget.getPointTemp().getStartPointX() + halfWidth + useWidth <= moveMaxWidth)//direction_right_bottom
-				&& (addTempWidget.getPointTemp().getStartPointY() + halfHeight + rate*useHeight <= moveMaxHeight)){
+		if ((contentBgRight + useWidth <= moveMaxWidth)//direction_right_bottom
+				&& (contentBgBottom + useHeight <= moveMaxHeight)){
 			direction = WIDGET_DIRECTION_STATE_RIGHT_BOTTOM;
-		}else if ((addTempWidget.getPointTemp().getStartPointX() + halfWidth + useWidth <= moveMaxWidth)//direction_right_top
-				&& (addTempWidget.getPointTemp().getStartPointY()- halfHeight - rate*useHeight >= 0)){
+		}else if ((contentBgRight + useWidth <= moveMaxWidth)//direction_right_top
+				&& (contentBgTop - useHeight >= 0)){
 			direction = WIDGET_DIRECTION_STATE_RIGHT_TOP;
-		}else if ((addTempWidget.getPointTemp().getStartPointX() - useWidth >= 0)//direction_left_bottom
-				&& (addTempWidget.getPointTemp().getStartPointY() + halfHeight + rate*useHeight <= moveMaxHeight)){
+		}else if ((contentBgLeft - useWidth >= 0)//direction_left_bottom
+				&& (contentBgBottom + useHeight <= moveMaxHeight)){
 			direction = WIDGET_DIRECTION_STATE_LEFT_BOTTOM;
-		}else if ((addTempWidget.getPointTemp().getStartPointX() - halfWidth -useWidth >= 0)//direction_left_top
-				&& (addTempWidget.getPointTemp().getStartPointY()- halfHeight - rate*useHeight >= 0)){
+		}else if ((contentBgLeft - useWidth >= 0)//direction_left_top
+				&& (contentBgTop - useHeight >= 0)){
 			direction = WIDGET_DIRECTION_STATE_LEFT_TOP;
 		}
 		return direction;
+	}
+	private void getStrCoordinate(int width ,int height ,int direction, int type){
+		if (type==1){
+			if (direction == WIDGET_DIRECTION_STATE_LEFT_TOP){
+				strLeft = contentLeft - width;
+				strRight = contentLeft;
+				strTop = (contentBgTop+ contentBgBottom)/2 - height;
+				strBottom = (contentBgTop+ contentBgBottom)/2;
+			}else if (direction == WIDGET_DIRECTION_STATE_LEFT_BOTTOM){
+				strLeft = contentLeft - width;
+				strRight = contentLeft;
+				strTop = (contentBgTop + contentBgBottom)/2;
+				strBottom = (contentBgTop+ contentBgBottom)/2 + height;
+			}else if (direction ==WIDGET_DIRECTION_STATE_RIGHT_TOP){
+				strLeft = contentRight ;
+				strRight = contentRight+ width;
+				strTop = (contentBgTop+ contentBgBottom)/2 - height;
+				strBottom = (contentBgTop+ contentBgBottom)/2;
+			}else if (direction ==WIDGET_DIRECTION_STATE_RIGHT_BOTTOM){
+				strLeft = contentRight;
+				strRight = contentRight+ width;
+				strTop = (contentBgTop+ contentBgBottom)/2;
+				strBottom = (contentBgTop+ contentBgBottom)/2 + height;
+			}
+		}
 	}
 
 	/**
 	 * 根据本地内容背景的四个边，及工具栏的宽高 确定工具栏绘制的位置
 	 * 确定规则：以中心横线为基准去计算方位
 	 * 一个Y轴的确定点
-	 * @param left 参照物左边
-	 * @param right 参照物右边
-	 * @param top   参照物顶边
-	 * @param bottom    参照物底边
+	 * @param endPointX 参照物左边
+	 * @param endPointY 参照物右边
+	 * @param width   参照点X轴
+	 * @param height    参照点Y轴
 	 * @param toolsWidth 工具栏宽度
 	 * @param toolsHeight   工具栏高度
-	 * @param extraDistance 额外添加的距离，针对于绘制线 和矩形时 温度图片的边界在边缘
+	 * @param type 额外添加的距离，针对于绘制线 和矩形时 温度图片的边界在边缘
 	 * @return 左上 左对齐 右上 右对齐
 	 */
-	private void getToolsDirection(int left , int right , int top , int bottom , int toolsWidth , int toolsHeight , int extraDistance){
+	private void getToolsDirection(int endPointX , int endPointY , int width , int height , int toolsWidth , int toolsHeight , int type){
 		//tools Direction
-		int pLeft ,pRight, pTop , pBottom;
-		pLeft = addTempWidget.getPointTemp().getStartPointX() - right/2;
-		pRight = addTempWidget.getPointTemp().getStartPointX() + right/2;
-		pTop = addTempWidget.getPointTemp().getStartPointY() - bottom/2;
-		pBottom = addTempWidget.getPointTemp().getStartPointY() + bottom/2;
-		//默认从右边顶部
-		if ((pRight + toolsWidth < moveMaxWidth) && ((pTop + pBottom)/2 - toolsHeight >= 0)){//tools_right_top
-			toolsLocationState = WIDGET_DIRECTION_STATE_RIGHT_TOP;
-		}else if ((pRight + toolsWidth < moveMaxWidth) && ((pTop + pBottom)/2 + toolsHeight <= moveMaxHeight)){//tools_right_bottom
-			toolsLocationState = WIDGET_DIRECTION_STATE_RIGHT_BOTTOM;
-		}else if ((pLeft - toolsWidth > 0) && ((pTop + pBottom)/2 - toolsHeight >= 0)){//tools_left_top
-			toolsLocationState = WIDGET_DIRECTION_STATE_LEFT_TOP;
-		}else if ((pLeft - toolsWidth > 0) && ((pTop + pBottom)/2 + toolsHeight <= moveMaxHeight)){//tools_left_bottom
-			toolsLocationState = WIDGET_DIRECTION_STATE_LEFT_BOTTOM;//从底部 向 顶部绘制
-		}
+//		if (type ==1 || type ==2){
+			if ((contentBgRight + toolsWidth <moveMaxWidth) && ((contentBgTop) - toolsHeight >= 0)){               //tools right top
+				toolsLocationState = WIDGET_DIRECTION_STATE_RIGHT_TOP;
+			}else if ((contentBgRight +toolsWidth <moveMaxWidth)&&(contentBgBottom + toolsHeight) <= moveMaxHeight){//tools right bottom
+				toolsLocationState = WIDGET_DIRECTION_STATE_RIGHT_BOTTOM;
+			}else if ((contentBgLeft - toolsWidth > 0)&&(contentBgTop - toolsHeight >= 0)){                   //tools left top
+				toolsLocationState = WIDGET_DIRECTION_STATE_LEFT_TOP;
+			}else if ((contentBgLeft - toolsWidth > 0)&&(contentBgBottom + toolsHeight) <= moveMaxHeight){       //tools left bottom
+				toolsLocationState = WIDGET_DIRECTION_STATE_LEFT_BOTTOM;
+			}
 	}
 	/**
 	 *通过工具栏的方位可以得到控件工具栏的相对（相对于本控件的坐标原点）坐标
 	 */
 	private void getToolsCoordinate(){
 		if (toolsLocationState == WIDGET_DIRECTION_STATE_LEFT_TOP){
-			toolsBgLeft = 0;
-			toolsBgRight = toolsNeedWidth;
-			toolsBgTop = 0;
-			toolsBgBottom = toolsNeedHeight;
+			toolsBgLeft = contentBgLeft - toolsNeedWidth;
+			toolsBgRight = contentBgLeft;
+			toolsBgTop = (contentBgTop + contentBgBottom)/2 - toolsNeedHeight;
+			toolsBgBottom =  (contentBgTop + contentBgBottom)/2;
 		}else if (toolsLocationState == WIDGET_DIRECTION_STATE_LEFT_BOTTOM){
-			toolsBgLeft = 0;
-			toolsBgRight = toolsNeedWidth;
-			toolsBgTop = hMeasureSpecSize - toolsNeedHeight ;
-			toolsBgBottom = hMeasureSpecSize;
+			toolsBgLeft = contentBgLeft - toolsNeedWidth;
+			toolsBgRight = contentBgLeft;
+			toolsBgTop = (contentBgTop + contentBgBottom)/2 ;
+			toolsBgBottom = (contentBgTop + contentBgBottom)/2 + toolsNeedHeight;
 		}else if (toolsLocationState == WIDGET_DIRECTION_STATE_RIGHT_TOP){
-			toolsBgLeft = wMeasureSpecSize - toolsNeedWidth;
-			toolsBgRight = wMeasureSpecSize;
-			toolsBgTop = 0;
-			toolsBgBottom = toolsNeedHeight;
+			toolsBgLeft = contentBgRight ;
+			toolsBgRight = contentBgRight + toolsNeedWidth;
+			toolsBgTop = (contentBgTop + contentBgBottom)/2 - toolsNeedHeight;
+			toolsBgBottom =  (contentBgTop + contentBgBottom)/2;
 		}else if (toolsLocationState == WIDGET_DIRECTION_STATE_RIGHT_BOTTOM){
-			toolsBgLeft = wMeasureSpecSize - toolsNeedWidth;
-			toolsBgRight = wMeasureSpecSize;
-			toolsBgTop = hMeasureSpecSize - toolsNeedHeight ;
-			toolsBgBottom = hMeasureSpecSize;
+			toolsBgLeft = contentBgRight ;
+			toolsBgRight = contentBgRight + toolsNeedWidth;
+			toolsBgTop = (contentBgTop + contentBgBottom)/2 ;
+			toolsBgBottom = (contentBgTop + contentBgBottom)/2 + toolsNeedHeight;
+		}
+		if (isDebug){
+			Log.e(TAG, " toolsBgLeft " + toolsBgLeft + " toolsBgRight " + toolsBgRight +
+					" toolsBgTop " + toolsBgTop+ " toolsBgBottom " + toolsBgBottom);
 		}
 	}
 	//更新内容中心的偏移量
 	private void updateContentCoordinate(){
-		int hintMaxWidth = Math.max(toolsNeedWidth,textNeedWidth);
-		int direction = addTempWidget.getPointTemp().getTempDirection();
-		if (direction == WIDGET_DIRECTION_STATE_RIGHT_BOTTOM){
-//			xOffset = hintMaxWidth + minTempBt.getWidth()/2;
-//			yOffset =
-		}
+		Log.e(TAG, "步骤四updateContentCoordinate: 更新内容 工具 背景的坐标系 ");
+		contentLeft -= xOffset;
+		contentRight -= xOffset;
+		contentTop -= yOffset;
+		contentBottom -= yOffset;
+
+		contentBgLeft -= xOffset;
+		contentBgRight -= xOffset;
+		contentBgTop -= yOffset;
+		contentBgBottom -= yOffset;
+
+		toolsBgLeft -= xOffset;
+		toolsBgRight -= xOffset;
+		toolsBgTop -= yOffset;
+		toolsBgBottom -= yOffset;
+
+		strLeft -= xOffset;
+		strRight -= xOffset;
+		strTop -= yOffset;
+		strBottom -= yOffset;
 
 
-	}
-	//拿到了精确的大小 ，更新所有的坐标系
-	private void updateALLCoordinate(){
-		//最后修整所有的坐标
-		getToolsCoordinate();//得到工具栏起始坐标
-		updateContentCoordinate();
-//		if (toolsLocationState >>4 == addTempWidget.getPointTemp().getTempDirection()>>4){
-//			if (toolsLocationState == 0x100 || toolsLocationState ==0x110){//内容可能会被挤下去
-//				contentLeft += toolsNeedWidth;
-//				contentRight += toolsNeedWidth;
+		Log.e(TAG, "updateContentCoordinate:xOffset==> " + xOffset + " yOffset==== >   "+ yOffset);
+		Log.e(TAG, "contentLeft " + contentLeft + " contentRight " + contentRight + " contentTop " + contentTop + " contentBottom " +contentBottom);
+		Log.e(TAG, "contentBgLeft " + contentBgLeft + " contentBgRight " + contentBgRight + " contentBgTop " + contentBgTop + " contentBgBottom " +contentBgBottom);
+		Log.e(TAG, "toolsBgLeft " + toolsBgLeft + " toolsBgRight " + toolsBgRight + " toolsBgTop " + toolsBgTop + " toolsBgBottom " +toolsBgBottom);
+
+//		xOffset += (contentBgRight + contentBgLeft)/2;
+//		yOffset += (contentBottom + contentBgTop)/2;
+
+//		if (select){//选中状态
+//			//工具栏方位修改内容坐标
+//			boolean toolsIsMax = toolsNeedHeight >= contentBgBottom;
+//			if (toolsDirection == WIDGET_DIRECTION_STATE_RIGHT_TOP){
+//				contentBgLeft = 0;
+//				contentBgRight = minTempBt.getWidth() + padLeft + padRight;
+//				if (toolsIsMax){
+//					contentBgTop = toolsNeedHeight - padTop - minTempBt.getHeight()/2;
+//					contentBgBottom = toolsNeedHeight + minTempBt.getHeight()/2 + padBottom;
+//				}else {
+//					contentBgTop = 0;
+//					contentBgBottom =  minTempBt.getHeight() + padTop + padBottom;
+//				}
+//			}else if(toolsDirection == WIDGET_DIRECTION_STATE_RIGHT_BOTTOM){
+//				contentBgLeft = 0;
+//				contentBgRight = minTempBt.getWidth() + padLeft + padRight;
+//				contentBgTop = 0;
+//				contentBgBottom =  minTempBt.getHeight() + padTop + padBottom;
+//			}else if (toolsDirection == WIDGET_DIRECTION_STATE_LEFT_TOP){
+//				contentBgLeft = toolsNeedWidth;
+//				contentBgRight = toolsNeedWidth+ minTempBt.getWidth() + padLeft + padRight;
+//				if (toolsIsMax){
+//					contentBgTop = toolsNeedHeight - padTop - minTempBt.getHeight()/2;
+//					contentBgBottom = toolsNeedHeight + minTempBt.getHeight()/2 + padBottom;
+//				}else {
+//					contentBgTop = 0;
+//					contentBgBottom =  minTempBt.getHeight() + padTop + padBottom;
+//				}
+//			}else if (toolsDirection == WIDGET_DIRECTION_STATE_LEFT_BOTTOM){
+//				contentBgLeft = toolsNeedWidth;
+//				contentBgRight = toolsNeedWidth+ minTempBt.getWidth() + padLeft + padRight;
+//				contentBgTop = 0;
+//				contentBgBottom =  minTempBt.getHeight() + padTop + padBottom;
+//			}
+//			//含工具栏 以及 文字
+//			boolean textIsMax = textNeedWidth > toolsNeedWidth;
+//			if (strDirection == WIDGET_DIRECTION_STATE_RIGHT_TOP){
+//
+//			}else if (strDirection == WIDGET_DIRECTION_STATE_RIGHT_BOTTOM){
+//
+//			}else if (strDirection == WIDGET_DIRECTION_STATE_LEFT_TOP){
+//				if (textIsMax){
+//					contentBgLeft = textNeedWidth;
+//					contentBgRight = textNeedWidth+ minTempBt.getWidth() + padLeft + padRight;
+//				}
+//			}else if (strDirection == WIDGET_DIRECTION_STATE_LEFT_BOTTOM){
+//				if (textIsMax){
+//					contentBgLeft = textNeedWidth;
+//					contentBgRight = textNeedWidth+ minTempBt.getWidth() + padLeft + padRight;
+//				}
+//			}
+//			contentLeft = contentBgLeft + padLeft;
+//			contentRight = contentBgRight + padRight;
+//			contentTop = contentBgTop + padTop;
+//			contentBottom = contentBgBottom + padBottom;
+//
+//		}else {//只含文字 修整内容的坐标
+//			if (strDirection == WIDGET_DIRECTION_STATE_RIGHT_TOP){
+//				contentBgLeft = contentLeft = 0;
+//				contentBgTop = contentTop = 0;
+//				contentBgRight = contentRight = minTempBt.getWidth();
+//				contentBgBottom = contentBottom = minTempBt.getHeight();
+//			}else if (strDirection == WIDGET_DIRECTION_STATE_RIGHT_BOTTOM){
+//				contentBgLeft = contentLeft = 0;
+//				contentBgTop = contentTop = 0;
+//				contentBgRight = contentRight = minTempBt.getWidth();
+//				contentBgBottom = contentBottom = minTempBt.getHeight();
+//			}else if (strDirection == WIDGET_DIRECTION_STATE_LEFT_TOP){
+//				contentBgLeft = contentLeft = textNeedWidth;
+//				contentBgTop = contentTop = 0;
+//				contentBgRight = contentRight = textNeedWidth + minTempBt.getWidth();
+//				contentBgBottom = contentBottom = minTempBt.getHeight();
+//			}else if (strDirection == WIDGET_DIRECTION_STATE_LEFT_BOTTOM){
+//				contentBgLeft = contentLeft = 0;
+//				contentBgTop = contentTop = 0;
+//				contentBgRight = contentRight = textNeedWidth + minTempBt.getWidth();
+//				contentBgBottom = contentBottom = minTempBt.getHeight();
 //			}
 //		}
 	}
 
-	//得到测量的具体值
+	//得到所需的总宽高
 	private void doMeasure(){
 		int toolTextMaxW = Math.max(textNeedWidth, toolsNeedWidth);
-		int halfContentToolHeight = Math.max(contentBgBottom/2, toolsNeedHeight);
-		if (addTempWidget.isCanMove()&&addTempWidget.isSelect()){//另加工具栏
+		int halfContentToolHeight = Math.max(contentBgBottom, toolsNeedHeight);
+
+
+		int minLeft, minTop , maxBottom, maxRight;
+		//用于计算坐标原点偏移量
+//		boolean toolsIsHeight = toolsNeedHeight > contentBgBottom/2;//是否工具栏高度比内容背景的一半高
+//		boolean textIsWidth = textNeedWidth > toolsNeedWidth;//是否文字比工具栏更宽
+		if (hasBackGroundAndTools){//有工具栏
 			if (addTempWidget.getType()==1){
-				if ((toolsLocationState >>4) == (addTempWidget.getPointTemp().getTempDirection()>>4)) {//左右同边
-					Log.e(TAG, "doMeasure:同边 ");
-					wMeasureSpecSize = (contentBgRight) + toolTextMaxW;
-//					if (toolsLocationState>>4 == 0x10) {//左边
-//						contentBgLeft = toolTextMaxW;
-//						contentBgRight = wMeasureSpecSize;
-//					}
-				}else {//左右不同边
-					wMeasureSpecSize = contentBgRight + textNeedWidth + toolsNeedWidth;
+				int min,max ;
+				//点模式，计算最左的坐标
+				min = Math.min(contentBgLeft,toolsBgLeft);
+				min = Math.min(min,strLeft);
+				minLeft = min;
+				min = Math.min(contentBgTop,toolsBgTop);
+				min = Math.min(min,strTop);
+				minTop = min;
+
+				max = Math.max(contentBgRight,toolsBgRight);
+				max = Math.max(max,strRight);
+				maxRight = max;
+				max = Math.max(contentBgBottom,toolsBgBottom);
+				max = Math.max(max,strBottom);
+				maxBottom = max;
+
+				xOffset = minLeft;
+				yOffset = minTop;
+
+				hMeasureSpecSize = maxBottom - minTop;
+				wMeasureSpecSize = maxRight - minLeft;
+
+				Log.e(TAG, "doMeasure: minLeft " +minLeft+ " maxRight " + maxRight+ " minTop " +minTop +" maxBottom " +maxBottom );
+				Log.e(TAG, "步骤三: 计算 要绘制的最左边 最右边  最顶部 最底部 ");
+				if (isDebug){
+					Log.e(TAG, " doMeasure: w " + wMeasureSpecSize + " hMeasureSpecSize" + hMeasureSpecSize );
 				}
-				hMeasureSpecSize = contentBgBottom/2 + halfContentToolHeight;
+
+			}else if (addTempWidget.getType()==2){
+				wMeasureSpecSize = contentRight + Math.max((minTempBt.getWidth()+textNeedWidth),toolsNeedWidth);
+				hMeasureSpecSize = contentBgBottom*2 + toolsNeedHeight;
+			}else if (addTempWidget.getType() ==3){
+				wMeasureSpecSize = contentRight + Math.max((minTempBt.getWidth()+textNeedWidth),toolsNeedWidth);
+				hMeasureSpecSize = contentBgBottom/2 + toolsNeedHeight;
 			}
-//			wMeasureSpecSize = (contentRight) + Math.max(textNeedWidth,toolsNeedWidth);
-//			hMeasureSpecSize = Math.max(contentBottom ,toolsNeedWidth);
 		}else {//没有工具栏
 			if (addTempWidget.getType()==1){
-				wMeasureSpecSize = (contentBgRight)+textNeedWidth;
+				int min,max ;
+				//点模式，计算最左的坐标
+				min = Math.min(contentBgLeft,strLeft);
+				minLeft = min;
+				min = Math.min(contentBgTop,strTop);
+				minTop = min;
+
+				max = Math.max(contentBgRight,strRight);
+				maxRight = max;
+				max = Math.max(contentBgBottom,strBottom);
+				maxBottom = max;
+
+				xOffset = minLeft;
+				yOffset = minTop;
+
+				hMeasureSpecSize = maxBottom - minTop;
+				wMeasureSpecSize = maxRight - minLeft;
+			}else if (addTempWidget.getType()==2){
+				wMeasureSpecSize = (contentBgRight)+(minTempBt.getWidth()+textNeedWidth);
+				hMeasureSpecSize = contentBgBottom;
+			}else if (addTempWidget.getType() ==3){
+				wMeasureSpecSize = (contentBgRight)+(minTempBt.getWidth()+textNeedWidth);
 				hMeasureSpecSize = contentBgBottom;
 			}
-//			wMeasureSpecSize = contentBgRight + Math.max(textNeedWidth,toolsNeedWidth);
-//			hMeasureSpecSize = Math.max(contentBgBottom ,toolsNeedHeight);
 		}
 	}
 	/**
 	 * 通过传入的起始点坐标得到内容的 坐标 及内容背景坐标
 	 * @param tempWidget 控件的实例化对象
 	 * @param bp       点模式的照片
+	 * 以图片的左上角为坐标原点计算
 	 */
 	private void getContentAndBgCoordinate(@NonNull AddTempWidget tempWidget ,Bitmap bp){
-		if (tempWidget.isCanMove()&&tempWidget.isSelect()){
+		if (hasBackGroundAndTools){//有工具栏及内容背景
 			if (tempWidget.getType() ==1){
-				contentLeft = padLeft;
-				contentRight = bp.getWidth() + padLeft;
-				contentTop = padTop;
-				contentBottom = bp.getHeight() + padTop;
+				if (isDebug)
+					Log.e(TAG, "步骤一: 得到内容及其背景坐标 ");
+				contentLeft = addTempWidget.getPointTemp().getStartPointX() - bp.getWidth()/2;
+				contentRight = addTempWidget.getPointTemp().getStartPointX() + bp.getWidth()/2;
+				contentTop = addTempWidget.getPointTemp().getStartPointY() - bp.getHeight()/2;
+				contentBottom = addTempWidget.getPointTemp().getStartPointY() + bp.getHeight()/2;
 
-				contentBgLeft = 0;
-				contentBgRight = contentRight + padRight  ;
-				contentBgTop = 0;
+				contentBgLeft = contentLeft - padLeft;
+				contentBgRight = contentRight + padRight;
+				contentBgTop = contentTop - padTop;
 				contentBgBottom = contentBottom + padBottom;
+				if (isDebug){
+					Log.e(TAG, "contentLeft " + contentLeft + " contentRight " + contentRight +
+							" contentTop " + contentTop+ " contentBottom " + contentBottom);
+					Log.e(TAG, "contentBgLeft " + contentBgLeft + " contentBgRight " + contentBgRight + " contentBgTop " + contentBgTop
+							+ " contentBgBottom " + contentBgBottom);
+				}
+
+				if (isDebug)
+					Log.e(TAG, "步骤二: 得到内容及其工具栏方位及其坐标 ");
+				//工具栏的放置方位计算
+				getToolsDirection(0,0, 0,0,toolsNeedWidth,toolsNeedHeight,1);
 			}else if (tempWidget.getType() ==2 ||tempWidget.getType() ==3){
-				contentLeft = padLeft;
-				contentRight = padLeft+(tempWidget.getOtherTemp().getEndPointX() - tempWidget.getOtherTemp().getStartPointX()) ;
-				contentTop = padTop;
-				contentBottom = padTop + (tempWidget.getOtherTemp().getEndPointY() - tempWidget.getOtherTemp().getStartPointY());
+				contentLeft = addTempWidget.getOtherTemp().getStartPointX();
+				contentRight = addTempWidget.getOtherTemp().getEndPointX();
+				contentTop = addTempWidget.getOtherTemp().getStartPointY();
+				contentBottom = addTempWidget.getOtherTemp().getEndPointY();
 
-				contentBgLeft = 0;
-				contentBgRight = contentRight + padRight ;
-				contentBgTop = 0;
+				contentBgLeft = contentLeft - padLeft;
+				contentBgRight = contentRight + padRight;
+				contentBgTop = contentTop - padTop;
 				contentBgBottom = contentBottom + padBottom;
+				//工具栏的放置方位计算
+				getToolsDirection(0,0, 0,0,toolsNeedWidth,toolsNeedHeight,1);
 			}
-		}else {
+			//初始化工具栏坐标
+			getToolsCoordinate();
+		}else {//无工具栏及内容背景
 			if (tempWidget.getType() ==1) {
-				contentLeft = contentBgLeft = 0;
-				contentRight = contentBgRight = bp.getWidth();
-				contentTop = contentBgTop = 0;
-				contentBottom = contentBgBottom = bp.getHeight();
+				contentLeft = contentBgLeft = addTempWidget.getPointTemp().getStartPointX() - bp.getWidth()/2;
+				contentRight = contentBgRight = addTempWidget.getPointTemp().getStartPointX() + bp.getWidth()/2;
+				contentTop = contentBgTop = addTempWidget.getPointTemp().getStartPointY() - bp.getHeight()/2;
+				contentBottom = contentBgBottom = addTempWidget.getPointTemp().getStartPointY() + bp.getHeight()/2;
 			} else if (tempWidget.getType() ==2 ||tempWidget.getType() ==3) {
-				contentLeft = contentBgLeft = 0;
-				contentRight = contentBgRight = (tempWidget.getOtherTemp().getEndPointX() - tempWidget.getOtherTemp().getStartPointX());
-				contentTop = contentBgTop = 0;
-				contentBottom = contentBgBottom = (tempWidget.getOtherTemp().getEndPointY() - tempWidget.getOtherTemp().getStartPointY());
+				contentLeft = contentBgLeft = addTempWidget.getOtherTemp().getStartPointX();
+				contentRight = contentBgRight = addTempWidget.getOtherTemp().getEndPointX();
+				contentTop = contentBgTop = addTempWidget.getOtherTemp().getStartPointY();
+				contentBottom = contentBgBottom = addTempWidget.getOtherTemp().getEndPointY();
 			}
 		}
 	}
@@ -447,6 +600,7 @@ public class MyMoveWidget extends View {
 	 */
 	private int getPointTempTextCoordinateX(int pointX, Bitmap pointBp , int pointDirection, int needWidth){
 		//计算温度文字的矩形坐标  从图片边界计算
+		Log.e(TAG, "getPointTempTextCoordinateX: pointDirection == >  " + pointDirection);
 		int calculateX = 0;
 		if (pointDirection == WIDGET_DIRECTION_STATE_LEFT_TOP){
 			//(pointX - pointBp.getWidth()/2) == contentLeft
@@ -454,9 +608,9 @@ public class MyMoveWidget extends View {
 		}else if (pointDirection == WIDGET_DIRECTION_STATE_LEFT_BOTTOM){
 			calculateX = pointX - needWidth ;
 		}else if (pointDirection == WIDGET_DIRECTION_STATE_RIGHT_TOP){
-			calculateX = pointX+ pointBp.getWidth();
+			calculateX = pointX + pointBp.getWidth();
 		}else if (pointDirection == WIDGET_DIRECTION_STATE_RIGHT_BOTTOM){
-			calculateX = pointX+ pointBp.getWidth();
+			calculateX = pointX + pointBp.getWidth();
 		}
 		return calculateX;
 	}
@@ -472,13 +626,13 @@ public class MyMoveWidget extends View {
 		//计算温度文字的矩形坐标  从图片边界计算
 		int calculateY = 0;
 		if (pointDirection == WIDGET_DIRECTION_STATE_LEFT_TOP){
-			calculateY = pointY;
+			calculateY = pointY -needHeight;
 		}else if (pointDirection == WIDGET_DIRECTION_STATE_LEFT_BOTTOM){
-			calculateY = pointBp.getHeight()  - needHeight;
+			calculateY = pointY + needHeight;
 		}else if (pointDirection == WIDGET_DIRECTION_STATE_RIGHT_TOP){
-			calculateY = pointY ;
+			calculateY = pointY-needHeight;
 		}else if (pointDirection == WIDGET_DIRECTION_STATE_RIGHT_BOTTOM){
-			calculateY = pointBp.getHeight()  - needHeight;
+			calculateY = pointY + needHeight;
 		}
 		return calculateY;
 	}
@@ -505,7 +659,6 @@ public class MyMoveWidget extends View {
 	 *             以工具栏背景的坐标为基准
 	 */
 	private void drawTool(@NonNull AddTempWidget view,@NonNull Canvas canvas){
-//		if (view.getType()==1){//点
 			canvas.drawRoundRect(rectToolsBg,5,5,bgRoundPaint);
 			int [] resPic = view.getToolsPicRes();
 			RectF perToolsPic ;
@@ -522,9 +675,6 @@ public class MyMoveWidget extends View {
 					canvas.drawBitmap(BitmapFactory.decodeResource(getResources(),resPic[i]),null,perToolsPic,pointPaint);
 				}
 			}
-
-//		}else {//线及其矩阵
-//		}
 	}
 
 	@Override
@@ -532,9 +682,8 @@ public class MyMoveWidget extends View {
 		super.onDraw(canvas);
 		Log.e(TAG, "onDraw: ");
 		//是否绘制背景
-		if (addTempWidget.isCanMove() && addTempWidget.isSelect()){//可选 | 不可选
-			//绘制工具栏 背景及其颜色
-			if(addTempWidget.getType()==3){// 已选
+		if (hasBackGroundAndTools){//可选 | 不可选
+			if(addTempWidget.getType()==3){
 				canvas.drawRoundRect(rectContent,0,0,bgRoundPaint);
 				float length = mMinHeight/5.0f;
 				int zoomBoxLeft,zoomBoxRight , zoomBoxTop , zoomBoxBottom , centerBeginX,leftRightBeginY;
@@ -583,16 +732,15 @@ public class MyMoveWidget extends View {
 		if (addTempWidget.getType() ==1){
 			//绘制标识圆
 			if (isDebug)Log.e(TAG, "onDraw: 11111111");
-			canvas.drawCircle(minTempBt.getWidth()/2.0f,minTempBt.getHeight()/2.0f,2,maxTempTextPaint);
+			canvas.drawCircle((contentBgLeft+contentBgRight)/2.0f,(contentBgTop+contentBgBottom)/2.0f,5,maxTempTextPaint);
 
-			canvas.drawBitmap(minTempBt,
-					contentLeft,
-					contentTop,pointTextPaint);
+			canvas.drawBitmap(minTempBt, null,rectContent,pointTextPaint);
 			//绘制点测温文字
+			Log.e(TAG, "onDraw: " + contentTop + "  b  ===> " +  contentBottom + " h " + textNeedHeight);
 
 			int textX= getPointTempTextCoordinateX(contentLeft,minTempBt,
 					addTempWidget.getPointTemp().getTempDirection(),textNeedWidth);
-			int textY = getPointTempTextCoordinateY(contentTop,minTempBt,
+			int textY = getPointTempTextCoordinateY((contentTop + contentBottom)/2,minTempBt,
 					addTempWidget.getPointTemp().getTempDirection(),textNeedHeight);
 			canvas.drawText(minTempStr,textX,textY,pointTextPaint);
 		}else if (addTempWidget.getType() == 2){
@@ -659,9 +807,8 @@ public class MyMoveWidget extends View {
 
 	@Override
 	protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
-		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-		Log.e(TAG, "onMeasure: " +MeasureSpec.getSize(widthMeasureSpec)+ "   height  "+MeasureSpec.getSize(heightMeasureSpec) );
+//		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+//		Log.e(TAG, "onMeasure: " +MeasureSpec.getSize(widthMeasureSpec)+ "   height  "+MeasureSpec.getSize(heightMeasureSpec) );
 //		setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec),MeasureSpec.getSize(heightMeasureSpec));
 		setMeasuredDimension(wMeasureSpecSize,hMeasureSpecSize);
 //		invalidate();
@@ -677,13 +824,15 @@ public class MyMoveWidget extends View {
 
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
-//		if (addTempWidget.getType() == 3){
-//
-//		}else {
-//			if (isDebug)Log.e(TAG, "onTouchEvent: getDrawType != 3 不为矩形" );
-//		}
-		if (isDebug)Log.e(TAG, "onTouchEvent: getDrawType != 3 不为矩形====================" );
-
+		switch (event.getAction()){
+			case MotionEvent.ACTION_DOWN:
+				Log.e(TAG, "onTouchEvent:child action down");
+				return true;
+			case MotionEvent.ACTION_MOVE:
+				Log.e(TAG, "onTouchEvent:child action move");
+				return true;
+		}
+		if (isDebug)Log.e(TAG, "onTouchEvent: child default" );
 		return true;
 	}
 }

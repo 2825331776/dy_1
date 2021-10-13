@@ -33,7 +33,7 @@ import java.util.List;
 public class DragTempContainer extends RelativeLayout {
 	public static int padTop = 14;
 	//点击工具栏之后的控制 响应的事件。删除的事件。
-	public static int perToolsWidthHeightSet = 3 * padTop;//每个工具栏的宽高
+	public static int perToolsWidthHeightSet = 6 * padTop;//每个工具栏的宽高
 	public static int perToolsMargin = 5;//每个工具栏的margin
 	//工具栏
 
@@ -191,7 +191,7 @@ public class DragTempContainer extends RelativeLayout {
 
 		MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),widget,screenWidth,screenHeight);
 		ConstraintLayout.LayoutParams  layoutParams = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-		layoutParams.setMargins(addWidgetMarginX,addWidgetMarginY,0,0);
+		layoutParams.setMargins(moveWidget.getXOffset(),moveWidget.getYOffset(),0,0);
 
 		moveWidget.setLayoutParams(layoutParams);
 		moveWidget.setAlpha(0.6f);
