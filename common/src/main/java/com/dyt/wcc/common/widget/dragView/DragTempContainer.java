@@ -35,8 +35,8 @@ public class DragTempContainer extends RelativeLayout {
 	//点击工具栏之后的控制 响应的事件。删除的事件。
 	public static int perToolsWidthHeightSet = 3 * padTop;//每个工具栏的宽高
 	public static int perToolsMargin = 5;//每个工具栏的margin
-	//工具栏
 
+	private static final int UPDATE_TEMP_DATA = 1;
 
 	private static final boolean isDebug = true;
 	private static final String TAG = "MyDragContainer";
@@ -45,12 +45,11 @@ public class DragTempContainer extends RelativeLayout {
 	private List<MyMoveWidget> viewLists;
 	private Bitmap pointBt, maxTempBt, minTempBt;//三张图片 ：单点温度、线和矩阵的 最高、最低温的图片
 
+	private float WRatio, HRatio;//相机数据大小  与 显示屏幕大小的比值。
 
 
 	private int           drawTempMode = -1;
 	private WeakReference<Context> mContext;
-
-//	private AddTempWidget addDefineView ;
 
 	private float [] tempSource;
 
@@ -71,9 +70,12 @@ public class DragTempContainer extends RelativeLayout {
 		pointBt = point;maxTempBt = max;minTempBt = min;
 		invalidate();
 	}
-	//绘制控件拿到温度数据
+	//实时刷新本地的温度数据
 	public void upDateTemp (float[] date){
-		tempSource = date;
+		Message message = Message.obtain();
+		message.what = UPDATE_TEMP_DATA;
+		message.obj = date;
+		handler.sendMessage(message);
 	}
 
 	public DragTempContainer (Context context) {
@@ -98,6 +100,7 @@ public class DragTempContainer extends RelativeLayout {
 		viewLists = new ArrayList<>();
 		tempSource = new float[256*196+10];
 		minAddWidgetWidth = minAddWidgetHeight = 100;
+
 
 		pointBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorgreen);
 		minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorblue);
@@ -132,8 +135,28 @@ public class DragTempContainer extends RelativeLayout {
 	protected void onDraw (Canvas canvas) {
 		super.onDraw(canvas);
 
+
+	}
+
+	@Override
+	protected void onLayout (boolean changed, int l, int t, int r, int b) {
+		super.onLayout(changed, l, t, r, b);
 		screenWidth = getWidth();
 		screenHeight = getHeight();
+
+		WRatio = 256 / (float)screenWidth;
+		HRatio = 192 / (float) screenHeight;
+
+		MyMoveWidget child ;
+		for (int index = 0; index < getChildCount(); index++){
+			child = (MyMoveWidget) getChildAt(index);
+			child.layout(child.getXOffset(),child.getYOffset(),child.getXOffset()+child.getWMeasureSpecSize(),child.getYOffset()+child.getHMeasureSpecSize());
+		}
+	}
+
+	@Override
+	protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
 	}
 
@@ -142,6 +165,17 @@ public class DragTempContainer extends RelativeLayout {
 	}
 	public void setDrawTempMode (int drawTempMode) {
 		this.drawTempMode = drawTempMode;
+	}
+//	public void setHWRation(float wRatio , float hRatio){
+//		this.WRatio = wRatio;
+//		this.HRatio = hRatio;
+//	}
+
+	private float getXByWRatio(float x){
+		return x/WRatio;
+	}
+	private float getYByHRatio(float y){
+		return y/HRatio;
 	}
 
 	//根据每帧数据源去更新数据，刷新子View
@@ -170,8 +204,60 @@ public class DragTempContainer extends RelativeLayout {
 		}
 		return true;
 	}
+	public void openHighLowTemp(){
+		TempWidgetObj highTemp = new TempWidgetObj();
+
+		PointTempWidget high= new PointTempWidget();
+		high.setStartPointX((int) getXByWRatio(tempSource[1]));
+		high.setStartPointY((int) getYByHRatio(tempSource[2]));
+		high.setTemp(tempSource[3]);
+		Log.e(TAG, "x: "+ getXByWRatio(tempSource[1]) + "   y === > " + getYByHRatio(tempSource[2]));
+
+		highTemp.setCanMove(false);
+		highTemp.setTempTextSize(20);
+		highTemp.setType(1);
+		highTemp.setId(1);
+		highTemp.setTextSuffix("℃");
+		highTemp.setPointTemp(high);
+
+		TempWidgetObj lowTemp = new TempWidgetObj();
+
+		PointTempWidget low= new PointTempWidget();
+		low.setStartPointX((int) getXByWRatio(tempSource[4]));
+		low.setStartPointY((int) getYByHRatio(tempSource[5]));
+		low.setTemp(tempSource[6]);
+
+		lowTemp.setCanMove(false);
+		lowTemp.setTempTextSize(20);
+		lowTemp.setType(1);
+		lowTemp.setId(2);
+		lowTemp.setTextSuffix("℃");
+		lowTemp.setPointTemp(low);
+
+
+		MyMoveWidget highWidget = new MyMoveWidget(mContext.get(),highTemp,screenWidth,screenHeight);
+//		highWidget.setAlpha(0.6f);
+//		highWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
+		MyMoveWidget lowWidget = new MyMoveWidget(mContext.get(),lowTemp,screenWidth,screenHeight);
+//		lowWidget.setAlpha(0.6f);
+//		lowWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
+
+		addView(highWidget);
+//		addView(lowWidget);
+
+		viewLists.add(highWidget);
+//		viewLists.add(lowWidget);
+	}
+	public void closeHighLowTemp(){
+		removeView(viewLists.get(0));
+//		removeView(viewLists.get(1));
+
+		viewLists.remove(0);
+//		viewLists.remove(1);
+	}
+
 	private void createPointView(){
-		AddTempWidget widget = new AddTempWidget();
+		TempWidgetObj widget = new TempWidgetObj();
 
 		PointTempWidget pointTempWidget = new PointTempWidget();
 		pointTempWidget.setStartPointX(startPressX);
@@ -181,7 +267,7 @@ public class DragTempContainer extends RelativeLayout {
 		widget.setId(pointNum);
 		widget.setType(drawTempMode);
 		widget.setCanMove(true);
-		widget.setSelect(true);
+		widget.setSelect(false);
 		widget.setTempTextSize(20);
 		widget.setTextSuffix("℃");
 		widget.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete, R.mipmap.define_view_tools_other});
@@ -195,14 +281,14 @@ public class DragTempContainer extends RelativeLayout {
 
 		moveWidget.setLayoutParams(layoutParams);
 		moveWidget.setAlpha(0.6f);
-		moveWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_right));
+		moveWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
 		addView(moveWidget);
 		pointNum++;
 		viewLists.add(moveWidget);
 	}
 	private void createLineOrRecView(){
 		if (reviseCoordinate(drawTempMode)){
-			AddTempWidget tempWidget = new AddTempWidget();
+			TempWidgetObj tempWidget = new TempWidgetObj();
 			//校正起始点坐标
 			OtherTempWidget otherTempWidget = new OtherTempWidget();
 
@@ -220,7 +306,7 @@ public class DragTempContainer extends RelativeLayout {
 
 			tempWidget.setType(drawTempMode);
 			tempWidget.setCanMove(true);
-			tempWidget.setSelect(true);
+			tempWidget.setSelect(false);
 			tempWidget.setTempTextSize(16);
 			tempWidget.setTextSuffix("℃");
 			tempWidget.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete, R.mipmap.define_view_tools_other});
@@ -232,7 +318,7 @@ public class DragTempContainer extends RelativeLayout {
 			layoutParams.setMargins(moveWidget.getXOffset(),moveWidget.getYOffset(),0,0);
 			moveWidget.setLayoutParams(layoutParams);
 			moveWidget.setAlpha(0.6f);
-			moveWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_right));
+			moveWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
 			addView(moveWidget);
 			viewLists.add(moveWidget);
 		}
@@ -271,74 +357,90 @@ public class DragTempContainer extends RelativeLayout {
 	@Override
 	public boolean onInterceptTouchEvent (MotionEvent ev) {
 		if (isDebug) Log.e(TAG, "onInterceptTouchEvent: "+ ev.getAction());
-		boolean state = false;
-		switch (ev.getAction()){
-			case MotionEvent.ACTION_DOWN:
-				if (drawTempMode != -1){
-					state = false;
-				}else {
-					state = super.onInterceptTouchEvent(ev);
-				}
-				break;
-			case MotionEvent.ACTION_MOVE:
-				if (drawTempMode == 2 || drawTempMode ==3) {
-					state = true;
-				}else {
-					state = super.onInterceptTouchEvent(ev);
-				}
-				//todo 移动可以移动的控件， 或实时缩放
-				break;
-			case MotionEvent.ACTION_UP:
-				if (drawTempMode != -1){
-					state = true;
-				}else {
-					state = super.onInterceptTouchEvent(ev);
-				}
-				break;
+		if (drawTempMode != -1){//绘制模式 ，自己消费事件
+//			switch (ev.getAction()) {
+//				case MotionEvent.ACTION_MOVE:
+//					if (drawTempMode == 2 || drawTempMode == 3) {
+//						return true;
+//					} else {
+//						return super.onInterceptTouchEvent(ev);
+//					}
+//					//todo 移动可以移动的控件， 或实时缩放
+//			}
+			return true;
+		}else {
+			//拿到点击的点
+			return super.onInterceptTouchEvent(ev);
 		}
-		return state;
 	}
 
-	@Override
-	public void draw (Canvas canvas) {
-		super.draw(canvas);
-
-
-	}
+//	@Override
+//	public void draw (Canvas canvas) {
+//		super.draw(canvas);
+//
+//
+//	}
 
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
-		boolean touchState = true;
-		switch (event.getAction()){
-			case MotionEvent.ACTION_DOWN:
-				if (drawTempMode != -1){
-					startPressX = (int) event.getX();
-					startPressY = (int) event.getY();
-				}
-				break;
-			case MotionEvent.ACTION_MOVE:
+		if (drawTempMode != -1){
+			switch (event.getAction()){
+				case MotionEvent.ACTION_DOWN:
+					if (drawTempMode != -1){
+						startPressX = (int) event.getX();
+						startPressY = (int) event.getY();
+					}
+					break;
+				case MotionEvent.ACTION_MOVE:
+					endPressX = (int) event.getX();
+					endPressY = (int) event.getY();
+					break;
+				case MotionEvent.ACTION_UP:
 					endPressX = (int) event.getX();
 					endPressY = (int) event.getY();
 
-				break;
-			case MotionEvent.ACTION_UP:
-				endPressX = (int) event.getX();
-				endPressY = (int) event.getY();
-
-				if (drawTempMode == 2 || drawTempMode ==3){
-					createLineOrRecView();
-				}else if (drawTempMode ==1) {
-					createPointView();
-				}
-				break;
+					if (drawTempMode == 2 || drawTempMode ==3){
+						createLineOrRecView();
+					}else if (drawTempMode ==1) {
+						createPointView();
+					}
+					break;
+			}
+			return true;
+		}else {//不是绘制
+			return false;
 		}
-
-		return true;
 	}
 
 	private Handler handler = new Handler(new Handler.Callback() {
 		@Override
 		public boolean handleMessage (@NonNull Message msg) {
+			switch (msg.what){
+				case UPDATE_TEMP_DATA:
+				tempSource = (float[]) msg.obj;
+//					Log.e(TAG, "UPDATE: " + " x = " + tempSource[1] + " y = "+ tempSource[2] +" value "+ tempSource[3]);
+//					Log.e(TAG, "UPDATE ==>>: "+ " x = " + tempSource[4] + " y = "+ tempSource[5] +" value ==> "+ tempSource[6]);
+//					Log.e(TAG, "handleMessage: " + viewLists.size());
+				if (viewLists.size()==1){
+					viewLists.get(0).getView().getPointTemp().setStartPointX((int) getXByWRatio(tempSource[1]));
+					viewLists.get(0).getView().getPointTemp().setStartPointY((int) getYByHRatio(tempSource[2]));
+
+					Log.e(TAG, "HRatio: "+ HRatio + "   WRatio === > " + WRatio);
+					Log.e(TAG, "x: "+ tempSource[1] + "   y === > " + tempSource[2]);
+					Log.e(TAG, "x: "+ (int)getXByWRatio(tempSource[1]) + "   y === > " + (int)getYByHRatio(tempSource[2]));
+					Log.e(TAG, "x: "+ viewLists.get(0).getView().getPointTemp().getStartPointX() + "   y === > " + viewLists.get(0).getView().getPointTemp().getStartPointY());
+					viewLists.get(0).getView().getPointTemp().setTemp(tempSource[3]);
+					viewLists.get(0).dataUpdate(viewLists.get(0).getView());
+					viewLists.get(0).invalidate();
+
+//					viewLists.get(1).getView().getPointTemp().setStartPointX((int) getXByWRatio(tempSource[4]));
+//					viewLists.get(1).getView().getPointTemp().setStartPointY((int) getYByHRatio(tempSource[5]));
+//					viewLists.get(1).getView().getPointTemp().setTemp(tempSource[6]);
+//					viewLists.get(1).invalidate();
+				}
+//				invalidate();
+				break;
+			}
 			return false;
 		}
 	}) ;

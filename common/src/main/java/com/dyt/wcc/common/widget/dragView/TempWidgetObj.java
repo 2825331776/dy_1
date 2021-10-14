@@ -7,7 +7,7 @@ package com.dyt.wcc.common.widget.dragView;
  * <p>Description：具体数据 对象         </p>
  * <p>PackagePath: com.dyt.wcc.common.widget.dragView     </p>
  */
-public class AddTempWidget {
+public class TempWidgetObj {
 	private int id;//必须
 	private int type; // 必须  1为点  2为线  3矩形  4 高低温
 	private boolean isSelect;//是否显示工具栏和背景色

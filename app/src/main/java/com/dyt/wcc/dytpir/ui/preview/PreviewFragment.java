@@ -32,6 +32,7 @@ import com.dyt.wcc.common.base.BaseFragment;
 import com.dyt.wcc.common.utils.AssetCopyer;
 import com.dyt.wcc.common.utils.CreateBitmap;
 import com.dyt.wcc.common.utils.FontUtils;
+import com.dyt.wcc.common.widget.MyToggleView;
 import com.dyt.wcc.common.widget.SwitchMultiButton;
 import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.constans.DYConstants;
@@ -280,10 +281,35 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 		fl = mDataBinding.flPreview;
 
-		mDataBinding.toggleShowHighLowTemp.setOnClickChangedState(checkState -> Toast.makeText(mContext.get(), "v"+ checkState,Toast.LENGTH_SHORT).show());
-		mDataBinding.toggleAreaCheck.setOnClickChangedState(checkState -> Toast.makeText(mContext.get(), "v"+ checkState,Toast.LENGTH_SHORT).show());
-		mDataBinding.toggleFixedTempBar.setOnClickChangedState(checkState -> Toast.makeText(mContext.get(), "v"+ checkState,Toast.LENGTH_SHORT).show());
-		mDataBinding.toggleHighTempAlarm.setOnClickChangedState(checkState -> Toast.makeText(mContext.get(), "v"+ checkState,Toast.LENGTH_SHORT).show());
+		mDataBinding.toggleShowHighLowTemp.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
+			@Override
+			public void onClick (boolean checkState) {
+				if (checkState){
+					mDataBinding.dragTempContainerPreviewFragment.openHighLowTemp();
+				}else {
+					mDataBinding.dragTempContainerPreviewFragment.closeHighLowTemp();
+				}
+			}
+		});
+		mDataBinding.toggleAreaCheck.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
+			@Override
+			public void onClick (boolean checkState) {
+//				Toast.makeText(mContext.get(), "State = "+ checkState,Toast.LENGTH_SHORT).show();
+//				mDataBinding.dragTempContainerPreviewFragment.closeHighLowTemp();
+			}
+		});
+		mDataBinding.toggleFixedTempBar.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
+			@Override
+			public void onClick (boolean checkState) {
+
+			}
+		});
+		mDataBinding.toggleHighTempAlarm.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
+			@Override
+			public void onClick (boolean checkState) {
+
+			}
+		});
 
 		//绘制  温度模式 切换  弹窗
 		mDataBinding.ivPreviewRightTempMode.setOnClickListener(v -> {

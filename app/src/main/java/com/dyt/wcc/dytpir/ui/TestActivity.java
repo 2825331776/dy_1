@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.dyt.wcc.common.base.BaseActivity;
-import com.dyt.wcc.common.widget.dragView.AddTempWidget;
+import com.dyt.wcc.common.widget.dragView.TempWidgetObj;
 import com.dyt.wcc.common.widget.dragView.MyMoveWidget;
 import com.dyt.wcc.common.widget.dragView.PointTempWidget;
 import com.dyt.wcc.dytpir.R;
@@ -37,9 +37,10 @@ public class TestActivity extends BaseActivity<ActivityTestBinding> implements V
 	public void onClick (View v) {
 		switch (v.getId()){
 			case R.id.bt_point:
-				drawMode = 1;
-				mDataBinding.myDragContainer.setDrawTempMode(drawMode);
-				mDataBinding.myDragContainer.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
+				mDataBinding.myDragContainer.removeView(moveWidget);
+//				drawMode = 1;
+//				mDataBinding.myDragContainer.setDrawTempMode(drawMode);
+//				mDataBinding.myDragContainer.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
 				break;
 			case R.id.bt_line:
 				drawMode = 2;
@@ -57,7 +58,7 @@ public class TestActivity extends BaseActivity<ActivityTestBinding> implements V
 				Log.e(TAG, "onClick: bt_reset");
 
 				RelativeLayout.LayoutParams  layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-				AddTempWidget view = new AddTempWidget();
+				TempWidgetObj view = new TempWidgetObj();
 				PointTempWidget pointTempWidget = new PointTempWidget();
 
 				pointTempWidget.setStartPointY(100);
