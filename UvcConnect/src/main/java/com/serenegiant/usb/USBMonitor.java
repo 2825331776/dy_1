@@ -40,7 +40,6 @@ import android.util.SparseArray;
 
 import com.serenegiant.utils.BuildCheck;
 import com.serenegiant.utils.HandlerThreadHandler;
-import com.serenegiant.utils.LogUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
@@ -56,7 +55,7 @@ import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 
 public final class USBMonitor {
 
-	private static final boolean DEBUG = false;	// TODO set false on production
+	private static final boolean DEBUG = true;	// TODO set false on production
 	private static final String TAG = "USBMonitor";
 
 	private static final String ACTION_USB_PERMISSION_BASE = "com.serenegiant.USB_PERMISSION.";
@@ -168,10 +167,11 @@ public final class USBMonitor {
 	 */
 	public synchronized void register() throws IllegalStateException {
 		if (destroyed) throw new IllegalStateException("already destroyed");
+		Log.e(TAG, "register: " + mDeviceFilters.size());
 		if (mPermissionIntent == null) {
-			if (DEBUG) Log.i(TAG, "register:");
+			if (DEBUG) Log.e(TAG, "register:");
 			final Context context = mWeakContext.get();
-			LogUtils.e("=====register============before==========PendingIntent.getBroadcast=======");
+			if (DEBUG) Log.e(TAG,"=====register============before==========PendingIntent.getBroadcast=======");
 			if (context != null) {
 				mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), FLAG_CANCEL_CURRENT);
 				final IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
@@ -180,10 +180,10 @@ public final class USBMonitor {
 				context.registerReceiver(mUsbReceiver, filter);
 			}
 			// start connection check
-			LogUtils.e("=====register============before==========mDeviceCheckRunnable=======");
+			if (DEBUG) Log.e(TAG,"=====register============before==========mDeviceCheckRunnable=======");
 			mDeviceCounts = 0;
 			mAsyncHandler.postDelayed(mDeviceCheckRunnable, 1000);
-			LogUtils.e("=====register============behind==========mDeviceCheckRunnable=======");
+			if (DEBUG) Log.e(TAG,"=====register============behind==========mDeviceCheckRunnable=======");
 		}
 	}
 
@@ -298,15 +298,17 @@ public final class USBMonitor {
 
 	/**
 	 * return device list, return empty list if no device matched
-	 * @param filters
-	 * @return
+	 * @param filters 过滤器
+	 * @return 设备列表，通过过滤器
 	 * @throws IllegalStateException
 	 */
 	public List<UsbDevice> getDeviceList(final List<DeviceFilter> filters) throws IllegalStateException {
 		if (destroyed) throw new IllegalStateException("already destroyed");
 		final HashMap<String, UsbDevice> deviceList = mUsbManager.getDeviceList();
+//		Log.e(TAG, "getDeviceList:  ======size==>" + deviceList.size());
 		final List<UsbDevice> result = new ArrayList<UsbDevice>();
-		if (deviceList != null) {
+		if (deviceList.size() != 0) {
+			//判断有无过滤器
 			if ((filters == null) || filters.isEmpty()) {
 				result.addAll(deviceList.values());
 			} else {
@@ -398,10 +400,12 @@ public final class USBMonitor {
 	}
 
 	/**
-	 * 内部で保持しているパーミッション状態を更新
-	 * @param device
-	 * @param hasPermission
-	 * @return hasPermission
+	 * 更新内部持有的权限状态。
+	 * 有权限则更新mHasPermissions中列表
+	 * 有权限：则把设备的信息String的hashcode存储在一个spareArray mHasPermissions中
+	 * @param device 设备
+	 * @param hasPermission 是否含有权限
+	 * @return hasPermission 是否有权限
 	 */
 	private boolean updatePermission(final UsbDevice device, final boolean hasPermission) {
 		final int deviceKey = getDeviceKey(device, true);
@@ -480,20 +484,20 @@ public final class USBMonitor {
 		public void onReceive(final Context context, final Intent intent) {
 			if (destroyed) return;
 			final String action = intent.getAction();
+			if (DEBUG)Log.e(TAG, "onReceive: Define"+action);
 			if (ACTION_USB_PERMISSION.equals(action)) {
-				if (DEBUG)Log.e(TAG, "onReceive: Define"+action);
 				// when received the result of requesting USB permission
 				synchronized (USBMonitor.this) {
 					final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 					if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
 						if (device != null) {
 							// get permission, call onConnect
-							LogUtils.e("UsbMonitor.register.broadcastReceiver.mUsbReceiver.OnReceiver=device !=null!!!====todo connect");
+							if (DEBUG) Log.e(TAG,"UsbMonitor.register.broadcastReceiver.mUsbReceiver.OnReceiver=device !=null!!!====todo connect");
 							processConnect(device);
 						}
 					} else {
 						// failed to get permission
-						LogUtils.e("UsbMonitor.register.broadcastReceiver.mUsbReceiver.OnReceiver=device ==null!!!====todo processCancel");
+						if (DEBUG) Log.e(TAG,"UsbMonitor.register.broadcastReceiver.mUsbReceiver.OnReceiver=device ==null!!!====todo processCancel");
 						processCancel(device);
 					}
 				}
@@ -532,6 +536,10 @@ public final class USBMonitor {
 			final int n = devices.size();
 			final int hasPermissionCounts;
 			final int m;
+//			for(UsbDevice device : devices){
+//				Log.e(TAG, "run: " +device.getProductName());
+//			}
+
 			synchronized (mHasPermissions) {
 				hasPermissionCounts = mHasPermissions.size();
 				mHasPermissions.clear();
@@ -540,12 +548,13 @@ public final class USBMonitor {
 				}
 				m = mHasPermissions.size();
 			}
+			//当权限列表 == 设备列表 则去连接每个有权限的设备
 			if ((n > mDeviceCounts) || (m > hasPermissionCounts)) {
 				mDeviceCounts = n;
 				if (mOnDeviceConnectListener != null) {
 					for (int i = 0; i < n; i++) {
 						final UsbDevice device = devices.get(i);
-						LogUtils.e("==========usbmonitor contains devices getProductName =====>"+device.getProductName());
+						if (DEBUG) Log.e(TAG,"==========usbmonitor contains devices getProductName =====>"+device.getProductName());
 						if(device.getProductName().contains("S0")  || device.getProductName().contains("T3C")|| device.getProductName().contains("Camera")) {
 							mAsyncHandler.post(new Runnable() {
 								@Override
@@ -569,7 +578,7 @@ public final class USBMonitor {
 		if (destroyed) return;
 		updatePermission(device, true);
 		if (DEBUG) Log.v(TAG, "processConnect:device=" + device);
-		LogUtils.e("=================processConnect===========================");
+		if (DEBUG) Log.e(TAG,"=================processConnect===========================");
 		UsbControlBlock ctrlBlock;
 		final boolean createNew;
 		ctrlBlock = mCtrlBlocks.get(device);
@@ -648,10 +657,10 @@ public final class USBMonitor {
 	}
 
 	/**
-	 * USB機器毎の設定保存用にデバイスキー名を生成する。
-	 * ベンダーID, プロダクトID, デバイスクラス, デバイスサブクラス, デバイスプロトコルから生成
-	 * 同種の製品だと同じキー名になるので注意
-	 * @param device nullなら空文字列を返す
+	 * 生成用于保存每个 USB 设备设置的设备密钥名称。
+	 * 从供应商 ID、产品 ID、设备类、设备子类、设备协议生成
+	 * 请注意，相同类型的产品将使用相同的密钥名称。
+	 * @param device 如果为 null 则返回空字符串
 	 * @return
 	 */
 	public static final String getDeviceKeyName(final UsbDevice device) {
@@ -675,8 +684,8 @@ public final class USBMonitor {
 	 * serialがnullや空文字でなければserialを含めたデバイスキー名を生成する
 	 * useNewAPI=trueでAPIレベルを満たしていればマニュファクチャ名, バージョン, コンフィギュレーションカウントも使う
 	 * @param device nullなら空文字列を返す
-	 * @param serial	UsbDeviceConnection#getSerialで取得したシリアル番号を渡す, nullでuseNewAPI=trueでAPI>=21なら内部で取得
-	 * @param useNewAPI API>=21またはAPI>=23のみで使用可能なメソッドも使用する(ただし機器によってはnullが返ってくるので有効かどうかは機器による)
+	 * @param serial	传递UsbDeviceConnection获取的序列号#getSerial，如果useNewAPI = true and API> = 21 with null，内部获取
+	 * @param useNewAPI 仅在 API> = 21 或 API> = 23 中可用的方法(但是，根据设备的不同，会返回null，因此是否有效取决于设备。)
 	 * @return
 	 */
 	@SuppressLint("NewApi")
@@ -691,6 +700,7 @@ public final class USBMonitor {
 		if (!TextUtils.isEmpty(serial)) {
 			sb.append("#");	sb.append(serial);
 		}
+		//长城注释 有问题
 		if (useNewAPI && BuildCheck.isAndroid5()) {
 			sb.append("#");
 			if (TextUtils.isEmpty(serial)) {
@@ -698,8 +708,8 @@ public final class USBMonitor {
 			}
 			sb.append(device.getManufacturerName());	sb.append("#");	// API >= 21
 			sb.append(device.getConfigurationCount());	sb.append("#");	// API >= 21
-			if (BuildCheck.isMarshmallow()) {
-				sb.append(device.getVersion());			sb.append("#");	// API >= 23
+			if (BuildCheck.isMarshmallow()) {           // API >= 23
+				sb.append(device.getVersion());			sb.append("#");
 			}
 		}
 //		if (DEBUG) Log.v(TAG, "getDeviceKeyName:" + sb.toString());
@@ -707,11 +717,11 @@ public final class USBMonitor {
 	}
 
 	/**
-	 * デバイスキーを整数として取得
-	 * getDeviceKeyNameで得られる文字列のhasCodeを取得
-	 * ベンダーID, プロダクトID, デバイスクラス, デバイスサブクラス, デバイスプロトコルから生成
-	 * 同種の製品だと同じデバイスキーになるので注意
-	 * @param device nullなら0を返す
+	 * 以整数形式获取设备密钥
+	 * getDeviceKeyName 获取中获取的字符串的hasCode
+	 * 从供应商 ID、产品 ID、设备类、设备子类、设备协议生成
+	 * 请注意，相同类型的产品将使用相同的设备密钥。
+	 * @param device 如果为空则返回 0
 	 * @return
 	 */
 	public static final int getDeviceKey(final UsbDevice device) {
@@ -719,12 +729,12 @@ public final class USBMonitor {
 	}
 
 	/**
-	 * デバイスキーを整数として取得
-	 * getDeviceKeyNameで得られる文字列のhasCodeを取得
-	 * useNewAPI=falseで同種の製品だと同じデバイスキーになるので注意
-	 * @param device
+	 * 以整数形式获取设备密钥
+	 * getDeviceKeyName 获取中获取的字符串的hasCode
+	 * useNewAPI=false 请注意，相同类型的产品将使用相同的设备密钥。
+	 * @param device 判断设备为不为空
 	 * @param useNewAPI
-	 * @return
+	 * @return 设备信息拼接的字符串的hashcode 或 0
 	 */
 	public static final int getDeviceKey(final UsbDevice device, final boolean useNewAPI) {
 		return device != null ? getDeviceKeyName(device, null, useNewAPI).hashCode() : 0;

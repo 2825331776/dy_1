@@ -61,6 +61,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private USBMonitor.OnDeviceConnectListener onDeviceConnectListener;
 	private UVCCameraHandler                   mUvcCameraHandler;
 	private Surface stt;
+	private PopupWindow PLRPopupWindows;//点线矩形测温弹窗
 
 //	private USBMonitor mUsbMonitor ;
 	private int mTextureViewWidth,mTextureViewHeight;
@@ -124,18 +125,23 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		super.onResume();
 		if (isDebug)Log.e(TAG, "onResume: ");
 
-		if (!mViewModel.getMUsbMonitor().getValue().isRegistered()){
-			mViewModel.getMUsbMonitor().getValue().register();
-		}
+
 		//		Spinner
 		List<UsbDevice> mUsbDeviceList = mViewModel.getMUsbMonitor().getValue().getDeviceList();
 		for (UsbDevice udv : mUsbDeviceList) {
 			//指定设备的连接，获取设备的名字，当前usb摄像头名为Xmodule-S0
 //			if (isDebug)Log.e(TAG, "udv.getProductName()" + udv.getProductName());
 			if (udv.getProductName().contains("S0") ) {
+				Log.e(TAG, "onResume: "+ " S0" + udv.getProductId() + " "  + udv.getVendorId() );
+
+
 				//CameraAlreadyConnected = true;//标志红外摄像头是否已经连接上
 				BaseApplication.deviceName = udv.getProductName();
 			}
+		}
+
+		if (!mViewModel.getMUsbMonitor().getValue().isRegistered()){
+			mViewModel.getMUsbMonitor().getValue().register();
 		}
 	}
 	private int setValue(final int flag, final int value) {//设置机芯参数,调用JNI层
@@ -313,7 +319,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 		//绘制  温度模式 切换  弹窗
 		mDataBinding.ivPreviewRightTempMode.setOnClickListener(v -> {
-
 			View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_temp_mode_choice,null);
 			PopTempModeChoiceBinding tempModeChoiceBinding = DataBindingUtil.bind(view);
 			assert tempModeChoiceBinding != null;
@@ -321,17 +326,17 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			tempModeChoiceBinding.ivTempModePoint.setOnClickListener(tempModeCheckListener);
 			tempModeChoiceBinding.ivTempModeRectangle.setOnClickListener(tempModeCheckListener);
 
-			PopupWindow popupWindow = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-			popupWindow.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
-			popupWindow.setHeight(popupWindow.getContentView().getMeasuredHeight());
-			popupWindow.setWidth(fl.getWidth()- 60);
+			PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+			PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
+			PLRPopupWindows.setHeight(PLRPopupWindows.getContentView().getMeasuredHeight());
+			PLRPopupWindows.setWidth(fl.getWidth()- 60);
 
-			popupWindow.setFocusable(true);
+			PLRPopupWindows.setFocusable(true);
 //				popupWindow.setBackgroundDrawable(getResources().getDrawable(R.mipmap.temp_mode_bg_tempback));
-			popupWindow.setOutsideTouchable(true);
-			popupWindow.setTouchable(true);
+			PLRPopupWindows.setOutsideTouchable(true);
+			PLRPopupWindows.setTouchable(true);
 
-			popupWindow.showAsDropDown(mDataBinding.flPreview,30,-popupWindow.getHeight()-20, Gravity.CENTER);
+			PLRPopupWindows.showAsDropDown(mDataBinding.flPreview,30,-PLRPopupWindows.getHeight()-20, Gravity.CENTER);
 		});
 
 		//切换色板
@@ -490,12 +495,18 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		public void onClick (View v) {
 			switch (v.getId()){
 				case R.id.iv_temp_mode_point:
+					PLRPopupWindows.dismiss();
+					mDataBinding.dragTempContainerPreviewFragment.setDrawTempMode(1);
 					Toast.makeText(mContext.get(),"point ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.iv_temp_mode_line:
+					PLRPopupWindows.dismiss();
+					mDataBinding.dragTempContainerPreviewFragment.setDrawTempMode(2);
 					Toast.makeText(mContext.get(),"line ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.iv_temp_mode_rectangle:
+					PLRPopupWindows.dismiss();
+					mDataBinding.dragTempContainerPreviewFragment.setDrawTempMode(3);
 					Toast.makeText(mContext.get(),"rectangle ", Toast.LENGTH_SHORT).show();
 					break;
 			}
@@ -532,11 +543,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	}
 
 	public void toClear(View view){
-		if (mUvcCameraHandler != null){
-			Toast.makeText(mContext.get(),"toClear ", Toast.LENGTH_SHORT).show();
-			mUvcCameraHandler.stopTemperaturing();
-			mUvcCameraHandler.stopPreview();
-		}
+		mDataBinding.dragTempContainerPreviewFragment.clearAll();
+//		if (mUvcCameraHandler != null){
+//			Toast.makeText(mContext.get(),"toClear ", Toast.LENGTH_SHORT).show();
+//			mUvcCameraHandler.stopTemperaturing();
+//			mUvcCameraHandler.stopPreview();
+//		}
 //		NavHostFragment.findNavController(PreviewFragment.this).popBackStack();
 //		Navigation.findNavController(mDataBinding.getRoot()).popBackStack();
 
@@ -544,11 +556,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	//拍照
 	public void toImage(View view){
 
-		if (mUvcCameraHandler != null){
-			Toast.makeText(mContext.get(),"toImage ", Toast.LENGTH_SHORT).show();
-			mUvcCameraHandler.startPreview(stt);
-			mUvcCameraHandler.startTemperaturing();
-		}
+//		if (mUvcCameraHandler != null){
+//			Toast.makeText(mContext.get(),"toImage ", Toast.LENGTH_SHORT).show();
+//			mUvcCameraHandler.startPreview(stt);
+//			mUvcCameraHandler.startTemperaturing();
+//		}
 		//		NavHostFragment.findNavController(PreviewFragment.this).popBackStack();
 		//		Navigation.findNavController(mDataBinding.getRoot()).popBackStack();
 

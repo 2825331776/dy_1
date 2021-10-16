@@ -1,5 +1,7 @@
 package com.dyt.wcc.common.widget.dragView;
 
+import java.text.DecimalFormat;
+
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
  * <p>Author：stefan cheng        </p>
@@ -12,7 +14,7 @@ package com.dyt.wcc.common.widget.dragView;
  * <p>    线/矩阵 测温模式       范围内 最高最低 温度值和坐标    都改（温度依靠查询温度表）</p>
  */
 public class PointTempWidget {
-	private int type;// 点测温，高低温追踪 、线矩形内高低温 0 1 2
+	private int type;//1最高温 2最低温， 3中心温度  用于区分画笔 颜色 和图片，默认是点测温的
 
 	private int startPointX;
 	private int startPointY;
@@ -51,7 +53,8 @@ public class PointTempWidget {
 	}
 
 	public void setTemp (float temp) {
-		this.temp = temp;
+		DecimalFormat df = new DecimalFormat("#.0");
+		this.temp = Float.parseFloat(df.format(temp));
 	}
 
 }

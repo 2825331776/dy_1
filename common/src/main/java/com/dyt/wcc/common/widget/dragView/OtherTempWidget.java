@@ -1,5 +1,7 @@
 package com.dyt.wcc.common.widget.dragView;
 
+import java.text.DecimalFormat;
+
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
  * <p>Author：stefan cheng        </p>
@@ -65,7 +67,8 @@ public class OtherTempWidget {
 	}
 
 	public void setMinTemp (float minTemp) {
-		this.minTemp = minTemp;
+		DecimalFormat df = new DecimalFormat("#.0");
+		this.minTemp = Float.parseFloat(df.format(minTemp));
 	}
 
 	public int getMinTempX () {
@@ -89,7 +92,8 @@ public class OtherTempWidget {
 	}
 
 	public void setMaxTemp (float maxTemp) {
-		this.maxTemp = maxTemp;
+		DecimalFormat df = new DecimalFormat("#.0");
+		this.maxTemp = Float.parseFloat(df.format(maxTemp));
 	}
 
 	public int getMaxTempX () {
