@@ -39,6 +39,7 @@ import com.dyt.wcc.dytpir.constans.DYConstants;
 import com.dyt.wcc.dytpir.databinding.FragmentPreviewMainBinding;
 import com.dyt.wcc.dytpir.databinding.PopCompanyInfoBinding;
 import com.dyt.wcc.dytpir.databinding.PopDrawChartBinding;
+import com.dyt.wcc.dytpir.databinding.PopPaletteChoiceBinding;
 import com.dyt.wcc.dytpir.databinding.PopSettingBinding;
 import com.dyt.wcc.dytpir.databinding.PopTempModeChoiceBinding;
 import com.permissionx.guolindev.PermissionX;
@@ -300,7 +301,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.toggleAreaCheck.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
 			@Override
 			public void onClick (boolean checkState) {
-//				Toast.makeText(mContext.get(), "State = "+ checkState,Toast.LENGTH_SHORT).show();
+				Toast.makeText(mContext.get(), "State = "+ checkState,Toast.LENGTH_SHORT).show();
 //				mDataBinding.dragTempContainerPreviewFragment.closeHighLowTemp();
 			}
 		});
@@ -319,43 +320,46 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 		//绘制  温度模式 切换  弹窗
 		mDataBinding.ivPreviewRightTempMode.setOnClickListener(v -> {
-			View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_temp_mode_choice,null);
-			PopTempModeChoiceBinding tempModeChoiceBinding = DataBindingUtil.bind(view);
-			assert tempModeChoiceBinding != null;
-			tempModeChoiceBinding.ivTempModeLine.setOnClickListener(tempModeCheckListener);
-			tempModeChoiceBinding.ivTempModePoint.setOnClickListener(tempModeCheckListener);
-			tempModeChoiceBinding.ivTempModeRectangle.setOnClickListener(tempModeCheckListener);
 
-			PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-			PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
-			PLRPopupWindows.setHeight(PLRPopupWindows.getContentView().getMeasuredHeight());
-			PLRPopupWindows.setWidth(fl.getWidth()- 60);
+			if (isResumed()){
+				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_temp_mode_choice,null);
+				PopTempModeChoiceBinding tempModeChoiceBinding = DataBindingUtil.bind(view);
+				assert tempModeChoiceBinding != null;
+				tempModeChoiceBinding.ivTempModeLine.setOnClickListener(tempModeCheckListener);
+				tempModeChoiceBinding.ivTempModePoint.setOnClickListener(tempModeCheckListener);
+				tempModeChoiceBinding.ivTempModeRectangle.setOnClickListener(tempModeCheckListener);
 
-			PLRPopupWindows.setFocusable(true);
-//				popupWindow.setBackgroundDrawable(getResources().getDrawable(R.mipmap.temp_mode_bg_tempback));
-			PLRPopupWindows.setOutsideTouchable(true);
-			PLRPopupWindows.setTouchable(true);
+				PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+				PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
+				PLRPopupWindows.setHeight(PLRPopupWindows.getContentView().getMeasuredHeight());
+				PLRPopupWindows.setWidth(fl.getWidth()- 60);
 
-			PLRPopupWindows.showAsDropDown(mDataBinding.flPreview,30,-PLRPopupWindows.getHeight()-20, Gravity.CENTER);
+				PLRPopupWindows.setFocusable(true);
+				//				popupWindow.setBackgroundDrawable(getResources().getDrawable(R.mipmap.temp_mode_bg_tempback));
+				PLRPopupWindows.setOutsideTouchable(true);
+				PLRPopupWindows.setTouchable(true);
+
+				PLRPopupWindows.showAsDropDown(mDataBinding.flPreview,30,-PLRPopupWindows.getHeight()-20, Gravity.CENTER);
+			}
 		});
 
 		//切换色板
 		mDataBinding.ivPreviewLeftPalette.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-
+				if (isResumed()){
 				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_palette_choice,null);
+				PopPaletteChoiceBinding popPaletteChoice = DataBindingUtil.bind(view);
+				assert popPaletteChoice != null;
+				popPaletteChoice.paletteLayoutTiehong.setOnClickListener(paletteChoiceListener);
+				popPaletteChoice.paletteLayoutCaihong.setOnClickListener(paletteChoiceListener);
+				popPaletteChoice.paletteLayoutHongre.setOnClickListener(paletteChoiceListener);
+				popPaletteChoice.paletteLayoutHeire.setOnClickListener(paletteChoiceListener);
+				popPaletteChoice.paletteLayoutBaire.setOnClickListener(paletteChoiceListener);
+				popPaletteChoice.paletteLayoutLenglan.setOnClickListener(paletteChoiceListener);
 
 				showPopWindows(view,20,10,20);
-//				PopupWindow popupWindow = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//				popupWindow.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
-//				popupWindow.setHeight(popupWindow.getContentView().getMeasuredHeight());
-//				popupWindow.setWidth(fl.getWidth()-20);
-//				popupWindow.setFocusable(true);
-////				popupWindow.setBackgroundDrawable(getResources().getDrawable(R.mipmap.temp_mode_bg_tempback));
-//				popupWindow.setOutsideTouchable(true);
-//				popupWindow.setTouchable(true);
-//				popupWindow.showAsDropDown(mDataBinding.flPreview,10,-popupWindow.getHeight()-20, Gravity.CENTER);
+				}
 			}
 		});
 		//公司信息弹窗   监听器使用的图表的监听器对象
@@ -508,6 +512,33 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					PLRPopupWindows.dismiss();
 					mDataBinding.dragTempContainerPreviewFragment.setDrawTempMode(3);
 					Toast.makeText(mContext.get(),"rectangle ", Toast.LENGTH_SHORT).show();
+					break;
+			}
+		}
+	};
+
+	//温度度量模式切换
+	View.OnClickListener paletteChoiceListener = new View.OnClickListener() {
+		@Override
+		public void onClick (View v) {
+			switch (v.getId()){
+				case R.id.palette_layout_Tiehong:
+					Toast.makeText(mContext.get(),"palette_layout_Tiehong ", Toast.LENGTH_SHORT).show();
+					break;
+				case R.id.palette_layout_Caihong:
+					Toast.makeText(mContext.get(),"palette_layout_Caihong ", Toast.LENGTH_SHORT).show();
+					break;
+				case R.id.palette_layout_Hongre:
+					Toast.makeText(mContext.get(),"palette_layout_Hongre ", Toast.LENGTH_SHORT).show();
+					break;
+				case R.id.palette_layout_Heire:
+					Toast.makeText(mContext.get(),"palette_layout_Heire ", Toast.LENGTH_SHORT).show();
+					break;
+				case R.id.palette_layout_Baire:
+					Toast.makeText(mContext.get(),"palette_layout_Baire ", Toast.LENGTH_SHORT).show();
+					break;
+				case R.id.palette_layout_Lenglan:
+					Toast.makeText(mContext.get(),"palette_layout_Lenglan ", Toast.LENGTH_SHORT).show();
 					break;
 			}
 		}

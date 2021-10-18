@@ -1,7 +1,5 @@
 package com.dyt.wcc.common.widget.dragView;
 
-import java.text.DecimalFormat;
-
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
  * <p>Author：stefan cheng        </p>
@@ -16,10 +14,10 @@ import java.text.DecimalFormat;
 public class PointTempWidget {
 	private int type;//1最高温 2最低温， 3中心温度  用于区分画笔 颜色 和图片，默认是点测温的
 
-	private int startPointX;
-	private int startPointY;
+	private float startPointX;
+	private float startPointY;
 
-	private float temp;//温度值
+	private String temp;//温度值
 	private int tempDirection;////绘制前通过计算坐标初始化 方位
 
 	public int getType () {
@@ -36,25 +34,24 @@ public class PointTempWidget {
 	public void setTempDirection (int tempDirection) {
 		this.tempDirection = tempDirection;
 	}
-	public int getStartPointX () {
+	public float getStartPointX () {
 		return startPointX;
 	}
-	public void setStartPointX (int startPointX) {
+	public void setStartPointX (float startPointX) {
 		this.startPointX = startPointX;
 	}
-	public int getStartPointY () {
+	public float getStartPointY () {
 		return startPointY;
 	}
-	public void setStartPointY (int startPointY) {
+	public void setStartPointY (float startPointY) {
 		this.startPointY = startPointY;
 	}
-	public float getTemp () {
+	public String getTemp () {
 		return temp;
 	}
 
-	public void setTemp (float temp) {
-		DecimalFormat df = new DecimalFormat("#.0");
-		this.temp = Float.parseFloat(df.format(temp));
+	public void setTemp (String temp) {
+		this.temp = temp;
 	}
 
 }

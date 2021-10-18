@@ -3,22 +3,20 @@ package com.dyt.wcc.common.widget.dragView;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.dyt.wcc.common.R;
 
 import java.lang.ref.WeakReference;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +64,9 @@ public class DragTempContainer extends RelativeLayout {
 
 	private boolean enabled = true;//设置是否可用,为false时不能添加view 不能进行任何操作
 
-	//设置点温度 最高 最低温度
+	//温度数值的模式。0摄氏度， 1华氏度， 2开氏度
+	private int tempSuffixMode  =0;
+	private String []tempSuffixList = new String[]{"℃","℉","K"};
 
 
 	private Paint testPaint;
@@ -161,7 +161,8 @@ public class DragTempContainer extends RelativeLayout {
 		MyMoveWidget child ;
 		for (int index = 0; index < getChildCount(); index++){
 			child = (MyMoveWidget) getChildAt(index);
-			child.layout(child.getXOffset(),child.getYOffset(),child.getXOffset()+child.getWMeasureSpecSize(),child.getYOffset()+child.getHMeasureSpecSize());
+			child.layout((int)child.getXOffset(),(int)child.getYOffset(),
+					(int)(child.getXOffset()+child.getWMeasureSpecSize()),(int)(child.getYOffset()+child.getHMeasureSpecSize()));
 		}
 
 	}
@@ -171,33 +172,75 @@ public class DragTempContainer extends RelativeLayout {
 //		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 //
 //	}
-	private float updatePointTemp(int x , int y){
-		//数据源上的坐标
-		int dataX = (int) (WRatio*x);
-		int dataY = (int) (HRatio*y);
-		return tempSource[(10+(dataX+dataY*256))];
+
+	/**
+	 * 给温度设置后缀
+	 */
+	public void setTempSuffix(int SuffixType){
+
 	}
-	private void updateLRTemp(OtherTempWidget tempWidget){
+
+
+	private float updatePointTemp(float x , float y){
+		//数据源上的坐标
+		float dataX =  (WRatio*x);
+		float dataY =  (HRatio*y);
+		return tempSource[(int) (10+(dataX+dataY*256))];
+	}
+
+	private void updateLRTemp(OtherTempWidget tempWidget , int type){
+//		Log.e(TAG, "updateLRTemp: ");
 		//更新线，矩形的温度 及其坐标
-		int startX ,startY ,endX ,endY;//数据源上的边界点
-		startX = (int) (tempWidget.getStartPointX()*WRatio);startY = (int) (HRatio*tempWidget.getStartPointY());
-		endX = (int) (tempWidget.getEndPointX()*WRatio); endY = (int) (HRatio*tempWidget.getEndPointY());
+		float startX ,startY ,endX ,endY;//数据源上的边界点
+		startX =  (tempWidget.getStartPointX()*WRatio);startY = (HRatio*tempWidget.getStartPointY());
+		endX =  (tempWidget.getEndPointX()*WRatio); endY = (HRatio*tempWidget.getEndPointY());
+//		Log.e(TAG, "updateLRTemp: startX = " + startX + " startY " + startY + " endx " + endX  + " endy" + endY);
 		//最低最高温度。及其坐标
 		float minTemp , maxTemp;//默认值指向第一个点的数据
-		minTemp = tempSource[(10+(startX+startY*256))];
-		maxTemp = tempSource[(10+(startX+startY*256))];
+		minTemp = tempSource[(int) (10+(startX+startY*256))];
+		maxTemp = tempSource[(int) (10+(startX+startY*256))];
 		//用什么去记录 最高点 最低点时候的xy值。切记要加上前置的10
-		int LRMinTempX,LRMinTempY, LRMaxTempX,LRMaxTempY;
-		LRMinTempX = startX;LRMinTempY = startY;LRMaxTempX = endX;LRMaxTempY = endY;//默认值
-		for (int i = startY; i < endY ; i++){//高度遍历
-			for (int j = startX; j < endX ; j++){//宽度遍历
-
-
-
+		float LRMinTempX,LRMinTempY, LRMaxTempX,LRMaxTempY;
+		LRMinTempX = startX;LRMinTempY = startY;LRMaxTempX = startX;LRMaxTempY = startY;//默认值
+		for (int i = (int) startY; i < endY ; i++){//高度遍历
+			for (int j = (int) startX; j < endX ; j++){//宽度遍历
+//				Log.e(TAG, "updateLRTemp: 222" + i + " j " + j);
+				if (tempSource[(int) (LRMinTempX+(LRMinTempY*256)+10)] >= tempSource[j+(i*256)+10]){
+					LRMinTempX = j;
+					LRMinTempY = i;
+				}
+				if (tempSource[(int) (LRMaxTempX+(LRMaxTempY*256)+10)] <= tempSource[j+(i*256)+10]){
+					LRMaxTempX = j;
+					LRMaxTempY = i;
+				}
 			}
 		}
+		if (type ==2) {
+			for (int j = (int) startX; j < endX ; j++){//宽度遍历
+//				Log.e(TAG, "updateLRTemp: 222" + i + " j " + j);
+				if (tempSource[(int) (LRMinTempX+(LRMinTempY*256)+10)] >= tempSource[(int) (j+(LRMinTempY*256)+10)]){
+					LRMinTempX = j;
+//					LRMinTempY = i;
+				}
+				if (tempSource[(int) (LRMaxTempX+(LRMinTempY*256)+10)] <= tempSource[(int) (j+(LRMinTempY*256)+10)]){
+					LRMaxTempX = j;
+				}
+			}
+		}
+//		Log.e(TAG, "updateLRTemp: LRMaxTempX = " + LRMaxTempX + " LRMaxTempY " + LRMaxTempY + " LRMinTempX " + LRMinTempX  + " LRMinTempY" + LRMinTempY);
+		tempWidget.setMinTempX((int) (LRMinTempX/WRatio));
+		tempWidget.setMinTempY((int) (LRMinTempY/HRatio));
+		tempWidget.setMinTemp(getTempStrByMode(tempSource[(int) (LRMinTempX + (LRMinTempY*256) + 10)]));
+		tempWidget.setMaxTempX((int) (LRMaxTempX/WRatio));
+		tempWidget.setMaxTempY((int) (LRMaxTempY/HRatio));
+		tempWidget.setMaxTemp(getTempStrByMode(tempSource[(int) (LRMaxTempX + (LRMaxTempY*256) + 10)]));
 
-
+//		tempWidget.setMinTempX(tempWidget.getStartPointX() + 20);
+//		tempWidget.setMinTempY(tempWidget.getStartPointY());
+//		tempWidget.setMinTemp(getTempStrByMode(50));
+//		tempWidget.setMaxTempX(tempWidget.getEndPointX() - 20);
+//		tempWidget.setMaxTempY(tempWidget.getEndPointY());
+//		tempWidget.setMaxTemp(getTempStrByMode(60));
 	}
 
 	public int getDrawTempMode () {
@@ -232,7 +275,7 @@ public class DragTempContainer extends RelativeLayout {
 		startPressX = min;
 		endPressX = max;
 		if (endPressX - startPressX < minAddWidgetWidth){
-			return endPressX - startPressX < minAddWidgetWidth;
+			return false;
 		}
 
 		if (type ==2){
@@ -246,51 +289,69 @@ public class DragTempContainer extends RelativeLayout {
 		}
 		return true;
 	}
-	public void openHighLowTemp(){
+
+	/**
+	 * 切换温度模式流程：切换到华氏度，得重新计算数值。并更改后面的单位
+	 * 华氏度 = 摄氏度*1.8+32 （℉）  ； 开氏度= 摄氏度 + 237.15 （K）
+	 * @param tempC 温度摄氏度
+	 * @return 温度数值带单位
+	 */
+	private String getTempStrByMode( float tempC){
+		String result = "∞ ℃";
+		//先对拿到的温度格式化
+		switch (tempSuffixMode){
+			case 0:
+				result = getFormatFloat(tempC) + tempSuffixList[tempSuffixMode];
+				break;
+			case 1:
+				result = getFormatFloat((float) (tempC * 1.8 + 32)) + tempSuffixList[tempSuffixMode];
+				break;
+			case 2:
+				result = getFormatFloat((float) (tempC + 273.15)) + tempSuffixList[tempSuffixMode];
+				break;
+		}
+		return result;
+	}
+
+	private float getFormatFloat(float value){
+		DecimalFormat df = new DecimalFormat("#.0");
+		return Float.parseFloat(df.format(value));
+	}
+
+	private void addHighLowTempWidget(float x , float y , float temp , int type , int id ){
 		TempWidgetObj highTemp = new TempWidgetObj();
 
 		PointTempWidget high= new PointTempWidget();
-		high.setStartPointX((int) getXByWRatio(tempSource[1]));
-		high.setStartPointY((int) getYByHRatio(tempSource[2]));
-		high.setType(1);//最高温
-		high.setTemp(tempSource[3]);
-//		Log.e(TAG, "x: "+ getXByWRatio(tempSource[1]) + "   y === > " + getYByHRatio(tempSource[2]));
+		high.setStartPointX((int) getXByWRatio(x));
+		high.setStartPointY((int) getYByHRatio(y));
+		high.setType(type);//1最高温 ,2 最低温
+		high.setTemp(getTempStrByMode(temp));
 
 		highTemp.setCanMove(false);
-		highTemp.setTempTextSize(14);
+		highTemp.setTempTextSize(20);
 		highTemp.setType(1);
-		highTemp.setId(1);
-		highTemp.setTextSuffix("℃");
+		highTemp.setId(id);
 		highTemp.setPointTemp(high);
 
-		TempWidgetObj lowTemp = new TempWidgetObj();
-
-		PointTempWidget low= new PointTempWidget();
-		low.setStartPointX((int) getXByWRatio(tempSource[4]));
-		low.setStartPointY((int) getYByHRatio(tempSource[5]));
-		low.setTemp(tempSource[6]);
-		low.setType(2);//最低温
-
-		lowTemp.setCanMove(false);
-		lowTemp.setTempTextSize(14);
-		lowTemp.setType(1);
-		lowTemp.setId(2);
-		lowTemp.setTextSuffix("℃");
-		lowTemp.setPointTemp(low);
-
-
 		MyMoveWidget highWidget = new MyMoveWidget(mContext.get(),highTemp,screenWidth,screenHeight);
-//		highWidget.setAlpha(0.6f);
-		highWidget.setBackgroundColor(Color.TRANSPARENT);
-		MyMoveWidget lowWidget = new MyMoveWidget(mContext.get(),lowTemp,screenWidth,screenHeight);
-//		lowWidget.setAlpha(0.6f);
-		lowWidget.setBackgroundColor(Color.TRANSPARENT);
+//		highWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
 
 		addView(highWidget);
-		addView(lowWidget);
-
 		highLowTempLists.add(highWidget);
-		highLowTempLists.add(lowWidget);
+	}
+
+
+	private void getMaxMinXYValue(OtherTempWidget other,int mode){
+		int startX,startY,endX ,endY;
+
+
+
+	}
+
+
+	public void openHighLowTemp(){
+		addHighLowTempWidget(tempSource[1],tempSource[2],tempSource[3],1,1);
+		addHighLowTempWidget(tempSource[4],tempSource[5],tempSource[6],2,2);
 	}
 	public void closeHighLowTemp(){
 		for (MyMoveWidget widget: highLowTempLists){
@@ -314,24 +375,18 @@ public class DragTempContainer extends RelativeLayout {
 		pointTempWidget.setStartPointX(startPressX);
 		pointTempWidget.setStartPointY(startPressY);
 		//通过点计算
-
-		pointTempWidget.setTemp(100);
+		pointTempWidget.setTemp(getTempStrByMode(updatePointTemp(startPressX,startPressY)));
 
 		widget.setId(pointNum);
 		widget.setType(drawTempMode);
 		widget.setCanMove(true);
 		widget.setSelect(false);
 		widget.setTempTextSize(20);
-		widget.setTextSuffix("℃");
 		widget.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete, R.mipmap.define_view_tools_other});
 		widget.setPointTemp(pointTempWidget);
 
 		MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),widget,screenWidth,screenHeight);
-		ConstraintLayout.LayoutParams  layoutParams = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-		layoutParams.setMargins(moveWidget.getXOffset(),moveWidget.getYOffset(),0,0);
 
-		moveWidget.setLayoutParams(layoutParams);
-		moveWidget.setBackgroundColor(Color.TRANSPARENT);
 		addView(moveWidget);
 		pointNum++;
 		userAdd.add(moveWidget);
@@ -350,25 +405,16 @@ public class DragTempContainer extends RelativeLayout {
 			otherTempWidget.setEndPointX(endPressX);
 			otherTempWidget.setEndPointY(endPressY);
 
-			otherTempWidget.setMinTempX(otherTempWidget.getStartPointX()+20);
-			otherTempWidget.setMinTempY(otherTempWidget.getStartPointY());
-			otherTempWidget.setMinTemp(50);
-			otherTempWidget.setMaxTempX(otherTempWidget.getEndPointX()-20);
-			otherTempWidget.setMaxTempY(otherTempWidget.getEndPointY());
-			otherTempWidget.setMaxTemp(131);
+			updateLRTemp(otherTempWidget,drawTempMode);
 
 			tempWidget.setType(drawTempMode);
 			tempWidget.setCanMove(true);
 			tempWidget.setSelect(false);
 			tempWidget.setTempTextSize(16);
-			tempWidget.setTextSuffix("℃");
 			tempWidget.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete, R.mipmap.define_view_tools_other});
 			tempWidget.setOtherTemp(otherTempWidget);
 
 			MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),tempWidget,screenWidth,screenHeight);
-			RelativeLayout.LayoutParams  layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-			layoutParams.setMargins(moveWidget.getXOffset(),moveWidget.getYOffset(),0,0);
-			moveWidget.setLayoutParams(layoutParams);
 //			moveWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
 			addView(moveWidget);
 			userAdd.add(moveWidget);
@@ -407,6 +453,10 @@ public class DragTempContainer extends RelativeLayout {
 //			}
 			return true;
 		}else {
+//			for (MyMoveWidget view : userAdd){
+//
+//			}
+
 			//拿到点击的点
 			return super.onInterceptTouchEvent(ev);
 		}
@@ -470,19 +520,18 @@ public class DragTempContainer extends RelativeLayout {
 				if (highLowTempLists.size()!=0){
 					highLowTempLists.get(0).getView().getPointTemp().setStartPointX((int) getXByWRatio(tempSource[1]));
 					highLowTempLists.get(0).getView().getPointTemp().setStartPointY((int) getYByHRatio(tempSource[2]));
-
 //					Log.e(TAG, "HRatio: "+ HRatio + "   WRatio === > " + WRatio);
 //					Log.e(TAG, "x: "+ tempSource[1] + "   y === > " + tempSource[2]);
 //					Log.e(TAG, "x: "+ (int)getXByWRatio(tempSource[1]) + "   y === > " + (int)getYByHRatio(tempSource[2]));
 //					Log.e(TAG, "x: "+ highLowTempLists.get(0).getView().getPointTemp().getStartPointX() + "   y === > " + highLowTempLists.get(0).getView().getPointTemp().getStartPointY());
-					highLowTempLists.get(0).getView().getPointTemp().setTemp(tempSource[3]);
+					highLowTempLists.get(0).getView().getPointTemp().setTemp(getTempStrByMode(tempSource[3]));
 //					highLowTempLists.get(0).dataUpdate(highLowTempLists.get(0).getView());
 					highLowTempLists.get(0).requestLayout();
 					highLowTempLists.get(0).invalidate();
 
 					highLowTempLists.get(1).getView().getPointTemp().setStartPointX((int) getXByWRatio(tempSource[4]));
 					highLowTempLists.get(1).getView().getPointTemp().setStartPointY((int) getYByHRatio(tempSource[5]));
-					highLowTempLists.get(1).getView().getPointTemp().setTemp(tempSource[6]);
+					highLowTempLists.get(1).getView().getPointTemp().setTemp(getTempStrByMode(tempSource[6]));
 					highLowTempLists.get(1).requestLayout();
 				}
 				if (userAdd.size()!= 0){//点线测温有数据
@@ -491,12 +540,12 @@ public class DragTempContainer extends RelativeLayout {
 						//todo 更新每一个的温度信息。
 						if (userAdd.get(i).getView().getType()==1){//点
 							float temp = updatePointTemp(userAdd.get(i).getView().getPointTemp().getStartPointX(),userAdd.get(i).getView().getPointTemp().getStartPointY());
-							userAdd.get(i).getView().getPointTemp().setTemp(temp);
-							userAdd.get(i).requestLayout();
+							userAdd.get(i).getView().getPointTemp().setTemp(getTempStrByMode(temp));
 						}else {//线及其矩形
-
+							updateLRTemp(userAdd.get(i).gettempWidgetData().getOtherTemp(),userAdd.get(i).gettempWidgetData().getType());
+//							userAdd.get(i).invalidate();
 						}
-
+						userAdd.get(i).requestLayout();
 					}
 				}
 				break;

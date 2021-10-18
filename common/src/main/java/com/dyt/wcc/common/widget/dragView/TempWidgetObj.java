@@ -15,7 +15,7 @@ public class TempWidgetObj {
 
 	private int tempTextSize ;//温度字体大小      非必须
 
-	private String textSuffix;//温度后缀 ℃  ℉  K 必须 从本地读
+//	private String textSuffix;//温度后缀 ℃  ℉  K 必须 从本地读
 
 	private int [] toolsPicRes;//工具栏图片集合
 	private int toolsNumber;
@@ -31,13 +31,12 @@ public class TempWidgetObj {
 		this.tempTextSize = tempTextSize;
 	}
 
-	public String getTextSuffix () {
-		return textSuffix;
-	}
-
-	public void setTextSuffix (String textSuffix) {
-		this.textSuffix = textSuffix;
-	}
+//	public String getTextSuffix () {
+//		return textSuffix;
+//	}
+//	public void setTextSuffix (String textSuffix) {
+//		this.textSuffix = textSuffix;
+//	}
 
 	public int[] getToolsPicRes () {
 		return toolsPicRes;

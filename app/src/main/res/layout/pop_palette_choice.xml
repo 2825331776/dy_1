@@ -1,81 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:background="@drawable/shape_bg_pop_palette_choice"
+    </data>
+
+    <ScrollView
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_50dp">
+        android:layout_height="wrap_content">
 
-        <ImageButton
-            android:id="@+id/palette_layout_Tiehong"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription"
-            android:layout_width="@dimen/dimen_50dp"
-            android:layout_height="@dimen/dimen_50dp"
-            android:layout_marginStart="@dimen/dimen_5dp"
-            android:background="@mipmap/temp_mode_tiehong"
-             />
 
-        <ImageButton
-            android:id="@+id/palette_layout_Caihong"
-            app:layout_constraintLeft_toRightOf="@id/palette_layout_Tiehong"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription"
-            android:layout_width="@dimen/dimen_50dp"
-            android:layout_height="@dimen/dimen_50dp"
-            android:layout_marginStart="@dimen/dimen_5dp"
-            android:background="@mipmap/temp_mode_caihong"/>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:background="@drawable/shape_bg_pop_palette_choice"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_50dp">
 
-        <ImageButton
-            android:id="@+id/palette_layout_Hongre"
-            app:layout_constraintLeft_toRightOf="@id/palette_layout_Caihong"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription"
-            android:scaleType="center"
-            android:layout_width="@dimen/dimen_50dp"
-            android:layout_height="@dimen/dimen_50dp"
-            android:layout_marginStart="@dimen/dimen_5dp"
-            android:background="@mipmap/temp_mode_hongre"/>
+            <ImageButton
+                android:id="@+id/palette_layout_Tiehong"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription"
+                android:layout_width="@dimen/dimen_50dp"
+                android:layout_height="@dimen/dimen_50dp"
+                android:layout_marginStart="@dimen/dimen_5dp"
+                android:background="@mipmap/temp_mode_tiehong" />
 
-        <ImageButton
-            android:id="@+id/palette_layout_Heire"
-            app:layout_constraintLeft_toRightOf="@id/palette_layout_Hongre"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription"
-            android:scaleType="center"
-            android:layout_width="@dimen/dimen_50dp"
-            android:layout_height="@dimen/dimen_50dp"
-            android:layout_marginStart="@dimen/dimen_5dp"
-            android:background="@mipmap/temp_mode_heire"/>
+            <ImageButton
+                android:id="@+id/palette_layout_Caihong"
+                app:layout_constraintLeft_toRightOf="@id/palette_layout_Tiehong"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription"
+                android:layout_width="@dimen/dimen_50dp"
+                android:layout_height="@dimen/dimen_50dp"
+                android:layout_marginStart="@dimen/dimen_5dp"
+                android:background="@mipmap/temp_mode_caihong" />
 
-        <ImageButton
-            android:id="@+id/palette_layout_Baire"
-            app:layout_constraintLeft_toRightOf="@id/palette_layout_Heire"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription"
-            android:scaleType="center"
-            android:layout_width="@dimen/dimen_50dp"
-            android:layout_height="@dimen/dimen_50dp"
-            android:layout_marginStart="@dimen/dimen_5dp"
-            android:background="@mipmap/temp_mode_baire"/>
+            <ImageButton
+                android:id="@+id/palette_layout_Hongre"
+                app:layout_constraintLeft_toRightOf="@id/palette_layout_Caihong"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription"
+                android:scaleType="center"
+                android:layout_width="@dimen/dimen_50dp"
+                android:layout_height="@dimen/dimen_50dp"
+                android:layout_marginStart="@dimen/dimen_5dp"
+                android:background="@mipmap/temp_mode_hongre" />
 
-        <ImageButton
-            android:id="@+id/palette_layout_Lenglan"
-            app:layout_constraintLeft_toRightOf="@id/palette_layout_Baire"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription"
-            android:scaleType="center"
-            android:layout_width="@dimen/dimen_50dp"
-            android:layout_height="@dimen/dimen_50dp"
-            android:layout_marginStart="@dimen/dimen_5dp"
-            android:background="@mipmap/temp_mode_lenglan"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageButton
+                android:id="@+id/palette_layout_Heire"
+                app:layout_constraintLeft_toRightOf="@id/palette_layout_Hongre"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription"
+                android:scaleType="center"
+                android:layout_width="@dimen/dimen_50dp"
+                android:layout_height="@dimen/dimen_50dp"
+                android:layout_marginStart="@dimen/dimen_5dp"
+                android:background="@mipmap/temp_mode_heire" />
 
-</ScrollView>
+            <ImageButton
+                android:id="@+id/palette_layout_Baire"
+                app:layout_constraintLeft_toRightOf="@id/palette_layout_Heire"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription"
+                android:scaleType="center"
+                android:layout_width="@dimen/dimen_50dp"
+                android:layout_height="@dimen/dimen_50dp"
+                android:layout_marginStart="@dimen/dimen_5dp"
+                android:background="@mipmap/temp_mode_baire" />
+
+            <ImageButton
+                android:id="@+id/palette_layout_Lenglan"
+                app:layout_constraintLeft_toRightOf="@id/palette_layout_Baire"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription"
+                android:scaleType="center"
+                android:layout_width="@dimen/dimen_50dp"
+                android:layout_height="@dimen/dimen_50dp"
+                android:layout_marginStart="@dimen/dimen_5dp"
+                android:background="@mipmap/temp_mode_lenglan" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+</layout>

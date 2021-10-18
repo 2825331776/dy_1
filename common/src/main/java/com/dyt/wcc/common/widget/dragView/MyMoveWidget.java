@@ -19,6 +19,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import com.dyt.wcc.common.R;
+import com.dyt.wcc.common.utils.DensityUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -57,7 +58,7 @@ public class MyMoveWidget extends View {
 	private boolean hasBackGroundAndTools = false;
 
 	private RectF pointBgRectF;
-	private int wMeasureSpecSize, hMeasureSpecSize;
+	private float wMeasureSpecSize, hMeasureSpecSize;
 	//todo  状态应提取出去
 	//八个方位
 	public static final int WIDGET_DIRECTION_STATE_LEFT = 0x000;
@@ -74,16 +75,16 @@ public class MyMoveWidget extends View {
 
 	private int tempLocationState = WIDGET_DIRECTION_STATE_LEFT_TOP, toolsLocationState = WIDGET_DIRECTION_STATE_LEFT_TOP, widgetLocationState;//文字 和 工具 绘制所处于的状态
 
-	private int contentLeft ,contentRight, contentTop, contentBottom;
-	private int contentBgLeft ,contentBgRight, contentBgTop, contentBgBottom;
+	private float contentLeft ,contentRight, contentTop, contentBottom;
+	private float contentBgLeft ,contentBgRight, contentBgTop, contentBgBottom;
 
-	private int textNeedWidth ,textNeedHeight  ,  toolsNeedWidth , toolsNeedHeight;
+	private float textNeedWidth ,textNeedHeight  ,  toolsNeedWidth , toolsNeedHeight;
 
-	private int strLeft,strRight, strTop, strBottom;
-	private int toolsBgLeft,toolsBgRight, toolsBgTop, toolsBgBottom;
+	private float strLeft,strRight, strTop, strBottom;
+	private float toolsBgLeft,toolsBgRight, toolsBgTop, toolsBgBottom;
 
 	private String minTempStr , maxTempStr;//记录最小最高温度
-	private int xOffset, yOffset;
+	private float xOffset, yOffset;
 
 	public MyMoveWidget (Context context, AttributeSet attrs) {
 		this(context, attrs,0);
@@ -150,7 +151,7 @@ public class MyMoveWidget extends View {
 
 		pointTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 		pointTextPaint.setStrokeWidth(2);
-		pointTextPaint.setTextSize(tempWidgetData.getTempTextSize());
+		pointTextPaint.setTextSize(DensityUtil.dp2px(mContext,tempWidgetData.getTempTextSize()));
 		pointTextPaint.setColor(getResources().getColor(R.color.bg_preview_toggle_select,null));
 		pointTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
@@ -172,19 +173,19 @@ public class MyMoveWidget extends View {
 		}
 
 		maxTempTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-		maxTempTextPaint.setTextSize(tempWidgetData.getTempTextSize());
+		maxTempTextPaint.setTextSize(DensityUtil.dp2px(mContext,tempWidgetData.getTempTextSize()));
 		maxTempTextPaint.setColor(getResources().getColor(R.color.max_temp_text_color_red));
 		maxTempTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
 		minTempTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-		minTempTextPaint.setTextSize(tempWidgetData.getTempTextSize());
+		minTempTextPaint.setTextSize(DensityUtil.dp2px(mContext,tempWidgetData.getTempTextSize()));
 		minTempTextPaint.setColor(getResources().getColor(R.color.min_temp_text_color_blue));
 		minTempTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
 		bgRoundPaint = new Paint();
 		bgRoundPaint.setStyle(Paint.Style.FILL);
 		bgRoundPaint.setColor(getResources().getColor(R.color.bg_move_layout_round_bg));
-		bgRoundPaint.setAlpha(100);//透明度 0透明-255不透明
+		bgRoundPaint.setAlpha(150);//透明度 0透明-255不透明
 		bgRoundPaint.setFlags(Paint.ANTI_ALIAS_FLAG);//抗锯齿
 
 		recZoomBox = new Paint();
@@ -226,14 +227,13 @@ public class MyMoveWidget extends View {
 		switch (tempWidgetData.getType()){
 			case 1://点
 				//点温度String
-				minTempStr = tempWidgetData.getPointTemp().getTemp() + tempWidgetData.getTextSuffix();
+				minTempStr = tempWidgetData.getPointTemp().getTemp();
 				// 通过方位及其 内容坐标或 文字的坐标设置 ，温度文字基准绘制点
 				textNeedWidth = (int) getStrWidth(pointTextPaint,minTempStr);
 				textNeedHeight = (int) getStrHeight(pointTextPaint,minTempStr);
 //				Log.e(TAG, "initData: "+ textNeedHeight);
 				//得到文字绘制方位
 				int strDirection = getStrDirection(WIDGET_DIRECTION_STATE_RIGHT_BOTTOM,textNeedWidth,textNeedHeight);
-
 
 				getStrCoordinate(textNeedWidth,textNeedHeight,strDirection,tempWidgetData.getType());
 				//文字方向时 工具方位，计算出内容的坐标值
@@ -245,8 +245,10 @@ public class MyMoveWidget extends View {
 				break;
 			case 2://线
 			case 3://矩形
-				minTempStr = tempWidgetData.getOtherTemp().getMinTemp() + tempWidgetData.getTextSuffix();
-				maxTempStr = tempWidgetData.getOtherTemp().getMaxTemp() + tempWidgetData.getTextSuffix();
+				minTempStr = tempWidgetData.getOtherTemp().getMinTemp();
+				maxTempStr = tempWidgetData.getOtherTemp().getMaxTemp();
+
+				//todo 校正 最高温和最低温 是否在 线或 矩形的边界临界 延伸点
 
 				doMeasure();
 				updateContentCoordinate();//更新所有的坐标
@@ -261,39 +263,35 @@ public class MyMoveWidget extends View {
 		//得到了所有的宽高 则可以计算所需总宽高了
 	}
 
-	public int getWMeasureSpecSize () {
+	public float getWMeasureSpecSize () {
 		return wMeasureSpecSize;
 	}
 
-	public int getHMeasureSpecSize () {
+	public float getHMeasureSpecSize () {
 		return hMeasureSpecSize;
 	}
 
 	/**
 	 * 计算中心偏移量
 	 */
-	protected int getXOffset(){
+	protected float getXOffset(){
 		return xOffset;
 	}
 	/**
 	 * 计算中心偏移量
 	 */
-	protected int getYOffset(){
+	protected float getYOffset(){
 		return yOffset;
 	}
 	private float getStrWidth(@NonNull TextPaint textPaint,@NonNull String tempMsg){
-		int w;
-		Rect minTempStrRect = new Rect();
-		textPaint.getTextBounds(tempMsg,0 , tempMsg.length(),minTempStrRect);
-		w = (int) Math.max(minTempStrRect.width(),textPaint.measureText(tempMsg));
-		return w;
+		Rect tempRect = new Rect();
+		textPaint.getTextBounds(tempMsg,0 , tempMsg.length(),tempRect);
+		return tempRect.width();
 	}
 	private float getStrHeight(@NonNull TextPaint textPaint,@NonNull String tempMsg){
-		int h;
-		Rect minTempStrRect = new Rect();
-		textPaint.getTextBounds(tempMsg,0 , tempMsg.length(),minTempStrRect);
-		h = minTempStrRect.height();
-		return h;
+		Rect tempRect = new Rect();
+		textPaint.getTextBounds(tempMsg,0 , tempMsg.length(),tempRect);
+		return tempRect.height();
 	}
 
 	/**
@@ -304,7 +302,7 @@ public class MyMoveWidget extends View {
 	 * @param useHeight 需求的高度
 	 * @return 方位值：左上左下 右上右下
 	 */
-	private int getStrDirection(int defaultValue, int useWidth ,int useHeight){
+	private int getStrDirection(int defaultValue, float useWidth ,float useHeight){
 		int direction = defaultValue;//文字默认在右底绘制
 		if ((contentBgRight + useWidth <= moveMaxWidth)//direction_right_bottom
 				&& (contentBgBottom + useHeight <= moveMaxHeight)){
@@ -321,7 +319,7 @@ public class MyMoveWidget extends View {
 		}
 		return direction;
 	}
-	private void getStrCoordinate(int width ,int height ,int direction, int type){
+	private void getStrCoordinate(float width ,float height ,int direction, int type){
 		if (type==1){
 			if (direction == WIDGET_DIRECTION_STATE_LEFT_TOP){
 				strLeft = contentLeft - width;
@@ -356,7 +354,7 @@ public class MyMoveWidget extends View {
 	 * @param type 额外添加的距离，针对于绘制线 和矩形时 温度图片的边界在边缘
 	 * @return 左上 左对齐 右上 右对齐
 	 */
-	private void getToolsDirection(int toolsWidth , int toolsHeight , int type){
+	private void getToolsDirection(float toolsWidth , float toolsHeight , int type){
 		//tools Direction
 //		if (type ==1 || type ==2){
 			if ((contentBgRight + toolsWidth <moveMaxWidth) && ((contentBgTop) - toolsHeight >= 0)){               //tools right top
@@ -433,10 +431,11 @@ public class MyMoveWidget extends View {
 	//得到所需的总宽高
 	private void doMeasure(){
 		//用于计算坐标原点偏移量
-		int minLeft, minTop , maxBottom, maxRight;
+//		Log.e(TAG, "doMeasure: ");
+		float minLeft, minTop , maxBottom, maxRight;
 		if (hasBackGroundAndTools){//有工具栏
 			if (tempWidgetData.getType()==1){
-				int min,max ;
+				float min,max ;
 				//点模式，计算最左 及 最顶部 坐标值为整体偏移量
 				min = Math.min(contentBgLeft,toolsBgLeft);
 				min = Math.min(min,strLeft);
@@ -457,24 +456,38 @@ public class MyMoveWidget extends View {
 				hMeasureSpecSize = maxBottom - minTop;
 				wMeasureSpecSize = maxRight - minLeft;
 
-				Log.e(TAG, "doMeasure: minLeft " +minLeft+ " maxRight " + maxRight+ " minTop " +minTop +" maxBottom " +maxBottom );
-				Log.e(TAG, "步骤三: 计算 要绘制的最左边 最右边  最顶部 最底部 ");
+//				Log.e(TAG, "doMeasure: minLeft " +minLeft+ " maxRight " + maxRight+ " minTop " +minTop +" maxBottom " +maxBottom );
+//				Log.e(TAG, "步骤三: 计算 要绘制的最左边 最右边  最顶部 最底部 ");
 				if (isDebug){
 					Log.e(TAG, " doMeasure: w " + wMeasureSpecSize + " hMeasureSpecSize" + hMeasureSpecSize );
 				}
 
-			}else if (tempWidgetData.getType()==2){
-				//点 温度坐标 加上温度文字长宽是否超过内容边界
-				int min,max ;
+			}else if (tempWidgetData.getType()==2 || tempWidgetData.getType() ==3){
+
+
+				//有背景情况下 线模式，四个边界的 值。包含了 高低位在四边延伸半个图片大小的情况
+				float min,max ;
 				//点模式，计算最左的坐标
-				min = Math.min(contentBgLeft,toolsBgLeft);
+				min = Math.min(tempWidgetData.getOtherTemp().getMinTempX()- minTempBt.getWidth()/2,tempWidgetData.getOtherTemp().getMaxTempX()- maxTempBt.getWidth()/2);
+				min = Math.min(min,contentBgLeft);
+				min = Math.min(min,toolsBgLeft);
 				minLeft = min;
-				min = Math.min(contentBgTop,toolsBgTop);
+				min = Math.min(tempWidgetData.getOtherTemp().getMinTempY()- minTempBt.getHeight()/2,tempWidgetData.getOtherTemp().getMaxTempY()- maxTempBt.getHeight()/2);
+				min = Math.min(min,contentBgTop);
+				min = Math.min(min,toolsBgTop);
+//				min = Math.min(contentBgTop,toolsBgTop);
 				minTop = min;
 
-				max = Math.max(contentBgRight,toolsBgRight);
+				max = Math.max(tempWidgetData.getOtherTemp().getMinTempX() + minTempBt.getWidth()/2,tempWidgetData.getOtherTemp().getMaxTempX()+ maxTempBt.getWidth()/2);
+				max = Math.max(max,contentBgRight);
+				max = Math.max(max,toolsBgRight);
+//				max = Math.max(contentBgRight,toolsBgRight);
 				maxRight = max;
-				max = Math.max(contentBgBottom,toolsBgBottom);
+
+				max = Math.max(tempWidgetData.getOtherTemp().getMinTempY() + minTempBt.getHeight()/2,tempWidgetData.getOtherTemp().getMaxTempY()+ maxTempBt.getHeight()/2);
+				max = Math.max(max,contentBgBottom);
+				max = Math.max(max,toolsBgBottom);
+//				max = Math.max(contentBgBottom,toolsBgBottom);
 				maxBottom = max;
 				//线及矩形的偏移量不是这样算
 				xOffset = minLeft;
@@ -483,30 +496,32 @@ public class MyMoveWidget extends View {
 				hMeasureSpecSize = maxBottom - minTop;
 				wMeasureSpecSize = maxRight - minLeft;
 
-			}else if (tempWidgetData.getType() ==3){
-				//点 温度坐标 加上温度文字长宽是否超过内容边界
-				int min,max ;
-				//点模式，计算最左的坐标
-				min = Math.min(contentBgLeft,toolsBgLeft);
-				minLeft = min;
-				min = Math.min(contentBgTop,toolsBgTop);
-				minTop = min;
-
-				max = Math.max(contentBgRight,toolsBgRight);
-				maxRight = max;
-				max = Math.max(contentBgBottom,toolsBgBottom);
-				maxBottom = max;
-				//线及矩形的偏移量不是这样算
-				xOffset = minLeft;
-				yOffset = minTop;
-
-				hMeasureSpecSize = maxBottom - minTop;
-				wMeasureSpecSize = maxRight - minLeft;
 			}
+//			else if (){
+//				//点 温度坐标 加上温度文字长宽是否超过内容边界
+//				int min,max ;
+//				//点模式，计算最左的坐标
+//				min = Math.min(contentBgLeft,toolsBgLeft);
+//				minLeft = min;
+//				min = Math.min(contentBgTop,toolsBgTop);
+//				minTop = min;
+//
+//				max = Math.max(contentBgRight,toolsBgRight);
+//				maxRight = max;
+//				max = Math.max(contentBgBottom,toolsBgBottom);
+//				maxBottom = max;
+//				//线及矩形的偏移量不是这样算
+//				xOffset = minLeft;
+//				yOffset = minTop;
+//
+//				hMeasureSpecSize = maxBottom - minTop;
+//				wMeasureSpecSize = maxRight - minLeft;
+//			}
 		}else {//没有工具栏
 			if (tempWidgetData.getType()==1){
-				int min,max ;
+				float min,max ;
 				//点模式，计算最左的坐标
+
 				min = Math.min(contentBgLeft,strLeft);
 				minLeft = min;
 				min = Math.min(contentBgTop,strTop);
@@ -522,18 +537,29 @@ public class MyMoveWidget extends View {
 
 				hMeasureSpecSize = maxBottom - minTop;
 				wMeasureSpecSize = maxRight - minLeft;
-			}else if (tempWidgetData.getType()==2){
+			}else if (tempWidgetData.getType()==2 ||tempWidgetData.getType() ==3){
+				textNeedHeight = (int) getStrHeight(maxTempTextPaint,maxTempStr);
+
 				//点 温度坐标 加上温度文字长宽是否超过内容边界
-				int min,max ;
-				//点模式，计算最左的坐标
-				min = contentBgLeft;
+				float min,max ;
+				min = Math.min(tempWidgetData.getOtherTemp().getMinTempX() - minTempBt.getWidth()/2.0f,tempWidgetData.getOtherTemp().getMaxTempX()- maxTempBt.getWidth()/2.0f);
+				min = Math.min(min,contentBgLeft);
+//				min = contentBgLeft;
 				minLeft = min;
-				min = contentBgTop;
+
+//				min = Math.min(tempWidgetData.getOtherTemp().getMinTempY()- minTempBt.getHeight()/2,tempWidgetData.getOtherTemp().getMaxTempY()- textNeedHeight);
+				min = Math.min(tempWidgetData.getOtherTemp().getMinTempY()- minTempBt.getHeight()/2 - textNeedHeight,contentBgTop);
+//				min = contentBgTop;
 				minTop = min;
 
-				max = contentBgRight;
+				max = Math.max(tempWidgetData.getOtherTemp().getMinTempX() + minTempBt.getWidth()/2,tempWidgetData.getOtherTemp().getMaxTempX()+ maxTempBt.getWidth()/2);
+				max = Math.max(max,contentBgRight);
+//				max = contentBgRight;
 				maxRight = max;
-				max = contentBgBottom;
+
+//				max = Math.max(,tempWidgetData.getOtherTemp().getMaxTempY()+ textNeedHeight);
+				max = Math.max(tempWidgetData.getOtherTemp().getMinTempY() + minTempBt.getHeight()/2 + textNeedHeight,contentBgBottom);
+//				max = contentBgBottom;
 				maxBottom = max;
 				//线及矩形的偏移量也是这样算
 				xOffset = minLeft;
@@ -541,26 +567,29 @@ public class MyMoveWidget extends View {
 
 				hMeasureSpecSize = maxBottom - minTop;
 				wMeasureSpecSize = maxRight - minLeft;
-			}else if (tempWidgetData.getType() ==3){
-				//点 温度坐标 加上温度文字长宽是否超过内容边界
-				int min,max ;
-				//点模式，计算最左的坐标
-				min = contentBgLeft;
-				minLeft = min;
-				min = contentBgTop;
-				minTop = min;
 
-				max = contentBgRight;
-				maxRight = max;
-				max = contentBgBottom;
-				maxBottom = max;
-				//线及矩形的偏移量不是这样算
-				xOffset = minLeft;
-				yOffset = minTop;
-
-				hMeasureSpecSize = maxBottom - minTop;
-				wMeasureSpecSize = maxRight - minLeft;
+//				Log.e(TAG, "doMeasure: 2*TH = > " + 2* textNeedHeight + " hM = " + hMeasureSpecSize + " WM "+ wMeasureSpecSize) ;
 			}
+//			else if (){
+//				//点 温度坐标 加上温度文字长宽是否超过内容边界
+//				int min,max ;
+//				//点模式，计算最左的坐标
+//				min = contentBgLeft;
+//				minLeft = min;
+//				min = contentBgTop;
+//				minTop = min;
+//
+//				max = contentBgRight;
+//				maxRight = max;
+//				max = contentBgBottom;
+//				maxBottom = max;
+//				//线及矩形的偏移量不是这样算
+//				xOffset = minLeft;
+//				yOffset = minTop;
+//
+//				hMeasureSpecSize = maxBottom - minTop;
+//				wMeasureSpecSize = maxRight - minLeft;
+//			}
 		}
 	}
 	/**
@@ -573,21 +602,21 @@ public class MyMoveWidget extends View {
 		if (hasBackGroundAndTools){//有工具栏及内容背景
 			if (tempWidget.getType() ==1){
 				if (isDebug)
-					Log.e(TAG, "步骤一: 得到内容及其背景坐标 ");
+//					Log.e(TAG, "步骤一: 得到内容及其背景坐标 ");
 				contentLeft = tempWidgetData.getPointTemp().getStartPointX() - bp.getWidth()/2;
 				contentRight = tempWidgetData.getPointTemp().getStartPointX() + bp.getWidth()/2;
 				contentTop = tempWidgetData.getPointTemp().getStartPointY() - bp.getHeight()/2;
 				contentBottom = tempWidgetData.getPointTemp().getStartPointY() + bp.getHeight()/2;
 
-				if (isDebug){
-					Log.e(TAG, "contentLeft " + contentLeft + " contentRight " + contentRight +
-							" contentTop " + contentTop+ " contentBottom " + contentBottom);
-					Log.e(TAG, "contentBgLeft " + contentBgLeft + " contentBgRight " + contentBgRight + " contentBgTop " + contentBgTop
-							+ " contentBgBottom " + contentBgBottom);
-				}
+//				if (isDebug){
+//					Log.e(TAG, "contentLeft " + contentLeft + " contentRight " + contentRight +
+//							" contentTop " + contentTop+ " contentBottom " + contentBottom);
+//					Log.e(TAG, "contentBgLeft " + contentBgLeft + " contentBgRight " + contentBgRight + " contentBgTop " + contentBgTop
+//							+ " contentBgBottom " + contentBgBottom);
+//				}
 
-				if (isDebug)
-					Log.e(TAG, "步骤二: 得到内容及其工具栏方位及其坐标 ");
+//				if (isDebug)
+//					Log.e(TAG, "步骤二: 得到内容及其工具栏方位及其坐标 ");
 			}else if (tempWidget.getType() ==2){
 				contentLeft = tempWidgetData.getOtherTemp().getStartPointX() - minTempBt.getWidth()/2;
 				contentRight = tempWidgetData.getOtherTemp().getEndPointX() + minTempBt.getWidth()/2;
@@ -631,9 +660,10 @@ public class MyMoveWidget extends View {
 	 * @param needWidth 文字需要的长度
 	 * @return 返回计算的X坐标
 	 */
-	private int getPointTempTextCoordinateX(int pointX, Bitmap pointBp , int pointDirection, int needWidth){
+	private int getPointTempTextCoordinateX(int pointX, Bitmap pointBp , int pointDirection, int needWidth,TextPaint tp){
 		//计算温度文字的矩形坐标  从图片边界计算
 //		Log.e(TAG, "getPointTempTextCoordinateX: pointDirection == >  " + pointDirection);
+
 		int calculateX = 0;
 		if (pointDirection == WIDGET_DIRECTION_STATE_LEFT_TOP){
 			//(pointX - pointBp.getWidth()/2) == contentLeft
@@ -655,17 +685,18 @@ public class MyMoveWidget extends View {
 	 * @param needHeight 需要的高度
 	 * @return 计算的Y坐标
 	 */
-	private int getPointTempTextCoordinateY(int pointY,Bitmap pointBp , int pointDirection, int needHeight){
+	private int getPointTempTextCoordinateY(float pointY,Bitmap pointBp , int pointDirection, float needHeight,TextPaint tp){
 		//计算温度文字的矩形坐标  从图片边界计算
+		Paint.FontMetrics metrics = tp.getFontMetrics();
 		int calculateY = 0;
 		if (pointDirection == WIDGET_DIRECTION_STATE_LEFT_TOP){
-			calculateY = pointY + needHeight;
+			calculateY = (int) (pointY - needHeight +(-tp.getFontMetrics().ascent));
 		}else if (pointDirection == WIDGET_DIRECTION_STATE_LEFT_BOTTOM){
-			calculateY = pointY + pointBp.getHeight()/2+ needHeight;
+			calculateY = (int) (pointY + needHeight - tp.getFontMetrics().descent);
 		}else if (pointDirection == WIDGET_DIRECTION_STATE_RIGHT_TOP){
-			calculateY = pointY + needHeight;
+			calculateY = (int) (pointY - needHeight +(-tp.getFontMetrics().ascent));
 		}else if (pointDirection == WIDGET_DIRECTION_STATE_RIGHT_BOTTOM){
-			calculateY = pointY + pointBp.getHeight()/2+ needHeight;
+			calculateY = (int) (pointY + needHeight- tp.getFontMetrics().descent);
 		}
 		return calculateY;
 	}
@@ -724,7 +755,7 @@ public class MyMoveWidget extends View {
 			if(tempWidgetData.getType()==3){
 				canvas.drawRoundRect(rectContent,0,0,bgRoundPaint);
 				float length = mMinHeight/5.0f;
-				int zoomBoxLeft,zoomBoxRight , zoomBoxTop , zoomBoxBottom , centerBeginX,leftRightBeginY;
+				float zoomBoxLeft,zoomBoxRight , zoomBoxTop , zoomBoxBottom , centerBeginX,leftRightBeginY;
 				zoomBoxLeft = contentLeft - recZoomBoxPaintStroke;
 				zoomBoxRight = contentRight + recZoomBoxPaintStroke;
 				zoomBoxTop = contentTop - recZoomBoxPaintStroke;
@@ -776,19 +807,18 @@ public class MyMoveWidget extends View {
 			//绘制点测温文字
 //
 
-			int textX= getPointTempTextCoordinateX(contentLeft,minTempBt,
-					tempWidgetData.getPointTemp().getTempDirection(),textNeedWidth);
-			int textY = getPointTempTextCoordinateY(contentTop ,minTempBt,
-					tempWidgetData.getPointTemp().getTempDirection(),textNeedHeight);
+			float textX= strLeft;
+			int textY = getPointTempTextCoordinateY((contentTop + contentBottom)/2,minTempBt,tempWidgetData.getPointTemp().getTempDirection(),textNeedHeight,pointTextPaint);
 
-//			Log.e(TAG, "onDraw: " + "  textX  ===> " +  textX + " textY " + textY);
-//			canvas.drawLine(textX,textY, textX+ 20, textY,pointTextPaint);
 			canvas.drawText(minTempStr,textX,textY,pointTextPaint);
 		}else if (tempWidgetData.getType() == 2){
+//			Log.e(TAG, "onDraw: type ===2============================");
 
 			//todo 绘制两个点温度 (计算两个点放置的方位)
-			int startX  = tempWidgetData.getOtherTemp().getMinTempX() - xOffset, startY = tempWidgetData.getOtherTemp().getMinTempY() - yOffset;
-			int endX = tempWidgetData.getOtherTemp().getMaxTempX() - xOffset, endY = tempWidgetData.getOtherTemp().getMaxTempY() - yOffset;
+			float startX  = tempWidgetData.getOtherTemp().getMinTempX() - xOffset, startY = tempWidgetData.getOtherTemp().getMinTempY() - yOffset;
+			float endX = tempWidgetData.getOtherTemp().getMaxTempX() - xOffset, endY = tempWidgetData.getOtherTemp().getMaxTempY() - yOffset;
+
+//			Log.e(TAG, "onDraw: type ===2===minx " + startX + " miny = " + startY + "maxx " + endX + " maxY" + endY );
 
 			canvas.drawLine(tempWidgetData.getOtherTemp().getStartPointX() - xOffset,tempWidgetData.getOtherTemp().getStartPointY()-yOffset
 					,tempWidgetData.getOtherTemp().getEndPointX() - xOffset,tempWidgetData.getOtherTemp().getEndPointY()-yOffset,linePaint);
@@ -796,16 +826,17 @@ public class MyMoveWidget extends View {
 			drawMinMaxTemp(canvas,startX,startY,minTempStr,minTempBt,minTempTextPaint,contentLeft,contentRight,contentTop,contentBottom);
 			drawMinMaxTemp(canvas,endX,endY,maxTempStr,maxTempBt,maxTempTextPaint,contentLeft,contentRight,contentTop,contentBottom);
 		}else if (tempWidgetData.getType() == 3){
-			int lsx  = tempWidgetData.getOtherTemp().getStartPointX() - xOffset, lsy = tempWidgetData.getOtherTemp().getStartPointY() - yOffset;
-			int lex = tempWidgetData.getOtherTemp().getEndPointX() - xOffset, ley = tempWidgetData.getOtherTemp().getEndPointY()- yOffset;
+			Log.e(TAG, "onDraw: type ===3============================");
+			float lsx  = tempWidgetData.getOtherTemp().getStartPointX() - xOffset, lsy = tempWidgetData.getOtherTemp().getStartPointY() - yOffset;
+			float lex = tempWidgetData.getOtherTemp().getEndPointX() - xOffset, ley = tempWidgetData.getOtherTemp().getEndPointY()- yOffset;
 			//todo 绘制四条线 矩形
 			canvas.drawLine(lsx,lsy,lex,lsy,linePaint);
 			canvas.drawLine(lex,lsy,lex,ley,linePaint);
 			canvas.drawLine(lex,ley,lsx,ley,linePaint);
 			canvas.drawLine(lsx,ley,lsx,lsy,linePaint);
 			//todo 绘制两个点温度 (计算两个点放置的方位)
-			int startX  = tempWidgetData.getOtherTemp().getMinTempX() - xOffset, startY = tempWidgetData.getOtherTemp().getMinTempY() -yOffset;
-			int endX = tempWidgetData.getOtherTemp().getMaxTempX() - xOffset, endY = tempWidgetData.getOtherTemp().getMaxTempY() - yOffset;
+			float startX  = tempWidgetData.getOtherTemp().getMinTempX() - xOffset, startY = tempWidgetData.getOtherTemp().getMinTempY() -yOffset;
+			float endX = tempWidgetData.getOtherTemp().getMaxTempX() - xOffset, endY = tempWidgetData.getOtherTemp().getMaxTempY() - yOffset;
 
 			drawMinMaxTemp(canvas,startX,startY,minTempStr,minTempBt,minTempTextPaint,contentLeft,contentRight,contentTop,contentBottom);
 			drawMinMaxTemp(canvas,endX,endY,maxTempStr,maxTempBt,maxTempTextPaint,contentLeft,contentRight,contentTop,contentBottom);
@@ -825,33 +856,35 @@ public class MyMoveWidget extends View {
 	 * @param topBorder 上边界
 	 * @param bottomBorder  下边界
 	 */
-	private void drawMinMaxTemp(Canvas canvas ,int drawTempX, int drawTempY ,String tempStr,Bitmap bp,TextPaint tempPaint,
-	                            int leftBorder,int rightBorder,int topBorder,int bottomBorder){
+	private void drawMinMaxTemp(Canvas canvas ,float drawTempX, float drawTempY ,String tempStr,Bitmap bp,TextPaint tempPaint,
+	                            float leftBorder,float rightBorder,float topBorder,float bottomBorder){
 		//温度文字 所需要的宽高，通过画笔计算
 		int tempNeedW,tempNeedH , direction;
 		Rect rect = new Rect();
-		tempNeedW = (int) tempPaint.measureText(tempStr);
 		tempPaint.getTextBounds(tempStr,0,tempStr.length(),rect);
+		tempNeedW = rect.width();
 		tempNeedH = rect.height();
 		//定义图片四个边界
-		int picLeft= drawTempX - bp.getWidth()/3;
-		int picRight = drawTempX + bp.getWidth()/3;
-		int	picTop = drawTempY - bp.getHeight()/3;
-		int picBottom = drawTempY + bp.getHeight()/3;
-		Rect bpRect = new Rect(picLeft,picTop,picRight,picBottom);
+		float picLeft= drawTempX - bp.getWidth()/3;
+		float picRight = drawTempX + bp.getWidth()/3;
+		float picTop = drawTempY - bp.getHeight()/3;
+		float picBottom = drawTempY + bp.getHeight()/3;
+//		Log.e(TAG, "drawMinMaxTemp:  " + picLeft + " " + picRight + " " + picTop + " " + picBottom);
 
-		if (picRight + tempNeedW <= rightBorder && (picTop + picBottom)/2 + tempNeedH < bottomBorder){//右下
+		RectF bpRect = new RectF(picLeft,picTop,picRight,picBottom);
+
+		if (picRight + tempNeedW <= rightBorder && (topBorder + bottomBorder)/2 + tempNeedH < bottomBorder){//右下
 			direction = WIDGET_DIRECTION_STATE_RIGHT_BOTTOM;
-			canvas.drawText(tempStr,picRight,picBottom - tempNeedH,tempPaint);
-		}else if (picRight + tempNeedW <= rightBorder && (picTop + picBottom)/2 - tempNeedH > topBorder){//右上
+			canvas.drawText(tempStr,picRight,(picTop + picBottom)/2.0f - tempPaint.getFontMetrics().top,tempPaint);
+		}else if (picRight + tempNeedW <= rightBorder && (topBorder + bottomBorder)/2 - tempNeedH > topBorder){//右上
 			direction = WIDGET_DIRECTION_STATE_RIGHT_TOP;
-			canvas.drawText(tempStr,picRight,picTop + tempNeedH,tempPaint);
-		}else if (picLeft - tempNeedW >= leftBorder && (picTop + picBottom)/2 - tempNeedH > topBorder){//左上
+			canvas.drawText(tempStr,picRight,(picTop + picBottom)/2.0f- tempPaint.getFontMetrics().top,tempPaint);
+		}else if (picLeft - tempNeedW >= leftBorder && (topBorder + bottomBorder)/2 - tempNeedH > topBorder){//左上
 			direction = WIDGET_DIRECTION_STATE_LEFT_TOP;
-			canvas.drawText(tempStr,picLeft - tempNeedW,picTop + tempNeedH,tempPaint);
-		}else if (picLeft - tempNeedW >= leftBorder && (picTop + picBottom)/2+ tempNeedH < bottomBorder){//左下
+			canvas.drawText(tempStr,picLeft - tempNeedW,(picTop + picBottom)/2.0f - tempPaint.getFontMetrics().top,tempPaint);
+		}else if (picLeft - tempNeedW >= leftBorder && (topBorder + bottomBorder)/2 + tempNeedH < bottomBorder){//左下
 			direction = WIDGET_DIRECTION_STATE_LEFT_BOTTOM;
-			canvas.drawText(tempStr,picLeft - tempNeedW,picBottom - tempNeedH,tempPaint);
+			canvas.drawText(tempStr,picLeft - tempNeedW,(picTop + picBottom)/2.0f - tempPaint.getFontMetrics().top,tempPaint);
 		}
 		canvas.drawBitmap(bp,null,bpRect ,tempPaint);
 	}
@@ -868,7 +901,7 @@ public class MyMoveWidget extends View {
 //		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 //		Log.e(TAG, "onMeasure: " +MeasureSpec.getSize(widthMeasureSpec)+ "   height  "+MeasureSpec.getSize(heightMeasureSpec) );
 //		setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec),MeasureSpec.getSize(heightMeasureSpec));
-		setMeasuredDimension(wMeasureSpecSize,hMeasureSpecSize);
+		setMeasuredDimension((int)wMeasureSpecSize,(int)hMeasureSpecSize);
 	}
 
 	@Override
@@ -898,14 +931,38 @@ public class MyMoveWidget extends View {
 				mTimer.schedule(mTimeTask, 500);
 				break;
 			case MotionEvent.ACTION_MOVE:
-				if (tempWidgetData.isCanMove()){
+				if (hasBackGroundAndTools){
 					if (tempWidgetData.getType()==1){
-						tempWidgetData.getPointTemp().setStartPointX(xOffset+(int) event.getX());
-						tempWidgetData.getPointTemp().setStartPointY(yOffset+(int) event.getY());
-						requestLayout();
+						if (xOffset+ event.getX()>= 0 && xOffset+ event.getX() <= moveMaxWidth &&yOffset+ event.getY()>= 0 && yOffset+ event.getY() <= moveMaxHeight){
+							tempWidgetData.getPointTemp().setStartPointX(xOffset+(int) event.getX());
+							tempWidgetData.getPointTemp().setStartPointY(yOffset+(int) event.getY());
+							requestLayout();
+						}
 					}
-					if (tempWidgetData.getType()==2){}
-					if (tempWidgetData.getType()==3){}
+					if (tempWidgetData.getType()==2){
+						if (tempWidgetData.getOtherTemp().getStartPointX()+ event.getX()>= 0
+								&&tempWidgetData.getOtherTemp().getEndPointX() + event.getX() <= moveMaxWidth
+								&&tempWidgetData.getOtherTemp().getStartPointY() + event.getY()>= 0
+								&&tempWidgetData.getOtherTemp().getEndPointY() + event.getY() <= moveMaxHeight) {
+//							tempWidgetData.getOtherTemp().setStartPointX(tempWidgetData.getOtherTemp().getStartPointX() + (int) event.getX());
+//							tempWidgetData.getOtherTemp().setStartPointY(tempWidgetData.getOtherTemp().getStartPointY() + (int) event.getY());
+//							tempWidgetData.getOtherTemp().setEndPointX(tempWidgetData.getOtherTemp().getEndPointX() + (int) event.getX());
+//							tempWidgetData.getOtherTemp().setEndPointY(tempWidgetData.getOtherTemp().getEndPointY() + (int) event.getY());
+//							requestLayout();
+						}
+					}
+					if (tempWidgetData.getType()==3){
+						if (tempWidgetData.getOtherTemp().getStartPointX()+ event.getX()>= 0
+								&&tempWidgetData.getOtherTemp().getEndPointX() + event.getX() <= moveMaxWidth
+								&&tempWidgetData.getOtherTemp().getStartPointY() + event.getY()>= 0
+								&&tempWidgetData.getOtherTemp().getEndPointY() + event.getY() <= moveMaxHeight) {
+//							tempWidgetData.getOtherTemp().setStartPointX(tempWidgetData.getOtherTemp().getStartPointX() + (int) event.getX());
+//							tempWidgetData.getOtherTemp().setStartPointY(tempWidgetData.getOtherTemp().getStartPointY() + (int) event.getY());
+//							tempWidgetData.getOtherTemp().setEndPointX(tempWidgetData.getOtherTemp().getEndPointX() + (int) event.getX());
+//							tempWidgetData.getOtherTemp().setEndPointY(tempWidgetData.getOtherTemp().getEndPointY() + (int) event.getY());
+//							requestLayout();
+						}
+					}
 
 				}
 				Log.e(TAG, "onTouchEvent:child action move" + event.getX() +"  Y = >"+ event.getY());
