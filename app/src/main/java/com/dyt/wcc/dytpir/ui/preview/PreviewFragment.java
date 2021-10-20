@@ -34,6 +34,8 @@ import com.dyt.wcc.common.utils.CreateBitmap;
 import com.dyt.wcc.common.utils.FontUtils;
 import com.dyt.wcc.common.widget.MyToggleView;
 import com.dyt.wcc.common.widget.SwitchMultiButton;
+import com.dyt.wcc.common.widget.dragView.DragTempContainer;
+import com.dyt.wcc.common.widget.dragView.TempWidgetObj;
 import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.constans.DYConstants;
 import com.dyt.wcc.dytpir.databinding.FragmentPreviewMainBinding;
@@ -63,6 +65,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private UVCCameraHandler                   mUvcCameraHandler;
 	private Surface stt;
 	private PopupWindow PLRPopupWindows;//点线矩形测温弹窗
+	private PopupWindow allPopupWindows;
 
 //	private USBMonitor mUsbMonitor ;
 	private int mTextureViewWidth,mTextureViewHeight;
@@ -301,7 +304,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.toggleAreaCheck.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
 			@Override
 			public void onClick (boolean checkState) {
-				Toast.makeText(mContext.get(), "State = "+ checkState,Toast.LENGTH_SHORT).show();
+				Toast.makeText(mContext.get(), "区域检查 = "+ checkState,Toast.LENGTH_SHORT).show();
 //				mDataBinding.dragTempContainerPreviewFragment.closeHighLowTemp();
 			}
 		});
@@ -399,6 +402,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				popSettingBinding.switchChoiceTempUnit.setText(new String[]{"℃","℉","K"}).setSelectedTab(0).setOnSwitchListener(new SwitchMultiButton.OnSwitchListener() {
 					@Override
 					public void onSwitch (int position, String tabText) {
+						mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(position);
 //						Toast.makeText(mContext.get(),""+position,Toast.LENGTH_SHORT).show();
 
 
@@ -464,6 +468,20 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			}
 		});
 
+		mDataBinding.dragTempContainerPreviewFragment.setChildToolsClickListener(new DragTempContainer.OnChildToolsClickListener() {
+			@Override
+			public void onChildToolsClick (TempWidgetObj child, int position) {
+
+				if (position==0){
+					mDataBinding.dragTempContainerPreviewFragment.removeChildByDataObj(child);
+				}else {
+					if (isDebug)Log.e(TAG, "onChildToolsClick: " + position);
+					Toast.makeText(mContext.get(),"click position "+ position ,Toast.LENGTH_SHORT).show();
+
+				}
+			}
+		});
+
 
 		mDataBinding.setPf(this);
 		mViewModel = new ViewModelProvider(getViewModelStore(),
@@ -481,16 +499,16 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	 * @param YOffset
 	 */
 	private void showPopWindows(View view,int widthMargin,int XOffset, int YOffset){
-		PopupWindow popupWindow = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-		popupWindow.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
-		popupWindow.setHeight(popupWindow.getContentView().getMeasuredHeight());
-		popupWindow.setWidth(fl.getWidth()- widthMargin);
+		allPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		allPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
+		allPopupWindows.setHeight(allPopupWindows.getContentView().getMeasuredHeight());
+		allPopupWindows.setWidth(fl.getWidth()- widthMargin);
 
-		popupWindow.setFocusable(true);
-		popupWindow.setOutsideTouchable(true);
-		popupWindow.setTouchable(true);
+		allPopupWindows.setFocusable(true);
+		allPopupWindows.setOutsideTouchable(true);
+		allPopupWindows.setTouchable(true);
 
-		popupWindow.showAsDropDown(mDataBinding.flPreview,XOffset,-popupWindow.getHeight()-YOffset, Gravity.CENTER);
+		allPopupWindows.showAsDropDown(mDataBinding.flPreview,XOffset,-allPopupWindows.getHeight()-YOffset, Gravity.CENTER);
 	}
 
 	//温度度量模式切换
@@ -517,27 +535,43 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		}
 	};
 
+	private void setPalette(int id){
+		if (allPopupWindows != null){
+			allPopupWindows.dismiss();
+		}
+		if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing() && id >= 1 && id <=6){
+			mUvcCameraHandler.setPalette(id);
+			mDataBinding.customSeekbarPreviewFragment.setBackcolor(id);
+			mDataBinding.customSeekbarPreviewFragment.invalidate();//刷新控件
+		}
+	}
 	//温度度量模式切换
 	View.OnClickListener paletteChoiceListener = new View.OnClickListener() {
 		@Override
 		public void onClick (View v) {
 			switch (v.getId()){
 				case R.id.palette_layout_Tiehong:
+					setPalette(1);
 					Toast.makeText(mContext.get(),"palette_layout_Tiehong ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.palette_layout_Caihong:
+					setPalette(2);
 					Toast.makeText(mContext.get(),"palette_layout_Caihong ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.palette_layout_Hongre:
+					setPalette(3);
 					Toast.makeText(mContext.get(),"palette_layout_Hongre ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.palette_layout_Heire:
+					setPalette(4);
 					Toast.makeText(mContext.get(),"palette_layout_Heire ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.palette_layout_Baire:
+					setPalette(5);
 					Toast.makeText(mContext.get(),"palette_layout_Baire ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.palette_layout_Lenglan:
+					setPalette(6);
 					Toast.makeText(mContext.get(),"palette_layout_Lenglan ", Toast.LENGTH_SHORT).show();
 					break;
 			}
