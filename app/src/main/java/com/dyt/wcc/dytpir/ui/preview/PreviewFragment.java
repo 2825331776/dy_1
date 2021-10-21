@@ -304,6 +304,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.toggleAreaCheck.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
 			@Override
 			public void onClick (boolean checkState) {
+				if (checkState){
+					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck();
+				}else {//close
+
+				}
 				Toast.makeText(mContext.get(), "区域检查 = "+ checkState,Toast.LENGTH_SHORT).show();
 //				mDataBinding.dragTempContainerPreviewFragment.closeHighLowTemp();
 			}

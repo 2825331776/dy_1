@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -15,6 +16,7 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 
 import com.dyt.wcc.common.R;
+import com.dyt.wcc.common.utils.DensityUtil;
 
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
@@ -74,6 +76,7 @@ public class DragTempContainer extends RelativeLayout {
 
 
 	private Paint testPaint;
+	private RectF rectFHighTempAlarm;
 	private MyMoveWidget operateChild = null;
 
 	protected void setBitMap(Bitmap point,Bitmap max , Bitmap min){
@@ -115,7 +118,9 @@ public class DragTempContainer extends RelativeLayout {
 	private void initAttrs(){
 
 		testPaint = new Paint();
-		testPaint.setColor(getResources().getColor(R.color.min_temp_text_color_blue));
+		testPaint.setStyle(Paint.Style.STROKE);
+		testPaint.setStrokeWidth(DensityUtil.dp2px(mContext.get(),3));
+		testPaint.setColor(getResources().getColor(R.color.max_temp_text_color_red));
 
 	}
 	private void initView(){
@@ -123,8 +128,7 @@ public class DragTempContainer extends RelativeLayout {
 		userAdd = new ArrayList<>();
 		highLowTempLists = new ArrayList<>();
 		tempSource = new float[256*196+10];
-		minAddWidgetWidth = minAddWidgetHeight = 100;
-
+		minAddWidgetWidth = minAddWidgetHeight = DensityUtil.dp2px(mContext.get(),70);//最小为50个dp
 
 		pointBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorgreen);
 		minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorblue);
@@ -156,10 +160,14 @@ public class DragTempContainer extends RelativeLayout {
 	@Override
 	protected void onDraw (Canvas canvas) {
 		super.onDraw(canvas);
+//		rectFHighTempAlarm = new RectF(6,6,screenWidth-6,screenHeight- 6);
+//		canvas.drawRect(rectFHighTempAlarm,testPaint);
+
 //		canvas.drawCircle(50,50,10,testPaint);
 
 //		canvas.drawCircle(50,10,3,testPaint);
 	}
+
 
 	@Override
 	protected void onLayout (boolean changed, int l, int t, int r, int b) {
@@ -184,6 +192,45 @@ public class DragTempContainer extends RelativeLayout {
 //		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 //
 //	}
+	/**
+	 * 创建区域检查
+	 * 打开逻辑：userAdd中，无区域检查的矩形，则添加，否则，拿到矩形的列表 穿给控件。
+	 * 取消逻辑：控件层取消
+	 */
+	public List<MyMoveWidget> openAreaCheck(){
+		List<MyMoveWidget> recList = new ArrayList<>();
+		for (MyMoveWidget child : userAdd){
+			if (child.getView().getType()==3){
+				recList.add(child);
+			}
+		}
+		if (recList.size() ==0){
+			TempWidgetObj tempWidget = new TempWidgetObj();
+			//校正起始点坐标
+			OtherTempWidget otherTempWidget = new OtherTempWidget();
+
+			otherTempWidget.setStartPointX(screenWidth/3.0f);
+			otherTempWidget.setStartPointY(screenHeight/3.0f);
+			otherTempWidget.setEndPointX(screenWidth/3.0f*2);
+			otherTempWidget.setEndPointY(screenWidth/3.0f*2);
+
+			updateLRTemp(otherTempWidget,3);
+
+			tempWidget.setType(3);
+			tempWidget.setCanMove(true);
+			tempWidget.setSelect(false);
+			tempWidget.setTempTextSize(20);
+			tempWidget.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete, R.mipmap.define_view_tools_other});
+			tempWidget.setOtherTemp(otherTempWidget);
+
+			MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),tempWidget,screenWidth,screenHeight);
+			moveWidget.setChildToolsClickListener(mChildToolsClickListener);
+			//todo 重置userAddView的集合
+			addView(moveWidget);
+			userAdd.add(moveWidget);
+		}
+		return recList;
+	}
 
 	/**
 	 * 给温度设置后缀
@@ -275,18 +322,31 @@ public class DragTempContainer extends RelativeLayout {
 		max = Math.max(startPressX,endPressX);
 		startPressX = min;
 		endPressX = max;
+		min = Math.min(startPressY,endPressY);
+		max = Math.max(startPressY,endPressY);
+		startPressY = min;
+		endPressY = max;
+		//type 2/3 校正X坐标
 		if (endPressX - startPressX < minAddWidgetWidth){
-			return false;
+			if(startPressX > screenWidth - minAddWidgetWidth){
+				endPressX = screenWidth ;
+				startPressX  = screenWidth - minAddWidgetWidth;
+			} else {
+				endPressX = startPressX + minAddWidgetWidth;
+			}
 		}
-
 		if (type ==2){
 			endPressY = startPressY;
-		}else {//type =3;
-			min = Math.min(startPressY,endPressY);
-			max = Math.max(startPressY,endPressY);
-			startPressY = min;
-			endPressY = max;
-			return endPressY - startPressY >= minAddWidgetHeight;
+		}else {//type =3; 校正Y坐标
+			if (endPressY - startPressY < minAddWidgetHeight){
+				if(startPressY > screenHeight - minAddWidgetHeight){
+					//
+					endPressY = screenHeight ;
+					startPressY  = screenHeight - minAddWidgetHeight;
+				} else {
+					endPressY = startPressY + minAddWidgetHeight;
+				}
+			}
 		}
 		return true;
 	}
@@ -345,12 +405,6 @@ public class DragTempContainer extends RelativeLayout {
 	}
 
 
-	private void getMaxMinXYValue(OtherTempWidget other,int mode){
-		int startX,startY,endX ,endY;
-
-
-	}
-
 
 	public void openHighLowTemp(){
 		addHighLowTempWidget(tempSource[1],tempSource[2],tempSource[3],1,1);
@@ -388,16 +442,11 @@ public class DragTempContainer extends RelativeLayout {
 		widget.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete, R.mipmap.define_view_tools_other});
 		widget.setPointTemp(pointTempWidget);
 
-		MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),widget,screenWidth,screenHeight);
-		moveWidget.setChildToolsClickListener(mChildToolsClickListener);
-		addView(moveWidget);
-		pointNum++;
-		userAdd.add(moveWidget);
-
+		resetUserAddView(widget);
 		drawTempMode = -1;
 	}
 	private void createLineOrRecView(){
-		Log.e(TAG, "reviseCoordinate: " + reviseCoordinate(drawTempMode));
+//		Log.e(TAG, "reviseCoordinate: " + reviseCoordinate(drawTempMode));
 		if (reviseCoordinate(drawTempMode)){
 			TempWidgetObj tempWidget = new TempWidgetObj();
 			//校正起始点坐标
@@ -417,13 +466,61 @@ public class DragTempContainer extends RelativeLayout {
 			tempWidget.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete, R.mipmap.define_view_tools_other});
 			tempWidget.setOtherTemp(otherTempWidget);
 
-			MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),tempWidget,screenWidth,screenHeight);
-			moveWidget.setChildToolsClickListener(mChildToolsClickListener);
-//			moveWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
-			addView(moveWidget);
-			userAdd.add(moveWidget);
+			//todo 重置userAddView的集合
+			resetUserAddView(tempWidget);
 		}
 		drawTempMode = -1;
+	}
+
+	/**
+	 * 新添加子View的业务逻辑，小于类型所规定的值，直接添加。
+	 * 大于类型的值。第一个添加的直接移除。再添加一个。
+	 * @param childData 数据源
+	 */
+	private void resetUserAddView(TempWidgetObj childData){
+		int type = childData.getType();
+		MyMoveWidget firstTypeChild  = null;
+		int typeCount = 0;
+		//记录第一个同类型的View,并累计有都少个同类型
+		for (MyMoveWidget child : userAdd){
+			if (type == child.getView().getType() && firstTypeChild ==null){
+				firstTypeChild = child;
+			}
+			if (type == child.getView().getType()){
+				typeCount++;
+			}
+		}
+		switch (type){
+			case 1:
+				if (typeCount == POINT_MAX_NUMBER){
+					removeView(firstTypeChild);
+					userAdd.remove(firstTypeChild);
+				}
+				addChild(childData);
+				break;
+			case 2:
+				if (typeCount == LINE_MAX_NUMBER){
+					removeView(firstTypeChild);
+					userAdd.remove(firstTypeChild);
+				}
+				addChild(childData);
+				break;
+			case 3:
+				if (typeCount == RECTANGLE_MAX_NUMBER){
+					removeView(firstTypeChild);
+					userAdd.remove(firstTypeChild);
+				}
+				addChild(childData);
+				break;
+		}
+	}
+
+	private void addChild(TempWidgetObj childData){
+		MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),childData,screenWidth,screenHeight);
+		moveWidget.setChildToolsClickListener(mChildToolsClickListener);
+		//todo 重置userAddView的集合
+		addView(moveWidget);
+		userAdd.add(moveWidget);
 	}
 
 	/**
@@ -601,9 +698,7 @@ public class DragTempContainer extends RelativeLayout {
 					if (drawTempMode == 2 || drawTempMode ==3){
 						createLineOrRecView();
 					}else if (drawTempMode ==1) {
-						if (pointNum < 5){
 							createPointView();
-						}
 					}
 					break;
 			}

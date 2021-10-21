@@ -69,6 +69,7 @@ public class MyMoveWidget extends View {
 	public static final int WIDGET_DIRECTION_STATE_LEFT_BOTTOM = 0x101;//257
 	public static final int WIDGET_DIRECTION_STATE_RIGHT_TOP = 0x110;//272
 	public static final int WIDGET_DIRECTION_STATE_RIGHT_BOTTOM = 0x111;//273
+	public static final int CENTER_RECTANGLE = 0x1111;//中心部分
 
 	//内容的矩形、内容背景矩形、 工具图片绘制的矩形、 工具图片的背景 矩形、 文字矩形
 	private RectF rectContent , rectContentBg , rectTool , rectToolsBg , textRectBg;
@@ -87,6 +88,8 @@ public class MyMoveWidget extends View {
 	private float xOffset, yOffset;
 
 	private float pressDownX,pressDownY;
+	private float zoomLineLength ;
+	private int rectangleState ;
 
 	private DragTempContainer.OnChildToolsClickListener mChildToolsClickListener;
 	public void setChildToolsClickListener (DragTempContainer.OnChildToolsClickListener childToolsClickListener) {
@@ -121,6 +124,7 @@ public class MyMoveWidget extends View {
 		padTop = padBottom= padLeft = padRight = 14;//设置背景间距,动态计算。不同dpi有明显差异  3DP
 		mMinHeight = mMinWidth = 15*padLeft;//矩形的最小宽高等于五倍pad
 		recZoomBoxPaintStroke = DensityUtil.dp2px(mContext,5) ;
+		zoomLineLength = DensityUtil.dp2px(mContext,20);
 	}
 	private Timer mTimer = null;
 	private TimerTask mTimeTask;
@@ -193,7 +197,7 @@ public class MyMoveWidget extends View {
 		bgRoundPaint = new Paint();
 		bgRoundPaint.setStyle(Paint.Style.FILL);
 		bgRoundPaint.setColor(getResources().getColor(R.color.bg_move_layout_round_bg));
-		bgRoundPaint.setAlpha(150);//透明度 0透明-255不透明
+		bgRoundPaint.setAlpha(100);//透明度 0透明-255不透明
 		bgRoundPaint.setFlags(Paint.ANTI_ALIAS_FLAG);//抗锯齿
 
 		recZoomBox = new Paint();
@@ -716,43 +720,42 @@ public class MyMoveWidget extends View {
 		//是否绘制背景
 		if (hasBackGroundAndTools){//可选 | 不可选
 			if(tempWidgetData.getType()==3){
-				canvas.drawRoundRect(rectContent,0,0,bgRoundPaint);
-				float length = mMinHeight/5.0f;
+//				canvas.drawRoundRect(rectContent,0,0,bgRoundPaint);
 				float zoomBoxLeft,zoomBoxRight , zoomBoxTop , zoomBoxBottom , centerBeginX,leftRightBeginY;
-				zoomBoxLeft = contentLeft - recZoomBoxPaintStroke;
-				zoomBoxRight = contentRight + recZoomBoxPaintStroke;
-				zoomBoxTop = contentTop - recZoomBoxPaintStroke;
-				zoomBoxBottom = contentBottom + recZoomBoxPaintStroke;
-				centerBeginX = (int) ((contentLeft+contentRight - length)/2);
-				leftRightBeginY = (int) ((contentTop+contentBottom - length)/2);
+				zoomBoxLeft = tempWidgetData.getOtherTemp().getStartPointX() - xOffset - recZoomBoxPaintStroke;
+				zoomBoxRight = tempWidgetData.getOtherTemp().getEndPointX() - xOffset + recZoomBoxPaintStroke;
+				zoomBoxTop = tempWidgetData.getOtherTemp().getStartPointY() - yOffset - recZoomBoxPaintStroke;
+				zoomBoxBottom = tempWidgetData.getOtherTemp().getEndPointY() - yOffset + recZoomBoxPaintStroke;
+				centerBeginX = (int) ((contentLeft+contentRight - zoomLineLength)/2);
+				leftRightBeginY = (int) ((contentTop+contentBottom - zoomLineLength)/2);
 
 				//todo 矩形特定的背景
 				//左上
-				canvas.drawLine(zoomBoxLeft,zoomBoxTop,zoomBoxLeft + length,zoomBoxTop,recZoomBox);
-				canvas.drawLine(zoomBoxLeft,zoomBoxTop,zoomBoxLeft,zoomBoxTop + length,recZoomBox);
+				canvas.drawLine(zoomBoxLeft-recZoomBoxPaintStroke/2.0f,zoomBoxTop,zoomBoxLeft + zoomLineLength,zoomBoxTop,recZoomBox);
+				canvas.drawLine(zoomBoxLeft,zoomBoxTop,zoomBoxLeft,zoomBoxTop + zoomLineLength,recZoomBox);
 
 				canvas.drawLine(centerBeginX,zoomBoxTop,
-						centerBeginX+length,zoomBoxTop,recZoomBox);
+						centerBeginX+zoomLineLength,zoomBoxTop,recZoomBox);
 
+				canvas.drawLine(zoomBoxRight + recZoomBoxPaintStroke/2.0f,zoomBoxTop,
+						zoomBoxRight - zoomLineLength,zoomBoxTop,recZoomBox);
 				canvas.drawLine(zoomBoxRight,zoomBoxTop,
-						zoomBoxRight - length,zoomBoxTop,recZoomBox);
-				canvas.drawLine(zoomBoxRight,zoomBoxTop,
-						zoomBoxRight,zoomBoxTop + length,recZoomBox);
+						zoomBoxRight,zoomBoxTop + zoomLineLength,recZoomBox);
 				//绘制左右两条
-				canvas.drawLine(zoomBoxLeft,leftRightBeginY,zoomBoxLeft,leftRightBeginY+length,recZoomBox);
-				canvas.drawLine(zoomBoxRight,leftRightBeginY,zoomBoxRight,leftRightBeginY+length,recZoomBox);
+				canvas.drawLine(zoomBoxLeft,leftRightBeginY,zoomBoxLeft,leftRightBeginY+zoomLineLength,recZoomBox);
+				canvas.drawLine(zoomBoxRight,leftRightBeginY,zoomBoxRight,leftRightBeginY+zoomLineLength,recZoomBox);
 				//底部三条
 
-				canvas.drawLine(zoomBoxLeft,zoomBoxBottom,zoomBoxLeft + length,zoomBoxBottom,recZoomBox);
-				canvas.drawLine(zoomBoxLeft,zoomBoxBottom,zoomBoxLeft,zoomBoxBottom - length,recZoomBox);
+				canvas.drawLine(zoomBoxLeft-recZoomBoxPaintStroke/2.0f,zoomBoxBottom,zoomBoxLeft + zoomLineLength,zoomBoxBottom,recZoomBox);
+				canvas.drawLine(zoomBoxLeft,zoomBoxBottom,zoomBoxLeft,zoomBoxBottom - zoomLineLength,recZoomBox);
 
 				canvas.drawLine(centerBeginX,zoomBoxBottom,
-						centerBeginX+length,zoomBoxBottom,recZoomBox);
+						centerBeginX+zoomLineLength,zoomBoxBottom,recZoomBox);
 
+				canvas.drawLine(zoomBoxRight+recZoomBoxPaintStroke/2.0f,zoomBoxBottom,
+						zoomBoxRight - zoomLineLength,zoomBoxBottom,recZoomBox);
 				canvas.drawLine(zoomBoxRight,zoomBoxBottom,
-						zoomBoxRight - length,zoomBoxBottom,recZoomBox);
-				canvas.drawLine(zoomBoxRight,zoomBoxBottom,
-						zoomBoxRight,zoomBoxBottom - length,recZoomBox);
+						zoomBoxRight,zoomBoxBottom - zoomLineLength,recZoomBox);
 
 			}else {
 				//绘制内容的背景
@@ -816,62 +819,81 @@ public class MyMoveWidget extends View {
 	 * @param tempStr 温度数值
 	 * @param bp 温度图片
 	 * @param tempPaint 绘制的画笔
-	 * @param leftBorder  内容左边界
-	 * @param rightBorder  右边界
-	 * @param topBorder 上边界
-	 * @param bottomBorder  下边界
+	 * @param leftBorder  内容左边界 contentLeft
+	 * @param rightBorder  右边界  contentRight
+	 * @param topBorder 上边界     contentTop
+	 * @param bottomBorder  下边界 contentBottom
+	 *
+	 * 计算线和矩形 最高最低温 文字的绘制位置
+	 * 1：能拿到温度的点的坐标，计算出图片绘制四个边界的坐标
 	 */
 	private void drawMinMaxTemp(Canvas canvas ,float drawTempX, float drawTempY ,String tempStr,Bitmap bp,TextPaint tempPaint,
 	                            float leftBorder,float rightBorder,float topBorder,float bottomBorder, int drawType){
 		//温度文字 所需要的宽高，通过画笔计算
-		float tempNeedW,tempNeedH ;int direction = WIDGET_DIRECTION_STATE_RIGHT_BOTTOM;
+		float tempNeedW,tempNeedH ;
+		int direction = WIDGET_DIRECTION_STATE_RIGHT_BOTTOM;
 		Rect rect = new Rect();
 		tempPaint.getTextBounds(tempStr,0,tempStr.length(),rect);
 		tempNeedW = rect.width();
-//		tempNeedH = rect.height();
-		tempNeedH = -tempPaint.getFontMetrics().ascent;
+		tempNeedH = tempPaint.getFontMetrics().descent - tempPaint.getFontMetrics().ascent;//文字绘制所需高度
+//		tempNeedH = - tempPaint.getFontMetrics().ascent;
 		//定义图片四个边界
 		float picLeft= drawTempX - bp.getWidth()/3.0f;
 		float picRight = drawTempX + bp.getWidth()/3.0f;
 		float picTop = drawTempY - bp.getHeight()/3.0f;
 		float picBottom = drawTempY + bp.getHeight()/3.0f;
-//		Log.e(TAG, "drawMinMaxTemp:  " + picLeft + " " + picRight + " " + picTop + " " + picBottom);
 
+//		if (isDebug){
+//			Log.e(TAG, "type 2 = : tempNeedW " + tempNeedW + " tempNeedH " + tempNeedH );
+//			Log.e(TAG, "type 2 = : left = " + leftBorder + " right = " + rightBorder +  " top "  + topBorder + " bottom " + bottomBorder);
+//			Log.e(TAG, "type 2 = : picLeft = " + picLeft + " picRight = " + picRight +  " picTop "  + picTop + " picBottom " + picBottom);
+//		}
 		RectF bpRect = new RectF(picLeft,picTop,picRight,picBottom);
+		//(rightBorder - (picRight + tempNeedW)) >= ((picLeft - tempNeedW)- leftBorder) 图片右边到右边界的距离 大于等于 图片左边到左边界的距离 则放置在右边
+		boolean isRight  = (rightBorder - (picRight + tempNeedW)) >= ((picLeft - tempNeedW)- leftBorder);
 
-		if (picRight + tempNeedW <= rightBorder && (topBorder + bottomBorder)/2 - tempNeedH < bottomBorder){//右下
-			direction = WIDGET_DIRECTION_STATE_RIGHT_BOTTOM;
-		}else if (picRight + tempNeedW <= rightBorder && (topBorder + bottomBorder)/2 - tempNeedH >= topBorder){//右上
-			direction = WIDGET_DIRECTION_STATE_RIGHT_TOP;
-		}else if (picLeft - tempNeedW >= leftBorder && (topBorder + bottomBorder)/2 - tempNeedH > topBorder){//左上
-			direction = WIDGET_DIRECTION_STATE_LEFT_TOP;
-		}else if (picLeft - tempNeedW >= leftBorder && (topBorder + bottomBorder)/2 + tempNeedH < bottomBorder){//左下
-			direction = WIDGET_DIRECTION_STATE_LEFT_BOTTOM;
-		}
 		if (drawType ==2){
+			if (isRight ){//右下
+				direction = WIDGET_DIRECTION_STATE_RIGHT_BOTTOM;
+			}else {//左上
+				direction = WIDGET_DIRECTION_STATE_LEFT_BOTTOM;
+			}
+
+			Log.e(TAG, "drawMinMaxTemp: direction = = > " + direction);
 			if (direction ==WIDGET_DIRECTION_STATE_RIGHT_BOTTOM ){direction = WIDGET_DIRECTION_STATE_RIGHT_TOP;}
 			if (direction ==WIDGET_DIRECTION_STATE_LEFT_BOTTOM ){direction = WIDGET_DIRECTION_STATE_LEFT_TOP;}
 			switch (direction){
 				case WIDGET_DIRECTION_STATE_LEFT_TOP:
-					canvas.drawText(tempStr,picLeft - tempNeedW, picBottom- tempPaint.getFontMetrics().descent,tempPaint);
+					canvas.drawText(tempStr,picLeft - tempNeedW, picBottom,tempPaint);
 					break;
 				case WIDGET_DIRECTION_STATE_RIGHT_TOP:
-					canvas.drawText(tempStr,picRight,picBottom- tempPaint.getFontMetrics().descent,tempPaint);
+					canvas.drawText(tempStr,picRight,picBottom,tempPaint);
 					break;
 			}
 		}else {//矩形 绘制温度文字方位
+
+			if (isRight && ((picBottom+ picTop)/2.0f + tempNeedH <= bottomBorder)){//右下
+				direction = WIDGET_DIRECTION_STATE_RIGHT_BOTTOM;
+			}else if (isRight && ((picBottom+ picTop)/2.0f - tempNeedH >= topBorder)){//右上
+				direction = WIDGET_DIRECTION_STATE_RIGHT_TOP;
+			}else if ((!isRight) && ((picBottom+ picTop)/2.0f - tempNeedH >= topBorder)){//左上
+				direction = WIDGET_DIRECTION_STATE_LEFT_TOP;
+			}else if ((!isRight) && ((picBottom+ picTop)/2.0f + tempNeedH <= bottomBorder)){//左下
+				direction = WIDGET_DIRECTION_STATE_LEFT_BOTTOM;
+			}
+
 			switch (direction){
 				case WIDGET_DIRECTION_STATE_LEFT_TOP:
 					canvas.drawText(tempStr,picLeft - tempNeedW,(picTop + picBottom)/2.0f - tempPaint.getFontMetrics().descent,tempPaint);
 					break;
 				case WIDGET_DIRECTION_STATE_LEFT_BOTTOM:
-					canvas.drawText(tempStr,picLeft - tempNeedW,(picTop + picBottom)/2.0f - tempPaint.getFontMetrics().top,tempPaint);
+					canvas.drawText(tempStr,picLeft - tempNeedW,(picTop + picBottom)/2.0f - tempPaint.getFontMetrics().ascent,tempPaint);
 					break;
 				case WIDGET_DIRECTION_STATE_RIGHT_TOP:
 					canvas.drawText(tempStr,picRight,(picTop + picBottom)/2.0f - tempPaint.getFontMetrics().descent,tempPaint);
 					break;
 				case WIDGET_DIRECTION_STATE_RIGHT_BOTTOM:
-					canvas.drawText(tempStr,picRight,(picTop + picBottom)/2.0f - tempPaint.getFontMetrics().top,tempPaint);
+					canvas.drawText(tempStr,picRight,(picTop + picBottom)/2.0f - tempPaint.getFontMetrics().ascent,tempPaint);
 					break;
 			}
 		}
@@ -880,13 +902,10 @@ public class MyMoveWidget extends View {
 	}
 	@Override
 	protected void onLayout (boolean changed, int l, int t, int r, int b) {
-//		layout(xOffset,yOffset, xOffset+wMeasureSpecSize, yOffset+hMeasureSpecSize);
-//		Log.e(TAG, "onLayout: ");
 	}
 
 	@Override
 	protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
-//		Log.e(TAG, "============ Child ===onMeasure========== ");
 		initData();
 //		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 //		Log.e(TAG, "onMeasure: " +MeasureSpec.getSize(widthMeasureSpec)+ "   height  "+MeasureSpec.getSize(heightMeasureSpec) );
@@ -898,7 +917,166 @@ public class MyMoveWidget extends View {
 	public boolean dispatchTouchEvent (MotionEvent ev) {
 		return super.dispatchTouchEvent(ev);
 	}
-	//
+
+	/**
+	 * 判断矩形模式按下的点在哪个位置
+	 * @param x 自我坐标原点的相对X坐标
+	 * @param y 自我坐标原点的相对Y坐标
+	 */
+	private int setPressDownState(float x, float y){
+		//计算点所在的响应区域
+		int state = CENTER_RECTANGLE;
+		//左边
+		if (x >= contentBgLeft && x <= (contentBgLeft + zoomLineLength + 2.0f* recZoomBoxPaintStroke)){
+			if (y >= contentBgTop && y <= (contentBgTop + zoomLineLength + 2.0f* recZoomBoxPaintStroke)){
+				//左上
+				state = WIDGET_DIRECTION_STATE_LEFT_TOP;
+			}else if (y <= contentBgBottom && y >= (contentBgBottom - zoomLineLength - 2.0f* recZoomBoxPaintStroke) ){
+				//左下
+				state = WIDGET_DIRECTION_STATE_LEFT_BOTTOM;
+			}else if (y >= (contentBgTop + contentBgBottom - zoomLineLength)/2.0f && y <= (contentBgTop + contentBgBottom + zoomLineLength)/2.0f
+			&& x <= (contentLeft + zoomLineLength)){
+				//左边中部
+				state = WIDGET_DIRECTION_STATE_LEFT;
+			}
+		}else if (x >= (contentBgLeft + contentBgRight - zoomLineLength)/2.0f && x <= (contentBgLeft + contentBgRight + zoomLineLength)/2.0f ){
+			//中部两点
+			if (y >= contentBgTop && y <= (contentTop + zoomLineLength)){
+				//顶部
+				state = WIDGET_DIRECTION_STATE_TOP;
+			}else if (y <= contentBgBottom && y >= (contentBottom - zoomLineLength)){
+				//底部
+				state = WIDGET_DIRECTION_STATE_BOTTOM;
+			}
+		}else if ( x <= contentBgRight && x >= (contentBgRight - zoomLineLength - 2.0f*recZoomBoxPaintStroke)){
+			if (y >= contentBgTop && y <= (contentBgTop + zoomLineLength + 2.0f*recZoomBoxPaintStroke)){
+				//右上
+				state = WIDGET_DIRECTION_STATE_RIGHT_TOP;
+			}else if (y <= contentBgBottom && y >= (contentBgBottom - zoomLineLength - 2.0f*recZoomBoxPaintStroke)){
+				//右下
+				state = WIDGET_DIRECTION_STATE_RIGHT_BOTTOM;
+			}else if (y >= (contentBgTop + contentBgBottom - zoomLineLength)/2.0f && y <= (contentBgTop + contentBgBottom + zoomLineLength)/2.0f
+					&& x >= (contentRight - zoomLineLength)){
+				//右边
+				state = WIDGET_DIRECTION_STATE_RIGHT;
+			}
+		}else {
+			//中心部位
+			state = CENTER_RECTANGLE;
+		}
+		return state;
+	}
+	private void reviseRectangleLocation(TempWidgetObj data , float xOff, float yOff ,int pressDirection){
+		float sx = data.getOtherTemp().getStartPointX(), sy= data.getOtherTemp().getStartPointY() ;
+		float ex = data.getOtherTemp().getEndPointX() ,ey = data.getOtherTemp().getEndPointY();
+		float lengthX = ex - sx; float lengthY = ey - sy;
+		Log.e(TAG, "reviseRectangleLocation:: pressDirection  == > " + pressDirection);
+
+		switch (pressDirection){
+			case WIDGET_DIRECTION_STATE_LEFT:
+				if ((sx + xOff) >= padLeft && (ex - (sx + xOff)) >= DensityUtil.dp2px(mContext,70) ){
+					sx += xOff;
+					data.getOtherTemp().setStartPointX(sx);
+					requestLayout();
+				}
+				break;
+			case WIDGET_DIRECTION_STATE_LEFT_TOP:
+				if ((sx + xOff) >= padLeft && (ex - (sx + xOff)) >= DensityUtil.dp2px(mContext,70) ){
+					sx += xOff;
+					data.getOtherTemp().setStartPointX(sx);
+					requestLayout();
+				}
+				if ((sy + yOff) >= padTop && (ey - (sy + yOff)) >= DensityUtil.dp2px(mContext,70)){
+					sy += yOff;
+					data.getOtherTemp().setStartPointY(sy);
+					requestLayout();
+				}
+				break;
+			case WIDGET_DIRECTION_STATE_LEFT_BOTTOM:
+				if ((sx + xOff) >= padLeft && (ex - (sx + xOff)) >= DensityUtil.dp2px(mContext,70) ){
+					sx += xOff;
+					data.getOtherTemp().setStartPointX(sx);
+					requestLayout();
+				}
+				if ((ey + yOff) <= (moveMaxHeight - padBottom) && ((ey + yOff) - sy) >= DensityUtil.dp2px(mContext,70)){
+					ey += yOff;
+					data.getOtherTemp().setEndPointY(ey);
+					requestLayout();
+				}
+				break;
+			case WIDGET_DIRECTION_STATE_TOP:
+				if ((sy + yOff) >= padTop && (ey - (sy + yOff)) >= DensityUtil.dp2px(mContext,70)){
+					sy += yOff;
+					data.getOtherTemp().setStartPointY(sy);
+					requestLayout();
+				}
+				break;
+			case WIDGET_DIRECTION_STATE_BOTTOM:
+				if ((ey + yOff) <= (moveMaxHeight - padBottom) && ((ey + yOff) - sy) >= DensityUtil.dp2px(mContext,70)){
+					ey += yOff;
+					data.getOtherTemp().setEndPointY(ey);
+					requestLayout();
+				}
+				break;
+			case WIDGET_DIRECTION_STATE_RIGHT:
+				if ((ex+xOff) - sx >= DensityUtil.dp2px(mContext,70) && (ex + xOff) <= (moveMaxWidth - padRight)){
+					ex += xOff;
+					data.getOtherTemp().setEndPointX(ex);
+					requestLayout();
+				}
+				break;
+			case WIDGET_DIRECTION_STATE_RIGHT_TOP:
+				if ((sy + yOff) >= padTop && (ey - (sy + yOff)) >= DensityUtil.dp2px(mContext,70)){
+					sy += yOff;
+					data.getOtherTemp().setStartPointY(sy);
+					requestLayout();
+				}
+				if ((ex+xOff) - sx >= DensityUtil.dp2px(mContext,70) && (ex + xOff) <= (moveMaxWidth - padRight)){
+					ex += xOff;
+					data.getOtherTemp().setEndPointX(ex);
+					requestLayout();
+				}
+				break;
+			case WIDGET_DIRECTION_STATE_RIGHT_BOTTOM:
+				if ((ex+xOff) - sx >= DensityUtil.dp2px(mContext,70) && (ex + xOff) <= (moveMaxWidth - padRight)){
+					ex += xOff;
+					data.getOtherTemp().setEndPointX(ex);
+					requestLayout();
+				}
+				if ((ey + yOff) <= (moveMaxHeight - padBottom) && ((ey + yOff) - sy) >= DensityUtil.dp2px(mContext,70)){
+					ey += yOff;
+					data.getOtherTemp().setEndPointY(ey);
+					requestLayout();
+				}
+				break;
+			case CENTER_RECTANGLE:
+				//rectangleState
+//				Log.e(TAG, "reviseRectangleLocation:CENTER_RECTANGLE " + CENTER_RECTANGLE);
+//				Log.e(TAG, "onTouchEvent: type == 3 "  );
+				//(event.getRawX()- pressDownX) 偏移量   (event.getRawY()- pressDownY)
+				//X 起点的取值范围为[ 0 , moveMaxWidth-(endX-startX)]   终点 [ (endX-startX) , moveMaxWidth]
+				//Y 起点取值范围[0,moveMaxHeight]   终点 [0,moveMaxHeight]
+//				float xoff = (event.getRawX()- pressDownX),yoff = (event.getRawY()- pressDownY);
+				if ((sx + xOff) >= padLeft && (sx + xOff) <= (moveMaxWidth - lengthX)
+						&& (ex + xOff) >= lengthX && (ex + xOff) <= moveMaxWidth - padRight){
+					sx += xOff;
+					ex += xOff;
+
+					data.getOtherTemp().setStartPointX(sx);
+					data.getOtherTemp().setEndPointX(ex);
+					requestLayout();
+				}
+				if ((sy + yOff) >= padTop && (sy + yOff) <= (moveMaxHeight - padBottom)
+						&&(ey + yOff) >= lengthY && (ey + yOff) <= (moveMaxHeight - padRight)){
+					sy += yOff;
+					ey += yOff;
+					data.getOtherTemp().setStartPointY(sy);
+					data.getOtherTemp().setEndPointY(ey);
+					requestLayout();
+				}
+				break;
+		}
+	}
 
 
 	@Override
@@ -919,6 +1097,11 @@ public class MyMoveWidget extends View {
 
 			switch (event.getAction()){
 				case MotionEvent.ACTION_DOWN:
+						//todo 计算矩形时候按下的点所属于的位置，通过控件内部坐标原点计算
+					if (tempWidgetData.getType() ==3 && hasBackGroundAndTools){
+						rectangleState = setPressDownState(event.getX(),event.getY());
+					}
+					Log.e(TAG, "type = 3: ==== > " + rectangleState);
 
 
 					Log.e(TAG, "onTouchEvent:child action down " + event.getRawX() +"  Y = >" +event.getRawY());
@@ -973,7 +1156,7 @@ public class MyMoveWidget extends View {
 								requestLayout();
 
 							}
-							if ((sy + yoff) >= padTop && (sy + xoff) <= (moveMaxHeight - padBottom)){
+							if ((sy + yoff) >= padTop && (sy + yoff) <= (moveMaxHeight - padBottom)){
 								sy += yoff;
 								ey = sy;
 								tempWidgetData.getOtherTemp().setStartPointY(sy);
@@ -987,13 +1170,11 @@ public class MyMoveWidget extends View {
 							Log.e(TAG, "onTouchEvent: offset x = " + xoff + " yoffset = "  + yoff);
 						}
 						if (tempWidgetData.getType()==3){
-							if (tempWidgetData.getOtherTemp().getStartPointX()+ event.getX()>= 0
-									&&tempWidgetData.getOtherTemp().getEndPointX() + event.getX() <= moveMaxWidth
-									&&tempWidgetData.getOtherTemp().getStartPointY() + event.getY()>= 0
-									&&tempWidgetData.getOtherTemp().getEndPointY() + event.getY() <= moveMaxHeight) {
+							//计算触碰的方位
+							reviseRectangleLocation(tempWidgetData,event.getRawX()- pressDownX,event.getRawY()-pressDownY,rectangleState);
 
-
-							}
+							pressDownX = event.getRawX();
+							pressDownY = event.getRawY();
 						}
 
 					}
@@ -1001,9 +1182,8 @@ public class MyMoveWidget extends View {
 					//				Log.e(TAG, "onTouchEvent:child action move");
 					break;
 				case MotionEvent.ACTION_UP:
-					Log.e(TAG, "onTouchEvent:child action up" + event.getX() +"  Y = >"+ event.getY());
+//					Log.e(TAG, "onTouchEvent:child action up" + event.getX() +"  Y = >"+ event.getY());
 					Log.e(TAG, "onTouchEvent:child action up" + event.getRawX() +"  Y = >"+ event.getRawY());
-					//				Log.e(TAG, "onTouchEvent:child action up");
 					if (mTimeTask != null){
 						mTimeTask.cancel();
 					}
@@ -1011,9 +1191,9 @@ public class MyMoveWidget extends View {
 					break;
 			}
 
-			return true;
-		}else {
-			return true;
+//			return true;
+		}else {//不能移动的
 		}
+		return true;
 	}
 }
