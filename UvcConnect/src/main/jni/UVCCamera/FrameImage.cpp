@@ -235,11 +235,11 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
         mIsPaletteChanged = false;
     }
     //获取图幅中的最大最小值
-    int amountPixels1=requestWidth*(requestHeight-4);
-    amountPixels1=amountPixels1 + 4;
-    max=tmp_buf[amountPixels1];
-    amountPixels1=amountPixels1 + 3;
-    min=tmp_buf[amountPixels1];
+    int amountPixels1 = requestWidth*(requestHeight-4);
+    amountPixels1 = amountPixels1 + 4;
+    max = tmp_buf[amountPixels1];
+    amountPixels1 = amountPixels1 + 3;
+    min = tmp_buf[amountPixels1];
     ro = max - min;
 //    LOGE("max ========== %d", max );
 //    LOGE("min ==========%d",min);

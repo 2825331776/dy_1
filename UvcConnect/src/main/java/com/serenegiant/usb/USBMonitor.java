@@ -77,13 +77,12 @@ public final class USBMonitor {
 	private List<DeviceFilter> mDeviceFilters = new ArrayList<DeviceFilter>();
 
 	/**
-	 * コールバックをワーカースレッドで呼び出すためのハンドラー
 	 * 用于在工作线程上调用回调的处理程序
 	 */
 	private final Handler mAsyncHandler;
 	private volatile boolean destroyed;
 	/**
-	 * USB機器の状態変更時のコールバックリスナー
+	 * 更改 USB 设备状态时的回调监听器
 	 */
 	public interface OnDeviceConnectListener {
 		/**
