@@ -148,7 +148,7 @@
             android:gravity="center"
             android:background="@color/bg_preview_right">
 
-            <com.dyt.wcc.cameracommon.widget.CustomRangeSeekBar
+            <com.dyt.wcc.common.widget.CustomRangeSeekBar
                 android:id="@+id/custom_seekbar_preview_fragment"
                 android:layout_marginTop="@dimen/dimen_20dp"
                 android:layout_marginBottom="@dimen/dimen_20dp"
@@ -189,7 +189,7 @@
                 app:showTextContent="@string/ShowHighLowTemp"
                 app:ColorTextUnselect="@color/white"
                 app:showTextSize="14sp"/>
-
+            <!--框内细查-->
             <com.dyt.wcc.common.widget.MyToggleView
                 android:id="@+id/toggle_area_check"
                 android:layout_width="match_parent"

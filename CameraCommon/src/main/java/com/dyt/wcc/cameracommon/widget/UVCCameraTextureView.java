@@ -28,7 +28,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
@@ -51,10 +50,8 @@ import com.serenegiant.glutils.EGLBase;
 import com.serenegiant.usb.ITemperatureCallback;
 import com.serenegiant.utils.FpsCounter;
 
-import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.serenegiant.glutils.ShaderConst.GL_TEXTURE_2D;
 import static com.serenegiant.glutils.ShaderConst.GL_TEXTURE_EXTERNAL_OES;
@@ -297,11 +294,11 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
         }
     }
 
-    public void iniTempFontsize(float fontsize) {
-        if (mRenderHandler != null) {
-            mRenderHandler.iniTempFontsize(fontsize);
-        }
-    }
+//    public void iniTempFontsize(float fontsize) {
+//        if (mRenderHandler != null) {
+//            mRenderHandler.iniTempFontsize(fontsize);
+//        }
+//    }
 
     public void iniTempBitmap(int w, int h) {
         if (mRenderHandler != null) {
@@ -309,11 +306,11 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
         }
     }
 
-    public void setBindSeekBar(CustomRangeSeekBar SeekBar) {
-        if (mRenderHandler != null) {
-            mRenderHandler.setBindSeekBar(SeekBar);
-        }
-    }
+//    public void setBindSeekBar(CustomRangeSeekBar SeekBar) {
+//        if (mRenderHandler != null) {
+//            mRenderHandler.setBindSeekBar(SeekBar);
+//        }
+//    }
 
     public void setDragTempContainer(DragTempContainer dragTempContainer){
         if (mRenderHandler != null) {
@@ -321,21 +318,21 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
         }
     }
 
-    public void setBitmap(Bitmap r, Bitmap g, Bitmap b, Bitmap y, Bitmap l) {
-        mRenderHandler.setBitmap(r, g, b, y, l);
-    }
-
-    public void setTouchPoint(CopyOnWriteArrayList<TouchPoint> touchPoint) {
-        mRenderHandler.setTouchPoint(touchPoint);
-    }
-
-    public void setTouchLine(CopyOnWriteArrayList<TouchLine> touchLine) {
-        mRenderHandler.setTouchLine(touchLine);
-    }
-
-    public void setTouchArea(CopyOnWriteArrayList<TouchArea> touchArea) {
-        mRenderHandler.setTouchArea(touchArea);
-    }
+//    public void setBitmap(Bitmap r, Bitmap g, Bitmap b, Bitmap y, Bitmap l) {
+//        mRenderHandler.setBitmap(r, g, b, y, l);
+//    }
+//
+//    public void setTouchPoint(CopyOnWriteArrayList<TouchPoint> touchPoint) {
+//        mRenderHandler.setTouchPoint(touchPoint);
+//    }
+//
+//    public void setTouchLine(CopyOnWriteArrayList<TouchLine> touchLine) {
+//        mRenderHandler.setTouchLine(touchLine);
+//    }
+//
+//    public void setTouchArea(CopyOnWriteArrayList<TouchArea> touchArea) {
+//        mRenderHandler.setTouchArea(touchArea);
+//    }
 
     public void setTemperatureAnalysisMode(int mode) {
         mRenderHandler.setTemperatureAnalysisMode(mode);
@@ -353,17 +350,17 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 
 //    public void setOnHighTempChangedCallback(onHighTempChangedCallback callback){ mRenderHandler.setOnHighTempChangedCallback(callback); }
 
-    public void watermarkOnOff(boolean isWatermaker) {
-        mRenderHandler.watermarkOnOff(isWatermaker);
-    }
+//    public void watermarkOnOff(boolean isWatermaker) {
+//        mRenderHandler.watermarkOnOff(isWatermaker);
+//    }
 
     public void tempShowOnOff(boolean isTempShow) {
         mRenderHandler.tempshowOnOff(isTempShow);
     }
 
-    public void setUnitTemperature(int mode) {
-        mRenderHandler.setUnitTemperature(mode);
-    }
+//    public void setUnitTemperature(int mode) {
+//        mRenderHandler.setUnitTemperature(mode);
+//    }
 
     public void resetFps() {
         mFpsCounter.reset();
@@ -425,21 +422,21 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
             mFpsCounter = counter;
         }
 
-        public void setBitmap(Bitmap r, Bitmap g, Bitmap b, Bitmap y, Bitmap l) {
-            mThread.setBitmap(r, g, b, y, l);
-        }
+//        public void setBitmap(Bitmap r, Bitmap g, Bitmap b, Bitmap y, Bitmap l) {
+//            mThread.setBitmap(r, g, b, y, l);
+//        }
 
-        public void setTouchPoint(CopyOnWriteArrayList<TouchPoint> touchPoint) {
-            mThread.setTouchPoint(touchPoint);
-        }
-
-        public void setTouchLine(CopyOnWriteArrayList<TouchLine> touchLine) {
-            mThread.setTouchLine(touchLine);
-        }
-
-        public void setTouchArea(CopyOnWriteArrayList<TouchArea> touchArea) {
-            mThread.setTouchArea(touchArea);
-        }
+//        public void setTouchPoint(CopyOnWriteArrayList<TouchPoint> touchPoint) {
+//            mThread.setTouchPoint(touchPoint);
+//        }
+//
+//        public void setTouchLine(CopyOnWriteArrayList<TouchLine> touchLine) {
+//            mThread.setTouchLine(touchLine);
+//        }
+//
+//        public void setTouchArea(CopyOnWriteArrayList<TouchArea> touchArea) {
+//            mThread.setTouchArea(touchArea);
+//        }
 
         public void setTemperatureAnalysisMode(int mode) {
             mThread.setTemperatureAnalysisMode(mode);
@@ -456,17 +453,17 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 
 //        public void setOnHighTempChangedCallback(onHighTempChangedCallback callback){ mThread.highTempChangedCallback = callback; }
 
-        public void watermarkOnOff(boolean isWatermaker) {
-            mThread.watermarkOnOff(isWatermaker);
-        }
+//        public void watermarkOnOff(boolean isWatermaker) {
+//            mThread.watermarkOnOff(isWatermaker);
+//        }
 
         public void tempshowOnOff(boolean isTempShow) {
             mThread.tempshowOnOff(isTempShow);
         }
 
-        public void setUnitTemperature(int mode) {
-            mThread.setUnitTemperature(mode);
-        }
+//        public void setUnitTemperature(int mode) {
+//            mThread.setUnitTemperature(mode);
+//        }
 
         public final void setVideoEncoder(final IVideoEncoder encoder) {
             if (DEBUG) Log.v(TAG, "setVideoEncoder:");
@@ -567,11 +564,11 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
             }
         }
 
-        public void iniTempFontsize(float fontsize) {
-            if (mThread != null) {
-                mThread.iniTempFontsize(fontsize);
-            }
-        }
+//        public void iniTempFontsize(float fontsize) {
+//            if (mThread != null) {
+//                mThread.iniTempFontsize(fontsize);
+//            }
+//        }
 
         public void iniTempBitmap(int w, int h) {
             if (mThread != null) {
@@ -579,11 +576,11 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
             }
         }
 
-        public void setBindSeekBar(CustomRangeSeekBar SeekBar) {
-            if (mThread != null) {
-                mThread.setBindSeekBar(SeekBar);
-            }
-        }
+//        public void setBindSeekBar(CustomRangeSeekBar SeekBar) {
+//            if (mThread != null) {
+//                mThread.setBindSeekBar(SeekBar);
+//            }
+//        }
         public void setDragTempContainer(DragTempContainer dragTempContainer){
             if (mThread != null) {
                 mThread.setDragTempContainer(dragTempContainer);
@@ -643,7 +640,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
             private int mViewWidth, mViewHeight;
             private final FpsCounter mFpsCounter;
             private Camera2Helper mCamera2Helper;
-            private CustomRangeSeekBar mBindSeekBar;
+//            private CustomRangeSeekBar mBindSeekBar;
             private DragTempContainer mDragTempContainer;
 
             /**
@@ -685,18 +682,18 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                 setName("RenderThread");
             }
 
-            public void iniTempFontsize(float fontsize) {
-                this.photoPaint.setTextSize(fontsize);
-            }
+//            public void iniTempFontsize(float fontsize) {
+//                this.photoPaint.setTextSize(fontsize);
+//            }
 
             public void iniTempBitmap(int w, int h) {
                 this.icon = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888); //建立一个空的图画板
                 this.bitcanvas = new Canvas(icon);//初始化画布绘制的图像到icon上
-                this.mTouchPointLists = new CopyOnWriteArrayList<>();
-                this.mTouchLineLists = new CopyOnWriteArrayList<>();
-                this.mTouchAreaLists = new CopyOnWriteArrayList<>();
-                this.photoPaint = new Paint();
-                this.alarmPaint = new Paint();
+//                this.mTouchPointLists = new CopyOnWriteArrayList<>();
+//                this.mTouchLineLists = new CopyOnWriteArrayList<>();
+//                this.mTouchAreaLists = new CopyOnWriteArrayList<>();
+//                this.photoPaint = new Paint();
+//                this.alarmPaint = new Paint();
 
 
                 if (bounds == null) {
@@ -710,9 +707,9 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                 }
             }
 
-            public void setBindSeekBar(CustomRangeSeekBar SeekBar) {
-                this.mBindSeekBar = SeekBar;
-            }
+//            public void setBindSeekBar(CustomRangeSeekBar SeekBar) {
+//                this.mBindSeekBar = SeekBar;
+//            }
 
             public void setDragTempContainer(DragTempContainer dragTempContainer){
                     this.mDragTempContainer = dragTempContainer;
@@ -804,46 +801,46 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
             private boolean isCamera2ing = false;
 
 
-            private Bitmap mCursorBlue, mCursorRed, mCursorYellow, mCursorGreen, mWatermakLogo;
+//            private Bitmap mCursorBlue, mCursorRed, mCursorYellow, mCursorGreen, mWatermakLogo;
             private float[] temperature1 = new float[640 * 512 + 10];
 
             //added by wupei
             private float maxtemperature;
             private float mintemperature;
 
-            private Paint photoPaint, alarmPaint;
+//            private Paint photoPaint, alarmPaint;
 //            private Rect highTempRect, lowTempRect ;//创建一个指定的新矩形的坐标centerTempRect
             private Rect dstHighTemp, dstLowTemp, bounds;//创建一个指定的新矩形的坐标
             private Bitmap icon;
             private Canvas bitcanvas;//初始化画布绘制的图像到icon上
-            private CopyOnWriteArrayList<TouchPoint> mTouchPointLists;
-            private CopyOnWriteArrayList<TouchLine> mTouchLineLists;
-            private CopyOnWriteArrayList<TouchArea> mTouchAreaLists;
-            private int temperatureAnalysisMode=-1, UnitTemperature;
+//            private CopyOnWriteArrayList<TouchPoint> mTouchPointLists;
+//            private CopyOnWriteArrayList<TouchLine> mTouchLineLists;
+//            private CopyOnWriteArrayList<TouchArea> mTouchAreaLists;
+            private int temperatureAnalysisMode=-1;//, UnitTemperature
             private int rotate = 0;
             private float widthRatio, heightRatio;
 
             //added by wupei, we may not need mWatermakLogo and fix it ！！！
-            private boolean isWatermaker = false;
+//            private boolean isWatermaker = false;
             private boolean isTempShow = true;
 
-            public void setBitmap(Bitmap mRed, Bitmap mGreen, Bitmap mBlue, Bitmap mYellow, Bitmap mLogo) {
-                mCursorBlue = mBlue;
-                mCursorRed = mRed;
-                mCursorYellow = mYellow;
-                mCursorGreen = mGreen;
-                mWatermakLogo = mLogo;
-            }
+//            public void setBitmap(Bitmap mRed, Bitmap mGreen, Bitmap mBlue, Bitmap mYellow, Bitmap mLogo) {
+//                mCursorBlue = mBlue;
+//                mCursorRed = mRed;
+//                mCursorYellow = mYellow;
+//                mCursorGreen = mGreen;
+//                mWatermakLogo = mLogo;
+//            }
 
 
             public void relayout(int rotate) {
                 this.rotate = rotate;
             }
 
-            public void watermarkOnOff(boolean isWatermaker) {
-//                Log.e(TAG, "watermarkOnOff: isWatermaker" + isWatermaker);
-                this.isWatermaker = isWatermaker;
-            }
+//            public void watermarkOnOff(boolean isWatermaker) {
+////                Log.e(TAG, "watermarkOnOff: isWatermaker" + isWatermaker);
+//                this.isWatermaker = isWatermaker;
+//            }
 
             public void tempshowOnOff(boolean isTempShow) {
                 this.isTempShow = isTempShow;
@@ -872,25 +869,25 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
             public int mSuportWidth;//探测器的面阵
             public int mSuportHeight;
 
-            public void setTouchPoint(CopyOnWriteArrayList<TouchPoint> touchPoint) {
-                this.mTouchPointLists = touchPoint;
-            }
-
-            public void setTouchLine(CopyOnWriteArrayList<TouchLine> touchLine) {
-                this.mTouchLineLists = touchLine;
-            }
-
-            public void setTouchArea(CopyOnWriteArrayList<TouchArea> touchArea) {
-                this.mTouchAreaLists = touchArea;
-            }
+//            public void setTouchPoint(CopyOnWriteArrayList<TouchPoint> touchPoint) {
+//                this.mTouchPointLists = touchPoint;
+//            }
+//
+//            public void setTouchLine(CopyOnWriteArrayList<TouchLine> touchLine) {
+//                this.mTouchLineLists = touchLine;
+//            }
+//
+//            public void setTouchArea(CopyOnWriteArrayList<TouchArea> touchArea) {
+//                this.mTouchAreaLists = touchArea;
+//            }
 
             public void setTemperatureAnalysisMode(int mode) {
                 this.temperatureAnalysisMode = mode;
             }
 
-            public void setUnitTemperature(int mode) {
-                this.UnitTemperature = mode;
-            }
+//            public void setUnitTemperature(int mode) {
+//                this.UnitTemperature = mode;
+//            }
 
             //获取全幅温度函数
             public final ITemperatureCallback ahITemperatureCallback = new ITemperatureCallback() {
@@ -901,27 +898,27 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //                    Log.e(TAG, "ITemperatureCallback.onReceiveTemperature.temperature[].length ==========="+temperature.length);
 //                    Log.e(TAG, " 取整 temperature[].length ==========="+temperature.length/256);
 //                    Log.e(TAG, " 取余 temperature[].length ==========="+temperature.length%256);
-
-                    if (UnitTemperature == 0) {     //摄氏度
-                        //Log.e(TAG, "000000000");
-//                        temperature1 = new float[mSuportHeight*mSuportWidth*4]; 初始化太迟 之前访问会报错
-                        System.arraycopy(temperature, 0, temperature1, 0, (mSuportHeight - 4) * mSuportWidth + 10);
-                        maxtemperature = temperature[3];
-                        mintemperature = temperature[6];
-                    } else {        //华氏度
-                        temperature1[0] = temperature[0] * 1.8f + 32;//中心温度
-                        temperature1[1] = temperature[1];//MAXX1
-                        temperature1[2] = temperature[2];//MAXY1
-                        temperature1[3] = temperature[3] * 1.8f + 32;//最高温
-                        temperature1[4] = temperature[4];//MINX1
-                        temperature1[5] = temperature[5];//MIXY1
-
-                        for (int i = 6; i < ((mSuportHeight - 4) * mSuportWidth + 10); i++) {
-                            temperature1[i] = temperature[i] * 1.8f + 32;
-                        }
-                        maxtemperature = temperature1[3];
-                        mintemperature = temperature1[6];
-                    }
+                    System.arraycopy(temperature, 0, temperature1, 0, (mSuportHeight - 4) * mSuportWidth + 10);
+//                    if (UnitTemperature == 0) {     //摄氏度
+//                        //Log.e(TAG, "000000000");
+////                        temperature1 = new float[mSuportHeight*mSuportWidth*4]; 初始化太迟 之前访问会报错
+//
+//                        maxtemperature = temperature[3];
+//                        mintemperature = temperature[6];
+//                    } else {        //华氏度
+//                        temperature1[0] = temperature[0] * 1.8f + 32;//中心温度
+//                        temperature1[1] = temperature[1];//MAXX1
+//                        temperature1[2] = temperature[2];//MAXY1
+//                        temperature1[3] = temperature[3] * 1.8f + 32;//最高温
+//                        temperature1[4] = temperature[4];//MINX1
+//                        temperature1[5] = temperature[5];//MIXY1
+//
+//                        for (int i = 6; i < ((mSuportHeight - 4) * mSuportWidth + 10); i++) {
+//                            temperature1[i] = temperature[i] * 1.8f + 32;
+//                        }
+//                        maxtemperature = temperature1[3];
+//                        mintemperature = temperature1[6];
+//                    }
                 }
             };
 //            public final TcpITemperatureCallback tcpAhITemperatureCallback = new TcpITemperatureCallback() {
@@ -1035,7 +1032,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //                    highTempChangedCallback.highTempChanged(false);
 //                }
 
-                mBindSeekBar.Update(maxtemperature,mintemperature);//更新seekbar
+//                mBindSeekBar.Update(maxtemperature,mintemperature);//更新seekbar
                 mDragTempContainer.upDateTemp(temperature1);
 
             }
@@ -1051,395 +1048,395 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                     rotate = 180;
                 }
 
-                if (UnitTemperature == 0) {
-                    extern = "°C";
-                } else {
-                    extern = "°F";
-                }
+//                if (UnitTemperature == 0) {
+//                    extern = "°C";
+//                } else {
+//                    extern = "°F";
+//                }
                 bitcanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
                 //                Log.e("rotate:",rotate+"");
                 //bitcanvas.drawARGB(0,0,0,0);
-                if (isWatermaker && (rotate == 0 || rotate == 180)) {
-                    x = (float) icon.getWidth() / 2;
-                    y = (float) icon.getHeight() / 2;
-                    if (isT3) {
-                        //                      bitcanvas.rotate(180 + rotate, x, y);
-                        bitcanvas.drawBitmap(mWatermakLogo, icon.getWidth() - mWatermakLogo.getWidth() - 10, 10, photoPaint);
-                        //                      bitcanvas.rotate(180 + rotate, x, y);
-                    } else {
-                        //                      bitcanvas.rotate(rotate, x, y);
-                        bitcanvas.drawBitmap(mWatermakLogo, icon.getWidth() - mWatermakLogo.getWidth() - 10, 10, photoPaint);
-                        //                      bitcanvas.rotate(360 - rotate, x, y);
-
-                    }
-                    isFirstCome++;
-                }
-                if (isWatermaker && (rotate == 90 || rotate == 270)) {
-                    x = (float) icon.getWidth() / 2;
-                    y = (float) icon.getHeight() / 2;
-                    float offset = (float) (icon.getWidth() - icon.getHeight()) / 2.0f;
-                    if (isT3) {
-                        //                      bitcanvas.rotate(360 - rotate, x, y);
-                        bitcanvas.drawBitmap(mWatermakLogo, offset + icon.getHeight() - mWatermakLogo.getWidth() - 10, -offset + 10, photoPaint);
-                        //                      bitcanvas.rotate(rotate, x, y);
-                    } else {
-                        //                      bitcanvas.rotate(rotate, x, y);
-                        bitcanvas.drawBitmap(mWatermakLogo, offset + icon.getHeight() - mWatermakLogo.getWidth() - 10, -offset + 10, photoPaint);
-                        //                      bitcanvas.rotate(360 - rotate, x, y);
-                    }
-                }
-                if (isCamera2ing) {
-                    Bitmap mCamera2Bitmap = mCamera2Helper.getCamera2Bitmap();
-                    if (mCamera2Bitmap != null) {
-                        Bitmap bp = null;
-                        if (isT3) {
-                            bp = rotateBitmap(mCamera2Bitmap, 90);
-                            bitcanvas.drawBitmap(bp, 1, 1, photoPaint);
-                            //                            bitcanvas.drawBitmap(bp,icon.getWidth()-mCamera2Bitmap.getHeight(),icon.getHeight()-mCamera2Bitmap.getWidth(),  photoPaint);
-                        } else {
-                            bp = rotateBitmap(mCamera2Bitmap, 270);
-                            bitcanvas.drawBitmap(bp, 1, 1, photoPaint);
-                        }
-                        //                        Log.e(TAG, "onDrawFrame: mCamera2Bitmap!=null width:" + mCamera2Bitmap.getWidth() + " height:" + mCamera2Bitmap.getHeight());
-                        //                        bitcanvas.drawBitmap(bp, 1, 1, photoPaint);
-                        mCamera2Bitmap = null;
-                    }
-                }
+//                if (isWatermaker && (rotate == 0 || rotate == 180)) {
+//                    x = (float) icon.getWidth() / 2;
+//                    y = (float) icon.getHeight() / 2;
+//                    if (isT3) {
+//                        //                      bitcanvas.rotate(180 + rotate, x, y);
+//                        bitcanvas.drawBitmap(mWatermakLogo, icon.getWidth() - mWatermakLogo.getWidth() - 10, 10, photoPaint);
+//                        //                      bitcanvas.rotate(180 + rotate, x, y);
+//                    } else {
+//                        //                      bitcanvas.rotate(rotate, x, y);
+//                        bitcanvas.drawBitmap(mWatermakLogo, icon.getWidth() - mWatermakLogo.getWidth() - 10, 10, photoPaint);
+//                        //                      bitcanvas.rotate(360 - rotate, x, y);
+//
+//                    }
+//                    isFirstCome++;
+//                }
+//                if (isWatermaker && (rotate == 90 || rotate == 270)) {
+//                    x = (float) icon.getWidth() / 2;
+//                    y = (float) icon.getHeight() / 2;
+//                    float offset = (float) (icon.getWidth() - icon.getHeight()) / 2.0f;
+//                    if (isT3) {
+//                        //                      bitcanvas.rotate(360 - rotate, x, y);
+//                        bitcanvas.drawBitmap(mWatermakLogo, offset + icon.getHeight() - mWatermakLogo.getWidth() - 10, -offset + 10, photoPaint);
+//                        //                      bitcanvas.rotate(rotate, x, y);
+//                    } else {
+//                        //                      bitcanvas.rotate(rotate, x, y);
+//                        bitcanvas.drawBitmap(mWatermakLogo, offset + icon.getHeight() - mWatermakLogo.getWidth() - 10, -offset + 10, photoPaint);
+//                        //                      bitcanvas.rotate(360 - rotate, x, y);
+//                    }
+//                }
+//                if (isCamera2ing) {
+//                    Bitmap mCamera2Bitmap = mCamera2Helper.getCamera2Bitmap();
+//                    if (mCamera2Bitmap != null) {
+//                        Bitmap bp = null;
+//                        if (isT3) {
+//                            bp = rotateBitmap(mCamera2Bitmap, 90);
+//                            bitcanvas.drawBitmap(bp, 1, 1, photoPaint);
+//                            //                            bitcanvas.drawBitmap(bp,icon.getWidth()-mCamera2Bitmap.getHeight(),icon.getHeight()-mCamera2Bitmap.getWidth(),  photoPaint);
+//                        } else {
+//                            bp = rotateBitmap(mCamera2Bitmap, 270);
+//                            bitcanvas.drawBitmap(bp, 1, 1, photoPaint);
+//                        }
+//                        //                        Log.e(TAG, "onDrawFrame: mCamera2Bitmap!=null width:" + mCamera2Bitmap.getWidth() + " height:" + mCamera2Bitmap.getHeight());
+//                        //                        bitcanvas.drawBitmap(bp, 1, 1, photoPaint);
+//                        mCamera2Bitmap = null;
+//                    }
+//                }
                 //
                 if (!isCbTemping) {
                     //                    bitcanvas.save(Canvas.ALL_SAVE_FLAG);//吴长城修改到下面函数
                     bitcanvas.save();
                 } else {
-                    DecimalFormat decimalFormat = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
-                    String centerTemp = decimalFormat.format(temperature1[0]) + extern;//format 返回的是字符串
-                    String maxTemp = decimalFormat.format(temperature1[3]) + extern;
-                    String minTemp = decimalFormat.format(temperature1[6]) + extern;
-                    float maxx1 = temperature1[1];
-                    float maxy1 = temperature1[2];
-                    float minx1 = temperature1[4];
-                    float miny1 = temperature1[5];
+//                    DecimalFormat decimalFormat = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
+//                    String centerTemp = decimalFormat.format(temperature1[0]) + extern;//format 返回的是字符串
+//                    String maxTemp = decimalFormat.format(temperature1[3]) + extern;
+//                    String minTemp = decimalFormat.format(temperature1[6]) + extern;
+//                    float maxx1 = temperature1[1];
+//                    float maxy1 = temperature1[2];
+//                    float minx1 = temperature1[4];
+//                    float miny1 = temperature1[5];
 
-                    photoPaint.setStrokeWidth(3);
-
-
+//                    photoPaint.setStrokeWidth(3);
 
 
-                    if (isAlarm){//显示高温报警
-//                        CountDownTimer timer = new
-
-                        alarmPaint.setStrokeWidth(4.0f);
-                        alarmPaint.setColor(Color.RED);
-                        bitcanvas.drawLine(5,5,icon.getWidth()-5,5,alarmPaint);
-                        bitcanvas.drawLine(5,5,5,icon.getHeight()-5,alarmPaint);
-
-                        bitcanvas.drawLine(icon.getWidth()-5,icon.getHeight()-5,5,icon.getHeight()-5,alarmPaint);
-                        bitcanvas.drawLine(icon.getWidth()-5,icon.getHeight()-5,icon.getWidth()-5,5,alarmPaint);
-                    }
-
-                    if(isTempShow){
-                        //绘制温度从这里开始
-                        //设置画笔粗细
-                        //photoPaint.setTextAlign(Paint.Align.LEFT);
-
-                        //bitcanvas.drawText(centerTemp, icon.getWidth() / 2.0f + mCursorYellow.getWidth() / 2, icon.getHeight() / 2.0f + mCursorYellow.getHeight() / 2, photoPaint);
-                        photoPaint.getTextBounds(centerTemp, 0, centerTemp.length(), bounds);//绘制中心点温度
-                        photoPaint.setColor(Color.YELLOW);
-                        x = (float) icon.getWidth() / 2.0f;
-                        y = icon.getHeight() / 2.0f;
-
-                        bitcanvas.drawText(centerTemp, x + (float) mCursorYellow.getWidth() / 2.0f, y + mCursorYellow.getHeight() / 2.0f, photoPaint);
 
 
-                        photoPaint.getTextBounds(maxTemp, 0, maxTemp.length(), dstHighTemp);//绘制最高温
-                        photoPaint.setColor(Color.RED);
-                        x = (float) icon.getWidth() / (float) mSuportWidth * maxx1;
-                        y = (float) icon.getHeight() / (float) (mSuportHeight - 4) * maxy1;
-                        if (x<(icon.getWidth()-mCursorBlue.getWidth())){
-                            bitcanvas.drawText(maxTemp, x + (float) mCursorRed.getWidth() / 2.0f, y + (float) mCursorRed.getHeight() / 2.0f, photoPaint);
-                        }else {
-                            bitcanvas.drawText(maxTemp, x - (float) mCursorRed.getWidth()*2, y + (float) mCursorRed.getHeight() , photoPaint);
-                        }
+//                    if (isAlarm){//显示高温报警
+////                        CountDownTimer timer = new
+//
+//                        alarmPaint.setStrokeWidth(4.0f);
+//                        alarmPaint.setColor(Color.RED);
+//                        bitcanvas.drawLine(5,5,icon.getWidth()-5,5,alarmPaint);
+//                        bitcanvas.drawLine(5,5,5,icon.getHeight()-5,alarmPaint);
+//
+//                        bitcanvas.drawLine(icon.getWidth()-5,icon.getHeight()-5,5,icon.getHeight()-5,alarmPaint);
+//                        bitcanvas.drawLine(icon.getWidth()-5,icon.getHeight()-5,icon.getWidth()-5,5,alarmPaint);
+//                    }
 
-                        photoPaint.getTextBounds(minTemp, 0, minTemp.length(), dstLowTemp);//绘制最低温
-                        photoPaint.setColor(Color.BLUE);
-                        x = (float) icon.getWidth() / (float) mSuportWidth * minx1;
-                        y = (float) icon.getHeight() / (float) (mSuportHeight - 4) * miny1;
-                        if (x<(icon.getWidth()-mCursorBlue.getWidth())){
-                            bitcanvas.drawText(minTemp, x + (float) mCursorBlue.getWidth() / 2.0f, y + (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
-                        }else {
-                            bitcanvas.drawText(minTemp, x - (float) mCursorBlue.getWidth() *2, y + (float) mCursorBlue.getHeight() , photoPaint);
-                        }
-
-                        bitcanvas.drawBitmap(mCursorRed, (float) icon.getWidth() / (float) mSuportWidth * maxx1 - (float) mCursorRed.getWidth() / 2.0f, (float) icon.getHeight() / (float) (mSuportHeight - 4) * maxy1 - (float) mCursorRed.getHeight() / 2.0f, photoPaint);
-                        bitcanvas.drawBitmap(mCursorBlue, (float) icon.getWidth() / (float) mSuportWidth * minx1 - (float) mCursorBlue.getWidth() / 2.0f, (float) icon.getHeight() / (float) (mSuportHeight - 4) * miny1 - (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
-                        bitcanvas.drawBitmap(mCursorYellow, (float) icon.getWidth() / 2.0f - (float) mCursorYellow.getWidth() / 2.0f, (float) icon.getHeight() / 2.0f - (float) mCursorYellow.getHeight() / 2.0f, photoPaint);
-
-                        //绘制标志性温度在这里结束
-                    }
+//                    if(isTempShow){
+//                        //绘制温度从这里开始
+//                        //设置画笔粗细
+//                        //photoPaint.setTextAlign(Paint.Align.LEFT);
+//
+//                        //bitcanvas.drawText(centerTemp, icon.getWidth() / 2.0f + mCursorYellow.getWidth() / 2, icon.getHeight() / 2.0f + mCursorYellow.getHeight() / 2, photoPaint);
+//                        photoPaint.getTextBounds(centerTemp, 0, centerTemp.length(), bounds);//绘制中心点温度
+//                        photoPaint.setColor(Color.YELLOW);
+//                        x = (float) icon.getWidth() / 2.0f;
+//                        y = icon.getHeight() / 2.0f;
+//
+//                        bitcanvas.drawText(centerTemp, x + (float) mCursorYellow.getWidth() / 2.0f, y + mCursorYellow.getHeight() / 2.0f, photoPaint);
+//
+//
+//                        photoPaint.getTextBounds(maxTemp, 0, maxTemp.length(), dstHighTemp);//绘制最高温
+//                        photoPaint.setColor(Color.RED);
+//                        x = (float) icon.getWidth() / (float) mSuportWidth * maxx1;
+//                        y = (float) icon.getHeight() / (float) (mSuportHeight - 4) * maxy1;
+//                        if (x<(icon.getWidth()-mCursorBlue.getWidth())){
+//                            bitcanvas.drawText(maxTemp, x + (float) mCursorRed.getWidth() / 2.0f, y + (float) mCursorRed.getHeight() / 2.0f, photoPaint);
+//                        }else {
+//                            bitcanvas.drawText(maxTemp, x - (float) mCursorRed.getWidth()*2, y + (float) mCursorRed.getHeight() , photoPaint);
+//                        }
+//
+//                        photoPaint.getTextBounds(minTemp, 0, minTemp.length(), dstLowTemp);//绘制最低温
+//                        photoPaint.setColor(Color.BLUE);
+//                        x = (float) icon.getWidth() / (float) mSuportWidth * minx1;
+//                        y = (float) icon.getHeight() / (float) (mSuportHeight - 4) * miny1;
+//                        if (x<(icon.getWidth()-mCursorBlue.getWidth())){
+//                            bitcanvas.drawText(minTemp, x + (float) mCursorBlue.getWidth() / 2.0f, y + (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
+//                        }else {
+//                            bitcanvas.drawText(minTemp, x - (float) mCursorBlue.getWidth() *2, y + (float) mCursorBlue.getHeight() , photoPaint);
+//                        }
+//
+//                        bitcanvas.drawBitmap(mCursorRed, (float) icon.getWidth() / (float) mSuportWidth * maxx1 - (float) mCursorRed.getWidth() / 2.0f, (float) icon.getHeight() / (float) (mSuportHeight - 4) * maxy1 - (float) mCursorRed.getHeight() / 2.0f, photoPaint);
+//                        bitcanvas.drawBitmap(mCursorBlue, (float) icon.getWidth() / (float) mSuportWidth * minx1 - (float) mCursorBlue.getWidth() / 2.0f, (float) icon.getHeight() / (float) (mSuportHeight - 4) * miny1 - (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
+//                        bitcanvas.drawBitmap(mCursorYellow, (float) icon.getWidth() / 2.0f - (float) mCursorYellow.getWidth() / 2.0f, (float) icon.getHeight() / 2.0f - (float) mCursorYellow.getHeight() / 2.0f, photoPaint);
+//
+//                        //绘制标志性温度在这里结束
+//                    }
 
                     /**
                      * 点测温绘制
                      */
-                    if(mTouchPointLists.size()>0){
-                        String pointTemp;//= decimalFormat.format(temperature[7]);
-
-                        //Log.e(TAG, "icon.getWidth()" + icon.getWidth());
-                        //Log.e(TAG, "icon.getHeight()" + icon.getHeight());
-                        photoPaint.setColor(Color.GREEN);
-                        try {
-                            for (TouchPoint j : mTouchPointLists) {
-                                float pointx = j.x - mCursorGreen.getWidth() / 2.0f;
-                                float pointy = j.y - mCursorGreen.getHeight() / 2.0f;
-                                if (isT3) {
-                                    bitcanvas.drawBitmap(mCursorGreen, icon.getWidth() - pointx - mCursorGreen.getWidth(), icon.getHeight() - pointy - mCursorGreen.getWidth(), photoPaint);
-                                } else {
-                                    bitcanvas.drawBitmap(mCursorGreen, pointx, pointy, photoPaint);
-                                }
-                                int index = 0;
-                                if (isT3) {
-                                    //index = (((int) ((1 - j.y) * (mSuportHeight - 4))) * mSuportWidth + (int) ((1 - j.x) * mSuportWidth) + 10);
-                                    index = ((int) (mSuportHeight - 4 - j.y*heightRatio) * mSuportWidth + (int) (mSuportWidth - j.x*widthRatio) + 10);
-                                } else {
-                                    //index = (((int) (j.y * (mSuportHeight - 4))) * mSuportWidth + (int) (j.x * mSuportWidth) + 10);
-                                    index = (((int) (j.y * heightRatio)) * mSuportWidth + (int) (j.x * widthRatio) + 10);
-                                }
-                                x = j.x;
-                                y = j.y;
-                                pointTemp = decimalFormat.format(temperature1[index]) + extern;
-                                photoPaint.getTextBounds(pointTemp, 0, pointTemp.length(), bounds);
-                                if (isT3) {
-                                    bitcanvas.drawText(pointTemp, icon.getWidth() - x + (float) mCursorGreen.getWidth() / 2.0f, icon.getHeight() - y + (float) mCursorGreen.getHeight() / 2.0f, photoPaint);
-                                } else {
-                                    if (icon.getWidth() - x >(mCursorGreen.getWidth()/2.0f + bounds.width())){//边界绘制温度 在左边
-                                        bitcanvas.drawText(pointTemp, x + (float) mCursorGreen.getWidth() / 2.0f, y + (float) mCursorGreen.getHeight() / 2.0f, photoPaint);
-                                    }else {
-                                        bitcanvas.drawText(pointTemp, x - (float) mCursorGreen.getWidth() / 2.0f - bounds.width(), y + (float) mCursorGreen.getHeight() / 2.0f, photoPaint);
-                                    }
-
-                                }
-                            }
-                        } catch (Exception e) {
-
-                        }
-
-                    }
+//                    if(mTouchPointLists.size()>0){
+//                        String pointTemp;//= decimalFormat.format(temperature[7]);
+//
+//                        //Log.e(TAG, "icon.getWidth()" + icon.getWidth());
+//                        //Log.e(TAG, "icon.getHeight()" + icon.getHeight());
+//                        photoPaint.setColor(Color.GREEN);
+//                        try {
+//                            for (TouchPoint j : mTouchPointLists) {
+//                                float pointx = j.x - mCursorGreen.getWidth() / 2.0f;
+//                                float pointy = j.y - mCursorGreen.getHeight() / 2.0f;
+//                                if (isT3) {
+//                                    bitcanvas.drawBitmap(mCursorGreen, icon.getWidth() - pointx - mCursorGreen.getWidth(), icon.getHeight() - pointy - mCursorGreen.getWidth(), photoPaint);
+//                                } else {
+//                                    bitcanvas.drawBitmap(mCursorGreen, pointx, pointy, photoPaint);
+//                                }
+//                                int index = 0;
+//                                if (isT3) {
+//                                    //index = (((int) ((1 - j.y) * (mSuportHeight - 4))) * mSuportWidth + (int) ((1 - j.x) * mSuportWidth) + 10);
+//                                    index = ((int) (mSuportHeight - 4 - j.y*heightRatio) * mSuportWidth + (int) (mSuportWidth - j.x*widthRatio) + 10);
+//                                } else {
+//                                    //index = (((int) (j.y * (mSuportHeight - 4))) * mSuportWidth + (int) (j.x * mSuportWidth) + 10);
+//                                    index = (((int) (j.y * heightRatio)) * mSuportWidth + (int) (j.x * widthRatio) + 10);
+//                                }
+//                                x = j.x;
+//                                y = j.y;
+//                                pointTemp = decimalFormat.format(temperature1[index]) + extern;
+//                                photoPaint.getTextBounds(pointTemp, 0, pointTemp.length(), bounds);
+//                                if (isT3) {
+//                                    bitcanvas.drawText(pointTemp, icon.getWidth() - x + (float) mCursorGreen.getWidth() / 2.0f, icon.getHeight() - y + (float) mCursorGreen.getHeight() / 2.0f, photoPaint);
+//                                } else {
+//                                    if (icon.getWidth() - x >(mCursorGreen.getWidth()/2.0f + bounds.width())){//边界绘制温度 在左边
+//                                        bitcanvas.drawText(pointTemp, x + (float) mCursorGreen.getWidth() / 2.0f, y + (float) mCursorGreen.getHeight() / 2.0f, photoPaint);
+//                                    }else {
+//                                        bitcanvas.drawText(pointTemp, x - (float) mCursorGreen.getWidth() / 2.0f - bounds.width(), y + (float) mCursorGreen.getHeight() / 2.0f, photoPaint);
+//                                    }
+//
+//                                }
+//                            }
+//                        } catch (Exception e) {
+//
+//                        }
+//
+//                    }
 
 
                     /**
                      * 1:线测温绘制
                      */
-                    if(mTouchLineLists.size()>0){
-                        for(int m=0; m<mTouchLineLists.size(); m++){
-                            TouchPoint TouchPoint1, TouchPoint2;
-                            int point1x, point2x, point1y, point2y, leftPointx, rightPointx, leftPointy, rightPointy;
-                            int maxPointX, maxPointY, minPointX, minPointY;
-                            float maxTempL, minTempL;
-                            //bitcanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-
-                            TouchPoint1 = mTouchLineLists.get(m).touchPoint1;
-                            TouchPoint2 = mTouchLineLists.get(m).touchPoint2;
-                            if (isT3) {
-                                /*
-                                point1x = (int) ((1 - TouchPoint1.x) * mSuportWidth);
-                                point2x = (int) ((1 - TouchPoint2.x) * mSuportWidth);
-                                point1y = (int) ((1 - TouchPoint1.y) * (mSuportHeight - 4));
-                                point2y = (int) ((1 - TouchPoint2.y) * (mSuportHeight - 4));
-                                 */
-                                point1x = (int) (mSuportWidth - TouchPoint1.x * widthRatio);
-                                point2x = (int) (mSuportWidth - TouchPoint2.x * widthRatio);
-                                point1y = (int) (mSuportHeight - 4 - TouchPoint1.y * heightRatio);
-                                point2y = (int) (mSuportHeight - 4 - TouchPoint2.y * heightRatio);
-                            } else {
-                                /*
-                                point1x = (int) (TouchPoint1.x * mSuportWidth);
-                                point2x = (int) (TouchPoint2.x * mSuportWidth);
-                                point1y = (int) (TouchPoint1.y * (mSuportHeight - 4));
-                                point2y = (int) (TouchPoint2.y * (mSuportHeight - 4));
-                                 */
-                                point1x = (int) (TouchPoint1.x * widthRatio);
-                                point2x = (int) (TouchPoint2.x * widthRatio);
-                                point1y = (int) (TouchPoint1.y * heightRatio);
-                                point2y = (int) (TouchPoint2.y * heightRatio);
-                            }
-
-                            if (point1x <= point2x) {
-                                leftPointx = point1x;
-                                leftPointy = point1y;
-                                rightPointx = point2x;
-                                rightPointy = point1y;
-                            } else {
-                                leftPointx = point2x;
-                                leftPointy = point1y;
-                                rightPointx = point1x;
-                                rightPointy = point1y;
-                            }
-                            int leftIndex = (leftPointy * mSuportWidth + leftPointx + 10);
-                            int rightIndex = (rightPointy * mSuportWidth + rightPointx + 10);
-                            maxTempL = temperature1[leftIndex];
-                            minTempL = temperature1[rightIndex];
-                            maxPointX = leftPointx;//对应数据源  画布 上的坐标。
-                            maxPointY = leftPointy;
-                            minPointX = rightPointx;
-                            minPointY = rightPointy;
-                            for (int k = leftPointx; k < rightPointx; k++) {
-                                float te = temperature1[leftPointy * mSuportWidth + k + 10];
-                                if (maxTempL <= te) {
-                                    maxTempL = te;
-                                    maxPointX = k;
-                                    maxPointY = leftPointy;
-                                }
-                                if (minTempL >= te) {
-                                    minTempL = te;
-                                    minPointX = k;
-                                    minPointY = leftPointy;
-                                }
-                            }
-                            photoPaint.setColor(Color.BLUE);
-                            if (isT3) {
-                                //bitcanvas.drawLine(icon.getWidth() - TouchPoint1.x * icon.getWidth(), icon.getHeight() - TouchPoint1.y * icon.getHeight(), icon.getWidth() - TouchPoint2.x * icon.getWidth(), icon.getHeight() - TouchPoint1.y * icon.getHeight(), photoPaint);
-                                bitcanvas.drawLine(icon.getWidth() - TouchPoint1.x, icon.getHeight() - TouchPoint1.y, icon.getWidth() - TouchPoint2.x, icon.getHeight() - TouchPoint1.y, photoPaint);
-                            } else {
-                                bitcanvas.drawLine(TouchPoint1.x, TouchPoint1.y, TouchPoint2.x, TouchPoint1.y, photoPaint);
-                            }
-                            String maxTempString = decimalFormat.format(maxTempL) + extern;
-                            String minTempString = decimalFormat.format(minTempL) + extern;
-
-
-                            photoPaint.getTextBounds(maxTempString, 0, maxTempString.length(), dstHighTemp);
-                            photoPaint.setColor(Color.RED);
-                            x = (float) icon.getWidth() / (float) mSuportWidth * maxPointX;//把数据源上画布的坐标  转化成 屏幕上画布的坐标
-                            y = (float) icon.getHeight() / (float) (mSuportHeight - 4) * maxPointY;
-
-                            if (icon.getWidth() - x > (mCursorRed.getWidth()+dstHighTemp.width())){//边界高温 绘制在 标志的前边
-                                bitcanvas.drawText(maxTempString, x + (float) mCursorRed.getWidth() / 2.0f, y + (float) mCursorRed.getHeight() / 2.0f, photoPaint);
-                            }else {
-                                bitcanvas.drawText(maxTempString, x - (float) mCursorRed.getWidth() - dstHighTemp.width(), y + (float) mCursorRed.getHeight() / 2.0f, photoPaint);
-                            }
-                            photoPaint.getTextBounds(minTempString, 0, minTempString.length(), dstLowTemp);
-                            photoPaint.setColor(Color.BLUE);
-                            x = (float) icon.getWidth() / (float) mSuportWidth * minPointX;//最小温度的x坐标
-                            y = (float) icon.getHeight() / (float) (mSuportHeight - 4) * minPointY;
-
+//                    if(mTouchLineLists.size()>0){
+//                        for(int m=0; m<mTouchLineLists.size(); m++){
+//                            TouchPoint TouchPoint1, TouchPoint2;
+//                            int point1x, point2x, point1y, point2y, leftPointx, rightPointx, leftPointy, rightPointy;
+//                            int maxPointX, maxPointY, minPointX, minPointY;
+//                            float maxTempL, minTempL;
+//                            //bitcanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+//
+//                            TouchPoint1 = mTouchLineLists.get(m).touchPoint1;
+//                            TouchPoint2 = mTouchLineLists.get(m).touchPoint2;
+//                            if (isT3) {
+//                                /*
+//                                point1x = (int) ((1 - TouchPoint1.x) * mSuportWidth);
+//                                point2x = (int) ((1 - TouchPoint2.x) * mSuportWidth);
+//                                point1y = (int) ((1 - TouchPoint1.y) * (mSuportHeight - 4));
+//                                point2y = (int) ((1 - TouchPoint2.y) * (mSuportHeight - 4));
+//                                 */
+//                                point1x = (int) (mSuportWidth - TouchPoint1.x * widthRatio);
+//                                point2x = (int) (mSuportWidth - TouchPoint2.x * widthRatio);
+//                                point1y = (int) (mSuportHeight - 4 - TouchPoint1.y * heightRatio);
+//                                point2y = (int) (mSuportHeight - 4 - TouchPoint2.y * heightRatio);
+//                            } else {
+//                                /*
+//                                point1x = (int) (TouchPoint1.x * mSuportWidth);
+//                                point2x = (int) (TouchPoint2.x * mSuportWidth);
+//                                point1y = (int) (TouchPoint1.y * (mSuportHeight - 4));
+//                                point2y = (int) (TouchPoint2.y * (mSuportHeight - 4));
+//                                 */
+//                                point1x = (int) (TouchPoint1.x * widthRatio);
+//                                point2x = (int) (TouchPoint2.x * widthRatio);
+//                                point1y = (int) (TouchPoint1.y * heightRatio);
+//                                point2y = (int) (TouchPoint2.y * heightRatio);
+//                            }
+//
+//                            if (point1x <= point2x) {
+//                                leftPointx = point1x;
+//                                leftPointy = point1y;
+//                                rightPointx = point2x;
+//                                rightPointy = point1y;
+//                            } else {
+//                                leftPointx = point2x;
+//                                leftPointy = point1y;
+//                                rightPointx = point1x;
+//                                rightPointy = point1y;
+//                            }
+//                            int leftIndex = (leftPointy * mSuportWidth + leftPointx + 10);
+//                            int rightIndex = (rightPointy * mSuportWidth + rightPointx + 10);
+//                            maxTempL = temperature1[leftIndex];
+//                            minTempL = temperature1[rightIndex];
+//                            maxPointX = leftPointx;//对应数据源  画布 上的坐标。
+//                            maxPointY = leftPointy;
+//                            minPointX = rightPointx;
+//                            minPointY = rightPointy;
+//                            for (int k = leftPointx; k < rightPointx; k++) {
+//                                float te = temperature1[leftPointy * mSuportWidth + k + 10];
+//                                if (maxTempL <= te) {
+//                                    maxTempL = te;
+//                                    maxPointX = k;
+//                                    maxPointY = leftPointy;
+//                                }
+//                                if (minTempL >= te) {
+//                                    minTempL = te;
+//                                    minPointX = k;
+//                                    minPointY = leftPointy;
+//                                }
+//                            }
+//                            photoPaint.setColor(Color.BLUE);
+//                            if (isT3) {
+//                                //bitcanvas.drawLine(icon.getWidth() - TouchPoint1.x * icon.getWidth(), icon.getHeight() - TouchPoint1.y * icon.getHeight(), icon.getWidth() - TouchPoint2.x * icon.getWidth(), icon.getHeight() - TouchPoint1.y * icon.getHeight(), photoPaint);
+//                                bitcanvas.drawLine(icon.getWidth() - TouchPoint1.x, icon.getHeight() - TouchPoint1.y, icon.getWidth() - TouchPoint2.x, icon.getHeight() - TouchPoint1.y, photoPaint);
+//                            } else {
+//                                bitcanvas.drawLine(TouchPoint1.x, TouchPoint1.y, TouchPoint2.x, TouchPoint1.y, photoPaint);
+//                            }
+//                            String maxTempString = decimalFormat.format(maxTempL) + extern;
+//                            String minTempString = decimalFormat.format(minTempL) + extern;
+//
+//
+//                            photoPaint.getTextBounds(maxTempString, 0, maxTempString.length(), dstHighTemp);
+//                            photoPaint.setColor(Color.RED);
+//                            x = (float) icon.getWidth() / (float) mSuportWidth * maxPointX;//把数据源上画布的坐标  转化成 屏幕上画布的坐标
+//                            y = (float) icon.getHeight() / (float) (mSuportHeight - 4) * maxPointY;
+//
+//                            if (icon.getWidth() - x > (mCursorRed.getWidth()+dstHighTemp.width())){//边界高温 绘制在 标志的前边
+//                                bitcanvas.drawText(maxTempString, x + (float) mCursorRed.getWidth() / 2.0f, y + (float) mCursorRed.getHeight() / 2.0f, photoPaint);
+//                            }else {
+//                                bitcanvas.drawText(maxTempString, x - (float) mCursorRed.getWidth() - dstHighTemp.width(), y + (float) mCursorRed.getHeight() / 2.0f, photoPaint);
+//                            }
+//                            photoPaint.getTextBounds(minTempString, 0, minTempString.length(), dstLowTemp);
+//                            photoPaint.setColor(Color.BLUE);
+//                            x = (float) icon.getWidth() / (float) mSuportWidth * minPointX;//最小温度的x坐标
+//                            y = (float) icon.getHeight() / (float) (mSuportHeight - 4) * minPointY;
+//
+////                                bitcanvas.drawText(minTempString, x + (float) mCursorBlue.getWidth() / 2.0f, y + (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
+//                            if (icon.getWidth() - x > (mCursorBlue.getWidth()+dstLowTemp.width())){//边界高温 绘制在 标志的前边
 //                                bitcanvas.drawText(minTempString, x + (float) mCursorBlue.getWidth() / 2.0f, y + (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
-                            if (icon.getWidth() - x > (mCursorBlue.getWidth()+dstLowTemp.width())){//边界高温 绘制在 标志的前边
-                                bitcanvas.drawText(minTempString, x + (float) mCursorBlue.getWidth() / 2.0f, y + (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
-                            }else {
-                                bitcanvas.drawText(minTempString, x - (float) mCursorBlue.getWidth() / 2.0f - dstLowTemp.width(), y + (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
-                            }
-
-                            bitcanvas.drawBitmap(mCursorRed, (float) icon.getWidth() / (float) mSuportWidth * maxPointX - (float) mCursorRed.getWidth() / 2.0f,
-                                    (float) icon.getHeight() / (float) (mSuportHeight - 4) * maxPointY - (float) mCursorRed.getHeight() / 2.0f, photoPaint);
-                            bitcanvas.drawBitmap(mCursorBlue, (float) icon.getWidth() / (float) mSuportWidth * minPointX - (float) mCursorBlue.getWidth() / 2.0f,
-                                    (float) icon.getHeight() / (float) (mSuportHeight - 4) * minPointY - (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
-
-                        }
-                    }
+//                            }else {
+//                                bitcanvas.drawText(minTempString, x - (float) mCursorBlue.getWidth() / 2.0f - dstLowTemp.width(), y + (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
+//                            }
+//
+//                            bitcanvas.drawBitmap(mCursorRed, (float) icon.getWidth() / (float) mSuportWidth * maxPointX - (float) mCursorRed.getWidth() / 2.0f,
+//                                    (float) icon.getHeight() / (float) (mSuportHeight - 4) * maxPointY - (float) mCursorRed.getHeight() / 2.0f, photoPaint);
+//                            bitcanvas.drawBitmap(mCursorBlue, (float) icon.getWidth() / (float) mSuportWidth * minPointX - (float) mCursorBlue.getWidth() / 2.0f,
+//                                    (float) icon.getHeight() / (float) (mSuportHeight - 4) * minPointY - (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
+//
+//                        }
+//                    }
 
                     /**
                      * 2:矩形测温绘制
                      */
-                    if(mTouchAreaLists.size()>0){
-                        for(int m=0; m<mTouchAreaLists.size(); m++){
-                            TouchPoint TouchPoint1, TouchPoint2;
-                            int point1x, point2x, point1y, point2y, leftPointx, rightPointx, leftPointy, rightPointy;
-                            int maxPointX, maxPointY, minPointX, minPointY;
-                            float maxTempR, minTempR;
-
-//                            Log.e(TAG,"ThreadId ===>"+this.getId());
-
-                            TouchPoint1 = mTouchAreaLists.get(m).touchPoint1;
-                            TouchPoint2 = mTouchAreaLists.get(m).touchPoint2;
-                            if (isT3) {
-                                point1x = (int) ((1 - TouchPoint1.x) * mSuportWidth);
-                                point2x = (int) ((1 - TouchPoint2.x) * mSuportWidth);
-                                point1y = (int) ((1 - TouchPoint1.y) * (mSuportHeight - 4));
-                                point2y = (int) ((1 - TouchPoint2.y) * (mSuportHeight - 4));
-                            } else {
-                                point1x = (int) (TouchPoint1.x * widthRatio);
-                                point2x = (int) (TouchPoint2.x * widthRatio);
-                                point1y = (int) (TouchPoint1.y * heightRatio);
-                                point2y = (int) (TouchPoint2.y * heightRatio);
-                            }
-                            if (point1x <= point2x) {
-                                leftPointx = point1x;
-                                leftPointy = point1y;
-                                rightPointx = point2x;
-                                rightPointy = point2y;
-                            } else {
-                                leftPointx = point2x;
-                                leftPointy = point2y;
-                                rightPointx = point1x;
-                                rightPointy = point1y;
-                            }
-                            int leftIndex = (leftPointy * mSuportWidth + leftPointx + 10);
-                            int rightIndex = (leftPointy * mSuportWidth + rightPointx + 10);
-                            maxTempR = temperature1[leftIndex];
-                            minTempR = temperature1[leftIndex];
-                            maxPointX = leftPointx;
-                            maxPointY = leftPointy;
-                            minPointX = leftPointx;
-                            minPointY = leftPointy;
-
-                            for (int i = leftPointx; i < rightPointx; i++) {
-                                for (int j = (leftPointy <= rightPointy ? leftPointy : rightPointy); j < (leftPointy >= rightPointy ? leftPointy : rightPointy); j++) {
-                                    float te = temperature1[j * mSuportWidth + i + 10];
-                                    if (maxTempR <= te) {
-                                        maxTempR = te;
-                                        maxPointX = i;
-                                        maxPointY = j;
-                                    }
-                                    if (minTempR >= te) {
-                                        minTempR = te;
-                                        minPointX = i;
-                                        minPointY = j;
-                                    }
-                                }
-                            }
-                            photoPaint.setColor(Color.YELLOW);
-                            if (isT3) {
-                                bitcanvas.drawLine(icon.getWidth() - TouchPoint1.x, icon.getHeight() - TouchPoint1.y, icon.getWidth() - TouchPoint2.x, icon.getHeight() - TouchPoint1.y, photoPaint);
-                                bitcanvas.drawLine(icon.getWidth() - TouchPoint1.x, icon.getHeight() - TouchPoint1.y, icon.getWidth() - TouchPoint1.x, icon.getHeight() - TouchPoint2.y, photoPaint);
-                                bitcanvas.drawLine(icon.getWidth() - TouchPoint1.x, icon.getHeight() - TouchPoint2.y, icon.getWidth() - TouchPoint2.x, icon.getHeight() - TouchPoint2.y, photoPaint);
-                                bitcanvas.drawLine(icon.getWidth() - TouchPoint2.x, icon.getHeight() - TouchPoint2.y, icon.getWidth() - TouchPoint2.x, icon.getHeight() - TouchPoint1.y, photoPaint);
-                            } else {
-                                bitcanvas.drawLine(TouchPoint1.x, TouchPoint1.y, TouchPoint2.x, TouchPoint1.y, photoPaint);
-                                bitcanvas.drawLine(TouchPoint1.x, TouchPoint1.y, TouchPoint1.x, TouchPoint2.y, photoPaint);
-                                bitcanvas.drawLine(TouchPoint1.x, TouchPoint2.y, TouchPoint2.x, TouchPoint2.y, photoPaint);
-                                bitcanvas.drawLine(TouchPoint2.x, TouchPoint2.y, TouchPoint2.x, TouchPoint1.y, photoPaint);
-                            }
-                            String maxTempString = decimalFormat.format(maxTempR) + extern;
-                            String minTempString = decimalFormat.format(minTempR) + extern;
-
-                            photoPaint.getTextBounds(maxTempString, 0, maxTempString.length(), dstHighTemp);
-                            photoPaint.setColor(Color.RED);
-                            x = (float) icon.getWidth() / (float) mSuportWidth * maxPointX;
-                            y = (float) icon.getHeight() / (float) (mSuportHeight - 4) * maxPointY;
-                            //x = maxPointX;
-                            //y = maxPointY;
-                            if (icon.getWidth() - x > (mCursorRed.getWidth()+dstHighTemp.width())){//边界高温 绘制在 标志的前边
-                                bitcanvas.drawText(maxTempString, x + (float) mCursorRed.getWidth() / 2.0f, y + (float) mCursorRed.getHeight() / 2.0f, photoPaint);
-                            }else {
-                                bitcanvas.drawText(maxTempString, x - (float) mCursorRed.getWidth() /2.0f - dstHighTemp.width(), y + (float) mCursorRed.getHeight() / 2.0f, photoPaint);
-                            }
-
-                            photoPaint.getTextBounds(minTempString, 0, minTempString.length(), dstLowTemp);
-                            photoPaint.setColor(Color.BLUE);
-                            x = (float) icon.getWidth() / (float) mSuportWidth * minPointX;
-                            y = (float) icon.getHeight() / (float) (mSuportHeight - 4) * minPointY;
-
-                            if (icon.getWidth() - x > (mCursorBlue.getWidth()+dstLowTemp.width())){//边界高温 绘制在 标志的前边
-                                bitcanvas.drawText(minTempString, x + (float) mCursorBlue.getWidth() / 2.0f, y + (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
-                            }else {
-                                bitcanvas.drawText(minTempString, x - (float) mCursorBlue.getWidth() /2.0f - dstLowTemp.width(), y + (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
-                            }
-//                            bitcanvas.drawText(minTempString, x + (float) mCursorBlue.getWidth() / 2.0f, y + (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
-                            bitcanvas.drawBitmap(mCursorRed, (float) icon.getWidth() / (float) mSuportWidth * maxPointX - (float) mCursorRed.getWidth() / 2.0f, (float) icon.getHeight() / (float) (mSuportHeight - 4) * maxPointY - (float) mCursorRed.getHeight() / 2.0f, photoPaint);
-                            bitcanvas.drawBitmap(mCursorBlue, (float) icon.getWidth() / (float) mSuportWidth * minPointX - (float) mCursorBlue.getWidth() / 2.0f, (float) icon.getHeight() / (float) (mSuportHeight - 4) * minPointY - (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
-                        }
-                        //                        bitcanvas.save(Canvas.ALL_SAVE_FLAG);//吴长城修改到下面函数
-                        bitcanvas.save();
-                        isCbTemping = true;
-                    }
+//                    if(mTouchAreaLists.size()>0){
+//                        for(int m=0; m<mTouchAreaLists.size(); m++){
+//                            TouchPoint TouchPoint1, TouchPoint2;
+//                            int point1x, point2x, point1y, point2y, leftPointx, rightPointx, leftPointy, rightPointy;
+//                            int maxPointX, maxPointY, minPointX, minPointY;
+//                            float maxTempR, minTempR;
+//
+////                            Log.e(TAG,"ThreadId ===>"+this.getId());
+//
+//                            TouchPoint1 = mTouchAreaLists.get(m).touchPoint1;
+//                            TouchPoint2 = mTouchAreaLists.get(m).touchPoint2;
+//                            if (isT3) {
+//                                point1x = (int) ((1 - TouchPoint1.x) * mSuportWidth);
+//                                point2x = (int) ((1 - TouchPoint2.x) * mSuportWidth);
+//                                point1y = (int) ((1 - TouchPoint1.y) * (mSuportHeight - 4));
+//                                point2y = (int) ((1 - TouchPoint2.y) * (mSuportHeight - 4));
+//                            } else {
+//                                point1x = (int) (TouchPoint1.x * widthRatio);
+//                                point2x = (int) (TouchPoint2.x * widthRatio);
+//                                point1y = (int) (TouchPoint1.y * heightRatio);
+//                                point2y = (int) (TouchPoint2.y * heightRatio);
+//                            }
+//                            if (point1x <= point2x) {
+//                                leftPointx = point1x;
+//                                leftPointy = point1y;
+//                                rightPointx = point2x;
+//                                rightPointy = point2y;
+//                            } else {
+//                                leftPointx = point2x;
+//                                leftPointy = point2y;
+//                                rightPointx = point1x;
+//                                rightPointy = point1y;
+//                            }
+//                            int leftIndex = (leftPointy * mSuportWidth + leftPointx + 10);
+//                            int rightIndex = (leftPointy * mSuportWidth + rightPointx + 10);
+//                            maxTempR = temperature1[leftIndex];
+//                            minTempR = temperature1[leftIndex];
+//                            maxPointX = leftPointx;
+//                            maxPointY = leftPointy;
+//                            minPointX = leftPointx;
+//                            minPointY = leftPointy;
+//
+//                            for (int i = leftPointx; i < rightPointx; i++) {
+//                                for (int j = (leftPointy <= rightPointy ? leftPointy : rightPointy); j < (leftPointy >= rightPointy ? leftPointy : rightPointy); j++) {
+//                                    float te = temperature1[j * mSuportWidth + i + 10];
+//                                    if (maxTempR <= te) {
+//                                        maxTempR = te;
+//                                        maxPointX = i;
+//                                        maxPointY = j;
+//                                    }
+//                                    if (minTempR >= te) {
+//                                        minTempR = te;
+//                                        minPointX = i;
+//                                        minPointY = j;
+//                                    }
+//                                }
+//                            }
+//                            photoPaint.setColor(Color.YELLOW);
+//                            if (isT3) {
+//                                bitcanvas.drawLine(icon.getWidth() - TouchPoint1.x, icon.getHeight() - TouchPoint1.y, icon.getWidth() - TouchPoint2.x, icon.getHeight() - TouchPoint1.y, photoPaint);
+//                                bitcanvas.drawLine(icon.getWidth() - TouchPoint1.x, icon.getHeight() - TouchPoint1.y, icon.getWidth() - TouchPoint1.x, icon.getHeight() - TouchPoint2.y, photoPaint);
+//                                bitcanvas.drawLine(icon.getWidth() - TouchPoint1.x, icon.getHeight() - TouchPoint2.y, icon.getWidth() - TouchPoint2.x, icon.getHeight() - TouchPoint2.y, photoPaint);
+//                                bitcanvas.drawLine(icon.getWidth() - TouchPoint2.x, icon.getHeight() - TouchPoint2.y, icon.getWidth() - TouchPoint2.x, icon.getHeight() - TouchPoint1.y, photoPaint);
+//                            } else {
+//                                bitcanvas.drawLine(TouchPoint1.x, TouchPoint1.y, TouchPoint2.x, TouchPoint1.y, photoPaint);
+//                                bitcanvas.drawLine(TouchPoint1.x, TouchPoint1.y, TouchPoint1.x, TouchPoint2.y, photoPaint);
+//                                bitcanvas.drawLine(TouchPoint1.x, TouchPoint2.y, TouchPoint2.x, TouchPoint2.y, photoPaint);
+//                                bitcanvas.drawLine(TouchPoint2.x, TouchPoint2.y, TouchPoint2.x, TouchPoint1.y, photoPaint);
+//                            }
+//                            String maxTempString = decimalFormat.format(maxTempR) + extern;
+//                            String minTempString = decimalFormat.format(minTempR) + extern;
+//
+//                            photoPaint.getTextBounds(maxTempString, 0, maxTempString.length(), dstHighTemp);
+//                            photoPaint.setColor(Color.RED);
+//                            x = (float) icon.getWidth() / (float) mSuportWidth * maxPointX;
+//                            y = (float) icon.getHeight() / (float) (mSuportHeight - 4) * maxPointY;
+//                            //x = maxPointX;
+//                            //y = maxPointY;
+//                            if (icon.getWidth() - x > (mCursorRed.getWidth()+dstHighTemp.width())){//边界高温 绘制在 标志的前边
+//                                bitcanvas.drawText(maxTempString, x + (float) mCursorRed.getWidth() / 2.0f, y + (float) mCursorRed.getHeight() / 2.0f, photoPaint);
+//                            }else {
+//                                bitcanvas.drawText(maxTempString, x - (float) mCursorRed.getWidth() /2.0f - dstHighTemp.width(), y + (float) mCursorRed.getHeight() / 2.0f, photoPaint);
+//                            }
+//
+//                            photoPaint.getTextBounds(minTempString, 0, minTempString.length(), dstLowTemp);
+//                            photoPaint.setColor(Color.BLUE);
+//                            x = (float) icon.getWidth() / (float) mSuportWidth * minPointX;
+//                            y = (float) icon.getHeight() / (float) (mSuportHeight - 4) * minPointY;
+//
+//                            if (icon.getWidth() - x > (mCursorBlue.getWidth()+dstLowTemp.width())){//边界高温 绘制在 标志的前边
+//                                bitcanvas.drawText(minTempString, x + (float) mCursorBlue.getWidth() / 2.0f, y + (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
+//                            }else {
+//                                bitcanvas.drawText(minTempString, x - (float) mCursorBlue.getWidth() /2.0f - dstLowTemp.width(), y + (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
+//                            }
+////                            bitcanvas.drawText(minTempString, x + (float) mCursorBlue.getWidth() / 2.0f, y + (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
+//                            bitcanvas.drawBitmap(mCursorRed, (float) icon.getWidth() / (float) mSuportWidth * maxPointX - (float) mCursorRed.getWidth() / 2.0f, (float) icon.getHeight() / (float) (mSuportHeight - 4) * maxPointY - (float) mCursorRed.getHeight() / 2.0f, photoPaint);
+//                            bitcanvas.drawBitmap(mCursorBlue, (float) icon.getWidth() / (float) mSuportWidth * minPointX - (float) mCursorBlue.getWidth() / 2.0f, (float) icon.getHeight() / (float) (mSuportHeight - 4) * minPointY - (float) mCursorBlue.getHeight() / 2.0f, photoPaint);
+//                        }
+//                        //                        bitcanvas.save(Canvas.ALL_SAVE_FLAG);//吴长城修改到下面函数
+//                        bitcanvas.save();
+//                        isCbTemping = true;
+//                    }
 
                     //added by wupei
                     //                    if (temperatureAnalysisMode == 3) {//3:多边形测温模式

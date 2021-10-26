@@ -26,7 +26,7 @@ package com.dyt.wcc.cameracommon.usbcameracommon;
 import android.app.Activity;
 import android.view.Surface;
 
-import com.dyt.wcc.cameracommon.widget.CustomRangeSeekBar;
+import com.dyt.wcc.common.widget.CustomRangeSeekBar;
 import com.dyt.wcc.cameracommon.widget.UVCCameraTextureView;
 import com.serenegiant.glutils.RendererHolder;
 

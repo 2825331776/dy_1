@@ -161,21 +161,22 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		if (isDebug)Log.e(TAG,"height =="+ mTextureViewHeight + " width==" + mTextureViewWidth);
 
 		mDataBinding.textureViewPreviewFragment.iniTempBitmap(mTextureViewWidth, mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
-		mDataBinding.textureViewPreviewFragment.iniTempFontsize(mFontSize);
-		mDataBinding.textureViewPreviewFragment.setUnitTemperature(0);//0 摄氏度 ; 1 华氏度
-		mDataBinding.textureViewPreviewFragment.setBindSeekBar(mDataBinding.customSeekbarPreviewFragment);
+//		mDataBinding.textureViewPreviewFragment.iniTempFontsize(mFontSize);
+//		mDataBinding.textureViewPreviewFragment.setUnitTemperature(0);//0 摄氏度 ; 1 华氏度
+//		mDataBinding.textureViewPreviewFragment.setBindSeekBar(mDataBinding.customSeekbarPreviewFragment);
 		mDataBinding.textureViewPreviewFragment.setDragTempContainer(mDataBinding.dragTempContainerPreviewFragment);
+		mDataBinding.dragTempContainerPreviewFragment.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
 
 		paletteType =1;
 		mUvcCameraHandler.PreparePalette(palettePath,paletteType);
 		mUvcCameraHandler.setAreaCheck(0);
-		mUvcCameraHandler.watermarkOnOff(isWatermark);//是否显示水印
+//		mUvcCameraHandler.watermarkOnOff(isWatermark);//是否显示水印
 		mUvcCameraHandler.setPalette(0);
 
 		//是否进行温度的绘制
 		isTempShow = 0;
 		mUvcCameraHandler.tempShowOnOff(isTempShow);//是否显示绘制的温度 0不显示，1显示。最终调用的是UVCCameraTextureView的绘制线程。
-		mDataBinding.textureViewPreviewFragment.setBitmap(mCursorRed, mCursorGreen, mCursorBlue, mCursorYellow, mWatermarkLogo);//红色最高温，绿色？， 蓝色最低温，黄色中心温，LOGO
+//		mDataBinding.textureViewPreviewFragment.setBitmap(mCursorRed, mCursorGreen, mCursorBlue, mCursorYellow, mWatermarkLogo);//红色最高温，绿色？， 蓝色最低温，黄色中心温，LOGO
 		// 注意显示水印的时候要设置这个水印图片
 
 		mUvcCameraHandler.startPreview(stt);
@@ -301,11 +302,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				}
 			}
 		});
+		//框内细查
 		mDataBinding.toggleAreaCheck.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
 			@Override
 			public void onClick (boolean checkState) {
 				if (checkState){
-					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck();
+					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
 				}else {//close
 
 				}
@@ -316,6 +318,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.toggleFixedTempBar.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
 			@Override
 			public void onClick (boolean checkState) {
+				if (checkState){
+					mDataBinding.customSeekbarPreviewFragment.setWidgetMode(1);
+				}else {
+					mDataBinding.customSeekbarPreviewFragment.setWidgetMode(0);
+				}
 
 			}
 		});

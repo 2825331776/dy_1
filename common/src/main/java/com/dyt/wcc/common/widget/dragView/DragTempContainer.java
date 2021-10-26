@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 
 import com.dyt.wcc.common.R;
 import com.dyt.wcc.common.utils.DensityUtil;
+import com.dyt.wcc.common.widget.CustomRangeSeekBar;
 
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
@@ -33,6 +34,8 @@ import java.util.List;
  * 有焦点的时候 哪个子VIew获得了，  否则都没有焦点  带焦点的控件有工具栏
  */
 public class DragTempContainer extends RelativeLayout {
+	private CustomRangeSeekBar mSeekBar;
+
 	public static int padTop = 14;
 	//点击工具栏之后的控制 响应的事件。删除的事件。
 	public static int perToolsWidthHeightSet = 30;//每个工具栏的宽高
@@ -105,6 +108,13 @@ public class DragTempContainer extends RelativeLayout {
 		mContext = new WeakReference<>(context) ;
 		initAttrs();
 		initView();
+	}
+
+	public CustomRangeSeekBar getmSeekBar () {
+		return mSeekBar;
+	}
+	public void setmSeekBar (CustomRangeSeekBar mSeekBar) {
+		this.mSeekBar = mSeekBar;
 	}
 
 	public interface OnChildToolsClickListener{
@@ -197,7 +207,7 @@ public class DragTempContainer extends RelativeLayout {
 	 * 打开逻辑：userAdd中，无区域检查的矩形，则添加，否则，拿到矩形的列表 穿给控件。
 	 * 取消逻辑：控件层取消
 	 */
-	public List<MyMoveWidget> openAreaCheck(){
+	public List<MyMoveWidget> openAreaCheck(int width,int height){
 		List<MyMoveWidget> recList = new ArrayList<>();
 		for (MyMoveWidget child : userAdd){
 			if (child.getView().getType()==3){
@@ -209,10 +219,10 @@ public class DragTempContainer extends RelativeLayout {
 			//校正起始点坐标
 			OtherTempWidget otherTempWidget = new OtherTempWidget();
 
-			otherTempWidget.setStartPointX(screenWidth/3.0f);
-			otherTempWidget.setStartPointY(screenHeight/3.0f);
-			otherTempWidget.setEndPointX(screenWidth/3.0f*2);
-			otherTempWidget.setEndPointY(screenWidth/3.0f*2);
+			otherTempWidget.setStartPointX(width/3.0f);
+			otherTempWidget.setStartPointY(height/3.0f);
+			otherTempWidget.setEndPointX(width/3.0f*2);
+			otherTempWidget.setEndPointY(height/3.0f*2);
 
 			updateLRTemp(otherTempWidget,3);
 
@@ -239,13 +249,13 @@ public class DragTempContainer extends RelativeLayout {
 		tempSuffixMode = suffixType;
 	}
 
-
+	//更新点的温度
 	private float updatePointTemp(float x , float y){
 		//数据源上的坐标
 		int index =  (10 + (int)(y*HRatio) * 256 + (int)(x*WRatio));
 		return tempSource[index];
 	}
-
+	//更新线L，矩形Rec 上的最高最低温度
 	private void updateLRTemp(OtherTempWidget tempWidget , int type){
 //		Log.e(TAG, "updateLRTemp: ");
 		//更新线，矩形的温度 及其坐标
@@ -254,9 +264,9 @@ public class DragTempContainer extends RelativeLayout {
 		endX =  (int)(tempWidget.getEndPointX()*WRatio); endY = (int)(HRatio*tempWidget.getEndPointY());
 //		Log.e(TAG, "updateLRTemp: startX = " + startX + " startY " + startY + " endx " + endX  + " endy" + endY);
 		//最低最高温度。及其坐标
-		float minTemp , maxTemp;//默认值指向第一个点的数据
-		minTemp = tempSource[(10+(startX+startY*256))];
-		maxTemp = tempSource[(10+(startX+startY*256))];
+//		float minTemp , maxTemp;//默认值指向第一个点的数据
+//		minTemp = tempSource[(10+(startX+startY*256))];
+//		maxTemp = tempSource[(10+(startX+startY*256))];
 		//用什么去记录 最高点 最低点时候的xy值。切记要加上前置的10
 		int LRMinTempX,LRMinTempY, LRMaxTempX,LRMaxTempY;
 		LRMinTempX = startX;LRMinTempY = startY;LRMaxTempX = startX;LRMaxTempY = startY;//默认值
@@ -290,17 +300,13 @@ public class DragTempContainer extends RelativeLayout {
 		tempWidget.setMaxTemp(getTempStrByMode(tempSource[(LRMaxTempX + (LRMaxTempY*256) + 10)]));
 
 	}
-
+	//返回绘制的模式drawTempMode
 	public int getDrawTempMode () {
 		return drawTempMode;
 	}
 	public void setDrawTempMode (int drawTempMode) {
 		this.drawTempMode = drawTempMode;
 	}
-//	public void setHWRation(float wRatio , float hRatio){
-//		this.WRatio = wRatio;
-//		this.HRatio = hRatio;
-//	}
 
 	private float getXByWRatio(float x){
 		return x/WRatio;
@@ -352,10 +358,32 @@ public class DragTempContainer extends RelativeLayout {
 	}
 
 	/**
+	 * 单纯的获取最高 最低温度值，根据设置的温度 单位 K F C。
+	 * @param tempC 温度摄氏度
+	 * @return float 温度数值
+	 */
+	private float getTempByMode( float tempC){
+		float result = 0.0f;
+		//先对拿到的温度格式化
+		switch (tempSuffixMode){
+			case 0:
+				result = getFormatFloat(tempC) ;
+				break;
+			case 1:
+				result = getFormatFloat((float) (tempC * 1.8 + 32)) ;
+				break;
+			case 2:
+				result = getFormatFloat((float) (tempC + 273.15));
+				break;
+		}
+		return result;
+	}
+
+	/**
 	 * 切换温度模式流程：切换到华氏度，得重新计算数值。并更改后面的单位
 	 * 华氏度 = 摄氏度*1.8+32 （℉）  ； 开氏度= 摄氏度 + 237.15 （K）
 	 * @param tempC 温度摄氏度
-	 * @return 温度数值带单位
+	 * @return String 温度数值带单位
 	 */
 	private String getTempStrByMode( float tempC){
 		String result = "0.0℃";
@@ -380,7 +408,13 @@ public class DragTempContainer extends RelativeLayout {
 	}
 
 
-
+	/**
+	 * @param x 数据源上的X坐标
+	 * @param y 数据源上的Y坐标
+	 * @param temp 温度数值
+	 * @param type 区分代表的是高温还是低温 1 高温；2低温
+	 * @param id 控件的id
+	 */
 	private void addHighLowTempWidget(float x , float y , float temp , int type , int id ){
 		TempWidgetObj highTemp = new TempWidgetObj();
 
@@ -404,19 +438,27 @@ public class DragTempContainer extends RelativeLayout {
 		highLowTempLists.add(highWidget);
 	}
 
-
-
+	/**
+	 * 打开高低温追踪，暴露给外部调用
+	 */
 	public void openHighLowTemp(){
 		addHighLowTempWidget(tempSource[1],tempSource[2],tempSource[3],1,1);
 		addHighLowTempWidget(tempSource[4],tempSource[5],tempSource[6],2,2);
 	}
+
+	/**
+	 * 关闭高低温追踪，暴露给外部调用
+	 */
 	public void closeHighLowTemp(){
 		for (MyMoveWidget widget: highLowTempLists){
 			removeView(widget);
 		}
 		highLowTempLists.clear();
 	}
-	//删除所有的控件
+
+	/**
+	 * 删除所有添加的测温控件。
+	 */
 	public void clearAll(){
 		for (MyMoveWidget widget: userAdd){
 			removeView(widget);
@@ -424,7 +466,7 @@ public class DragTempContainer extends RelativeLayout {
 		userAdd.clear();
 		pointNum = 0;
 	}
-
+	//添加点测温模式
 	private void createPointView(){
 		TempWidgetObj widget = new TempWidgetObj();
 
@@ -445,6 +487,7 @@ public class DragTempContainer extends RelativeLayout {
 		resetUserAddView(widget);
 		drawTempMode = -1;
 	}
+	//添加 线或者矩形 测温模式
 	private void createLineOrRecView(){
 //		Log.e(TAG, "reviseCoordinate: " + reviseCoordinate(drawTempMode));
 		if (reviseCoordinate(drawTempMode)){
@@ -729,6 +772,9 @@ public class DragTempContainer extends RelativeLayout {
 //					Log.e(TAG, "UPDATE: " + " x = " + tempSource[1] + " y = "+ tempSource[2] +" value "+ tempSource[3]);
 //					Log.e(TAG, "UPDATE ==>>: "+ " x = " + tempSource[4] + " y = "+ tempSource[5] +" value ==> "+ tempSource[6]);
 //					Log.e(TAG, "handleMessage: " + highLowTempLists.size());
+					if (mSeekBar!=null){
+						mSeekBar.Update(getTempByMode(tempSource[3]),getTempByMode(tempSource[6]));
+					}
 					//刷新高低温追踪的数据
 				if (highLowTempLists.size()!=0){
 					highLowTempLists.get(0).getView().getPointTemp().setStartPointX((int) getXByWRatio(tempSource[1]));

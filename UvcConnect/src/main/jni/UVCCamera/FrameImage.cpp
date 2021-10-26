@@ -234,11 +234,11 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
         currentpalette = DYgetPalette(mTypeOfPalette);
         mIsPaletteChanged = false;
     }
-    //获取图幅中的最大最小值
+    //获取图幅中的 最大最小AD值
     int amountPixels1 = requestWidth*(requestHeight-4);
-    amountPixels1 = amountPixels1 + 4;
+    amountPixels1 = amountPixels1 + 4;//倒数第四行的 第四位
     max = tmp_buf[amountPixels1];
-    amountPixels1 = amountPixels1 + 3;
+    amountPixels1 = amountPixels1 + 3;//倒数第四行的 第七位
     min = tmp_buf[amountPixels1];
     ro = max - min;
 //    LOGE("max ========== %d", max );
@@ -249,7 +249,8 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
             // 是否为区域检查，是则绘制灰度图
             for (int i = 0; i < requestHeight - 4; i++) {
                 for (int j = 0; j < requestWidth; j++) {
-                    //黑白：灰度值0-254单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
+                    //黑白：灰度值0-255单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
+                    //tmp_buf[i * requestWidth + j 每个数据点。 (AD -min)* (255 / ro) 表示减去最小值 将255分成 ro份，每个ad 值占多少份
                     int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
                     if (gray < 0) {
                         gray = 0;
@@ -264,7 +265,7 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
                 }
             }
             if (isshowtemprange) {
-                //LOGE("区域检查+拉温宽");
+                //LOGE("拉温宽");
                 min = (int) (min + ro * minpercent / 100);
                 ro = (int) (ro * (maxpercent - minpercent) / 100);
             }

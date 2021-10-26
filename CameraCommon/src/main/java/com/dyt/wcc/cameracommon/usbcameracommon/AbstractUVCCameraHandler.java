@@ -448,12 +448,12 @@ abstract class AbstractUVCCameraHandler extends Handler {
     }
 
 
-    public void watermarkOnOff(int isWatermaker) {
-        Message message = Message.obtain();
-        message.what = MSG_WATERMARK_ONOFF;
-        message.arg1 = isWatermaker;
-        sendMessage(message);
-    }
+//    public void watermarkOnOff(int isWatermaker) {
+//        Message message = Message.obtain();
+//        message.what = MSG_WATERMARK_ONOFF;
+//        message.arg1 = isWatermaker;
+//        sendMessage(message);
+//    }
 
     public void tempShowOnOff(int isTempShow) {
         Message message = Message.obtain();
@@ -723,11 +723,11 @@ abstract class AbstractUVCCameraHandler extends Handler {
                 int rotate = msg.arg1;
                 thread.handleRelayout(rotate);
                 break;
-            case MSG_WATERMARK_ONOFF:
-                boolean isWatermaker;
-                isWatermaker = (msg.arg1 > 0);
-                thread.handleWatermarkOnOff(isWatermaker);
-                break;
+//            case MSG_WATERMARK_ONOFF:
+//                boolean isWatermaker;
+//                isWatermaker = (msg.arg1 > 0);
+//                thread.handleWatermarkOnOff(isWatermaker);
+//                break;
             case MSG_SHOW_TEMP:
                 boolean isTempShow;
                 isTempShow = (msg.arg1 > 0);
@@ -1005,34 +1005,34 @@ abstract class AbstractUVCCameraHandler extends Handler {
 
                 if(mUVCCamera != null){
                     String mSupportedSize = mUVCCamera.getSupportedSize();
-                    LogUtils.e("==================mSupportedSize=============="+mSupportedSize);
+                    if (DEBUG)Log.e(TAG,"==================mSupportedSize=============="+mSupportedSize);
 
                     int find_str_postion = mSupportedSize.indexOf("384x292");
                     if (find_str_postion >= 0) {
                         mWidth = 384;
                         mHeight = 292;
-                        Log.e(TAG, "handleOpen: 384 DEVICE ");
+                        if (DEBUG)Log.e(TAG, "handleOpen: 384 DEVICE ");
                     }
                     find_str_postion = mSupportedSize.indexOf("240x184");
                     if (find_str_postion >= 0) {
                         mWidth = 240;
                         mHeight = 184;
-                        Log.e(TAG, "handleOpen: 240 DEVICE ");
+                        if (DEBUG)Log.e(TAG, "handleOpen: 240 DEVICE ");
                     }
                     find_str_postion = mSupportedSize.indexOf("256x196");
                     if (find_str_postion >= 0) {
                         mWidth = 256;
                         mHeight = 196;
-                        Log.e(TAG, "handleOpen: 256 DEVICE ");
+                        if (DEBUG)Log.e(TAG, "handleOpen: 256 DEVICE ");
                     }
                     find_str_postion = mSupportedSize.indexOf("640x516");
                     if (find_str_postion >= 0) {
                         mWidth = 640;
                         mHeight = 516;
-                        Log.e(TAG, "handleOpen: 640 DEVICE ");
+                        if (DEBUG)Log.e(TAG, "handleOpen: 640 DEVICE ");
                     }
                     if (DEBUG)
-                        Log.i(TAG, "supportedSize:" + (mUVCCamera != null ? mUVCCamera.getSupportedSize() : null));
+                        if (DEBUG)Log.e(TAG, "supportedSize:" + (mUVCCamera != null ? mUVCCamera.getSupportedSize() : null));
                 }
 
 
@@ -1646,10 +1646,10 @@ abstract class AbstractUVCCameraHandler extends Handler {
             mWeakCameraView.get().relayout(rotate);
         }
 
-        public void handleWatermarkOnOff(boolean isWatermaker) {
-            Log.e(TAG, "handleWatermarkOnOff isWatermaker: " + isWatermaker);
-            mWeakCameraView.get().watermarkOnOff(isWatermaker);
-        }
+//        public void handleWatermarkOnOff(boolean isWatermaker) {
+//            Log.e(TAG, "handleWatermarkOnOff isWatermaker: " + isWatermaker);
+//            mWeakCameraView.get().watermarkOnOff(isWatermaker);
+//        }
 
         public void handleTempShowOnOff(boolean isTempShow) {
             Log.e(TAG, "handleTempShowOnOff isTempShow: " + isTempShow);

@@ -66,6 +66,8 @@ int attr ColorFillUnselect 0x0
 int attr ColorStroke 0x0
 int attr ColorTextSelect 0x0
 int attr ColorTextUnselect 0x0
+int attr absoluteMax 0x0
+int attr absoluteMin 0x0
 int attr action 0x0
 int attr actionBarDivider 0x0
 int attr actionBarItemBackground 0x0
@@ -159,6 +161,7 @@ int attr behavior_overlapTop 0x0
 int attr behavior_peekHeight 0x0
 int attr behavior_saveFlags 0x0
 int attr behavior_skipCollapsed 0x0
+int attr betweenAbsoluteValue 0x0
 int attr bg_select 0x0
 int attr bg_unselect 0x0
 int attr borderWidth 0x0
@@ -713,8 +716,11 @@ int attr prefixTextAppearance 0x0
 int attr prefixTextColor 0x0
 int attr preserveIconSpacing 0x0
 int attr pressedTranslationZ 0x0
+int attr progressBarBg 0x0
 int attr progressBarPadding 0x0
+int attr progressBarSelBg 0x0
 int attr progressBarStyle 0x0
+int attr progressTextSize 0x0
 int attr queryBackground 0x0
 int attr queryHint 0x0
 int attr radioButtonStyle 0x0
@@ -782,6 +788,8 @@ int attr startIconContentDescription 0x0
 int attr startIconDrawable 0x0
 int attr startIconTint 0x0
 int attr startIconTintMode 0x0
+int attr startMaxPercent 0x0
+int attr startMinPercent 0x0
 int attr state_above_anchor 0x0
 int attr state_collapsed 0x0
 int attr state_collapsible 0x0
@@ -880,6 +888,7 @@ int attr themeLineHeight 0x0
 int attr thickness 0x0
 int attr thumbColor 0x0
 int attr thumbElevation 0x0
+int attr thumbImage 0x0
 int attr thumbRadius 0x0
 int attr thumbTextPadding 0x0
 int attr thumbTint 0x0
@@ -2568,6 +2577,11 @@ int mipmap cursorred 0x0
 int mipmap cursoryellow 0x0
 int mipmap define_view_tools_delete 0x0
 int mipmap define_view_tools_other 0x0
+int mipmap max 0x0
+int mipmap min 0x0
+int mipmap seekbar_bg 0x0
+int mipmap span_max 0x0
+int mipmap span_min 0x0
 int mipmap spinner_down 0x0
 int mipmap spinner_up 0x0
 int plurals mtrl_badge_content_description 0x0
@@ -4140,6 +4154,16 @@ int styleable CustomAttribute_customFloatValue 5
 int styleable CustomAttribute_customIntegerValue 6
 int styleable CustomAttribute_customPixelDimension 7
 int styleable CustomAttribute_customStringValue 8
+int[] styleable CustomRangeSeekBar { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 }
+int styleable CustomRangeSeekBar_absoluteMax 0
+int styleable CustomRangeSeekBar_absoluteMin 1
+int styleable CustomRangeSeekBar_betweenAbsoluteValue 2
+int styleable CustomRangeSeekBar_progressBarBg 3
+int styleable CustomRangeSeekBar_progressBarSelBg 4
+int styleable CustomRangeSeekBar_progressTextSize 5
+int styleable CustomRangeSeekBar_startMaxPercent 6
+int styleable CustomRangeSeekBar_startMinPercent 7
+int styleable CustomRangeSeekBar_thumbImage 8
 int[] styleable DesignTheme { 0x0, 0x0 }
 int styleable DesignTheme_bottomSheetDialogTheme 0
 int styleable DesignTheme_bottomSheetStyle 1
