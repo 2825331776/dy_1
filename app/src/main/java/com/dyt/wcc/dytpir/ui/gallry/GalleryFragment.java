@@ -1,12 +1,16 @@
 package com.dyt.wcc.dytpir.ui.gallry;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 
@@ -96,24 +100,50 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 			@Override
 			public void run() {
 				String filePath = DYConstants.PIC_PATH;
-				Log.e(TAG, "run: " + filePath);
+//				Log.e(TAG, "run: " + filePath);
 
-				File fileAll = new File(filePath);
-//				Log.e(TAG, "run: "+ fileAll.getAbsolutePath());
-				File[] files = fileAll.listFiles();
-				if (files!= null){
-					for (File file : files) {
-						if (checkIsImageFile(file.getPath())) {// 将所有的文件存入ArrayList中,并过滤所有图片格式的文件
-							imagePathList.add(file.getPath());
-						}
-					}
+				ContentResolver contentResolver = mContext.get().getContentResolver();
+//				ContentValues contentValues = contentResolver.
 
-					mHandler.sendEmptyMessage(DYConstants.IMAGE_READY);
-				}else {
-					Log.e(TAG, "run: files is null");
+				Uri uriAll =  MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+				String sort = MediaStore.Images.Media.DATE_MODIFIED + " desc ";
+				String [] projection = new String[]{
+						MediaStore.Images.Media._ID ,MediaStore.Images.Media.DATA};
+
+				String selection = MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?";
+
+				String [] selectionArgs = new String[] {"image/png","image/jpeg"};
+
+				Cursor cursor = contentResolver.query(uriAll,null,
+						selection, selectionArgs, sort);
+				Log.e(TAG, "run: " + (cursor!=null));
+				Log.e(TAG, "run: " + cursor.moveToFirst());
+
+//				final String column = "_data";
+				// 获取id字段是第几列，该方法最好在循环之前做好
+				int idIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID);
+				// 获取data字段是第几列，该方法最好在循环之前做好
+				int dataIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+
+				while (cursor.moveToNext()) {
+					long id = cursor.getLong(idIndex);
+					// 获取到每张图片的uri
+					Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,id);
+					// 获取到每张图片的绝对路径
+					String path = cursor.getString(dataIndex);
+					imagePathList.add(imageUri.toString());
+					// 做保存工作
+					// todo
+					Log.e(TAG, "run: imageUri " + imageUri);
+					Log.e(TAG, "run: path " + path);
 				}
 
-			}
+				cursor.close();
+
+				mHandler.sendEmptyMessage(DYConstants.IMAGE_READY);
+
+				}
 		}).start();
 	}
 
@@ -158,6 +188,12 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 				Navigation.findNavController(mDataBinding.getRoot()).navigateUp();
 			}
 		});
-		getImageList();
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+			getImageList();
+		}else {
+
+		}
+
 	}
 }

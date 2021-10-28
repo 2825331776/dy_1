@@ -24,5 +24,7 @@
   -->
 
 <usb>
-	<usb-device class="239" subclass="2" />	<!-- all device of UVC -->
+<!--	<usb-device class="239" subclass="2" />	&lt;!&ndash; all device of UVC &ndash;&gt;-->
+
+	<usb-device vendor-id="5396" product-id="1" class="239" subclass="2"/>
 </usb>

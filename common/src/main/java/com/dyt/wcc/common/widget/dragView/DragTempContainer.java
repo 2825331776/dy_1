@@ -116,6 +116,38 @@ public class DragTempContainer extends RelativeLayout {
 	public void setmSeekBar (CustomRangeSeekBar mSeekBar) {
 		this.mSeekBar = mSeekBar;
 	}
+	public int [] getAreaIntArray(){
+		int areaNumber = 0;
+		for (MyMoveWidget child : userAdd){
+			if (child.getView().getType() ==3){
+				areaNumber ++;
+			}
+		}
+		int [] areaData = new int[4*areaNumber];
+
+		int areaIndex =0 ;
+		for (MyMoveWidget child : userAdd){
+			if (child.getView().getType() ==3){
+				areaData[4 * areaIndex] = (int) (child.getView().getOtherTemp().getStartPointX() / screenWidth * 256);
+				areaData[4*areaIndex+1] = (int) (child.getView().getOtherTemp().getEndPointX() / screenWidth * 256);
+				areaData[4*areaIndex+2] = (int) (child.getView().getOtherTemp().getStartPointY() / screenHeight * 192);
+				areaData[4*areaIndex+3] = (int) (child.getView().getOtherTemp().getEndPointY() / screenHeight * 192);
+				areaIndex++;
+			}
+		}
+		return areaData;
+	}
+
+	/**
+	 * 超温报警 数据源是摄氏度
+	 * @param thresholdTemp 带了模式 的温度。 需要转换成摄氏度
+	 */
+	public void openHighTempAlarm(float thresholdTemp){
+
+	}
+	public void closeHighTempAlarm(){
+
+	}
 
 	public interface OnChildToolsClickListener{
 		void onChildToolsClick(TempWidgetObj childObj, int position);

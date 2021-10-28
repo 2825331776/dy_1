@@ -51,7 +51,6 @@ import com.dyt.wcc.cameracommon.encoder.MediaSurfaceEncoder;
 import com.dyt.wcc.cameracommon.encoder.MediaVideoBufferEncoder;
 import com.dyt.wcc.cameracommon.encoder.MediaVideoEncoder;
 import com.dyt.wcc.cameracommon.utils.ByteUtil;
-import com.dyt.wcc.cameracommon.widget.TouchArea;
 import com.dyt.wcc.cameracommon.widget.UVCCameraTextureView;
 import com.dyt.wcc.common.base.BaseApplication;
 import com.serenegiant.usb.IFrameCallback;
@@ -80,8 +79,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 
@@ -381,12 +380,10 @@ abstract class AbstractUVCCameraHandler extends Handler {
         sendMessage(message);
     }
 
-    public void setArea(CopyOnWriteArrayList<TouchArea> area, int width, int height) {
+    public void setArea(int [] areaData) {
         Message message = Message.obtain();
         message.what = MSG_SET_AREA;
-        message.obj = area;
-        message.arg1 = width;
-        message.arg2 = height;
+        message.obj = areaData;
         sendMessage(message);
     }
 
@@ -553,7 +550,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
 
     public void release() {
         mReleased = true;
-        close();
+//        close();
         sendEmptyMessage(MSG_RELEASE);
     }
 
@@ -697,7 +694,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
                 thread.handleSetAreaCheck(msg.arg1);
                 break;
             case MSG_SET_AREA:
-                thread.handleSetArea(msg.obj, msg.arg1, msg.arg2);
+                thread.handleSetArea(msg.obj);
                 break;
             case MSG_SET_PALETTEPATH:
                 thread.handlePreparePalette((String) msg.obj, msg.arg1);
@@ -1508,45 +1505,45 @@ abstract class AbstractUVCCameraHandler extends Handler {
         }
 
 
-        public void handleSetArea(final Object area, final int width, final int height) {
+        public void handleSetArea(final Object area) {
             if (DEBUG) Log.v(TAG_THREAD, "handleSetPalettePath:");
             if (mUVCCamera != null) {
-                CopyOnWriteArrayList<TouchArea> area1 = (CopyOnWriteArrayList<TouchArea>) area;
-                int[] areainfo = new int[4 * area1.size()];
-                int i = 0;
-                for (TouchArea mRect : area1) {//通过控件的宽高，把点转化成数据源上的点。
-                    // 一个矩阵生成 x1y1  x2y2两个点 放置的时候小的点放在前面。areainfo[ 0 1 2 3]= x1 x2 y1 y2
-                    int point1x = (int) (mRect.touchPoint1.x / width * 256);
-                    int point1y = (int) (mRect.touchPoint1.y / height * 192);
-                    int point2x = (int) (mRect.touchPoint2.x / width * 256);
-                    int point2y = (int) (mRect.touchPoint2.y / height * 192);
-
-                    if (point1x <= point2x) {
-                        areainfo[4 * i] = point1x;
-                        areainfo[4 * i + 1] = point2x;
-                        if (point1y <= point2y) {
-                            areainfo[4 * i + 2] = point1y;
-                            areainfo[4 * i + 3] = point2y;
-                        } else {
-                            areainfo[4 * i + 2] = point2y;
-                            areainfo[4 * i + 3] = point1y;
-                        }
-                    } else {
-                        areainfo[4 * i] = point2x;
-                        areainfo[4 * i + 1] = point1x;
-                        if (point1y <= point2y) {
-                            areainfo[4 * i + 2] = point1y;
-                            areainfo[4 * i + 3] = point2y;
-                        } else {
-                            areainfo[4 * i + 2] = point2y;
-                            areainfo[4 * i + 3] = point1y;
-                        }
-                    }
-                    i++;
-                }
-
-                //Log.v(TAG_THREAD, "handleSetArea:"+ area1[1]);
-                mUVCCamera.setArea(areainfo);
+                int [] data = (int [])area;
+//                int [] areainfo = (int []) area;
+//                int[] areainfo = new int[4 * area1.size()];
+//                int i = 0;
+//                for (TouchArea mRect : area1) {//通过控件的宽高，把点转化成数据源上的点。
+//                    // 一个矩阵生成 x1y1  x2y2两个点 放置的时候小的点放在前面。areainfo[ 0 1 2 3]= x1 x2 y1 y2
+//                    int point1x = (int) (mRect.touchPoint1.x / width * 256);
+//                    int point1y = (int) (mRect.touchPoint1.y / height * 192);
+//                    int point2x = (int) (mRect.touchPoint2.x / width * 256);
+//                    int point2y = (int) (mRect.touchPoint2.y / height * 192);
+//
+//                    if (point1x <= point2x) {
+//                        areainfo[4 * i] = point1x;
+//                        areainfo[4 * i + 1] = point2x;
+//                        if (point1y <= point2y) {
+//                            areainfo[4 * i + 2] = point1y;
+//                            areainfo[4 * i + 3] = point2y;
+//                        } else {
+//                            areainfo[4 * i + 2] = point2y;
+//                            areainfo[4 * i + 3] = point1y;
+//                        }
+//                    } else {
+//                        areainfo[4 * i] = point2x;
+//                        areainfo[4 * i + 1] = point1x;
+//                        if (point1y <= point2y) {
+//                            areainfo[4 * i + 2] = point1y;
+//                            areainfo[4 * i + 3] = point2y;
+//                        } else {
+//                            areainfo[4 * i + 2] = point2y;
+//                            areainfo[4 * i + 3] = point1y;
+//                        }
+//                    }
+//                    i++;
+//                }
+                Log.e(TAG_THREAD, "handleSetArea:"  + Arrays.toString(data));
+                mUVCCamera.setArea(data);
             }
         }
 

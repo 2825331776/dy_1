@@ -1,12 +1,11 @@
 package com.dyt.wcc.dytpir.ui.gallry;
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.RadioButton;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -15,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.dyt.wcc.dytpir.R;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -54,9 +52,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 	@Override
 	public void onBindViewHolder (@NonNull GalleryHolder holder, int position) {
 		if (photoList.get(position).endsWith("mp4")){
-			Glide.with(mContext).load(Uri.fromFile(new File(photoList.get(position)))).into(holder.iv_item_photo);
-			holder.tv_item_photo.setTextColor(mContext.getResources().getColor(R.color.red));
-			holder.tv_item_photo.setText("mp4");
+
+
+			Glide.with(mContext).load(photoList.get(position)).into(holder.iv_item_photo);
+			holder.rb_item_photo.setTextColor(mContext.getResources().getColor(R.color.red));
+//			holder.iv_item_play.set
 		}else {
 			Glide.with(mContext).load(photoList.get(position)).into(holder.iv_item_photo);
 		}
@@ -79,8 +79,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 		return photoList.size();
 	}
 	static class GalleryHolder extends RecyclerView.ViewHolder{
-		final ImageView iv_item_photo;
-		final TextView tv_item_photo;
+		final ImageView        iv_item_photo;
+		final RadioButton      rb_item_photo;
+		final ImageView        iv_item_play;
 		final ConstraintLayout cl_item_container;
 
 
@@ -88,7 +89,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 			super(itemView);
 			this.cl_item_container = itemView.findViewById(R.id.cl_item_container);
 			this.iv_item_photo = itemView.findViewById(R.id.iv_item_photo_gallery);
-			this.tv_item_photo = itemView.findViewById(R.id.tv_item_photo_gallery);
+			this.rb_item_photo = itemView.findViewById(R.id.rb_item_photo_gallery);
+			this.iv_item_play = itemView.findViewById(R.id.iv_play_item_photo_gallery);
 		}
 	}
 

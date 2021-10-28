@@ -59,10 +59,10 @@ public final class USBMonitor {
 	private static final boolean DEBUG = true;	// TODO set false on production
 	private static final String TAG = "USBMonitor";
 
-	private static final String ACTION_USB_PERMISSION_BASE = "com.serenegiant.USB_PERMISSION.";
+	private static final String ACTION_USB_PERMISSION_BASE = "com.dyt.wcc.dytpir.";
 	private final String ACTION_USB_PERMISSION = ACTION_USB_PERMISSION_BASE + hashCode();
 
-	public static final String ACTION_USB_DEVICE_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
+//	public static final String ACTION_USB_DEVICE_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
 
 	/**
 	 * openしているUsbControlBlock
@@ -137,7 +137,7 @@ public final class USBMonitor {
 		//unregister();
 		if (!destroyed) {
 			destroyed = true;
-			// モニターしているUSB機器を全てcloseする;;关闭所有受监控的 USB 设备
+			// 关闭所有受监控的 USB 设备;;
 			final Set<UsbDevice> keys = mCtrlBlocks.keySet();
 			if (keys != null) {
 				UsbControlBlock ctrlBlock;
@@ -173,7 +173,9 @@ public final class USBMonitor {
 			final Context context = mWeakContext.get();
 			if (DEBUG) Log.e(TAG,"=====register============before==========PendingIntent.getBroadcast=======");
 			if (context != null) {
-				mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), FLAG_CANCEL_CURRENT);
+				Intent intent = new Intent(ACTION_USB_PERMISSION);
+				intent.putExtra("permissions ", 1);
+				mPermissionIntent = PendingIntent.getBroadcast(context, 0, intent, FLAG_CANCEL_CURRENT);
 				final IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
 				// ACTION_USB_DEVICE_ATTACHED never comes on some devices so it should not be added here
 				filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
@@ -396,7 +398,13 @@ public final class USBMonitor {
 	 */
 	public final boolean hasPermission(final UsbDevice device) throws IllegalStateException {
 		if (destroyed) throw new IllegalStateException("already destroyed");
-		return updatePermission(device, device != null && mUsbManager.hasPermission(device));
+//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !mUsbManager.hasPermission(device)){
+//			mUsbManager.requestPermission(device,mPermissionIntent);
+//			updatePermission(device,true);
+//			return true;
+//		}else {
+			return updatePermission(device, device != null && mUsbManager.hasPermission(device));
+//		}
 	}
 
 	/**
@@ -490,23 +498,27 @@ public final class USBMonitor {
 				// when received the result of requesting USB permission
 				synchronized (USBMonitor.this) {
 					final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+//					assert device != null;
+//					Log.e(TAG, "onReceive: " + (device.toString()));
+					Log.e(TAG, "onReceive:  hasPermission " + mUsbManager.hasPermission(device));
 					if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
 						if (device != null) {
 							// get permission, call onConnect
+							updatePermission(device,true);
 							if (DEBUG) Log.e(TAG,"UsbMonitor.register.broadcastReceiver.mUsbReceiver.OnReceiver=device !=null!!!====todo connect");
-							processConnect(device);
+//							processConnect(device);
 						}
 					} else {
 						// failed to get permission
 						if (DEBUG) Log.e(TAG,"UsbMonitor.register.broadcastReceiver.mUsbReceiver.OnReceiver=device ==null!!!====todo processCancel");
-						processCancel(device);
+//						processCancel(device);
 					}
 				}
 			} else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
 				if (DEBUG)Log.e(TAG, "onReceive: ACTION_USB_DEVICE_ATTACHED");
 				final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 				updatePermission(device, hasPermission(device));
-				processAttach(device);
+//				processAttach(device);
 			} else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
 				// when device removed
 				if (DEBUG)Log.e(TAG, "onReceive: ACTION_USB_DEVICE_DETACHED");
@@ -527,63 +539,6 @@ public final class USBMonitor {
 	/** number of connected & detected devices */
 	private volatile int mDeviceCounts = 0;
 	/**
-	 * periodically check connected devices and if it changed, call onAttach
-	 */
-	private final Runnable mDeviceCheckRunnable = new Runnable() {
-		@Override
-		public void run() {
-			if (destroyed) return;
-			final List<UsbDevice> devices = getDeviceList();
-			final int n = devices.size();
-			final int hasPermissionCounts;
-			final int m;
-//			for(UsbDevice device : devices){
-//				Log.e(TAG, "run: " +device.getProductName());
-//			}
-
-			synchronized (mHasPermissions) {
-				hasPermissionCounts = mHasPermissions.size();
-				mHasPermissions.clear();
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){//API 大于等于2 3 /9时，所有的USB设备访问之前都给权限
-					if (DEBUG)
-						Log.e(TAG, "run: Build.VERSION.SDK_INT >= Build.VERSION_CODES.M");
-					for (final UsbDevice device: devices) {
-						if(device.getProductName().contains("S0")) {
-							if (DEBUG)
-								Log.e(TAG, "run: contains(S0)");
-									mUsbManager.requestPermission(device,mPermissionIntent);
-						}
-					}
-				}
-
-				for (final UsbDevice device: devices) {
-					hasPermission(device);
-				}
-				m = mHasPermissions.size();
-			}
-			//当权限列表 == 设备列表 则去连接每个有权限的设备
-			if ((n > mDeviceCounts) || (m > hasPermissionCounts)) {
-				mDeviceCounts = n;
-				if (mOnDeviceConnectListener != null) {
-					for (int i = 0; i < n; i++) {
-						final UsbDevice device = devices.get(i);
-						if (DEBUG) Log.e(TAG,"==========usbmonitor contains devices getProductName =====>"+device.getProductName());
-						if(device.getProductName().contains("S0")) {
-							mAsyncHandler.post(new Runnable() {
-								@Override
-								public void run() {
-									mOnDeviceConnectListener.onAttach(device);
-								}
-							});
-						}
-					}
-				}
-			}
-			mAsyncHandler.postDelayed(this, 2000);	// confirm every 2 seconds
-		}
-	};
-
-	/**
 	 * open specific USB device
 	 * @param device
 	 */
@@ -591,7 +546,7 @@ public final class USBMonitor {
 		if (mUsbManager.hasPermission(device)) {
 			if (destroyed)
 				return;
-			updatePermission(device, true);
+//			updatePermission(device, true);
 			if (DEBUG)
 				Log.v(TAG, "processConnect:device=" + device);
 			if (DEBUG)
@@ -633,6 +588,65 @@ public final class USBMonitor {
 		});
 		*/
 	}
+
+	/**
+	 * periodically check connected devices and if it changed, call onAttach
+	 */
+	private final Runnable mDeviceCheckRunnable = new Runnable() {
+		@Override
+		public void run() {
+			if (destroyed) return;
+			final List<UsbDevice> devices = getDeviceList();
+			final int n = devices.size();//设备数量
+			final int hasPermissionCounts;//已有权限的数量
+			final int m;//现有权限的数量
+			//什么时候要去连接设备。
+			//			for(UsbDevice device : devices){
+			//				Log.e(TAG, "run: " +device.getProductName());
+			//			}
+
+			synchronized (mHasPermissions) {
+				hasPermissionCounts = mHasPermissions.size();
+				mHasPermissions.clear();
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){//API 大于等于2 3 /9时，所有的USB设备访问之前都给权限
+					if (DEBUG)
+						Log.e(TAG, "run: Build.VERSION.SDK_INT >= Build.VERSION_CODES.p");
+					for (final UsbDevice device: devices) {
+						if(device.getProductId() == 1 && device.getVendorId() == 5396) {
+							//							if (DEBUG)
+							Log.e(TAG, "run: contains 5396 1 ");
+							if (!mUsbManager.hasPermission(device)){
+								mUsbManager.requestPermission(device,mPermissionIntent);
+							}
+						}
+					}
+				}
+				for (final UsbDevice device: devices) {
+					hasPermission(device);
+				}
+				m = mHasPermissions.size();
+			}
+			//当权限列表 == 设备列表 则去连接每个有权限的设备
+			if (m>0) {
+				mDeviceCounts = n;
+				if (mOnDeviceConnectListener != null) {
+					//					for (int index : mHasPermissions.keyAt(0)) {
+					final UsbDevice device = mHasPermissions.get(mHasPermissions.keyAt(0)).get();
+					if (DEBUG) Log.e(TAG,"==========usbmonitor contains devices getProductName =====>"+device.getProductName());
+					if(device.getProductId() == 1 && device.getVendorId() == 5396 && mUsbManager.hasPermission(device) ) {
+						mAsyncHandler.post(new Runnable() {
+							@Override
+							public void run() {
+								processConnect(device);
+							}
+						});
+					}
+					//					}
+				}
+			}
+			mAsyncHandler.postDelayed(this, 2000);	// confirm every 2 seconds
+		}
+	};
 
 	private final void processCancel(final UsbDevice device) {
 		if (mUsbManager.hasPermission(device)){
@@ -733,7 +747,7 @@ public final class USBMonitor {
 				sb.append(device.getVersion());			sb.append("#");
 			}
 		}
-//		if (DEBUG) Log.v(TAG, "getDeviceKeyName:" + sb.toString());
+		if (DEBUG) Log.e(TAG, "getDeviceKeyName:" + sb.toString());
 		return sb.toString();
 	}
 
@@ -930,7 +944,7 @@ public final class USBMonitor {
 	}
 
 	/**
-	 * ベンダー名・製品名・バージョン・シリアルを取得する
+	 * 获取供应商名称/产品名称/版本/序列号
 	 * #updateDeviceInfo(final UsbManager, final UsbDevice, final UsbDeviceInfo)のヘルパーメソッド
 	 * @param context
 	 * @param device

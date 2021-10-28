@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.SurfaceTexture;
 import android.hardware.usb.UsbDevice;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -161,9 +160,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		if (isDebug)Log.e(TAG,"height =="+ mTextureViewHeight + " width==" + mTextureViewWidth);
 
 		mDataBinding.textureViewPreviewFragment.iniTempBitmap(mTextureViewWidth, mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
-//		mDataBinding.textureViewPreviewFragment.iniTempFontsize(mFontSize);
-//		mDataBinding.textureViewPreviewFragment.setUnitTemperature(0);//0 摄氏度 ; 1 华氏度
-//		mDataBinding.textureViewPreviewFragment.setBindSeekBar(mDataBinding.customSeekbarPreviewFragment);
 		mDataBinding.textureViewPreviewFragment.setDragTempContainer(mDataBinding.dragTempContainerPreviewFragment);
 		mDataBinding.dragTempContainerPreviewFragment.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
 
@@ -230,30 +226,33 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 						@Override
 						public void run() {
 							if (isDebug)Log.e(TAG, "检测到设备========");
-							mViewModel.getMUsbMonitor().getValue().requestPermission(device);
+//							mViewModel.getMUsbMonitor().getValue().requestPermission(device);
 						}
 					}, 100);
 				}
 			}
 			@Override
 			public void onConnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock, boolean createNew) {
-				//			if (isDebug)Log.e(TAG, "onConnect: ");
-				if (isDebug)Toast.makeText(mContext.get(),"onConnect========",Toast.LENGTH_SHORT).show();
-				mUvcCameraHandler.open(ctrlBlock);
-				startPreview();
+				if (isDebug)Log.e(TAG, "onConnect: ");
 
-				Handler handler = new Handler();
-				handler.postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
-					}
-				}, 300);
+				if (mUvcCameraHandler != null){
+					if (isDebug)Log.e(TAG, "onConnect: != null");
 
-//				currentDevice = device;
+					mUvcCameraHandler.open(ctrlBlock);
+					startPreview();
+
+					Handler handler = new Handler();
+					handler.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
+						}
+					}, 300);
+				}
 			}
 			@Override
 			public void onDetach (UsbDevice device) {
+//				mUvcCameraHandler.close();
 				if (isDebug)Log.e(TAG, "DD  onDetach: ");
 			}
 			@Override
@@ -263,7 +262,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 				if (mUvcCameraHandler != null){
 					Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
-					SurfaceTexture stt = mDataBinding.textureViewPreviewFragment.getSurfaceTexture();
+//					SurfaceTexture stt = mDataBinding.textureViewPreviewFragment.getSurfaceTexture();
 					mUvcCameraHandler.stopTemperaturing();
 					mUvcCameraHandler.stopPreview();
 					mUvcCameraHandler.release();
@@ -279,9 +278,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //		mUsbMonitor = new USBMonitor(mContext.get(),deviceConnectListener);
 
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
-				,Manifest.permission.WRITE_EXTERNAL_STORAGE).request(new RequestCallback() {
+				,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO).request(new RequestCallback() {
 			@Override
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+				if (allGranted){
+
+				}
 			}
 		});
 
@@ -308,8 +310,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			public void onClick (boolean checkState) {
 				if (checkState){
 					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
+					int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
+					mUvcCameraHandler.setArea(areaData);
+					mUvcCameraHandler.setAreaCheck(1);
 				}else {//close
-
+					mUvcCameraHandler.setAreaCheck(0);
 				}
 				Toast.makeText(mContext.get(), "区域检查 = "+ checkState,Toast.LENGTH_SHORT).show();
 //				mDataBinding.dragTempContainerPreviewFragment.closeHighLowTemp();
@@ -326,10 +331,15 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 			}
 		});
+		//高温警告
 		mDataBinding.toggleHighTempAlarm.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
 			@Override
 			public void onClick (boolean checkState) {
-
+				if (checkState){
+					mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(20);
+				}else {
+					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
+				}
 			}
 		});
 
@@ -500,7 +510,15 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				new ViewModelProvider.AndroidViewModelFactory((Application) mContext.get().getApplicationContext())).get(PreViewViewModel.class);
 		mDataBinding.setPreviewViewModel(mViewModel);
 
-		mViewModel.setDeviceConnectListener(onDeviceConnectListener);
+		PermissionX.init(this).permissions(Manifest.permission.CAMERA).request(new RequestCallback() {
+			@Override
+			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+				if (allGranted){
+					mViewModel.setDeviceConnectListener(onDeviceConnectListener);
+				}
+			}
+		});
+
 	}
 
 	/**
