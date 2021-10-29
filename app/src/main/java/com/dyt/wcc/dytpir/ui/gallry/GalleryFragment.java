@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 
@@ -23,6 +24,7 @@ import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.constans.DYConstants;
 import com.dyt.wcc.dytpir.databinding.FragmentGalleryMainBinding;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -32,21 +34,22 @@ import java.util.ArrayList;
  * <p>Description：@todo         </p>
  * <p>PackagePath: com.dyt.wcc.dytpir.ui.gallry     </p>
  */
-public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
+public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> implements View.OnClickListener {
 	private GridLayoutManager gridLayoutManager ;
 	private GalleryAdapter galleryAdapter ;
 
 	private ArrayList<GalleryBean > imagePathList;
+	private ArrayList<GalleryBean > showList;
 
 	private Handler mHandler = new Handler(new Handler.Callback() {
 		@Override
 		public boolean handleMessage (@NonNull Message msg) {
 			switch (msg.what){
 				case DYConstants.IMAGE_READY:
-
+                    showList.addAll(imagePathList);
 					Log.e(TAG, "handleMessage: ");
 					gridLayoutManager = new GridLayoutManager(mContext.get(),4);
-					galleryAdapter = new GalleryAdapter(mContext.get(),imagePathList);
+					galleryAdapter = new GalleryAdapter(mContext.get(),showList);
 
 					mDataBinding.recyclerViewGallery.setLayoutManager(gridLayoutManager);
 					mDataBinding.recyclerViewGallery.setAdapter(galleryAdapter);
@@ -54,15 +57,19 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 						@Override
 						public void itemClickListener (int position) {
 							Bundle args = new Bundle();
-							args.putString("pathList",imagePathList.get(position).getUriAddress().toString());
+							args.putString("pathList",showList.get(position).getUriAddress().toString());
 
-							if (imagePathList.get(position).getAbsoluteAddress().endsWith("mp4")){//查看MP4文件
+							if (showList.get(position).getAbsoluteAddress().endsWith("mp4")){//查看MP4文件
 								Intent intent = new Intent();
 								intent.setAction(android.content.Intent.ACTION_VIEW);
-								intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-								Uri contentUri = imagePathList.get(position).getUriAddress();
+								Uri contentUri = showList.get(position).getUriAddress();
 								intent.setDataAndType(contentUri, "video/mp4");
-
+								if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+									intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+								}else {
+									intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//									intent.setDataAndType(contentUri, "video/*");
+								}
 								mContext.get().startActivity(intent);
 							}else {//查看图片
 								Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_galleryFg_to_lookFileFg,args);
@@ -96,7 +103,7 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 				//条件
 				String selection = MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?";
 				//条件参数
-				String [] selectionArgs = new String[] {"image/png"};
+				String [] selectionArgs = new String[] {"image/png", "image/jpeg"};
 				//查询排序方式
 				String sort = MediaStore.Images.Media.DATE_MODIFIED + " desc ";
 
@@ -124,8 +131,8 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 
 						imagePathList.add(imageBean);
 
-						Log.e(TAG, "run: imageUri " + imageUri);
-						Log.e(TAG, "run: path " + path);
+//						Log.e(TAG, "run: imageUri " + imageUri);
+//						Log.e(TAG, "run: path " + path);
 					}
 				}
 				cursor.close();
@@ -173,6 +180,42 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 		}).start();
 	}
 
+	@Override
+	public void onResume () {
+		super.onResume();
+		Log.e(TAG, "onResume: ");
+	}
+
+	@Override
+	public void onStop () {
+		super.onStop();
+		Log.e(TAG, "onStop: ");
+	}
+
+	@Override
+	public void onDestroyView () {
+		super.onDestroyView();
+		Log.e(TAG, "onDestroyView: ");
+	}
+
+	@Override
+	public void onDestroy () {
+		super.onDestroy();
+		Log.e(TAG, "onDestroy: ");
+	}
+
+	@Override
+	public void onDetach () {
+		super.onDetach();
+		Log.e(TAG, "onDetach: ");
+	}
+
+	@Override
+	public void onCreate (@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		Log.e(TAG, "onCreate: ");
+	}
+
 	/**
 	 * 检查扩展名，得到图片格式的文件
 	 * @param fName  文件名
@@ -203,19 +246,93 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 		return R.layout.fragment_gallery_main;
 	}
 
-	public void onSelectAll(View view){
+	@Override
+	public void onClick (View v) {
+		switch (v.getId()){
+			case R.id.bt_all_gallery_rightRl:
+				showList.clear();
+				showList.addAll(imagePathList);
+				galleryAdapter.notifyDataSetChanged();
+				break;
+			case R.id.bt_pic_gallery_rightRl:
+				showList.removeAll(imagePathList);
+				for (GalleryBean bean : imagePathList){
+					if (bean.getAbsoluteAddress().endsWith("jpg") || bean.getAbsoluteAddress().endsWith("png")){
+						showList.add(bean);
+					}
+					galleryAdapter.notifyDataSetChanged();
+				}
+				break;
 
-	}
-	public void onSelectImage(View view){
+			case R.id.bt_video_gallery_rightRl:
+				showList.removeAll(imagePathList);
+				for (GalleryBean bean : imagePathList){
+					if (bean.getAbsoluteAddress().endsWith("mp4")){
+						showList.add(bean);
+					}
+					galleryAdapter.notifyDataSetChanged();
+				}
+				break;
 
-	}
-	public void onSelectVideo(View view){
+			case R.id.bt_delete_gallery_rightRl:
+				for (GalleryBean child : showList){
+					if (child.isSelect()){
+						File file = new File(child.getAbsoluteAddress());
+						if (child.getAbsoluteAddress().endsWith("mp4")){
+							if (file.isFile()){
+								int res = mContext.get().getContentResolver().delete(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+										MediaStore.Audio.Media.DISPLAY_NAME + "=?",
+										new String[]{file.getName()});
+								if (res > -1){
+									file.delete();
+									Log.e(TAG, "删除文件成功");
+									showList.remove(child);
+									galleryAdapter.notifyDataSetChanged();
+								}else{
+									Log.e(TAG, "删除文件失败");
+								}
+							}
 
+
+						}else {
+							if (file.isFile()){
+								Log.e(TAG, "onClick: " + file.getName());
+								int res = mContext.get().getContentResolver().delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+										MediaStore.Images.Media.DISPLAY_NAME + "=?",
+										new String[]{file.getName()});
+								if (res > -1){
+//									file.delete();
+									Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+									intent.setData(child.getUriAddress());
+									mContext.get().sendBroadcast(intent);
+									Log.e(TAG, "删除文件成功" + res);
+
+									showList.remove(child);
+									galleryAdapter.notifyDataSetChanged();
+								}else{
+									Log.e(TAG, "删除文件失败");
+								}
+							}
+						}
+//						file.delete();
+						Log.e(TAG, "delete: " + child.getAbsoluteAddress());
+					}
+				}
+				break;
+		}
 	}
 
 	@Override
 	protected void initView () {
+
+		Log.e(TAG, "initView: ");
 		imagePathList = new ArrayList<>();
+		showList = new ArrayList<>();
+
+		mDataBinding.btAllGalleryRightRl.setOnClickListener(this);
+		mDataBinding.btPicGalleryRightRl.setOnClickListener(this);
+		mDataBinding.btVideoGalleryRightRl.setOnClickListener(this);
+		mDataBinding.btDeleteGalleryRightRl.setOnClickListener(this);
 
 		mDataBinding.setFgGallery(this);
 		mDataBinding.includeGallery.ivBackGallery.setOnClickListener(new View.OnClickListener() {

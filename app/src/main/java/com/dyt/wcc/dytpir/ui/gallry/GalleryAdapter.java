@@ -1,12 +1,14 @@
 package com.dyt.wcc.dytpir.ui.gallry;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -25,6 +27,7 @@ import java.util.List;
  * <p>PackagePath: com.wcc.dytfourbie.main.photo     </p>
  */
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryHolder> {
+	private static final String TAG = "GalleryAdapter";
 	private List<GalleryBean> photoList;
 	private Context mContext;
 	private LayoutInflater mInflater;
@@ -63,9 +66,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 		holder.cb_item_photo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
+				Log.e(TAG, "onCheckedChanged: " + isChecked);
 				photoList.get(position).setSelect(isChecked);
 			}
 		});
+
 		holder.cl_item_container.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
@@ -87,6 +92,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 		final ImageView        iv_item_photo;
 		final CheckBox         cb_item_photo;
 		final ImageView        iv_item_play;
+		final TextView  tv_video_length;
 		final ConstraintLayout cl_item_container;
 
 
@@ -96,6 +102,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 			this.iv_item_photo = itemView.findViewById(R.id.iv_item_photo_gallery);
 			this.cb_item_photo = itemView.findViewById(R.id.checkBox_photo_gallery);
 			this.iv_item_play = itemView.findViewById(R.id.iv_play_item_photo_gallery);
+			this.tv_video_length = itemView.findViewById(R.id.tv_video_length);
 		}
 	}
 
