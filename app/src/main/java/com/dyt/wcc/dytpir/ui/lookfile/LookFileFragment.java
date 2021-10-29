@@ -7,8 +7,6 @@ import com.dyt.wcc.common.base.BaseFragment;
 import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.databinding.FragmentLookfileMainBinding;
 
-import java.util.ArrayList;
-
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
  * <p>Author：stefan cheng        </p>
@@ -17,7 +15,7 @@ import java.util.ArrayList;
  * <p>PackagePath: com.dyt.wcc.dytpir.ui.lookfile     </p>
  */
 public class LookFileFragment extends BaseFragment<FragmentLookfileMainBinding> {
-	private ArrayList<String > imageList ;
+
 	@Override
 	protected int bindingLayout () {
 		return R.layout.fragment_lookfile_main;
@@ -25,11 +23,11 @@ public class LookFileFragment extends BaseFragment<FragmentLookfileMainBinding> 
 
 	@Override
 	protected void initView () {
-		imageList = new ArrayList<>();
+	    String  uriAddress ;
 		Bundle receiverArgs = getArguments();
 		assert receiverArgs != null;
-		imageList.addAll(receiverArgs.getStringArrayList("pathList"));
-		Glide.with(mContext.get()).load(imageList.get(receiverArgs.getInt("position"))).into(mDataBinding.ivCheckPhoto);
+		uriAddress= receiverArgs.getString("pathList");
+		Glide.with(mContext.get()).load(uriAddress).into(mDataBinding.ivCheckPhoto);
 	}
 
 	@Override

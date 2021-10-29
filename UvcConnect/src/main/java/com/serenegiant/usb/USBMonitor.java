@@ -171,10 +171,10 @@ public final class USBMonitor {
 		if (mPermissionIntent == null) {
 			if (DEBUG) Log.e(TAG, "register:");
 			final Context context = mWeakContext.get();
-			if (DEBUG) Log.e(TAG,"=====register============before==========PendingIntent.getBroadcast=======");
+//			if (DEBUG) Log.e(TAG,"=====register============before==========PendingIntent.getBroadcast=======");
 			if (context != null) {
 				Intent intent = new Intent(ACTION_USB_PERMISSION);
-				intent.putExtra("permissions ", 1);
+//				intent.putExtra("permissions ", 1);
 				mPermissionIntent = PendingIntent.getBroadcast(context, 0, intent, FLAG_CANCEL_CURRENT);
 				final IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
 				// ACTION_USB_DEVICE_ATTACHED never comes on some devices so it should not be added here
@@ -398,13 +398,7 @@ public final class USBMonitor {
 	 */
 	public final boolean hasPermission(final UsbDevice device) throws IllegalStateException {
 		if (destroyed) throw new IllegalStateException("already destroyed");
-//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !mUsbManager.hasPermission(device)){
-//			mUsbManager.requestPermission(device,mPermissionIntent);
-//			updatePermission(device,true);
-//			return true;
-//		}else {
-			return updatePermission(device, device != null && mUsbManager.hasPermission(device));
-//		}
+		return mUsbManager.hasPermission(device);
 	}
 
 	/**
@@ -417,17 +411,34 @@ public final class USBMonitor {
 	 */
 	private boolean updatePermission(final UsbDevice device, final boolean hasPermission) {
 //		mUsbManager.requestPermission(device,mPermissionIntent);
-		final int deviceKey = getDeviceKey(device, true);
-		synchronized (mHasPermissions) {
-			if (hasPermission) {
-				if (mHasPermissions.get(deviceKey) == null) {
-					mHasPermissions.put(deviceKey, new WeakReference<UsbDevice>(device));
-				}
-			} else {
-				mHasPermissions.remove(deviceKey);
+		if (device.getProductId() == 1 && device.getVendorId() == 5396){
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){//API 大于等于2 3 /9时，所有的USB设备访问之前都给权限
+				if (DEBUG)
+					Log.e(TAG, "run: Build.VERSION.SDK_INT >= Build.VERSION_CODES.p");
+					if(device.getProductId() == 1 && device.getVendorId() == 5396) {
+						//							if (DEBUG)
+						Log.e(TAG, "run: contains 5396 1 ");
+						if (!mUsbManager.hasPermission(device)){
+							mUsbManager.requestPermission(device,mPermissionIntent);
+						}
+					}
 			}
+
+
+			final int deviceKey = getDeviceKey(device, true);
+			synchronized (mHasPermissions) {
+				if (hasPermission) {
+					if (mHasPermissions.get(deviceKey) == null) {
+						mHasPermissions.put(deviceKey, new WeakReference<UsbDevice>(device));
+					}
+				} else {
+					mHasPermissions.remove(deviceKey);
+				}
+			}
+			return hasPermission;
+		}else {
+			return false;
 		}
-		return hasPermission;
 	}
 
 	/**
@@ -546,7 +557,7 @@ public final class USBMonitor {
 		if (mUsbManager.hasPermission(device)) {
 			if (destroyed)
 				return;
-//			updatePermission(device, true);
+			updatePermission(device, true);
 			if (DEBUG)
 				Log.v(TAG, "processConnect:device=" + device);
 			if (DEBUG)
@@ -608,19 +619,7 @@ public final class USBMonitor {
 			synchronized (mHasPermissions) {
 				hasPermissionCounts = mHasPermissions.size();
 				mHasPermissions.clear();
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){//API 大于等于2 3 /9时，所有的USB设备访问之前都给权限
-					if (DEBUG)
-						Log.e(TAG, "run: Build.VERSION.SDK_INT >= Build.VERSION_CODES.p");
-					for (final UsbDevice device: devices) {
-						if(device.getProductId() == 1 && device.getVendorId() == 5396) {
-							//							if (DEBUG)
-							Log.e(TAG, "run: contains 5396 1 ");
-							if (!mUsbManager.hasPermission(device)){
-								mUsbManager.requestPermission(device,mPermissionIntent);
-							}
-						}
-					}
-				}
+
 				for (final UsbDevice device: devices) {
 					hasPermission(device);
 				}
@@ -632,12 +631,12 @@ public final class USBMonitor {
 				if (mOnDeviceConnectListener != null) {
 					//					for (int index : mHasPermissions.keyAt(0)) {
 					final UsbDevice device = mHasPermissions.get(mHasPermissions.keyAt(0)).get();
-					if (DEBUG) Log.e(TAG,"==========usbmonitor contains devices getProductName =====>"+device.getProductName());
+					if (DEBUG) Log.e(TAG,"===============> "+mUsbManager.hasPermission(device) + " " + device.toString());
 					if(device.getProductId() == 1 && device.getVendorId() == 5396 && mUsbManager.hasPermission(device) ) {
 						mAsyncHandler.post(new Runnable() {
 							@Override
 							public void run() {
-								processConnect(device);
+//								processConnect(device);
 							}
 						});
 					}

@@ -55,18 +55,21 @@
                 <Button
                     android:id="@+id/bt_all_gallery_rightRl"
                     android:text="@string/MediaBrowser_all"
+                    android:onClick="onSelectAll"
                     android:layout_width="match_parent"
                     android:layout_weight="1"
                     android:layout_height="@dimen/dimen_0dp"/>
                 <Button
                     android:id="@+id/bt_pic_gallery_rightRl"
                     android:text="@string/MediaBrowser_pic"
+                    android:onClick="onSelectImage"
                     android:layout_width="match_parent"
                     android:layout_weight="1"
                     android:layout_height="@dimen/dimen_0dp"/>
                 <Button
                     android:id="@+id/bt_video_gallery_rightRl"
                     android:text="@string/MediaBrowser_video"
+                    android:onClick="onSelectVideo"
                     android:layout_width="match_parent"
                     android:layout_weight="1"
                     android:layout_height="@dimen/dimen_0dp"/>

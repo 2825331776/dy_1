@@ -4,8 +4,9 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -24,7 +25,7 @@ import java.util.List;
  * <p>PackagePath: com.wcc.dytfourbie.main.photo     </p>
  */
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryHolder> {
-	private List<String> photoList;
+	private List<GalleryBean> photoList;
 	private Context mContext;
 	private LayoutInflater mInflater;
 	private MyOnItemClickListener onItemClickListener;
@@ -37,7 +38,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 		this.onItemClickListener = itemClickListener;
 	}
 
-	public GalleryAdapter (Context context, List<String >data) {
+	public GalleryAdapter (Context context, List<GalleryBean>data) {
 			this.mContext = context;
 			this.photoList = data;
 			mInflater = LayoutInflater.from(mContext);
@@ -49,18 +50,22 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 		return new GalleryHolder(mInflater.inflate(R.layout.item_photo_gallery, parent, false));
 	}
 
+
 	@Override
 	public void onBindViewHolder (@NonNull GalleryHolder holder, int position) {
-		if (photoList.get(position).endsWith("mp4")){
-
-
-			Glide.with(mContext).load(photoList.get(position)).into(holder.iv_item_photo);
-			holder.rb_item_photo.setTextColor(mContext.getResources().getColor(R.color.red));
-//			holder.iv_item_play.set
+		if (photoList.get(position).getType() == 0) {
+			holder.iv_item_play.setVisibility(View.GONE);
 		}else {
-			Glide.with(mContext).load(photoList.get(position)).into(holder.iv_item_photo);
+			holder.iv_item_play.setVisibility(View.VISIBLE);
 		}
-
+		holder.cb_item_photo.setChecked(photoList.get(position).isSelect());
+		Glide.with(mContext).load(photoList.get(position).getUriAddress()).into(holder.iv_item_photo);
+		holder.cb_item_photo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
+				photoList.get(position).setSelect(isChecked);
+			}
+		});
 		holder.cl_item_container.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
@@ -71,7 +76,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 
 	@Override
 	public int getItemViewType (int position) {
-		return position;
+		return photoList.get(position).getType();
 	}
 
 	@Override
@@ -80,7 +85,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 	}
 	static class GalleryHolder extends RecyclerView.ViewHolder{
 		final ImageView        iv_item_photo;
-		final RadioButton      rb_item_photo;
+		final CheckBox         cb_item_photo;
 		final ImageView        iv_item_play;
 		final ConstraintLayout cl_item_container;
 
@@ -89,7 +94,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 			super(itemView);
 			this.cl_item_container = itemView.findViewById(R.id.cl_item_container);
 			this.iv_item_photo = itemView.findViewById(R.id.iv_item_photo_gallery);
-			this.rb_item_photo = itemView.findViewById(R.id.rb_item_photo_gallery);
+			this.cb_item_photo = itemView.findViewById(R.id.checkBox_photo_gallery);
 			this.iv_item_play = itemView.findViewById(R.id.iv_play_item_photo_gallery);
 		}
 	}

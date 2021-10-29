@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.FileProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 
@@ -24,7 +23,6 @@ import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.constans.DYConstants;
 import com.dyt.wcc.dytpir.databinding.FragmentGalleryMainBinding;
 
-import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -38,7 +36,7 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 	private GridLayoutManager gridLayoutManager ;
 	private GalleryAdapter galleryAdapter ;
 
-	private ArrayList<String > imagePathList;
+	private ArrayList<GalleryBean > imagePathList;
 
 	private Handler mHandler = new Handler(new Handler.Callback() {
 		@Override
@@ -47,7 +45,7 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 				case DYConstants.IMAGE_READY:
 
 					Log.e(TAG, "handleMessage: ");
-					gridLayoutManager = new GridLayoutManager(mContext.get(),5);
+					gridLayoutManager = new GridLayoutManager(mContext.get(),4);
 					galleryAdapter = new GalleryAdapter(mContext.get(),imagePathList);
 
 					mDataBinding.recyclerViewGallery.setLayoutManager(gridLayoutManager);
@@ -56,25 +54,14 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 						@Override
 						public void itemClickListener (int position) {
 							Bundle args = new Bundle();
-							args.putStringArrayList("pathList",imagePathList);
-							args.putInt("position",position);
+							args.putString("pathList",imagePathList.get(position).getUriAddress().toString());
 
-							if (imagePathList.get(position).endsWith("mp4")){//查看MP4文件
+							if (imagePathList.get(position).getAbsoluteAddress().endsWith("mp4")){//查看MP4文件
 								Intent intent = new Intent();
 								intent.setAction(android.content.Intent.ACTION_VIEW);
-								File file = new File(imagePathList.get(position));
-								Uri uri;
-
-								if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-									intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-									Uri contentUri = FileProvider.getUriForFile(mContext.get(), mContext.get().getApplicationContext().getPackageName()
-											+ ".FileProvider", file);
-									intent.setDataAndType(contentUri, "video/*");
-								} else {
-									uri = Uri.fromFile(file);
-									intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-									intent.setDataAndType(uri, "video/*");
-								}
+								intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+								Uri contentUri = imagePathList.get(position).getUriAddress();
+								intent.setDataAndType(contentUri, "video/mp4");
 
 								mContext.get().startActivity(intent);
 							}else {//查看图片
@@ -82,7 +69,6 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 							}
 						}
 					});
-
 //					mDataBinding.tvTittle.setText(getResources().getString(R.string.DYTGallery)+"("+imagePathList.size()+")");
 					Log.e(TAG, "handleMessage: "+ imagePathList.size() );
 					Log.e(TAG, "handleMessage: "+ imagePathList);
@@ -100,25 +86,22 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 			@Override
 			public void run() {
 				String filePath = DYConstants.PIC_PATH;
-//				Log.e(TAG, "run: " + filePath);
 
 				ContentResolver contentResolver = mContext.get().getContentResolver();
-//				ContentValues contentValues = contentResolver.
 
 				Uri uriAll =  MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-
-				String sort = MediaStore.Images.Media.DATE_MODIFIED + " desc ";
+				//查询的数据
 				String [] projection = new String[]{
 						MediaStore.Images.Media._ID ,MediaStore.Images.Media.DATA};
-
+				//条件
 				String selection = MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?";
+				//条件参数
+				String [] selectionArgs = new String[] {"image/png"};
+				//查询排序方式
+				String sort = MediaStore.Images.Media.DATE_MODIFIED + " desc ";
 
-				String [] selectionArgs = new String[] {"image/png","image/jpeg"};
-
-				Cursor cursor = contentResolver.query(uriAll,null,
+				Cursor cursor = contentResolver.query(uriAll,projection,
 						selection, selectionArgs, sort);
-				Log.e(TAG, "run: " + (cursor!=null));
-				Log.e(TAG, "run: " + cursor.moveToFirst());
 
 //				final String column = "_data";
 				// 获取id字段是第几列，该方法最好在循环之前做好
@@ -130,16 +113,59 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 					long id = cursor.getLong(idIndex);
 					// 获取到每张图片的uri
 					Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,id);
+					//uri转 绝对路径， 如果路径是DYTCamera 结尾，则添加到list
 					// 获取到每张图片的绝对路径
 					String path = cursor.getString(dataIndex);
-					imagePathList.add(imageUri.toString());
-					// 做保存工作
-					// todo
-					Log.e(TAG, "run: imageUri " + imageUri);
-					Log.e(TAG, "run: path " + path);
-				}
+					if (path.contains(DYConstants.PIC_PATH)){
+						GalleryBean imageBean = new GalleryBean();
+						imageBean.setType(0);
+						imageBean.setAbsoluteAddress(path);
+						imageBean.setUriAddress(imageUri);
 
+						imagePathList.add(imageBean);
+
+						Log.e(TAG, "run: imageUri " + imageUri);
+						Log.e(TAG, "run: path " + path);
+					}
+				}
 				cursor.close();
+
+				Uri uriVideo =  MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+				//查询的数据
+				String [] videoProjection = new String[]{MediaStore.Video.Media._ID ,MediaStore.Video.Media.DATA};
+				//条件
+				String videoSelection = MediaStore.Video.Media.MIME_TYPE + "=?";
+				//条件参数
+				String [] videoSelectionArgs = new String[] {"video/mp4"};
+				//查询排序方式
+				String videoSort = MediaStore.Video.Media.DATE_MODIFIED + " desc ";
+
+				Cursor videoCursor = contentResolver.query(uriVideo,videoProjection,
+						videoSelection, videoSelectionArgs, videoSort);
+
+				// 获取id字段是第几列，该方法最好在循环之前做好
+				int videoIdIndex = videoCursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID);
+				// 获取data字段是第几列，该方法最好在循环之前做好
+				int videoDataIndex = videoCursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+
+				while (videoCursor.moveToNext()) {
+					long id = videoCursor.getLong(videoIdIndex);
+					// 获取到每张图片的uri
+					Uri imageUri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,id);
+					//uri转 绝对路径， 如果路径是DYTCamera 结尾，则添加到list
+					// 获取到每张图片的绝对路径
+					String path = videoCursor.getString(videoDataIndex);
+					if (path.contains(DYConstants.PIC_PATH)){
+
+						GalleryBean videoBean = new GalleryBean();
+						videoBean.setType(1);
+						videoBean.setAbsoluteAddress(path);
+						videoBean.setUriAddress(imageUri);
+
+						imagePathList.add(videoBean);
+					}
+				}
+				videoCursor.close();
 
 				mHandler.sendEmptyMessage(DYConstants.IMAGE_READY);
 
@@ -177,6 +203,16 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 		return R.layout.fragment_gallery_main;
 	}
 
+	public void onSelectAll(View view){
+
+	}
+	public void onSelectImage(View view){
+
+	}
+	public void onSelectVideo(View view){
+
+	}
+
 	@Override
 	protected void initView () {
 		imagePathList = new ArrayList<>();
@@ -194,6 +230,5 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> {
 		}else {
 
 		}
-
 	}
 }
