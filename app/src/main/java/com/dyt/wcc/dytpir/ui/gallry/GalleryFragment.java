@@ -25,7 +25,7 @@ import com.dyt.wcc.dytpir.constans.DYConstants;
 import com.dyt.wcc.dytpir.databinding.FragmentGalleryMainBinding;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -38,8 +38,8 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 	private GridLayoutManager gridLayoutManager ;
 	private GalleryAdapter galleryAdapter ;
 
-	private ArrayList<GalleryBean > imagePathList;
-	private ArrayList<GalleryBean > showList;
+	private CopyOnWriteArrayList<GalleryBean > imagePathList;
+	private CopyOnWriteArrayList<GalleryBean >            showList;
 
 	private Handler mHandler = new Handler(new Handler.Callback() {
 		@Override
@@ -275,59 +275,79 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 				break;
 
 			case R.id.bt_delete_gallery_rightRl:
+
 				for (GalleryBean child : showList){
 					if (child.isSelect()){
-						File file = new File(child.getAbsoluteAddress());
+//						deleteImage(child.getAbsoluteAddress());
 						if (child.getAbsoluteAddress().endsWith("mp4")){
-							if (file.isFile()){
 								int res = mContext.get().getContentResolver().delete(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-										MediaStore.Audio.Media.DISPLAY_NAME + "=?",
-										new String[]{file.getName()});
+										MediaStore.Video.Media.DATA + "=?",
+										new String[]{child.getAbsoluteAddress()});
 								if (res > -1){
-									file.delete();
 									Log.e(TAG, "删除文件成功");
-									showList.remove(child);
-									galleryAdapter.notifyDataSetChanged();
+//									showList.remove(child);
+//									galleryAdapter.notifyDataSetChanged();
 								}else{
 									Log.e(TAG, "删除文件失败");
 								}
 							}
-
-
 						}else {
-							if (file.isFile()){
-								Log.e(TAG, "onClick: " + file.getName());
-								int res = mContext.get().getContentResolver().delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-										MediaStore.Images.Media.DISPLAY_NAME + "=?",
-										new String[]{file.getName()});
+								int res = mContext.get().getContentResolver().delete(child.getUriAddress(),
+										MediaStore.Images.Media.DATA + "=?",
+										new String[]{child.getAbsoluteAddress()});
 								if (res > -1){
-//									file.delete();
+//									if (file.exists())file.delete();
 									Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
 									intent.setData(child.getUriAddress());
 									mContext.get().sendBroadcast(intent);
+
 									Log.e(TAG, "删除文件成功" + res);
 
-									showList.remove(child);
-									galleryAdapter.notifyDataSetChanged();
+//									showList.remove(child);
+//									galleryAdapter.notifyDataSetChanged();
 								}else{
 									Log.e(TAG, "删除文件失败");
 								}
 							}
 						}
+//				Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//				intent.setData(Uri.fromFile(new File(imgPath)));
+//				sendBroadcast(intent);
 //						file.delete();
-						Log.e(TAG, "delete: " + child.getAbsoluteAddress());
-					}
-				}
+//						Log.e(TAG, "delete: " + child.getAbsoluteAddress());
+//					}
+//				}
 				break;
 		}
+	}
+
+	//删除图库照片
+	private boolean deleteImage(String imgPath) {
+		ContentResolver resolver = mContext.get().getContentResolver();
+		Cursor cursor = MediaStore.Images.Media.query(resolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+				new String[]{MediaStore.Images.Media._ID}, MediaStore.Images.Media.DATA + "=?",
+				new String[]{imgPath}, null);
+		boolean result = false;
+		if (null != cursor && cursor.moveToFirst()) {
+			long id = cursor.getLong(0);
+			Uri contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+			Uri uri = ContentUris.withAppendedId(contentUri, id);
+			int count = mContext.get().getContentResolver().delete(uri, null, null);
+			result = count == 1;
+		} else {
+			File file = new File(imgPath);
+			result = file.delete();
+		}
+		Log.e(TAG,"--deleteImage--imgPath:" + imgPath + "--result:" + result);
+		return result;
 	}
 
 	@Override
 	protected void initView () {
 
 		Log.e(TAG, "initView: ");
-		imagePathList = new ArrayList<>();
-		showList = new ArrayList<>();
+		imagePathList = new CopyOnWriteArrayList<>();
+		showList = new CopyOnWriteArrayList<>();
 
 		mDataBinding.btAllGalleryRightRl.setOnClickListener(this);
 		mDataBinding.btPicGalleryRightRl.setOnClickListener(this);
