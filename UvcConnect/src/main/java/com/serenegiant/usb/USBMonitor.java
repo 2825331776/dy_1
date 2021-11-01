@@ -65,7 +65,6 @@ public final class USBMonitor {
 //	public static final String ACTION_USB_DEVICE_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
 
 	/**
-	 * openしているUsbControlBlock
 	 * 打开 UsbControlBlock
 	 */
 	private final ConcurrentHashMap<UsbDevice, UsbControlBlock> mCtrlBlocks = new ConcurrentHashMap<UsbDevice, UsbControlBlock>();

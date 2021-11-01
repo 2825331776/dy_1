@@ -275,10 +275,8 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 				break;
 
 			case R.id.bt_delete_gallery_rightRl:
-
 				for (GalleryBean child : showList){
 					if (child.isSelect()){
-//						deleteImage(child.getAbsoluteAddress());
 						if (child.getAbsoluteAddress().endsWith("mp4")){
 								int res = mContext.get().getContentResolver().delete(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
 										MediaStore.Video.Media.DATA + "=?",
@@ -286,7 +284,10 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 								if (res > -1){
 									Log.e(TAG, "删除文件成功");
 									showList.remove(child);
-									galleryAdapter.notifyDataSetChanged();
+
+									Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+									intent.setData(child.getUriAddress());
+									mContext.get().sendBroadcast(intent);
 								}else{
 									Log.e(TAG, "删除文件失败");
 								}
@@ -295,28 +296,24 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 										MediaStore.Images.Media.DATA + "=?",
 										new String[]{child.getAbsoluteAddress()});
 								if (res > -1){
-									//									if (file.exists())file.delete();
+									showList.remove(child);
+//									galleryAdapter.notifyDataSetChanged();
+
 									Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
 									intent.setData(child.getUriAddress());
 									mContext.get().sendBroadcast(intent);
 
 									Log.e(TAG, "删除文件成功" + res);
 
-									showList.remove(child);
-									galleryAdapter.notifyDataSetChanged();
+
 								}else{
 									Log.e(TAG, "删除文件失败");
 								}
 						}
 					}
+
 				}
-//				Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-//				intent.setData(Uri.fromFile(new File(imgPath)));
-//				sendBroadcast(intent);
-//						file.delete();
-//						Log.e(TAG, "delete: " + child.getAbsoluteAddress());
-//					}
-//				}
+				galleryAdapter.notifyDataSetChanged();
 				break;
 		}
 	}

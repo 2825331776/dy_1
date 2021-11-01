@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.dyt.wcc.dytpir.R;
 
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -27,11 +27,11 @@ import java.util.List;
  * <p>PackagePath: com.wcc.dytfourbie.main.photo     </p>
  */
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryHolder> {
-	private static final String TAG = "GalleryAdapter";
-	private List<GalleryBean> photoList;
-	private Context mContext;
-	private LayoutInflater mInflater;
-	private MyOnItemClickListener onItemClickListener;
+	private static final String                            TAG = "GalleryAdapter";
+	private              CopyOnWriteArrayList<GalleryBean> photoList;
+	private              Context                           mContext;
+	private              LayoutInflater                    mInflater;
+	private              MyOnItemClickListener             onItemClickListener;
 
 	public interface MyOnItemClickListener{
 		void itemClickListener(int position );
@@ -41,7 +41,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 		this.onItemClickListener = itemClickListener;
 	}
 
-	public GalleryAdapter (Context context, List<GalleryBean>data) {
+	public GalleryAdapter (Context context, CopyOnWriteArrayList<GalleryBean>data) {
 			this.mContext = context;
 			this.photoList = data;
 			mInflater = LayoutInflater.from(mContext);
@@ -66,7 +66,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 		holder.cb_item_photo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
-				Log.e(TAG, "onCheckedChanged: " + isChecked);
+				Log.e(TAG, "onCheckedChanged: " + isChecked + position);
 				photoList.get(position).setSelect(isChecked);
 			}
 		});
