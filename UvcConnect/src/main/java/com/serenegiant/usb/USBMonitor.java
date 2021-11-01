@@ -69,6 +69,7 @@ public final class USBMonitor {
 	 */
 	private final ConcurrentHashMap<UsbDevice, UsbControlBlock> mCtrlBlocks = new ConcurrentHashMap<UsbDevice, UsbControlBlock>();
 	private final SparseArray<WeakReference<UsbDevice>> mHasPermissions = new SparseArray<WeakReference<UsbDevice>>();
+	private ConcurrentHashMap<String ,UsbDevice> targetUsbDevice = new ConcurrentHashMap<String,UsbDevice>();
 
 	private final WeakReference<Context> mWeakContext;
 	private final UsbManager mUsbManager;
@@ -606,20 +607,25 @@ public final class USBMonitor {
 		@Override
 		public void run() {
 			if (destroyed) return;
+			//每两秒刷新的设备列表
+
 			final List<UsbDevice> devices = getDeviceList();
 			final int n = devices.size();//设备数量
 			final int hasPermissionCounts;//已有权限的数量
 			final int m;//现有权限的数量
 			//什么时候要去连接设备。
-			//			for(UsbDevice device : devices){
-			//				Log.e(TAG, "run: " +device.getProductName());
-			//			}
+			targetUsbDevice.clear();
+			for(UsbDevice device : devices){
+				if(device.getProductId() == 1 && device.getVendorId() == 5396){
+					targetUsbDevice.put(device.getProductName(),device);
+				}
+			}
 
 			synchronized (mHasPermissions) {
 				hasPermissionCounts = mHasPermissions.size();
 				mHasPermissions.clear();
 
-				for (final UsbDevice device: devices) {
+				for (final UsbDevice device: targetUsbDevice.values()) {
 					hasPermission(device);
 				}
 				m = mHasPermissions.size();
