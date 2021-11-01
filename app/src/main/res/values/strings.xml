@@ -21,6 +21,9 @@
     <string name="CheckLatestVersion">Check the latest version</string>
     <string name="VersionName">Version Name：</string>
 
+    <!--录制-->
+    <string name="StartRecorderService">StartRecorderService</string>
+
     <!--    设置页-->
     <string name="SettingGeneral">General</string>
     <string name="SettingLanguage">Language</string>

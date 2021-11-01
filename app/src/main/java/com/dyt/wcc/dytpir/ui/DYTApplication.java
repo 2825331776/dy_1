@@ -11,8 +11,15 @@ import com.dyt.wcc.common.base.BaseApplication;
 */
 public class DYTApplication extends BaseApplication {
 
+	//	private AppViewModel appViewModel;//全局唯一ViewModel
+	public  static DYTApplication instance;
+	public static DYTApplication getInstance(){
+		return instance;
+	}
+
 	@Override
 	public void onCreate () {
 		super.onCreate();
+		instance = this;
 	}
 }

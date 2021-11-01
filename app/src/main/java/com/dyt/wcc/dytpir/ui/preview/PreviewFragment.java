@@ -3,10 +3,15 @@ package com.dyt.wcc.dytpir.ui.preview;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
+import android.app.Notification;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbDevice;
+import android.net.Uri;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -25,6 +30,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.dyt.wcc.cameracommon.encoder.MediaMuxerWrapper;
 import com.dyt.wcc.cameracommon.usbcameracommon.UVCCameraHandler;
 import com.dyt.wcc.common.base.BaseApplication;
 import com.dyt.wcc.common.base.BaseFragment;
@@ -43,13 +49,23 @@ import com.dyt.wcc.dytpir.databinding.PopDrawChartBinding;
 import com.dyt.wcc.dytpir.databinding.PopPaletteChoiceBinding;
 import com.dyt.wcc.dytpir.databinding.PopSettingBinding;
 import com.dyt.wcc.dytpir.databinding.PopTempModeChoiceBinding;
+import com.dyt.wcc.dytpir.ui.preview.record.MediaProjectionHelper;
+import com.dyt.wcc.dytpir.ui.preview.record.MediaProjectionNotificationEngine;
+import com.dyt.wcc.dytpir.ui.preview.record.MediaRecorderCallback;
+import com.dyt.wcc.dytpir.ui.preview.record.NotificationHelper;
 import com.permissionx.guolindev.PermissionX;
+import com.permissionx.guolindev.callback.ExplainReasonCallback;
+import com.permissionx.guolindev.callback.ForwardToSettingsCallback;
 import com.permissionx.guolindev.callback.RequestCallback;
+import com.permissionx.guolindev.request.ExplainScope;
+import com.permissionx.guolindev.request.ForwardScope;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -90,6 +106,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 	@Override
 	public void onPause () {
+
 		super.onPause();
 		if (isDebug)Log.e(TAG, "onPause: ");
 	}
@@ -103,6 +120,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	@Override
 	public void onDestroy () {
 		super.onDestroy();
+		if (MediaProjectionHelper.getInstance().getRecord_State() != 0){
+			MediaProjectionHelper.getInstance().stopMediaRecorder();
+			MediaProjectionHelper.getInstance().stopService(mContext.get());
+		}
 
 		if (isDebug)Log.e(TAG, "onDestroy: ");
 	}
@@ -126,7 +147,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	@Override
 	public void onResume () {
 		super.onResume();
-		if (isDebug)Log.e(TAG, "onResume: ");
+//		if (isDebug)Log.e(TAG, "onResume: ");
 
 
 		//		Spinner
@@ -278,11 +299,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //		mUsbMonitor = new USBMonitor(mContext.get(),deviceConnectListener);
 
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
-				,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO).request(new RequestCallback() {
+				,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO,Manifest.permission.RECORD_AUDIO).request(new RequestCallback() {
 			@Override
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 				if (allGranted){
-
+					initRecord();
 				}
 			}
 		});
@@ -565,6 +586,60 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		}
 	};
 
+	private void initRecord(){
+		Log.e(TAG, "initRecord: ");
+
+		MediaProjectionHelper.getInstance().setNotificationEngine(new MediaProjectionNotificationEngine() {
+			@Override
+			public Notification getNotification () {
+				String title = getString(R.string.StartRecorderService);
+				return NotificationHelper.getInstance().createSystem()
+						.setOngoing(true)// 常驻通知栏
+						.setTicker(title)
+						.setContentText(title)
+						.setDefaults(Notification.DEFAULT_ALL)
+						.build();
+			}
+		});
+
+		MediaProjectionHelper.getInstance().setMediaRecorderCallback(new MediaRecorderCallback() {
+			@Override
+			public void onSuccess (File file) {
+				super.onSuccess(file);
+				Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+				intent.setData(Uri.fromFile(file));
+				mContext.get().sendBroadcast(intent);
+				Toast.makeText(mContext.get(),"录制完成" + file.getName(),Toast.LENGTH_LONG).show();
+			}
+
+			@Override
+			public void onFail () {
+				super.onFail();
+				Toast.makeText(mContext.get(),"录制失败",Toast.LENGTH_SHORT).show();
+			}
+
+			@Override
+			public void onStartCounting () {
+				super.onStartCounting();
+				//				Log.e(TAG, "onClick: "+mDataBinding.chronometerShowRecordTimeMainInfo.getBase());
+				mDataBinding.chronometerRecordTimeInfo.setVisibility(View.VISIBLE);
+				mDataBinding.ivPreviewLeftRecord.setImageResource(R.drawable.ic_user_vector_stoprecord_24px);
+				mDataBinding.chronometerRecordTimeInfo.setBase(SystemClock.elapsedRealtime());
+				mDataBinding.chronometerRecordTimeInfo.setFormat("%s");
+				mDataBinding.chronometerRecordTimeInfo.start();
+			}
+
+			@Override
+			public void onStopCounting () {
+				super.onStopCounting();
+
+				mDataBinding.chronometerRecordTimeInfo.stop();
+				mDataBinding.ivPreviewLeftRecord.setImageResource(R.drawable.ic_user_vector_record_24px);
+				mDataBinding.chronometerRecordTimeInfo.setVisibility(View.INVISIBLE);
+			}
+		});
+	}
+
 	private void setPalette(int id){
 		if (allPopupWindows != null){
 			allPopupWindows.dismiss();
@@ -639,17 +714,40 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 	public void toClear(View view){
 		mDataBinding.dragTempContainerPreviewFragment.clearAll();
-//		if (mUvcCameraHandler != null){
-//			Toast.makeText(mContext.get(),"toClear ", Toast.LENGTH_SHORT).show();
-//			mUvcCameraHandler.stopTemperaturing();
-//			mUvcCameraHandler.stopPreview();
-//		}
-//		NavHostFragment.findNavController(PreviewFragment.this).popBackStack();
-//		Navigation.findNavController(mDataBinding.getRoot()).popBackStack();
-
 	}
 	//拍照
 	public void toImage(View view){
+
+		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
+				,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO)
+				.onExplainRequestReason(new ExplainReasonCallback() {
+					@Override
+					public void onExplainReason (@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
+						//								Toast.makeText(MainActivity.this,"onExplainReason",Toast.LENGTH_SHORT).show();
+						scope.showRequestReasonDialog(deniedList,"没有存储权限，无法实现截图，录制等功能。是否重新授权？","确认","取消");
+						//								shouldShowRequestPermissionRationale(deniedList,"df");
+					}
+				}).onForwardToSettings(new ForwardToSettingsCallback() {
+			@Override
+			public void onForwardToSettings (@NonNull ForwardScope scope, @NonNull List<String> deniedList) {
+				scope.showForwardToSettingsDialog(deniedList,"没有存储权限，无法实现截图，录制等功能。是否去设置打开？","确认","取消");
+			}
+		}).request(new RequestCallback() {
+			@Override
+			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+				if (allGranted){//拿到权限 去C++ 绘制 传入文件路径path， 点线矩阵
+					//实现截屏操作
+					//生成一个当前的图片地址：  然后设置一个标识位，标识正截屏 或者 录像中
+					String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
+					//							String picPath = "/storage/emulated/0/DCIM/DYTCamera/1970-01-01-13-11-32.jpg";//写死一个图片地址 方便用于查看
+					mUvcCameraHandler.captureStill(picPath);
+					Log.e(TAG, "onResult: java path === "+ picPath);
+				}else {
+					Toast.makeText(mContext.get(),"未获取需要的权限.",Toast.LENGTH_SHORT).show();
+				}
+
+			}
+		});
 
 //		if (mUvcCameraHandler != null){
 //			Toast.makeText(mContext.get(),"toImage ", Toast.LENGTH_SHORT).show();
@@ -662,9 +760,18 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	}
 	//录制
 	public void toRecord(View view){
-
-		//		NavHostFragment.findNavController(PreviewFragment.this).popBackStack();
-		//		Navigation.findNavController(mDataBinding.getRoot()).popBackStack();
+		Log.e(TAG, "toRecord: ");
+		/**
+		 * 录制业务逻辑：点击开始录制，判断 是否在录制？ no-> 开始录制，更改录制按钮"结束录制" & 开始计时器
+		 * yes->结束录制。更改录制按钮"录制" （刷新媒体库）& 重置计时器
+		 */
+		Log.e(TAG, "toRecord: " + MediaProjectionHelper.getInstance().getRecord_State());
+		if (MediaProjectionHelper.getInstance().getRecord_State() !=0 ){//停止录制
+			MediaProjectionHelper.getInstance().stopMediaRecorder();
+			MediaProjectionHelper.getInstance().stopService(mContext.get());
+		}else {//开始录制
+			MediaProjectionHelper.getInstance().startService(mContext.get());
+		}
 
 	}
 

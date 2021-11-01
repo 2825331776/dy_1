@@ -285,31 +285,31 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 										new String[]{child.getAbsoluteAddress()});
 								if (res > -1){
 									Log.e(TAG, "删除文件成功");
-//									showList.remove(child);
-//									galleryAdapter.notifyDataSetChanged();
+									showList.remove(child);
+									galleryAdapter.notifyDataSetChanged();
 								}else{
 									Log.e(TAG, "删除文件失败");
 								}
-							}
-						}else {
+							}else {
 								int res = mContext.get().getContentResolver().delete(child.getUriAddress(),
 										MediaStore.Images.Media.DATA + "=?",
 										new String[]{child.getAbsoluteAddress()});
 								if (res > -1){
-//									if (file.exists())file.delete();
+									//									if (file.exists())file.delete();
 									Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
 									intent.setData(child.getUriAddress());
 									mContext.get().sendBroadcast(intent);
 
 									Log.e(TAG, "删除文件成功" + res);
 
-//									showList.remove(child);
-//									galleryAdapter.notifyDataSetChanged();
+									showList.remove(child);
+									galleryAdapter.notifyDataSetChanged();
 								}else{
 									Log.e(TAG, "删除文件失败");
 								}
-							}
 						}
+					}
+				}
 //				Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
 //				intent.setData(Uri.fromFile(new File(imgPath)));
 //				sendBroadcast(intent);

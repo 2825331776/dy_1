@@ -136,6 +136,17 @@
 
         </FrameLayout>
 
+        <Chronometer
+            app:layout_constraintLeft_toRightOf="@id/rl_left_container"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:id="@+id/chronometer_RecordTime_Info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:visibility="invisible"
+            android:textColor="@color/red"
+            android:textSize="20sp" />
+
 <!--        拖动条布局-->
         <LinearLayout
             android:id="@+id/ll_container_preview_seekbar"

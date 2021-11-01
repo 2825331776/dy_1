@@ -20,6 +20,8 @@
 
     <string name="CheckLatestVersion">检查最新版本</string>
     <string name="VersionName">版本号：</string>
+    <!--录制-->
+    <string name="StartRecorderService">启动录制服务</string>
 
     <!--    设置页-->
     <string name="SettingGeneral">通用</string>
