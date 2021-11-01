@@ -1182,11 +1182,17 @@ public class MyMoveWidget extends View {
 					//				Log.e(TAG, "onTouchEvent:child action move");
 					break;
 				case MotionEvent.ACTION_UP:
-//					Log.e(TAG, "onTouchEvent:child action up" + event.getX() +"  Y = >"+ event.getY());
-					Log.e(TAG, "onTouchEvent:child action up" + event.getRawX() +"  Y = >"+ event.getRawY());
 					if (mTimeTask != null){
 						mTimeTask.cancel();
 					}
+
+					if (hasBackGroundAndTools && tempWidgetData.getType() ==3){
+						//todo 发送一个指令给C层刷新 矩阵数据
+						mChildToolsClickListener.onRectChangedListener();
+					}
+//					Log.e(TAG, "onTouchEvent:child action up" + event.getX() +"  Y = >"+ event.getY());
+					Log.e(TAG, "onTouchEvent:child action up" + event.getRawX() +"  Y = >"+ event.getRawY());
+
 
 					break;
 			}

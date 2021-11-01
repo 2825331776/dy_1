@@ -523,6 +523,15 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 				}
 			}
+
+			@Override
+			public void onRectChangedListener () {//移动框框之后刷新C层控件的设置
+				if (mUvcCameraHandler != null){
+					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
+					int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
+					mUvcCameraHandler.setArea(areaData);
+				}
+			}
 		});
 
 

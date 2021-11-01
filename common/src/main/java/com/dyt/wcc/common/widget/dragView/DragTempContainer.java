@@ -151,6 +151,8 @@ public class DragTempContainer extends RelativeLayout {
 
 	public interface OnChildToolsClickListener{
 		void onChildToolsClick(TempWidgetObj childObj, int position);
+
+		void onRectChangedListener();
 	}
 	private OnChildToolsClickListener mChildToolsClickListener;
 	public void setChildToolsClickListener (OnChildToolsClickListener childToolsClickListener) {

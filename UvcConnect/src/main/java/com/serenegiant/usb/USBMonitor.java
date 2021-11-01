@@ -68,7 +68,7 @@ public final class USBMonitor {
 	 */
 	private final ConcurrentHashMap<UsbDevice, UsbControlBlock> mCtrlBlocks = new ConcurrentHashMap<UsbDevice, UsbControlBlock>();
 	private final SparseArray<WeakReference<UsbDevice>> mHasPermissions = new SparseArray<WeakReference<UsbDevice>>();
-	private ConcurrentHashMap<String ,UsbDevice> targetUsbDevice = new ConcurrentHashMap<String,UsbDevice>();
+	private ConcurrentHashMap<Integer ,UsbDevice> targetUsbDevice = new ConcurrentHashMap<Integer,UsbDevice>();
 
 	private final WeakReference<Context> mWeakContext;
 	private final UsbManager mUsbManager;
@@ -183,7 +183,7 @@ public final class USBMonitor {
 			}
 			// start connection check
 			if (DEBUG) Log.e(TAG,"=====register============before==========mDeviceCheckRunnable=======");
-			mDeviceCounts = 0;
+//			mDeviceCounts = 0;
 			mAsyncHandler.postDelayed(mDeviceCheckRunnable, 1000);
 			if (DEBUG) Log.e(TAG,"=====register============behind==========mDeviceCheckRunnable=======");
 		}
@@ -195,7 +195,7 @@ public final class USBMonitor {
 	 */
 	public synchronized void unregister() throws IllegalStateException {
 		// 接続チェック用Runnableを削除
-		mDeviceCounts = 0;
+//		mDeviceCounts = 0;
 		if (!destroyed) {
 			mAsyncHandler.removeCallbacks(mDeviceCheckRunnable);
 		}
@@ -518,8 +518,10 @@ public final class USBMonitor {
 					Log.e(TAG, "onReceive:  hasPermission " + mUsbManager.hasPermission(device));
 					if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
 						if (device != null) {
+							isConnect = true;
+							processConnect(device);
 							// get permission, call onConnect
-							updatePermission(device,true);
+//							updatePermission(device,true);
 							if (DEBUG) Log.e(TAG,"UsbMonitor.register.broadcastReceiver.mUsbReceiver.OnReceiver=device !=null!!!====todo connect");
 //							processConnect(device);
 						}
@@ -544,7 +546,7 @@ public final class USBMonitor {
 						// cleanup
 						ctrlBlock.close();
 					}
-					mDeviceCounts = 0;
+//					mDeviceCounts = 0;
 					processDettach(device);
 				}
 			}
@@ -603,7 +605,7 @@ public final class USBMonitor {
 		*/
 	}
 	/** number of connected & detected devices */
-	private volatile int mDeviceCounts = 0;
+//	private volatile int mDeviceCounts = 0;
 	/**
 	 * periodically check connected devices and if it changed, call onAttach
 	 */
@@ -615,29 +617,32 @@ public final class USBMonitor {
 
 			final List<UsbDevice> devices = getDeviceList();
 
-			final int hasPermissionCounts;//两秒前 已有权限的数量
-			final int m;//现拥有设备的 权限数量
+//			final int hasPermissionCounts;//两秒前 已有权限的数量
+//			final int m;//现拥有设备的 权限数量
 			//什么时候要去连接设备。
 			targetUsbDevice.clear();
 			for(UsbDevice device : devices){
 				if(device.getProductId() == 1 && device.getVendorId() == 5396){
-					targetUsbDevice.put(getMyDeviceKeyName(device,null),device);
+					targetUsbDevice.put(targetUsbDevice.size(),device);
 				}
 			}
 			final int n = targetUsbDevice.size();//当前 连接符合条件的设备数量
 
 			synchronized (mHasPermissions) {
-				hasPermissionCounts = mHasPermissions.size();
+//				hasPermissionCounts = mHasPermissions.size();
 				mHasPermissions.clear();
 
 				for (final UsbDevice device: targetUsbDevice.values()) {
 					hasPermission(device);
 				}
-				m = mHasPermissions.size();
+				if (targetUsbDevice.size() > 0 && mHasPermissions.size() ==0){
+					requestPermission(targetUsbDevice.get(0));
+				}
+//				m = mHasPermissions.size();
 			}
 			//当权限列表 == 设备列表 则去连接每个有权限的设备
-			if (m>0 ) {
-				mDeviceCounts = n;
+			if (mHasPermissions.size()>0 && !isConnect) {
+//				mDeviceCounts = n;
 				if (mOnDeviceConnectListener != null) {
 					//					for (int index : mHasPermissions.keyAt(0)) {
 					final UsbDevice device = mHasPermissions.get(mHasPermissions.keyAt(0)).get();
@@ -646,7 +651,8 @@ public final class USBMonitor {
 						mAsyncHandler.post(new Runnable() {
 							@Override
 							public void run() {
-//								processConnect(device);
+								processConnect(device);
+								isConnect = true;
 							}
 						});
 					}
