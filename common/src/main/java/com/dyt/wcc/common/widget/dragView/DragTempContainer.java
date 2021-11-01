@@ -38,7 +38,7 @@ public class DragTempContainer extends RelativeLayout {
 
 	public static int padTop = 14;
 	//点击工具栏之后的控制 响应的事件。删除的事件。
-	public static int perToolsWidthHeightSet = 30;//每个工具栏的宽高
+	public static int perToolsWidthHeightSet = 25;//每个工具栏的宽高
 	public static int perToolsMargin = 5;//每个工具栏的margin
 
 	private static final int UPDATE_TEMP_DATA = 1;

@@ -33,7 +33,6 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
-import android.os.Build;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
@@ -82,6 +81,7 @@ public final class USBMonitor {
 	 */
 	private final Handler mAsyncHandler;
 	private volatile boolean destroyed;
+	private volatile boolean isConnect;//标识有无设备连接
 	/**
 	 * 更改 USB 设备状态时的回调监听器
 	 */
@@ -391,6 +391,7 @@ public final class USBMonitor {
 	}
 
 	/**
+	 * 判断设备是否有权限，有则添加到 mHasPermissions 中。否则返回无权限
 	 * return whether the specific Usb device has permission
 	 * @param device
 	 * @return true: 指定したUsbDeviceにパーミッションがある
@@ -398,6 +399,9 @@ public final class USBMonitor {
 	 */
 	public final boolean hasPermission(final UsbDevice device) throws IllegalStateException {
 		if (destroyed) throw new IllegalStateException("already destroyed");
+		if (mUsbManager.hasPermission(device)){
+			updatePermission(device,true);
+		}
 		return mUsbManager.hasPermission(device);
 	}
 
@@ -411,18 +415,18 @@ public final class USBMonitor {
 	 */
 	private boolean updatePermission(final UsbDevice device, final boolean hasPermission) {
 //		mUsbManager.requestPermission(device,mPermissionIntent);
-		if (device.getProductId() == 1 && device.getVendorId() == 5396){
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){//API 大于等于2 3 /9时，所有的USB设备访问之前都给权限
-				if (DEBUG)
-					Log.e(TAG, "run: Build.VERSION.SDK_INT >= Build.VERSION_CODES.p");
-					if(device.getProductId() == 1 && device.getVendorId() == 5396) {
-						//							if (DEBUG)
-						Log.e(TAG, "run: contains 5396 1 ");
-						if (!mUsbManager.hasPermission(device)){
-							mUsbManager.requestPermission(device,mPermissionIntent);
-						}
-					}
-			}
+//		if (device.getProductId() == 1 && device.getVendorId() == 5396){
+//			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){//API 大于等于2 3 /9时，所有的USB设备访问之前都给权限
+//				if (DEBUG)
+//					Log.e(TAG, "run: Build.VERSION.SDK_INT >= Build.VERSION_CODES.p");
+//					if(device.getProductId() == 1 && device.getVendorId() == 5396) {
+//						//							if (DEBUG)
+//						Log.e(TAG, "run: contains 5396 1 ");
+//						if (!mUsbManager.hasPermission(device)){
+//							mUsbManager.requestPermission(device,mPermissionIntent);
+//						}
+//					}
+//			}
 
 
 			final int deviceKey = getDeviceKey(device, true);
@@ -436,9 +440,9 @@ public final class USBMonitor {
 				}
 			}
 			return hasPermission;
-		}else {
-			return false;
-		}
+//		}else {
+//			return false;
+//		}
 	}
 
 	/**
@@ -547,8 +551,7 @@ public final class USBMonitor {
 		}
 	};
 
-	/** number of connected & detected devices */
-	private volatile int mDeviceCounts = 0;
+
 	/**
 	 * open specific USB device
 	 * @param device
@@ -599,7 +602,8 @@ public final class USBMonitor {
 		});
 		*/
 	}
-
+	/** number of connected & detected devices */
+	private volatile int mDeviceCounts = 0;
 	/**
 	 * periodically check connected devices and if it changed, call onAttach
 	 */
@@ -610,16 +614,17 @@ public final class USBMonitor {
 			//每两秒刷新的设备列表
 
 			final List<UsbDevice> devices = getDeviceList();
-			final int n = devices.size();//设备数量
-			final int hasPermissionCounts;//已有权限的数量
-			final int m;//现有权限的数量
+
+			final int hasPermissionCounts;//两秒前 已有权限的数量
+			final int m;//现拥有设备的 权限数量
 			//什么时候要去连接设备。
 			targetUsbDevice.clear();
 			for(UsbDevice device : devices){
 				if(device.getProductId() == 1 && device.getVendorId() == 5396){
-					targetUsbDevice.put(device.getProductName(),device);
+					targetUsbDevice.put(getMyDeviceKeyName(device,null),device);
 				}
 			}
+			final int n = targetUsbDevice.size();//当前 连接符合条件的设备数量
 
 			synchronized (mHasPermissions) {
 				hasPermissionCounts = mHasPermissions.size();
@@ -631,7 +636,7 @@ public final class USBMonitor {
 				m = mHasPermissions.size();
 			}
 			//当权限列表 == 设备列表 则去连接每个有权限的设备
-			if (m>0) {
+			if (m>0 ) {
 				mDeviceCounts = n;
 				if (mOnDeviceConnectListener != null) {
 					//					for (int index : mHasPermissions.keyAt(0)) {
@@ -715,6 +720,22 @@ public final class USBMonitor {
 	public static final String getDeviceKeyName(final UsbDevice device, final boolean useNewAPI) {
 		return getDeviceKeyName(device, null, useNewAPI);
 	}
+
+	public static final String getMyDeviceKeyName(final UsbDevice device, final String serial) {
+		if (device == null) return "";
+		final StringBuilder sb = new StringBuilder();
+		sb.append(device.getVendorId());			sb.append("#");	// API >= 12
+		sb.append(device.getProductId());			sb.append("#");	// API >= 12
+		sb.append(device.getDeviceClass());			sb.append("#");	// API >= 12
+		sb.append(device.getDeviceSubclass());		sb.append("#");	// API >= 12
+		sb.append(device.getDeviceProtocol());						// API >= 12
+		if (!TextUtils.isEmpty(serial)) {
+			sb.append("#");	sb.append(serial);
+		}
+		if (DEBUG) Log.e(TAG, "getMyDeviceKeyName:" + sb.toString());
+		return sb.toString();
+	}
+
 	/**
 	 * USB機器毎の設定保存用にデバイスキー名を生成する。この機器名をHashMapのキーにする
 	 * UsbDeviceがopenしている時のみ有効

@@ -696,10 +696,10 @@ public class MyMoveWidget extends View {
 			float left , right , top , bottom;
 			if (resPic!= null && data.getToolsNumber() != 0){
 				for (int i = 0 ; i < data.getToolsNumber(); i++){
-					left = toolsBgLeft + DragTempContainer.perToolsMargin;
-					right =toolsBgRight - DragTempContainer.perToolsMargin;
-					top = toolsBgTop + DragTempContainer.perToolsMargin + (DragTempContainer.perToolsWidthHeightSet + 2.0f* DragTempContainer.perToolsMargin)* i ;
-					bottom = toolsBgTop +(DragTempContainer.perToolsMargin + DragTempContainer.perToolsWidthHeightSet) + (DragTempContainer.perToolsWidthHeightSet+ 2.0f* DragTempContainer.perToolsMargin)* i;
+					left = toolsBgLeft + DensityUtil.dp2px(mContext,DragTempContainer.perToolsMargin);
+					right =toolsBgRight - DensityUtil.dp2px(mContext,DragTempContainer.perToolsMargin);
+					top = toolsBgTop + DensityUtil.dp2px(mContext,DragTempContainer.perToolsMargin) + (toolsNeedWidth)* i ;
+					bottom = toolsBgTop + toolsNeedWidth*(i+1) - DensityUtil.dp2px(mContext,DragTempContainer.perToolsMargin);
 
 					perToolsPic = new RectF(left,top,right,bottom);
 
