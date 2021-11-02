@@ -134,7 +134,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		if (isDebug)Log.e(TAG, "onDestroyView: ");
 
 		if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened()){
-			Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
+//			Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
 			mUvcCameraHandler.stopTemperaturing();
 			mUvcCameraHandler.stopPreview();
 			mUvcCameraHandler.release();
@@ -157,9 +157,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //			if (isDebug)Log.e(TAG, "udv.getProductName()" + udv.getProductName());
 			if (udv.getProductName().contains("S0") ) {
 				Log.e(TAG, "onResume: "+ " S0" + udv.getProductId() + " "  + udv.getVendorId() );
-
-
-				//CameraAlreadyConnected = true;//标志红外摄像头是否已经连接上
 				BaseApplication.deviceName = udv.getProductName();
 			}
 		}
@@ -241,16 +238,14 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onAttach (UsbDevice device) {
 				if (isDebug)Log.e(TAG, "DD  onAttach: "+ device.toString());
-				if (device.getProductId() == 1 && device.getVendorId() == 5396) {
 					Handler handler = new Handler();
 					handler.postDelayed(new Runnable() {
 						@Override
 						public void run() {
 							if (isDebug)Log.e(TAG, "检测到设备========");
-//							mViewModel.getMUsbMonitor().getValue().requestPermission(device);
+							mViewModel.getMUsbMonitor().getValue().requestPermission(device);
 						}
 					}, 100);
-				}
 			}
 			@Override
 			public void onConnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock, boolean createNew) {
@@ -517,6 +512,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 				if (position==0){
 					mDataBinding.dragTempContainerPreviewFragment.removeChildByDataObj(child);
+//					if (child.getType()==3){
+//						mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
+//						int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
+//						mUvcCameraHandler.setArea(areaData);
+//					}
+
 				}else {
 					if (isDebug)Log.e(TAG, "onChildToolsClick: " + position);
 					Toast.makeText(mContext.get(),"click position "+ position ,Toast.LENGTH_SHORT).show();
@@ -615,36 +616,60 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onSuccess (File file) {
 				super.onSuccess(file);
-				Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-				intent.setData(Uri.fromFile(file));
-				mContext.get().sendBroadcast(intent);
-				Toast.makeText(mContext.get(),"录制完成" + file.getName(),Toast.LENGTH_LONG).show();
+				mContext.get().runOnUiThread(new Runnable() {
+					@Override
+					public void run () {
+						Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+						intent.setData(Uri.fromFile(file));
+						mContext.get().sendBroadcast(intent);
+						Toast.makeText(mContext.get(),"录制完成" + file.getName(),Toast.LENGTH_LONG).show();
+					}
+				});
+
 			}
 
 			@Override
 			public void onFail () {
 				super.onFail();
-				Toast.makeText(mContext.get(),"录制失败",Toast.LENGTH_SHORT).show();
+				mContext.get().runOnUiThread(new Runnable() {
+					@Override
+					public void run () {
+						Toast.makeText(mContext.get(),"录制失败",Toast.LENGTH_SHORT).show();
+					}
+				});
+
 			}
 
 			@Override
 			public void onStartCounting () {
 				super.onStartCounting();
 				//				Log.e(TAG, "onClick: "+mDataBinding.chronometerShowRecordTimeMainInfo.getBase());
-				mDataBinding.chronometerRecordTimeInfo.setVisibility(View.VISIBLE);
-				mDataBinding.ivPreviewLeftRecord.setImageResource(R.drawable.ic_user_vector_stoprecord_24px);
-				mDataBinding.chronometerRecordTimeInfo.setBase(SystemClock.elapsedRealtime());
-				mDataBinding.chronometerRecordTimeInfo.setFormat("%s");
-				mDataBinding.chronometerRecordTimeInfo.start();
+				mContext.get().runOnUiThread(new Runnable() {
+					@Override
+					public void run () {
+						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.VISIBLE);
+						mDataBinding.ivPreviewLeftRecord.setImageResource(R.drawable.ic_user_vector_stoprecord_24px);
+						mDataBinding.chronometerRecordTimeInfo.setBase(SystemClock.elapsedRealtime());
+						mDataBinding.chronometerRecordTimeInfo.setFormat("%s");
+						mDataBinding.chronometerRecordTimeInfo.start();
+					}
+				});
+
 			}
 
 			@Override
 			public void onStopCounting () {
 				super.onStopCounting();
 
-				mDataBinding.chronometerRecordTimeInfo.stop();
-				mDataBinding.ivPreviewLeftRecord.setImageResource(R.drawable.ic_user_vector_record_24px);
-				mDataBinding.chronometerRecordTimeInfo.setVisibility(View.INVISIBLE);
+				mContext.get().runOnUiThread(new Runnable() {
+					@Override
+					public void run () {
+						mDataBinding.chronometerRecordTimeInfo.stop();
+						mDataBinding.ivPreviewLeftRecord.setImageResource(R.drawable.ic_user_vector_record_24px);
+						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.INVISIBLE);
+					}
+				});
+
 			}
 		});
 	}
@@ -747,9 +772,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				if (allGranted){//拿到权限 去C++ 绘制 传入文件路径path， 点线矩阵
 					//实现截屏操作
 					//生成一个当前的图片地址：  然后设置一个标识位，标识正截屏 或者 录像中
+//					MediaStore.Images.Media.in
 					String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
 					//							String picPath = "/storage/emulated/0/DCIM/DYTCamera/1970-01-01-13-11-32.jpg";//写死一个图片地址 方便用于查看
-					mUvcCameraHandler.captureStill(picPath);
+//					mUvcCameraHandler.captureStill(picPath);
 					Log.e(TAG, "onResult: java path === "+ picPath);
 				}else {
 					Toast.makeText(mContext.get(),"未获取需要的权限.",Toast.LENGTH_SHORT).show();
@@ -774,13 +800,20 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		 * 录制业务逻辑：点击开始录制，判断 是否在录制？ no-> 开始录制，更改录制按钮"结束录制" & 开始计时器
 		 * yes->结束录制。更改录制按钮"录制" （刷新媒体库）& 重置计时器
 		 */
-		Log.e(TAG, "toRecord: " + MediaProjectionHelper.getInstance().getRecord_State());
-		if (MediaProjectionHelper.getInstance().getRecord_State() !=0 ){//停止录制
-			MediaProjectionHelper.getInstance().stopMediaRecorder();
-			MediaProjectionHelper.getInstance().stopService(mContext.get());
-		}else {//开始录制
-			MediaProjectionHelper.getInstance().startService(mContext.get());
-		}
+		new Thread(new Runnable() {
+			@Override
+			public void run () {
+				Log.e(TAG, "toRecord: " + MediaProjectionHelper.getInstance().getRecord_State());
+				if (MediaProjectionHelper.getInstance().getRecord_State() !=0 ){//停止录制
+					MediaProjectionHelper.getInstance().stopMediaRecorder();
+					MediaProjectionHelper.getInstance().stopService(mContext.get());
+				}else {//开始录制
+					MediaProjectionHelper.getInstance().startService(mContext.get());
+				}
+			}
+		}).start();
+
+
 
 	}
 

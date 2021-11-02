@@ -138,7 +138,7 @@ static void nativeDestroy(JNIEnv *env, jobject thiz,
 }
 
 //======================================================================
-// カメラへ接続
+//连接到相机
 static jint nativeConnect(JNIEnv *env, jobject thiz,
 	ID_TYPE id_camera,
 	jint vid, jint pid, jint fd,

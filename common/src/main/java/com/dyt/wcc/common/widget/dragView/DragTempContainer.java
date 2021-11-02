@@ -36,7 +36,6 @@ import java.util.List;
 public class DragTempContainer extends RelativeLayout {
 	private CustomRangeSeekBar mSeekBar;
 
-	public static int padTop = 14;
 	//点击工具栏之后的控制 响应的事件。删除的事件。
 	public static int perToolsWidthHeightSet = 25;//每个工具栏的宽高
 	public static int perToolsMargin = 5;//每个工具栏的margin
@@ -80,6 +79,9 @@ public class DragTempContainer extends RelativeLayout {
 
 	private Paint testPaint;
 	private RectF rectFHighTempAlarm;
+	private float valueHighTempAlarm = 0.0f;//设置最高温数值
+	private boolean isAboveHighTemp = false;//是否超温
+	private int alarmCountDown = 0;
 	private MyMoveWidget operateChild = null;
 
 	protected void setBitMap(Bitmap point,Bitmap max , Bitmap min){
@@ -116,13 +118,21 @@ public class DragTempContainer extends RelativeLayout {
 	public void setmSeekBar (CustomRangeSeekBar mSeekBar) {
 		this.mSeekBar = mSeekBar;
 	}
+
+	/**
+	 * <p>通过添加的 数据源列表，得到其中矩形的坐标的 int [] 数组。</p>
+	 * <p>排布顺序，开始X，> 结束X， 开始Y，> 结束Y。</p>
+	 * @return int [] 数组
+	 */
 	public int [] getAreaIntArray(){
 		int areaNumber = 0;
+		//得到矩形数据源列表中，矩形的数量
 		for (MyMoveWidget child : userAdd){
 			if (child.getView().getType() ==3){
 				areaNumber ++;
 			}
 		}
+		//创建一个int数据保存 数据源列表中的矩阵坐标。一个矩形 四个坐标。
 		int [] areaData = new int[4*areaNumber];
 
 		int areaIndex =0 ;
@@ -139,11 +149,23 @@ public class DragTempContainer extends RelativeLayout {
 	}
 
 	/**
-	 * 超温报警 数据源是摄氏度
+	 * 超温报警 数据源是摄氏度.传入的带温度单位的数值。
+	 * <p>超温报警逻辑：</p>
+	 * <p>温度超过，并且开启高温警告。如果超温 则开始倒计时 绘制。 每间隔0.5s 绘制警告框。0.5S时间不绘制</p>
+	 * <p>如果关闭，则停止绘制，倒计时也停止。 如果未超温则 不绘制。</p>
+	 *
 	 * @param thresholdTemp 带了模式 的温度。 需要转换成摄氏度
 	 */
 	public void openHighTempAlarm(float thresholdTemp){
-
+		if (tempSuffixMode == 0){//0摄氏度， 1华氏度， 2开氏度
+			valueHighTempAlarm = getFormatFloat(thresholdTemp);
+		}
+		if (tempSuffixMode == 1){
+			valueHighTempAlarm = getFormatFloat((thresholdTemp - 32) / 1.8f);
+		}
+		if (tempSuffixMode == 2){
+			valueHighTempAlarm = getFormatFloat((thresholdTemp - 273.15f));
+		}
 	}
 	public void closeHighTempAlarm(){
 
@@ -186,10 +208,15 @@ public class DragTempContainer extends RelativeLayout {
 		invalidate();
 	}
 
+	/**
+	 * 删除一个子控件，通过回调得到的 数据源对象
+	 * @param obj
+	 */
 	public void removeChildByDataObj(TempWidgetObj obj){
 		for (MyMoveWidget child  : userAdd){
 			if (obj.equals(child.getView())){
 				removeView(child);
+				userAdd.remove(child);
 			}
 		}
 	}
@@ -204,9 +231,10 @@ public class DragTempContainer extends RelativeLayout {
 	@Override
 	protected void onDraw (Canvas canvas) {
 		super.onDraw(canvas);
-//		rectFHighTempAlarm = new RectF(6,6,screenWidth-6,screenHeight- 6);
-//		canvas.drawRect(rectFHighTempAlarm,testPaint);
-
+//		if (needDrawHighTempBox){
+//			rectFHighTempAlarm = new RectF(6,6,screenWidth-6,screenHeight- 6);
+//			canvas.drawRect(rectFHighTempAlarm,testPaint);
+//		}
 //		canvas.drawCircle(50,50,10,testPaint);
 
 //		canvas.drawCircle(50,10,3,testPaint);
@@ -803,9 +831,12 @@ public class DragTempContainer extends RelativeLayout {
 			switch (msg.what){
 				case UPDATE_TEMP_DATA:
 				tempSource = (float[]) msg.obj;
-//					Log.e(TAG, "UPDATE: " + " x = " + tempSource[1] + " y = "+ tempSource[2] +" value "+ tempSource[3]);
-//					Log.e(TAG, "UPDATE ==>>: "+ " x = " + tempSource[4] + " y = "+ tempSource[5] +" value ==> "+ tempSource[6]);
-//					Log.e(TAG, "handleMessage: " + highLowTempLists.size());
+				if (tempSource[3] <= valueHighTempAlarm){//判定超温报警是否超过了额定温度，每帧刷新
+					isAboveHighTemp= true;
+				}else {
+					isAboveHighTemp = false;
+				}
+
 					if (mSeekBar!=null){
 						mSeekBar.Update(getTempByMode(tempSource[3]),getTempByMode(tempSource[6]));
 					}
@@ -813,12 +844,7 @@ public class DragTempContainer extends RelativeLayout {
 				if (highLowTempLists.size()!=0){
 					highLowTempLists.get(0).getView().getPointTemp().setStartPointX((int) getXByWRatio(tempSource[1]));
 					highLowTempLists.get(0).getView().getPointTemp().setStartPointY((int) getYByHRatio(tempSource[2]));
-//					Log.e(TAG, "HRatio: "+ HRatio + "   WRatio === > " + WRatio);
-//					Log.e(TAG, "x: "+ tempSource[1] + "   y === > " + tempSource[2]);
-//					Log.e(TAG, "x: "+ (int)getXByWRatio(tempSource[1]) + "   y === > " + (int)getYByHRatio(tempSource[2]));
-//					Log.e(TAG, "x: "+ highLowTempLists.get(0).getView().getPointTemp().getStartPointX() + "   y === > " + highLowTempLists.get(0).getView().getPointTemp().getStartPointY());
 					highLowTempLists.get(0).getView().getPointTemp().setTemp(getTempStrByMode(tempSource[3]));
-//					highLowTempLists.get(0).dataUpdate(highLowTempLists.get(0).getView());
 					highLowTempLists.get(0).requestLayout();
 					highLowTempLists.get(0).invalidate();
 
@@ -836,7 +862,6 @@ public class DragTempContainer extends RelativeLayout {
 							userAdd.get(i).getView().getPointTemp().setTemp(getTempStrByMode(temp));
 						}else {//线及其矩形
 							updateLRTemp(userAdd.get(i).gettempWidgetData().getOtherTemp(),userAdd.get(i).gettempWidgetData().getType());
-//							userAdd.get(i).invalidate();
 						}
 						userAdd.get(i).requestLayout();
 					}

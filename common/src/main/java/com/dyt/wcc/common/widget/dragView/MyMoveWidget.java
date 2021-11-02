@@ -35,7 +35,7 @@ public class MyMoveWidget extends View {
 	private static final boolean isDebug = true;
 	private static final String TAG = "MyMoveWidget";
 
-	private Bitmap maxTempBt, minTempBt,centerTempBt;//最小温度，最大温度图片（单点只有最小温度的图片）
+	private Bitmap maxTempBt, minTempBt ,centerTempBt;//最小温度，最大温度图片（单点只有最小温度的图片）
 	private TempWidgetObj tempWidgetData;//数据源
 
 	private int mMinHeight;//最小高度像素点个数   //矩阵类型独有

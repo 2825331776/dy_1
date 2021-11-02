@@ -81,7 +81,7 @@ public final class USBMonitor {
 	 */
 	private final Handler mAsyncHandler;
 	private volatile boolean destroyed;
-	private volatile boolean isConnect;//标识有无设备连接
+	private volatile boolean isConnect = false;//标识有无设备连接
 	/**
 	 * 更改 USB 设备状态时的回调监听器
 	 */
@@ -133,6 +133,7 @@ public final class USBMonitor {
 	 * never reuse again
 	 */
 	public void destroy() {
+		isConnect = false;
 		if (DEBUG) Log.i(TAG, "destroy:");
 		//unregister();
 		if (!destroyed) {
@@ -145,6 +146,7 @@ public final class USBMonitor {
 					for (final UsbDevice key: keys) {
 						ctrlBlock = mCtrlBlocks.remove(key);
 						if (ctrlBlock != null) {
+
 							ctrlBlock.close();
 						}
 					}
@@ -456,7 +458,9 @@ public final class USBMonitor {
 		if (isRegistered()) {
 			if (device != null) {
 				if (mUsbManager.hasPermission(device)) {
+					//还得更新mHasPermission 列表 读取设备的信息。
 					// call onConnect if app already has permission
+//					updatePermission(device,true);
 					processConnect(device);
 				} else {
 					try {
@@ -518,33 +522,39 @@ public final class USBMonitor {
 					Log.e(TAG, "onReceive:  hasPermission " + mUsbManager.hasPermission(device));
 					if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
 						if (device != null) {
-							isConnect = true;
-							processConnect(device);
-							// get permission, call onConnect
-//							updatePermission(device,true);
-							if (DEBUG) Log.e(TAG,"UsbMonitor.register.broadcastReceiver.mUsbReceiver.OnReceiver=device !=null!!!====todo connect");
+//							isConnect = true;
 //							processConnect(device);
+							// get permission, call onConnect
+							updatePermission(device,true);
+							if (DEBUG) Log.e(TAG,"UsbMonitor.register.broadcastReceiver.mUsbReceiver.OnReceiver=device !=null!!!====todo connect");
+							processConnect(device);
 						}
 					} else {
 						// failed to get permission
 						if (DEBUG) Log.e(TAG,"UsbMonitor.register.broadcastReceiver.mUsbReceiver.OnReceiver=device ==null!!!====todo processCancel");
-//						processCancel(device);
+						processCancel(device);
 					}
 				}
 			} else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
 				if (DEBUG)Log.e(TAG, "onReceive: ACTION_USB_DEVICE_ATTACHED");
 				final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-				updatePermission(device, hasPermission(device));
-//				processAttach(device);
+				if (mHasPermissions.size() > 0){
+//					updatePermission(device, true);
+				}else if (mHasPermissions.size() == 0){
+					processAttach(device);
+				}
 			} else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
 				// when device removed
 				if (DEBUG)Log.e(TAG, "onReceive: ACTION_USB_DEVICE_DETACHED");
 				final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+//				if (mHasPermissions.)
+
 				if (device != null) {
 					UsbControlBlock ctrlBlock = mCtrlBlocks.remove(device);
 					if (ctrlBlock != null) {
 						// cleanup
 						ctrlBlock.close();
+						isConnect = false;
 					}
 //					mDeviceCounts = 0;
 					processDettach(device);
@@ -564,7 +574,7 @@ public final class USBMonitor {
 				return;
 			updatePermission(device, true);
 			if (DEBUG)
-				Log.v(TAG, "processConnect:device=" + device);
+				Log.e(TAG, "processConnect:device=" + device);
 			if (DEBUG)
 				Log.e(TAG, "=================processConnect===========================");
 			UsbControlBlock ctrlBlock;
@@ -578,6 +588,7 @@ public final class USBMonitor {
 				createNew = false;
 			}
 			if (mOnDeviceConnectListener != null) {
+				isConnect = true;
 				mOnDeviceConnectListener.onConnect(device, ctrlBlock, createNew);
 			}
 		}
@@ -631,33 +642,36 @@ public final class USBMonitor {
 			synchronized (mHasPermissions) {
 //				hasPermissionCounts = mHasPermissions.size();
 				mHasPermissions.clear();
-
+				//遍历
 				for (final UsbDevice device: targetUsbDevice.values()) {
 					hasPermission(device);
 				}
-				if (targetUsbDevice.size() > 0 && mHasPermissions.size() ==0){
-					requestPermission(targetUsbDevice.get(0));
-				}
+				//如果没有设备有权限则会调用请求权限。收到一个广播
+//				if (targetUsbDevice.size() > 0){
+//
+//					(targetUsbDevice.get(0));
+//				}
 //				m = mHasPermissions.size();
 			}
 			//当权限列表 == 设备列表 则去连接每个有权限的设备
-			if (mHasPermissions.size()>0 && !isConnect) {
+			if (!isConnect && targetUsbDevice.size() > 0) {
 //				mDeviceCounts = n;
-				if (mOnDeviceConnectListener != null) {
+//				if (mOnDeviceConnectListener != null) {
 					//					for (int index : mHasPermissions.keyAt(0)) {
-					final UsbDevice device = mHasPermissions.get(mHasPermissions.keyAt(0)).get();
+					final UsbDevice device = targetUsbDevice.get(0);
 					if (DEBUG) Log.e(TAG,"===============> "+mUsbManager.hasPermission(device) + " " + device.toString());
-					if(device.getProductId() == 1 && device.getVendorId() == 5396 && mUsbManager.hasPermission(device) ) {
+//					if(device.getProductId() == 1 && device.getVendorId() == 5396 && mUsbManager.hasPermission(device) ) {
 						mAsyncHandler.post(new Runnable() {
 							@Override
 							public void run() {
-								processConnect(device);
-								isConnect = true;
+								processAttach(device);
+//								processConnect(device);
+//								isConnect = true;
 							}
 						});
-					}
+//					}
 					//					}
-				}
+//				}
 			}
 			mAsyncHandler.postDelayed(this, 2000);	// confirm every 2 seconds
 		}
@@ -673,15 +687,20 @@ public final class USBMonitor {
 					@Override
 					public void run() {
 						mOnDeviceConnectListener.onCancel(device);
+//						isConnect = false;
 					}
 				});
 			}
 		}
 	}
 
+	/**
+	 * 调用了 成员方法 RequestPermission 方法。
+	 * @param device
+	 */
 	private final void processAttach(final UsbDevice device) {
 		if (destroyed) return;
-		if (DEBUG) Log.v(TAG, "processAttach:");
+		if (DEBUG) Log.e(TAG, "processAttach:");
 		if (mOnDeviceConnectListener != null) {
 			mAsyncHandler.post(new Runnable() {
 				@Override
@@ -700,6 +719,7 @@ public final class USBMonitor {
 				@Override
 				public void run() {
 					mOnDeviceConnectListener.onDetach(device);
+
 				}
 			});
 		}
@@ -778,7 +798,7 @@ public final class USBMonitor {
 				sb.append(device.getVersion());			sb.append("#");
 			}
 		}
-		if (DEBUG) Log.e(TAG, "getDeviceKeyName:" + sb.toString());
+//		if (DEBUG) Log.e(TAG, "getDeviceKeyName:" + sb.toString());
 		return sb.toString();
 	}
 

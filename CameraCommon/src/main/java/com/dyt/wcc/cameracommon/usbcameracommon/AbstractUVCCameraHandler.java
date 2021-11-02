@@ -1310,6 +1310,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
             if (DEBUG) Log.v(TAG_THREAD, "handleCaptureStill:");
             final Activity parent = mWeakParent.get();
             if (parent == null) return;
+
             mSoundPool.play(mSoundId, 1f, 1f, 1, 1, 1.0f);    // play shutter sound
             try {
                 final Bitmap bitmap = mWeakCameraView.get().captureStillImage();
@@ -1875,7 +1876,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
             //added by wupei,快门声音设置
             // load shutter sound from resource
             mSoundPool = new SoundPool(2, streamType, 0);
-            mSoundId = mSoundPool.load(context, R.raw.a8_bell, 1);
+            mSoundId = mSoundPool.load(context, R.raw.camera_click, 1);
         }
 
         @Override
