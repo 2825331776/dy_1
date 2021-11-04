@@ -130,6 +130,11 @@ public class UVCCameraHandler extends AbstractUVCCameraHandler {
 		return mUVCCameraHandler;
 		//return (UVCCameraHandler)thread.getHandler();
 	}
+//	public boolean getisReleased(){
+//
+//		return super.
+//	}
+
 	public static synchronized UVCCameraHandler getInstance(){
 		return mUVCCameraHandler;
 	}

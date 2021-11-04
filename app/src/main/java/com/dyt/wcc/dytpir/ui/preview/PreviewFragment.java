@@ -171,7 +171,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private void startPreview () {//打开连接 调用预览图像的设置
 		stt = new Surface(mDataBinding.textureViewPreviewFragment.getSurfaceTexture());
 
-
 		mTextureViewWidth = mDataBinding.textureViewPreviewFragment.getWidth();
 		mTextureViewHeight = mDataBinding.textureViewPreviewFragment.getHeight();
 		if (isDebug)Log.e(TAG,"height =="+ mTextureViewHeight + " width==" + mTextureViewWidth);
@@ -250,8 +249,23 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			public void onConnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock, boolean createNew) {
 				if (isDebug)Log.e(TAG, "onConnect: ");
 
-				if (mUvcCameraHandler != null){
+				if (mUvcCameraHandler != null && !mUvcCameraHandler.isReleased()){
 					if (isDebug)Log.e(TAG, "onConnect: != null");
+
+					mUvcCameraHandler.open(ctrlBlock);
+					startPreview();
+
+					Handler handler = new Handler();
+					handler.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
+						}
+					}, 300);
+				}else {
+					mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
+							mDataBinding.textureViewPreviewFragment,1,
+							384,292,1,null,0);
 
 					mUvcCameraHandler.open(ctrlBlock);
 					startPreview();
@@ -275,7 +289,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					//					SurfaceTexture stt = mDataBinding.textureViewPreviewFragment.getSurfaceTexture();
 					mUvcCameraHandler.stopTemperaturing();
 					mUvcCameraHandler.stopPreview();
-					//					mUvcCameraHandler.release();//拔出之时没释放掉这个资源。关闭窗口之时必须释放
+					mUvcCameraHandler.release();//拔出之时没释放掉这个资源。关闭窗口之时必须释放
 				}
 			}
 			@Override

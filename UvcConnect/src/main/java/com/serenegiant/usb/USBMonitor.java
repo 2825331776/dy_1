@@ -170,6 +170,7 @@ public final class USBMonitor {
 	public synchronized void register() throws IllegalStateException {
 		if (destroyed) throw new IllegalStateException("already destroyed");
 		Log.e(TAG, "register: " + mDeviceFilters.size());
+
 		if (mPermissionIntent == null) {
 			if (DEBUG) Log.e(TAG, "register:");
 			final Context context = mWeakContext.get();
@@ -180,13 +181,14 @@ public final class USBMonitor {
 				final IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
 				// ACTION_USB_DEVICE_ATTACHED never comes on some devices so it should not be added here
 				filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+				filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
 				context.registerReceiver(mUsbReceiver, filter);
 			}
 			// start connection check
-			if (DEBUG) Log.e(TAG,"=====register============before==========mDeviceCheckRunnable=======");
+//			if (DEBUG) Log.e(TAG,"=====register============before==========mDeviceCheckRunnable=======");
 //			mDeviceCounts = 0;
 			mAsyncHandler.postDelayed(mDeviceCheckRunnable, 1000);
-			if (DEBUG) Log.e(TAG,"=====register============behind==========mDeviceCheckRunnable=======");
+//			if (DEBUG) Log.e(TAG,"=====register============behind==========mDeviceCheckRunnable=======");
 		}
 	}
 
@@ -195,6 +197,7 @@ public final class USBMonitor {
 	 * @throws IllegalStateException
 	 */
 	public synchronized void unregister() throws IllegalStateException {
+		if (DEBUG)Log.e(TAG, "unregister: ");
 		// 接続チェック用Runnableを削除
 //		mDeviceCounts = 0;
 		if (!destroyed) {
@@ -651,6 +654,8 @@ public final class USBMonitor {
 //				m = mHasPermissions.size();
 			}
 			//当权限列表 == 设备列表 则去连接每个有权限的设备
+			Log.e(TAG, "run: targetD size " + targetUsbDevice.size() + " mhasPermission Size " + mHasPermissions.size());
+			Log.e(TAG, "run: isConnect " + isConnect);
 			if (!isConnect && targetUsbDevice.size() > 0) {
 //				mDeviceCounts = n;
 //				if (mOnDeviceConnectListener != null) {

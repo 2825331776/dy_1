@@ -271,7 +271,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
         return thread != null && (thread.getId() == Thread.currentThread().getId());
     }
 
-    protected boolean isReleased() {
+    public boolean isReleased() {
         final CameraThread thread = mWeakThread.get();
         return mReleased || (thread == null);
     }
