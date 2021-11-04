@@ -45,15 +45,17 @@
 
             <TextView
                 android:id="@+id/tv_language"
-                app:layout_constraintLeft_toLeftOf="@id/tv_general_info"
+                app:layout_constraintLeft_toLeftOf="@id/gl_setting_title"
+                app:layout_constraintRight_toRightOf="@id/gl_setting_content"
                 app:layout_constraintTop_toBottomOf="@id/tv2"
                 android:textColor="@color/white"
                 android:layout_marginTop="@dimen/dimen_10dp"
-                android:layout_marginStart="@dimen/dimen_30dp"
                 android:text="@string/SettingLanguage"
                 android:textSize="16sp"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content" />
+
+
 
 <!--            <Button-->
 <!--                android:id="@+id/bt_language"-->
@@ -67,10 +69,10 @@
 
             <Spinner
                 android:id="@+id/spinner_setting_language"
-                app:layout_constraintLeft_toRightOf="@id/tv_language"
+                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"
                 app:layout_constraintTop_toTopOf="@id/tv_language"
                 app:layout_constraintBottom_toBottomOf="@id/tv_language"
-                android:layout_marginStart="@dimen/dimen_20dp"
+                android:layout_marginStart="@dimen/dimen_10dp"
                 android:spinnerMode="dialog"
                 android:layout_width="@dimen/dimen_100dp"
                 android:layout_height="@dimen/dimen_25dp"/>
@@ -90,26 +92,26 @@
 
             <TextView
                 android:id="@+id/tv_temp_unit_choice_info"
-                app:layout_constraintLeft_toLeftOf="@id/tv_general_info"
+                app:layout_constraintLeft_toLeftOf="@id/gl_setting_title"
+                app:layout_constraintRight_toRightOf="@id/gl_setting_content"
                 app:layout_constraintTop_toBottomOf="@id/tv_language"
                 android:textColor="@color/white"
                 android:layout_marginTop="@dimen/dimen_10dp"
-                android:layout_marginStart="@dimen/dimen_30dp"
                 android:text="@string/SettingTemperatureUnit"
                 android:textSize="16sp"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content" />
 
             <com.dyt.wcc.common.widget.SwitchMultiButton
                 android:id="@+id/switch_choice_temp_unit"
                 app:layout_constraintTop_toTopOf="@id/tv_temp_unit_choice_info"
-                app:layout_constraintLeft_toRightOf="@id/tv_temp_unit_choice_info"
+                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"
                 app:selectedColor="@color/bg_three_choice_one"
                 app:selectedTab="0"
                 app:strokeRadius="@dimen/dimen_20dp"
                 app:strokeWidth="@dimen/dimen_1dp"
                 app:text_Size="14sp"
-                android:layout_marginStart="@dimen/dimen_20dp"
+                android:layout_marginStart="@dimen/dimen_10dp"
                 android:layout_width="@dimen/dimen_150dp"
                 android:layout_height="@dimen/dimen_25dp" />
             <!--        <include-->
@@ -144,24 +146,39 @@
                 android:background="@color/bg_cutoff_rule"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dimen_1dp" />
+<!--标题导航线-->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/gl_setting_title"
+                android:layout_width="@dimen/dimen_5dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="@dimen/dimen_10dp" />
+<!--            内容导航线-->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/gl_setting_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="@dimen/dimen_160dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
 
 <!--辐射率-->
             <TextView
                 android:id="@+id/tv_camera_setting_emittance"
-                app:layout_constraintLeft_toLeftOf="@id/tv_general_info"
+                app:layout_constraintLeft_toLeftOf="@id/gl_setting_title"
+                app:layout_constraintRight_toRightOf="@id/gl_setting_content"
                 app:layout_constraintTop_toBottomOf="@id/tv4"
-                android:layout_marginStart="@dimen/dimen_30dp"
                 android:textColor="@color/white"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:text="@string/SettingCameraParams_Emittance"
                 android:textSize="16sp"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <SeekBar
                 android:id="@+id/seekbar_camera_setting_emittance"
                 app:layout_constraintTop_toTopOf="@id/tv_camera_setting_emittance"
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_emittance"
-                app:layout_constraintLeft_toRightOf="@id/tv_camera_setting_emittance"
+                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"
                 android:layout_marginStart="@dimen/dimen_10dp"
                 android:progressBackgroundTint="@color/white"
                 android:layout_width="@dimen/dimen_150dp"
@@ -170,20 +187,21 @@
 <!--            距离-->
             <TextView
                 android:id="@+id/tv_camera_setting_distance"
-                app:layout_constraintLeft_toLeftOf="@id/tv_general_info"
+                app:layout_constraintLeft_toLeftOf="@id/gl_setting_title"
+                app:layout_constraintRight_toRightOf="@id/gl_setting_content"
                 app:layout_constraintTop_toBottomOf="@id/tv_camera_setting_emittance"
-                android:layout_marginStart="@dimen/dimen_30dp"
                 android:layout_marginTop="@dimen/dimen_15dp"
                 android:textColor="@color/white"
                 android:text="@string/SettingCameraParams_Distance"
+                android:singleLine="true"
                 android:textSize="16sp"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <EditText
                 android:id="@+id/et_camera_setting_distance"
                 app:layout_constraintTop_toTopOf="@id/tv_camera_setting_distance"
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_distance"
-                app:layout_constraintLeft_toRightOf="@id/tv_camera_setting_distance"
+                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"
                 android:layout_marginStart="@dimen/dimen_10dp"
                 android:hint="@string/AlarmTempInput"
                 android:textColorHint="@color/white"
@@ -207,20 +225,21 @@
 <!--        大气温度-->
             <TextView
                 android:id="@+id/tv_camera_setting_freeAirTemp"
-                app:layout_constraintLeft_toLeftOf="@id/tv_camera_setting_distance"
-                app:layout_constraintTop_toTopOf="@id/tv_camera_setting_distance"
-                app:layout_constraintRight_toRightOf="parent"
-                android:layout_marginStart="@dimen/dimen_30dp"
+                app:layout_constraintLeft_toLeftOf="@id/gl_setting_title"
+                app:layout_constraintRight_toRightOf="@id/gl_setting_content"
+                app:layout_constraintTop_toBottomOf="@id/tv_camera_setting_revise"
+                android:layout_marginTop="@dimen/dimen_15dp"
                 android:textColor="@color/white"
                 android:text="@string/SettingCameraParams_FreeAirTemp"
                 android:textSize="16sp"
-                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <EditText
                 android:id="@+id/et_camera_setting_freeAirTemp"
                 app:layout_constraintTop_toTopOf="@id/tv_camera_setting_freeAirTemp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_freeAirTemp"
-                app:layout_constraintLeft_toRightOf="@id/tv_camera_setting_freeAirTemp"
+                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"
                 android:layout_marginStart="@dimen/dimen_10dp"
                 android:hint="@string/AlarmTempInput"
                 android:textColorHint="@color/white"
@@ -244,20 +263,21 @@
             <!--        humidity 湿度-->
             <TextView
                 android:id="@+id/tv_camera_setting_humidity"
-                app:layout_constraintLeft_toLeftOf="@id/tv_camera_setting_freeAirTemp"
-                app:layout_constraintTop_toTopOf="@id/tv_camera_setting_reflect"
-                app:layout_constraintRight_toRightOf="@id/tv_camera_setting_freeAirTemp"
-                android:layout_marginStart="@dimen/dimen_30dp"
+                app:layout_constraintLeft_toLeftOf="@id/gl_setting_title"
+                app:layout_constraintRight_toRightOf="@id/gl_setting_content"
+                app:layout_constraintTop_toBottomOf="@id/tv_camera_setting_freeAirTemp"
+                android:layout_marginTop="@dimen/dimen_18dp"
                 android:textColor="@color/white"
                 android:text="@string/SettingCameraParams_Humidity"
+                android:singleLine="true"
                 android:textSize="16sp"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <EditText
                 android:id="@+id/et_camera_setting_humidity"
                 app:layout_constraintTop_toTopOf="@id/tv_camera_setting_humidity"
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_humidity"
-                app:layout_constraintLeft_toRightOf="@id/tv_camera_setting_humidity"
+                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"
                 android:layout_marginStart="@dimen/dimen_10dp"
                 android:hint="@string/AlarmTempInput"
                 android:textColorHint="@color/white"
@@ -281,20 +301,21 @@
 <!--        反射温度-->
             <TextView
                 android:id="@+id/tv_camera_setting_reflect"
-                app:layout_constraintLeft_toLeftOf="@id/tv_general_info"
+                app:layout_constraintLeft_toLeftOf="@id/gl_setting_title"
+                app:layout_constraintRight_toRightOf="@id/gl_setting_content"
                 app:layout_constraintTop_toBottomOf="@id/tv_camera_setting_distance"
-                android:layout_marginStart="@dimen/dimen_30dp"
                 android:layout_marginTop="@dimen/dimen_18dp"
                 android:textColor="@color/white"
                 android:text="@string/SettingCameraParams_ReflectTemp"
                 android:textSize="16sp"
-                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <EditText
                 android:id="@+id/et_camera_setting_reflect"
                 app:layout_constraintTop_toTopOf="@id/tv_camera_setting_reflect"
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_reflect"
-                app:layout_constraintLeft_toRightOf="@id/tv_camera_setting_reflect"
+                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"
                 android:layout_marginStart="@dimen/dimen_10dp"
                 android:hint="@string/AlarmTempInput"
                 android:textColorHint="@color/white"
@@ -318,20 +339,21 @@
             <!--校正-->
             <TextView
                 android:id="@+id/tv_camera_setting_revise"
-                app:layout_constraintLeft_toLeftOf="@id/tv_general_info"
+                app:layout_constraintLeft_toLeftOf="@id/gl_setting_title"
+                app:layout_constraintRight_toRightOf="@id/gl_setting_content"
                 app:layout_constraintTop_toBottomOf="@id/tv_camera_setting_reflect"
-                android:layout_marginStart="@dimen/dimen_30dp"
                 android:layout_marginTop="@dimen/dimen_18dp"
                 android:textColor="@color/white"
                 android:text="@string/SettingCameraParams_Revise"
+                android:singleLine="true"
                 android:textSize="16sp"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <EditText
                 android:id="@+id/et_camera_setting_revise"
                 app:layout_constraintTop_toTopOf="@id/tv_camera_setting_revise"
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_revise"
-                app:layout_constraintLeft_toRightOf="@id/tv_camera_setting_revise"
+                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"
                 android:layout_marginStart="@dimen/dimen_10dp"
                 android:hint="@string/AlarmTempInput"
                 android:textColorHint="@color/white"

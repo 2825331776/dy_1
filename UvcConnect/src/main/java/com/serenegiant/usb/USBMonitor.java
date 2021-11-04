@@ -176,7 +176,6 @@ public final class USBMonitor {
 //			if (DEBUG) Log.e(TAG,"=====register============before==========PendingIntent.getBroadcast=======");
 			if (context != null) {
 				Intent intent = new Intent(ACTION_USB_PERMISSION);
-//				intent.putExtra("permissions ", 1);
 				mPermissionIntent = PendingIntent.getBroadcast(context, 0, intent, FLAG_CANCEL_CURRENT);
 				final IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
 				// ACTION_USB_DEVICE_ATTACHED never comes on some devices so it should not be added here
@@ -430,7 +429,6 @@ public final class USBMonitor {
 //					}
 //			}
 
-
 			final int deviceKey = getDeviceKey(device, true);
 			synchronized (mHasPermissions) {
 				if (hasPermission) {
@@ -442,9 +440,6 @@ public final class USBMonitor {
 				}
 			}
 			return hasPermission;
-//		}else {
-//			return false;
-//		}
 	}
 
 	/**
@@ -538,11 +533,12 @@ public final class USBMonitor {
 			} else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
 				if (DEBUG)Log.e(TAG, "onReceive: ACTION_USB_DEVICE_ATTACHED");
 				final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-				if (mHasPermissions.size() > 0){
-//					updatePermission(device, true);
-				}else if (mHasPermissions.size() == 0){
-					processAttach(device);
-				}
+				hasPermission(device);
+//				if (mHasPermissions.size() > 0){
+////					updatePermission(device, true);
+//				}else if (mHasPermissions.size() == 0){
+//					processAttach(device);
+//				}
 			} else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
 				// when device removed
 				if (DEBUG)Log.e(TAG, "onReceive: ACTION_USB_DEVICE_DETACHED");
@@ -553,11 +549,12 @@ public final class USBMonitor {
 					UsbControlBlock ctrlBlock = mCtrlBlocks.remove(device);
 					if (ctrlBlock != null) {
 						// cleanup
-						ctrlBlock.close();
 						isConnect = false;
+						ctrlBlock.close();
 					}
 //					mDeviceCounts = 0;
 					processDettach(device);
+
 				}
 			}
 		}
@@ -644,7 +641,7 @@ public final class USBMonitor {
 				mHasPermissions.clear();
 				//遍历
 				for (final UsbDevice device: targetUsbDevice.values()) {
-					hasPermission(device);
+						hasPermission(device);
 				}
 				//如果没有设备有权限则会调用请求权限。收到一个广播
 //				if (targetUsbDevice.size() > 0){
@@ -658,8 +655,8 @@ public final class USBMonitor {
 //				mDeviceCounts = n;
 //				if (mOnDeviceConnectListener != null) {
 					//					for (int index : mHasPermissions.keyAt(0)) {
-					final UsbDevice device = targetUsbDevice.get(0);
-					if (DEBUG) Log.e(TAG,"===============> "+mUsbManager.hasPermission(device) + " " + device.toString());
+				UsbDevice device = targetUsbDevice.get(0);
+//					if (DEBUG) Log.e(TAG,"===============> "+mUsbManager.hasPermission(device) + " " + device.toString());
 //					if(device.getProductId() == 1 && device.getVendorId() == 5396 && mUsbManager.hasPermission(device) ) {
 						mAsyncHandler.post(new Runnable() {
 							@Override
@@ -713,7 +710,7 @@ public final class USBMonitor {
 
 	private final void processDettach(final UsbDevice device) {
 		if (destroyed) return;
-		if (DEBUG) Log.v(TAG, "processDettach:");
+		if (DEBUG) Log.e(TAG, "processDettach:");
 		if (mOnDeviceConnectListener != null) {
 			mAsyncHandler.post(new Runnable() {
 				@Override

@@ -27,4 +27,13 @@ public class DYConstants {
 
 	public static final int CAMERA_DATA_MODE_8004 = 0x8004;
 	public static final int CAMERA_DATA_MODE_8005 = 0x8005;
+
+	public static final String HighLowTemp_Toggle_info = "highLowTemp_toggle";//高低温追踪 开关
+	public static final String areaCheck_Toggle_info = "areaCheck_toggle";//框内细查 开关
+
+	public static final String palette_number_info = "palette_number";//画板设置
+	public static final String language_setting = "language_setting";//语言设置
+	public static final String tempUnit_setting = "tempUnit";//温度单位
+
+
 }

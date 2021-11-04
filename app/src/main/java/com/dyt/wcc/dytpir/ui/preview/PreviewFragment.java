@@ -45,7 +45,6 @@ import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.constans.DYConstants;
 import com.dyt.wcc.dytpir.databinding.FragmentPreviewMainBinding;
 import com.dyt.wcc.dytpir.databinding.PopCompanyInfoBinding;
-import com.dyt.wcc.dytpir.databinding.PopDrawChartBinding;
 import com.dyt.wcc.dytpir.databinding.PopPaletteChoiceBinding;
 import com.dyt.wcc.dytpir.databinding.PopSettingBinding;
 import com.dyt.wcc.dytpir.databinding.PopTempModeChoiceBinding;
@@ -156,7 +155,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			//指定设备的连接，获取设备的名字，当前usb摄像头名为Xmodule-S0
 //			if (isDebug)Log.e(TAG, "udv.getProductName()" + udv.getProductName());
 			if (udv.getProductName().contains("S0") ) {
-				Log.e(TAG, "onResume: "+ " S0" + udv.getProductId() + " "  + udv.getVendorId() );
+				Log.e(TAG, "onResume: "+ " S0 " + udv.getProductId() + " "  + udv.getVendorId() );
 				BaseApplication.deviceName = udv.getProductName();
 			}
 		}
@@ -270,19 +269,21 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			public void onDetach (UsbDevice device) {
 //				mUvcCameraHandler.close();
 				if (isDebug)Log.e(TAG, "DD  onDetach: ");
+
+				if (mUvcCameraHandler != null){
+					//					Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
+					//					SurfaceTexture stt = mDataBinding.textureViewPreviewFragment.getSurfaceTexture();
+					mUvcCameraHandler.stopTemperaturing();
+					mUvcCameraHandler.stopPreview();
+					//					mUvcCameraHandler.release();//拔出之时没释放掉这个资源。关闭窗口之时必须释放
+				}
 			}
 			@Override
 			public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
 				if (isDebug)Log.e(TAG, " DD  onDisconnect: ");
 
 
-				if (mUvcCameraHandler != null){
-					Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
-//					SurfaceTexture stt = mDataBinding.textureViewPreviewFragment.getSurfaceTexture();
-					mUvcCameraHandler.stopTemperaturing();
-					mUvcCameraHandler.stopPreview();
-					mUvcCameraHandler.release();
-				}
+
 
 			}
 			@Override
@@ -351,6 +352,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.toggleHighTempAlarm.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
 			@Override
 			public void onClick (boolean checkState) {
+				//判断键入的值是否符合规范,或者提示用户 键入值的规范。
+//				mDataBinding.toggleHighTempAlarm.setSelected(false);
+
 				if (checkState){
 					mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(20);
 				}else {
@@ -416,19 +420,19 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			}
 		});
 
-		//绘制图表的弹窗
-		mDataBinding.ivPreviewRightChart.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick (View v) {
-				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_draw_chart,null);
-				PopDrawChartBinding popDrawChartBinding = DataBindingUtil.bind(view);
-				assert popDrawChartBinding != null;
-				popDrawChartBinding.ivChartModePoint.setOnClickListener(chartModeCheckListener);
-				popDrawChartBinding.ivChartModeRectangle.setOnClickListener(chartModeCheckListener);
-
-				showPopWindows(view,60,30,20);
-			}
-		});
+//		//绘制图表的弹窗
+//		mDataBinding.ivPreviewRightChart.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick (View v) {
+//				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_draw_chart,null);
+//				PopDrawChartBinding popDrawChartBinding = DataBindingUtil.bind(view);
+//				assert popDrawChartBinding != null;
+//				popDrawChartBinding.ivChartModePoint.setOnClickListener(chartModeCheckListener);
+//				popDrawChartBinding.ivChartModeRectangle.setOnClickListener(chartModeCheckListener);
+//
+//				showPopWindows(view,60,30,20);
+//			}
+//		});
 		//设置弹窗
 		mDataBinding.ivPreviewRightSetting.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -440,6 +444,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				popSettingBinding.switchChoiceTempUnit.setText(new String[]{"℃","℉","K"}).setSelectedTab(0).setOnSwitchListener(new SwitchMultiButton.OnSwitchListener() {
 					@Override
 					public void onSwitch (int position, String tabText) {
+
 						mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(position);
 //						Toast.makeText(mContext.get(),""+position,Toast.LENGTH_SHORT).show();
 
@@ -512,12 +517,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 				if (position==0){
 					mDataBinding.dragTempContainerPreviewFragment.removeChildByDataObj(child);
-//					if (child.getType()==3){
+					if (child.getType()==3){
 //						mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
-//						int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
-//						mUvcCameraHandler.setArea(areaData);
-//					}
-
+						int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
+						mUvcCameraHandler.setArea(areaData);
+					}
 				}else {
 					if (isDebug)Log.e(TAG, "onChildToolsClick: " + position);
 					Toast.makeText(mContext.get(),"click position "+ position ,Toast.LENGTH_SHORT).show();
@@ -595,7 +599,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			}
 		}
 	};
-
+	//初始化录制的相关方法
 	private void initRecord(){
 		Log.e(TAG, "initRecord: ");
 
@@ -611,7 +615,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 						.build();
 			}
 		});
-
+		//录制倒计时方法
 		MediaProjectionHelper.getInstance().setMediaRecorderCallback(new MediaRecorderCallback() {
 			@Override
 			public void onSuccess (File file) {
