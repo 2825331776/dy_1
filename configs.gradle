@@ -1,16 +1,16 @@
 ext{
     projectVersions = [
             //编译及其构建版本
-            compileSdkV     :29,
-            buildToolsV     :"29.0.3",
+            compileSdkV     :28,
+            buildToolsV     :"28.0.3",
             //支持的sdk范围21-29
             minSdkV         :23,
-            targetSdkV      :29,
+            targetSdkV      :28,
             //版本号和名字
             VCode           :1,
             VName           :"1.0.0",
 
-            supportV        :"29.0.0"
+            supportV        :"28.0.0"
     ]
 
     //依赖库的版本  common

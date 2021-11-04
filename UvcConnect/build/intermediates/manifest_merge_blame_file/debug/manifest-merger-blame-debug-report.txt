@@ -29,7 +29,7 @@
 29    <uses-sdk
 30        android:minSdkVersion="23"
 30-->D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
-31        android:targetSdkVersion="29" />
+31        android:targetSdkVersion="28" />
 31-->D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
 32
 33</manifest>

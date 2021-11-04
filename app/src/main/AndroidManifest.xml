@@ -33,7 +33,6 @@
         android:icon="@mipmap/appicon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:theme="@style/MyTheme">
         <activity android:name=".ui.TestActivity">
@@ -45,7 +44,6 @@
         </activity>
 
         <service android:name=".ui.preview.record.MediaProjectionService"
-            android:foregroundServiceType="mediaProjection"
             />
 
         <provider

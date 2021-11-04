@@ -280,7 +280,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				}
 			}
 			@Override
-			public void onDetach (UsbDevice device) {
+			public void onDettach (UsbDevice device) {
 //				mUvcCameraHandler.close();
 				if (isDebug)Log.e(TAG, "DD  onDetach: ");
 
