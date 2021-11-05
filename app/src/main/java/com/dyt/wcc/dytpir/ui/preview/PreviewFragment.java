@@ -368,9 +368,18 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			public void onClick (boolean checkState) {
 				//判断键入的值是否符合规范,或者提示用户 键入值的规范。
 //				mDataBinding.toggleHighTempAlarm.setSelected(false);
+				if ( "".equals(mDataBinding.etInputTempRightRLContainer.getText().toString())){
+					Toast.makeText(mContext.get(), "请输入高温界限",Toast.LENGTH_SHORT).show();
+					Log.e(TAG, "onClick: "+ checkState);
+					mDataBinding.toggleHighTempAlarm.setSelected(false);
+					return;
+				}
+
+				float temp = Float.parseFloat(mDataBinding.etInputTempRightRLContainer.getText().toString());
+				Log.e(TAG, "onClick: temp = >  " + temp);
 
 				if (checkState){
-					mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(20);
+					mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(temp);
 				}else {
 					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
 				}

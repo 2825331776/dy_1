@@ -200,7 +200,7 @@
                 android:layout_marginTop="@dimen/dimen_10dp"
                 app:showTextContent="@string/ShowHighLowTemp"
                 app:ColorTextUnselect="@color/white"
-                app:showTextSize="10sp"/>
+                app:showTextSize="12sp"/>
             <!--框内细查-->
             <com.dyt.wcc.common.widget.MyToggleView
                 android:id="@+id/toggle_area_check"
@@ -215,7 +215,7 @@
                 app:layout_constraintTop_toBottomOf="@id/toggle_show_high_low_temp"
                 app:showTextContent="@string/AreaCheck"
                 app:ColorTextUnselect="@color/white"
-                app:showTextSize="10sp"/>
+                app:showTextSize="12sp"/>
 
             <com.dyt.wcc.common.widget.MyToggleView
                 android:id="@+id/toggle_high_temp_alarm"
@@ -230,16 +230,14 @@
                 android:layout_marginTop="@dimen/dimen_3dp"
                 app:showTextContent="@string/HighTempAlarm"
                 app:ColorTextUnselect="@color/white"
-                app:showTextSize="10sp"/>
+                app:showTextSize="12sp"/>
 
 <!--        高温报警输入EditText-->
             <EditText
                 android:id="@+id/et_inputTemp_rightRL_container"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/iv_togo"
                 app:layout_constraintTop_toBottomOf="@id/toggle_high_temp_alarm"
-                app:layout_constraintBottom_toTopOf="@id/toggle_fixed_tempBar"
-                android:layout_width="@dimen/dimen_0dp"
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
                 app:layout_constraintHeight_percent="0.1"
                 android:maxHeight="@dimen/dimen_30dp"
@@ -248,24 +246,24 @@
                 android:textColorHint="@color/white"
                 android:hint="@string/AlarmTempInput"
                 android:background="@drawable/shape_bg_pop_setting_edit"
-                android:inputType="number"
-                android:maxLength="5"
+                android:inputType="numberDecimal"
+                android:maxLength="6"
                 android:gravity="center"
                 android:textSize="12sp"
                 android:textColor="@color/white"
                 android:singleLine="true"/>
 
-            <ImageView
-                android:id="@+id/iv_togo"
-                app:layout_constraintLeft_toRightOf="@id/et_inputTemp_rightRL_container"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@id/et_inputTemp_rightRL_container"
-                app:layout_constraintBottom_toBottomOf="@id/et_inputTemp_rightRL_container"
-                android:background="@drawable/ic_user_vector_confirm_24px"
-                android:layout_width="@dimen/dimen_25dp"
-                android:layout_height="@dimen/dimen_25dp"
-                tools:ignore="ContentDescription"
-                android:scaleType="fitXY"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_togo"-->
+<!--                app:layout_constraintLeft_toRightOf="@id/et_inputTemp_rightRL_container"-->
+<!--                app:layout_constraintRight_toRightOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="@id/et_inputTemp_rightRL_container"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/et_inputTemp_rightRL_container"-->
+<!--                android:background="@drawable/ic_user_vector_confirm_24px"-->
+<!--                android:layout_width="@dimen/dimen_25dp"-->
+<!--                android:layout_height="@dimen/dimen_25dp"-->
+<!--                tools:ignore="ContentDescription"-->
+<!--                android:scaleType="fitXY"/>-->
 
 <!--            固定温度条-->
             <com.dyt.wcc.common.widget.MyToggleView
@@ -280,7 +278,7 @@
                 android:layout_margin="@dimen/dimen_6dp"
                 app:showTextContent="@string/FixeTempBar"
                 app:ColorTextUnselect="@color/white"
-                app:showTextSize="10sp"/>
+                app:showTextSize="12sp"/>
 
             <!--        右侧底部温度模式-->
             <androidx.constraintlayout.widget.ConstraintLayout

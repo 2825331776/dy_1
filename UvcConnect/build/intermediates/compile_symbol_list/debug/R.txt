@@ -2585,6 +2585,14 @@ int mipmap span_min 0x0
 int mipmap spinner_down 0x0
 int mipmap spinner_up 0x0
 int plurals mtrl_badge_content_description 0x0
+int raw a1_chime 0x0
+int raw a2_ding 0x0
+int raw a3_falling 0x0
+int raw a4_rising 0x0
+int raw a5_dry 0x0
+int raw a6_dry 0x0
+int raw a7_ring 0x0
+int raw a8_bell 0x0
 int string abc_action_bar_home_description 0x0
 int string abc_action_bar_up_description 0x0
 int string abc_action_menu_overflow_description 0x0

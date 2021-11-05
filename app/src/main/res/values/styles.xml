@@ -9,6 +9,18 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
+    <!--SplashActivity Theme-->
+    <style name="SplashTheme" parent="MyTheme">
+        <item name="android:windowIsTranslucent">true</item>  <!-- 透明背景 -->
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@mipmap/logo</item>
+
+        <!-- 隐藏状态栏 -->
+        <item name="android:windowFullscreen">true</item>
+        <!-- 隐藏标题栏 -->
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
 <!--    <style name="SwitchTheme" parent="@android:style/TextAppearance.Small">-->
 <!--        <item name="android:textColor">@color/switch_text_selector</item>-->
 <!--    </style>-->

@@ -2586,6 +2586,14 @@ mipmap span_min
 mipmap spinner_down
 mipmap spinner_up
 plurals mtrl_badge_content_description
+raw a1_chime
+raw a2_ding
+raw a3_falling
+raw a4_rising
+raw a5_dry
+raw a6_dry
+raw a7_ring
+raw a8_bell
 string abc_action_bar_home_description
 string abc_action_bar_up_description
 string abc_action_menu_overflow_description

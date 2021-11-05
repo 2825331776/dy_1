@@ -16,7 +16,7 @@
     <string name="FixeTempBar">固定温度条</string>
     <string name="DynamicTempBar">动态温度条</string>
 
-    <string name="AlarmTempInput">输入框</string>
+    <string name="AlarmTempInput">高温输入框</string>
 
     <string name="CheckLatestVersion">检查最新版本</string>
     <string name="VersionName">版本号：</string>

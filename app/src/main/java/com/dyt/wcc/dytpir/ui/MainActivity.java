@@ -1,6 +1,7 @@
 package com.dyt.wcc.dytpir.ui;
 
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -31,7 +32,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 	@Override
 	protected void onActivityResult (int requestCode, int resultCode, @Nullable Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		//		Log.e(TAG, "======= MainActivity Result: ====");
+		Log.e(TAG, "======= MainActivity Result: ====" + resultCode + "  " + requestCode   );
 		MediaProjectionHelper.getInstance().createVirtualDisplay(requestCode,resultCode,data,true,true);
 	}
 

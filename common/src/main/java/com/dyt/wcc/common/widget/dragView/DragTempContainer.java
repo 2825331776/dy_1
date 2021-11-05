@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -81,8 +82,13 @@ public class DragTempContainer extends RelativeLayout {
 	private RectF rectFHighTempAlarm;
 	private float valueHighTempAlarm = 0.0f;//设置最高温数值
 	private boolean isAboveHighTemp = false;//是否超温
+	private boolean highTempAlarmToggle = false;
 	private int alarmCountDown = 0;
 	private MyMoveWidget operateChild = null;
+	private int frameCount = 0;
+	private MediaPlayer audioPlayer;
+	private long lastAboveTime = 0;
+
 
 	protected void setBitMap(Bitmap point,Bitmap max , Bitmap min){
 		pointBt = point;maxTempBt = max;minTempBt = min;
@@ -157,6 +163,8 @@ public class DragTempContainer extends RelativeLayout {
 	 * @param thresholdTemp 带了模式 的温度。 需要转换成摄氏度
 	 */
 	public void openHighTempAlarm(float thresholdTemp){
+		highTempAlarmToggle = true;
+
 		if (tempSuffixMode == 0){//0摄氏度， 1华氏度， 2开氏度
 			valueHighTempAlarm = getFormatFloat(thresholdTemp);
 		}
@@ -166,8 +174,20 @@ public class DragTempContainer extends RelativeLayout {
 		if (tempSuffixMode == 2){
 			valueHighTempAlarm = getFormatFloat((thresholdTemp - 273.15f));
 		}
+		if (audioPlayer == null){
+			audioPlayer = MediaPlayer.create(mContext.get(),R.raw.a2_ding);
+			audioPlayer.setLooping(true);
+		}
 	}
 	public void closeHighTempAlarm(){
+		highTempAlarmToggle = false;
+		invalidate();
+
+		if (audioPlayer != null){
+			audioPlayer.stop();
+			audioPlayer.release();
+			audioPlayer = null;
+		}
 
 	}
 
@@ -231,13 +251,18 @@ public class DragTempContainer extends RelativeLayout {
 	@Override
 	protected void onDraw (Canvas canvas) {
 		super.onDraw(canvas);
-//		if (needDrawHighTempBox){
-//			rectFHighTempAlarm = new RectF(6,6,screenWidth-6,screenHeight- 6);
-//			canvas.drawRect(rectFHighTempAlarm,testPaint);
-//		}
-//		canvas.drawCircle(50,50,10,testPaint);
-
-//		canvas.drawCircle(50,10,3,testPaint);
+		Log.e(TAG, "onDraw: " + highTempAlarmToggle +" "+ isAboveHighTemp);
+		if (highTempAlarmToggle && isAboveHighTemp){//每隔 0.5S 绘制一次
+			if (frameCount < 10){//绘制超温
+				rectFHighTempAlarm = new RectF(6,6,screenWidth-6,screenHeight- 6);
+				canvas.drawRect(rectFHighTempAlarm,testPaint);
+				frameCount++;
+			}else if (frameCount < 25){//间隔帧数
+				frameCount++;
+			}else {//释放
+				frameCount = 0;
+			}
+		}
 	}
 
 
@@ -831,16 +856,30 @@ public class DragTempContainer extends RelativeLayout {
 			switch (msg.what){
 				case UPDATE_TEMP_DATA:
 				tempSource = (float[]) msg.obj;
-				if (tempSource[3] <= valueHighTempAlarm){//判定超温报警是否超过了额定温度，每帧刷新
+				if (tempSource[3] >= valueHighTempAlarm){//判定超温报警是否超过了额定温度，每帧刷新
 					isAboveHighTemp= true;
 				}else {
 					isAboveHighTemp = false;
 				}
-
-					if (mSeekBar!=null){
-						mSeekBar.Update(getTempByMode(tempSource[3]),getTempByMode(tempSource[6]));
+				if (isAboveHighTemp && highTempAlarmToggle){//打开了开关，并且超温了。
+					lastAboveTime = System.currentTimeMillis();
+					if (audioPlayer != null && !audioPlayer.isPlaying()){
+						audioPlayer.start();
 					}
-					//刷新高低温追踪的数据
+					Log.e(TAG, "handleMessage: " + audioPlayer.isPlaying());
+				}else {//一段时间（X）后停止音乐的播放，如果音乐是在播放，则停止。
+					long seconds = ((System.currentTimeMillis() - lastAboveTime)/1000);
+
+					if (seconds > 3 && audioPlayer != null && audioPlayer.isPlaying()){//时间可以更改
+						audioPlayer.pause();
+					}
+				}
+				invalidate();//重新绘制
+
+				if (mSeekBar!=null){//更新滑动温度条
+					mSeekBar.Update(getTempByMode(tempSource[3]),getTempByMode(tempSource[6]));
+				}
+				//刷新高低温追踪的数据
 				if (highLowTempLists.size()!=0){
 					highLowTempLists.get(0).getView().getPointTemp().setStartPointX((int) getXByWRatio(tempSource[1]));
 					highLowTempLists.get(0).getView().getPointTemp().setStartPointY((int) getYByHRatio(tempSource[2]));
