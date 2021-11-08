@@ -1,29 +1,29 @@
 -- Merging decision tree log ---
 manifest
-ADDED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml:24:1-32:12
-INJECTED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml:24:1-32:12
-INJECTED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml:24:1-32:12
+ADDED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml:24:1-32:12
+INJECTED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml:24:1-32:12
+INJECTED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml:24:1-32:12
 	package
-		ADDED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml:25:5-40
-		INJECTED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
-		INJECTED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
+		ADDED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml:25:5-40
+		INJECTED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
+		INJECTED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
 	android:versionName
-		ADDED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml:27:5-38
+		ADDED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml:27:5-38
 	xmlns:android
-		ADDED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml:24:11-69
+		ADDED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml:24:11-69
 	android:versionCode
-		ADDED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml:26:5-28
+		ADDED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml:26:5-28
 uses-sdk
-INJECTED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
-INJECTED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
-INJECTED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
-INJECTED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
+INJECTED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
+INJECTED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
+INJECTED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
+INJECTED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
 	android:targetSdkVersion
-		INJECTED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
-		ADDED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
-		INJECTED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
+		INJECTED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
+		ADDED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
+		INJECTED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
-		ADDED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
-		INJECTED from D:\workspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
+		INJECTED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
+		ADDED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml
+		INJECTED from D:\androidWorkspace\DYTPIRCamera\UvcConnect\src\main\AndroidManifest.xml

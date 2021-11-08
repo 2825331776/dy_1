@@ -86,4 +86,11 @@
         <attr name="progressTextSize" format="dimension" />
     </declare-styleable>
 
+    <declare-styleable name="MyCustomRangeSeekBar">
+        <!-- 总体的背景色-->
+        <attr name="SeekBarRangeBg" format="reference" />
+        <!-- 所有的文本字体大小 -->
+        <attr name="SeekBarAllTextSize" format="dimension" />
+    </declare-styleable>
+
 </resources>

@@ -19,10 +19,10 @@ public class TestActivity extends BaseActivity<ActivityTestBinding> implements V
 
 	@Override
 	protected void initView () {
-		mDataBinding.btPoint.setOnClickListener(this::onClick);
-		mDataBinding.btLine.setOnClickListener(this::onClick);
-		mDataBinding.btRectangle.setOnClickListener(this);
-		mDataBinding.btReset.setOnClickListener(this);
+//		mDataBinding.btPoint.setOnClickListener(this::onClick);
+//		mDataBinding.btLine.setOnClickListener(this::onClick);
+//		mDataBinding.btRectangle.setOnClickListener(this);
+//		mDataBinding.btReset.setOnClickListener(this);
 
 		DisplayMetrics metrics = new DisplayMetrics();
 		this.getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -31,23 +31,23 @@ public class TestActivity extends BaseActivity<ActivityTestBinding> implements V
 	@Override
 	public void onClick (View v) {
 		switch (v.getId()){
-			case R.id.bt_point:
-				mDataBinding.myDragContainer.removeView(moveWidget);
-//				drawMode = 1;
+//			case R.id.bt_point:
+//				mDataBinding.myDragContainer.removeView(moveWidget);
+////				drawMode = 1;
+////				mDataBinding.myDragContainer.setDrawTempMode(drawMode);
+////				mDataBinding.myDragContainer.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
+//				break;
+//			case R.id.bt_line:
+//				drawMode = 2;
 //				mDataBinding.myDragContainer.setDrawTempMode(drawMode);
-//				mDataBinding.myDragContainer.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
-				break;
-			case R.id.bt_line:
-				drawMode = 2;
-				mDataBinding.myDragContainer.setDrawTempMode(drawMode);
-				break;
-			case R.id.bt_rectangle:
-				drawMode = 3;
-				mDataBinding.myDragContainer.setDrawTempMode(drawMode);
-//				moveWidget.setSelectedState(!moveWidget.getView().isSelect());
-
-				break;
-			case R.id.bt_reset:
+//				break;
+//			case R.id.bt_rectangle:
+//				drawMode = 3;
+//				mDataBinding.myDragContainer.setDrawTempMode(drawMode);
+////				moveWidget.setSelectedState(!moveWidget.getView().isSelect());
+//
+//				break;
+//			case R.id.bt_reset:
 //				drawMode = -1;
 //				mDataBinding.myDragContainer.setDrawTempMode(drawMode);
 //				Log.e(TAG, "onClick: bt_reset");
@@ -73,7 +73,7 @@ public class TestActivity extends BaseActivity<ActivityTestBinding> implements V
 //
 //				mDataBinding.myDragContainer.addView(moveWidget);
 
-				break;
+//				break;
 		}
 	}
 

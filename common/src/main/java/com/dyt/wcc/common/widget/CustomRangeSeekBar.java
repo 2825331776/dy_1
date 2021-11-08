@@ -39,11 +39,13 @@ public class CustomRangeSeekBar extends View {
     private Bitmap mThumbImageMin;//滑块图像 对应表最小值
 
     private static final int DEFAULT_MODE = 0;
+    private float imgMax;//图层的最高温
+    private float imgMin;//图层的最低温
     private Bitmap mTempMaxImg;//图像 最高温
     private Bitmap mTempMinImg;//图像 最低温
     private int widgetMode;//控件的绘制模式。0代表简单的绘制最高最低温。非零代表固定温度条模式。
-    private float max;
-    private float min;
+    private float max;//控件最高温
+    private float min;//控件最低温
 
     //progress bar 选中背景
     private static Bitmap mProgressBarSelBg;//整体的背景颜色
@@ -62,12 +64,12 @@ public class CustomRangeSeekBar extends View {
     //长度上下padding
     private float mHeightPadding;
 
-    //最小值（绝对）
+    //最小值（绝对），
     public static float mAbsoluteMinValue;
-    public static float mMinTemp=0;
+    public static float mMinTemp=0;//滑块的最低温度
     //最大值（绝对）
     public static float mAbsoluteMaxValue;
-    public static float mMaxTemp=100;
+    public static float mMaxTemp=100;//滑块的最高温度
 
     //已选标准（占滑动条百分比）最小值
     private double mPercentSelectedMinValue = 0d;
@@ -328,6 +330,10 @@ public class CustomRangeSeekBar extends View {
                 break;
         }
 
+//        if (widgetMode==1){
+//            canvas.drawBitmap(mTempMaxImg,0,);
+//        }
+
 
 
         // draw minimum thumb   //绘制滑块
@@ -375,24 +381,30 @@ public class CustomRangeSeekBar extends View {
 
     /**
      * 画滑块值text
-     *
+     *绘制最大值，和滑块的最大值的文字
      * @param screenCoord
      * @param canvas
      */
     //changed by wp: float->double
     private void drawThumbMaxText(float screenCoord, Canvas canvas) {
-        String progress = df.format(max);
-        float progressHeight = mPaint.measureText(progress);
-        canvas.drawText(progress, 0.7f*mThumbWidth, mThumbHeight, mPaint);
+        String progress = df.format(max);//转化最大值为String类型
+        float progressHeight = mPaint.measureText(progress);//测量最大值String需要的长度
+        canvas.drawText(progress, 0.7f*mThumbWidth, mThumbHeight, mPaint);//绘制最大值的String，起始点：跟测量的长度无关？
 
+        //绘制最大值滑块，设置了最大值和最小值的差距为0.1
         double temp=getSelectedAbsoluteMaxTemp();
-        if(getSelectedAbsoluteMaxTemp()-getSelectedAbsoluteMinTemp()<0.1)
-            temp=getSelectedAbsoluteMinTemp()+0.1;
+        if(getSelectedAbsoluteMaxTemp()-getSelectedAbsoluteMinTemp() < 0.1)
+            temp = getSelectedAbsoluteMinTemp() + 0.1;
         String selectmax=df.format(temp);
 
         canvas.drawText(selectmax, 0, screenCoord- 0.4f*mWordSize, mPaint);
     }
 
+    /**
+     * 绘制最小值，和滑块的最小值的 文字
+     * @param screenCoord
+     * @param canvas
+     */
     private void drawThumbMinText(float screenCoord, Canvas canvas) {
         String progress = df.format(min);
         float progressHeight = mPaint.measureText(progress);
@@ -405,8 +417,7 @@ public class CustomRangeSeekBar extends View {
 
 
     /**
-     * 根据touchX, 判断是哪一个thumb(Min or Max)
-     *
+     * 根据touchY, 判断是哪一个thumb(Min or Max)
      * @param touchY 触摸的Y在屏幕中坐标（相对于容器）
      */
     private Thumb evalPressedThumb(float touchY) {
@@ -451,9 +462,8 @@ public class CustomRangeSeekBar extends View {
     }
 
     /**
-     * 进度值，从百分比到绝对值
-     *
-     * @return
+     * 进度值，从百分比到绝对值 取值为 0 - 100
+     * @return  (float) percent * 100;
      */
     @SuppressWarnings("unchecked")
     /*这么写不对
@@ -461,12 +471,16 @@ public class CustomRangeSeekBar extends View {
         return (float) normalized * 100;
     }
      */
-
     private float percentToAbsoluteValue(double percent) {
         return (float) percent * 100;
     }
 
-
+    /**
+     * 百分比转化为 整体最大值与最小值之间的百分比。
+     * 百分比乘以最大值减去最小值，然后加上最小值。为返回的温度
+     * @param percent   百分比
+     * @return      (float) (mMinTemp + percent * (mMaxTemp - mMinTemp));
+     */
     private float percentToAbsoluteTemp(double percent) {
         return (float) (mMinTemp + percent * (mMaxTemp - mMinTemp));
     }
@@ -594,13 +608,13 @@ public class CustomRangeSeekBar extends View {
                 case UPDATE_VALUE:
                     //更新时分秒
                     float[] temp = (float[]) msg.obj;
-                    mMaxTemp = temp[0];
-                    mMinTemp = temp[1];
+                    imgMax = temp[0];//滑块最高温 /图层最高温
+                    imgMin = temp[1];//滑块最低温/ 图层最低温
                     if (widgetMode ==0) {//普通模式
-                        max = mMaxTemp;
-                        min = mMinTemp;
+                        max = imgMax;//控件的最高温
+                        min = imgMin;//控件的最低温
                     }else {//固定温度条
-                        calculateMaxMin(mMaxTemp,mMinTemp);
+                        calculateMaxMin(imgMax,imgMin);
                     }
                     invalidate();
                     break;
@@ -609,22 +623,18 @@ public class CustomRangeSeekBar extends View {
     };
 
     /**
+     *  max 控件的最高点温度， min 最低点温度
+     * @param maxTemp 实时最大值
+     * @param minTemp 实时最小值
      *
-     * @param maxT 实时最大值
-     * @param minT 实时最小值
      */
-    private void calculateMaxMin(float maxT ,float minT){
-        if (max - maxT < 10){//相差不足10
-            max = (maxT/10)*10 + 20;
-        }else {
-
-        }
-        if (min + 10 > minT){//相差不足10 了
-            min = (minT/10)*10 - 10;
+    private void calculateMaxMin(float maxTemp ,float minTemp){
+        if (Math.abs(max - maxTemp) < 15 ||Math.abs(min- minTemp) < 10){//相差不足10
+            max = ((int)maxTemp/10)*10 + 20;
+            min = ((int)minTemp/10)*10 - 10;
         }else {
 
         }
     }
-
 
 }

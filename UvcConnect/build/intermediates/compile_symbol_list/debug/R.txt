@@ -66,6 +66,8 @@ int attr ColorFillUnselect 0x0
 int attr ColorStroke 0x0
 int attr ColorTextSelect 0x0
 int attr ColorTextUnselect 0x0
+int attr SeekBarAllTextSize 0x0
+int attr SeekBarRangeBg 0x0
 int attr absoluteMax 0x0
 int attr absoluteMin 0x0
 int attr action 0x0
@@ -4644,6 +4646,9 @@ int[] styleable MotionTelltales { 0x0, 0x0, 0x0 }
 int styleable MotionTelltales_telltales_tailColor 0
 int styleable MotionTelltales_telltales_tailScale 1
 int styleable MotionTelltales_telltales_velocityMode 2
+int[] styleable MyCustomRangeSeekBar { 0x0, 0x0 }
+int styleable MyCustomRangeSeekBar_SeekBarAllTextSize 0
+int styleable MyCustomRangeSeekBar_SeekBarRangeBg 1
 int[] styleable MySpinner { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 }
 int styleable MySpinner_arrowDrawable 0
 int styleable MySpinner_arrowTint 1

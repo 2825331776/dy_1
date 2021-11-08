@@ -67,6 +67,8 @@ attr ColorFillUnselect
 attr ColorStroke
 attr ColorTextSelect
 attr ColorTextUnselect
+attr SeekBarAllTextSize
+attr SeekBarRangeBg
 attr absoluteMax
 attr absoluteMin
 attr action
@@ -3515,6 +3517,7 @@ styleable MotionHelper onHide onShow
 styleable MotionLayout applyMotionScene currentState layoutDescription motionDebug motionProgress showPaths
 styleable MotionScene defaultDuration layoutDuringTransition
 styleable MotionTelltales telltales_tailColor telltales_tailScale telltales_velocityMode
+styleable MyCustomRangeSeekBar SeekBarAllTextSize SeekBarRangeBg
 styleable MySpinner arrowDrawable arrowTint backgroundSelector dropDownListPaddingBottom entries hideArrow popupTextAlignment textTint
 styleable MyToggle toggle_text_default_color toggle_text_info toggle_text_select_color toggle_text_size
 styleable MyToggleView ColorCirSelect ColorCirUnselect ColorFillSelect ColorFillUnselect ColorStroke ColorTextSelect ColorTextUnselect isShowText mStrokeWith showTextContent showTextSize
