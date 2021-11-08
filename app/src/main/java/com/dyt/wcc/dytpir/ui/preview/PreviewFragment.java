@@ -153,8 +153,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		List<UsbDevice> mUsbDeviceList = mViewModel.getMUsbMonitor().getValue().getDeviceList();
 		for (UsbDevice udv : mUsbDeviceList) {
 			//指定设备的连接，获取设备的名字，当前usb摄像头名为Xmodule-S0
-//			if (isDebug)Log.e(TAG, "udv.getProductName()" + udv.getProductName());
-			if (udv.getProductName().contains("S0") ) {
+			if (isDebug)Log.e(TAG, "usb devices  == " + udv.toString());
+			if (isDebug)Log.e(TAG, "udv.getProductName()" + udv.getProductName());
+			if (udv.getVendorId() == 5396 && udv.getProductId() ==1 ) {
 				Log.e(TAG, "onResume: "+ " S0 " + udv.getProductId() + " "  + udv.getVendorId() );
 				BaseApplication.deviceName = udv.getProductName();
 			}
@@ -367,7 +368,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onClick (boolean checkState) {
 				//判断键入的值是否符合规范,或者提示用户 键入值的规范。
-//				mDataBinding.toggleHighTempAlarm.setSelected(false);
 				if ( "".equals(mDataBinding.etInputTempRightRLContainer.getText().toString())){
 					Toast.makeText(mContext.get(), "请输入高温界限",Toast.LENGTH_SHORT).show();
 					Log.e(TAG, "onClick: "+ checkState);

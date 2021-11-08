@@ -251,7 +251,7 @@ public class DragTempContainer extends RelativeLayout {
 	@Override
 	protected void onDraw (Canvas canvas) {
 		super.onDraw(canvas);
-		Log.e(TAG, "onDraw: " + highTempAlarmToggle +" "+ isAboveHighTemp);
+//		Log.e(TAG, "onDraw: " + highTempAlarmToggle +" "+ isAboveHighTemp);
 		if (highTempAlarmToggle && isAboveHighTemp){//每隔 0.5S 绘制一次
 			if (frameCount < 10){//绘制超温
 				rectFHighTempAlarm = new RectF(6,6,screenWidth-6,screenHeight- 6);

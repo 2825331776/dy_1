@@ -46,7 +46,7 @@ public class CustomRangeSeekBar extends View {
     private float min;
 
     //progress bar 选中背景
-    private static Bitmap mProgressBarSelBg;
+    private static Bitmap mProgressBarSelBg;//整体的背景颜色
     private static Bitmap mProgressBarBgOne;
     private static Bitmap mProgressBarBgTwo;
     private static Bitmap mProgressBarBgThree;
@@ -120,16 +120,6 @@ public class CustomRangeSeekBar extends View {
 
         mProgressBarSelBg = BitmapFactory.decodeResource(getResources(), a.getResourceId(R.styleable.CustomRangeSeekBar_progressBarBg, R.mipmap.seekbar_bg));
 
-        /*
-        mProgressBarSelBgOne = BitmapFactory.decodeResource(getResources(), a.getResourceId(R.styleable.CustomRangeSeekBar_progressBarBg, R.mipmap.seekbar_bg));
-        mProgressBarSelBgOne=BitmapFactory.decodeResource(getResources(), a.getResourceId(R.styleable.CustomRangeSeekBar_progressBarBg, R.mipmap.one));
-        mProgressBarSelBgTwo=BitmapFactory.decodeResource(getResources(), a.getResourceId(R.styleable.CustomRangeSeekBar_progressBarBg, R.mipmap.two));
-        mProgressBarSelBgNine=BitmapFactory.decodeResource(getResources(), a.getResourceId(R.styleable.CustomRangeSeekBar_progressBarBg, R.mipmap.nine));
-        mProgressBarSelBgEleven=BitmapFactory.decodeResource(getResources(), a.getResourceId(R.styleable.CustomRangeSeekBar_progressBarBg, R.mipmap.eleven));
-        mProgressBarSelBgTwenty=BitmapFactory.decodeResource(getResources(), a.getResourceId(R.styleable.CustomRangeSeekBar_progressBarBg, R.mipmap.twenty));
-
-         */
-
 
         //changed by wupei
         mThumbHeight = mThumbImageMax.getHeight();
@@ -140,7 +130,8 @@ public class CustomRangeSeekBar extends View {
 
         Paint.FontMetrics metrics = mPaint.getFontMetrics();
         //changed by wupei
-        mWordWidth = (int) (metrics.descent - metrics.ascent);
+//        mWordWidth = (int) (metrics.descent - metrics.ascent);
+        mWordWidth = (int) mPaint.measureText(String.valueOf(max));
 
         restorePercentSelectedMinValue();
         restorePercentSelectedMaxValue();
@@ -175,7 +166,7 @@ public class CustomRangeSeekBar extends View {
         super.onSizeChanged(w, h, oldw, oldh);
 
         mProgressBarRect = new RectF(mThumbWidth , mHeightPadding,
-                2f *mThumbWidth, h - mHeightPadding);
+                mWordWidth+mThumbWidth, h - mHeightPadding);
 
         //mProgressBarSelRect在ondraw的时候还会变的
         mProgressBarSelRect = new RectF(mProgressBarRect);
@@ -296,7 +287,8 @@ public class CustomRangeSeekBar extends View {
         }
         //int height = mThumbImage.getHeight() + mWordHeight;
         //changed by wupei
-        int width = mThumbImageMax.getWidth() + mWordWidth;
+        //*2 + mTempMaxImg.getWidth()
+        int width = mThumbImageMax.getWidth() + mWordWidth*2 + mTempMaxImg.getWidth();
         if (MeasureSpec.UNSPECIFIED != MeasureSpec.getMode(widthMeasureSpec)) {
             width = Math.min(width, MeasureSpec.getSize(widthMeasureSpec));
         }
@@ -389,7 +381,7 @@ public class CustomRangeSeekBar extends View {
      */
     //changed by wp: float->double
     private void drawThumbMaxText(float screenCoord, Canvas canvas) {
-        String progress = df.format(mMaxTemp);
+        String progress = df.format(max);
         float progressHeight = mPaint.measureText(progress);
         canvas.drawText(progress, 0.7f*mThumbWidth, mThumbHeight, mPaint);
 
@@ -402,7 +394,7 @@ public class CustomRangeSeekBar extends View {
     }
 
     private void drawThumbMinText(float screenCoord, Canvas canvas) {
-        String progress = df.format(mMinTemp);
+        String progress = df.format(min);
         float progressHeight = mPaint.measureText(progress);
         canvas.drawText(progress, 0.7f*mThumbWidth, getHeight()-0.5f*mWordSize, mPaint);
 
@@ -608,16 +600,31 @@ public class CustomRangeSeekBar extends View {
                         max = mMaxTemp;
                         min = mMinTemp;
                     }else {//固定温度条
-
+                        calculateMaxMin(mMaxTemp,mMinTemp);
                     }
                     invalidate();
                     break;
             }
         }
     };
- 
 
+    /**
+     *
+     * @param maxT 实时最大值
+     * @param minT 实时最小值
+     */
+    private void calculateMaxMin(float maxT ,float minT){
+        if (max - maxT < 10){//相差不足10
+            max = (maxT/10)*10 + 20;
+        }else {
 
+        }
+        if (min + 10 > minT){//相差不足10 了
+            min = (minT/10)*10 - 10;
+        }else {
+
+        }
+    }
 
 
 }

@@ -544,7 +544,7 @@ public final class USBMonitor {
 					for (int i = 0; i < n; i++) {
 						final UsbDevice device = devices.get(i);
 						LogUtils.e("==========usbmonitor contains devices getProductName =====>"+device.getProductName());
-						if(device.getProductName().contains("S0")  || device.getProductName().contains("T3C")|| device.getProductName().contains("Camera")) {
+						if(device.getVendorId() == 5396 && device.getProductId() ==1 ) {
 							mAsyncHandler.post(new Runnable() {
 								@Override
 								public void run() {
