@@ -226,8 +226,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			e.printStackTrace();
 		}
 
-		mDataBinding.customSeekbarPreviewFragment.setBackBitmap(tiehong, caihong, hongre, heire, baire, lenglan);
-		mDataBinding.customSeekbarPreviewFragment.setBackcolor(1);
+//		mDataBinding.customSeekbarPreviewFragment.setBackBitmap(tiehong, caihong, hongre, heire, baire, lenglan);
+//		mDataBinding.customSeekbarPreviewFragment.setBackcolor(1);
 
 		mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
 				mDataBinding.textureViewPreviewFragment,1,
@@ -707,7 +707,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		}
 		if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing() && id >= 1 && id <=6){
 			mUvcCameraHandler.setPalette(id);
-			mDataBinding.customSeekbarPreviewFragment.setBackcolor(id);
+//			mDataBinding.customSeekbarPreviewFragment.setBackcolor(id);
 			mDataBinding.customSeekbarPreviewFragment.invalidate();//刷新控件
 		}
 	}

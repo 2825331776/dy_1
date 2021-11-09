@@ -111,7 +111,7 @@ public class CustomRangeSeekBar extends View {
         mAbsoluteMaxValue = a.getFloat(R.styleable.CustomRangeSeekBar_absoluteMax, (float) 100.0);
         mStartMinPercent = a.getFloat(R.styleable.CustomRangeSeekBar_startMinPercent, 0);
         mStartMaxPercent = a.getFloat(R.styleable.CustomRangeSeekBar_startMaxPercent, 1);
-        mThumbImageMin =BitmapFactory.decodeResource(getResources(), a.getResourceId(R.styleable.CustomRangeSeekBar_thumbImage, R.mipmap.span_min));
+        mThumbImageMin = BitmapFactory.decodeResource(getResources(), a.getResourceId(R.styleable.CustomRangeSeekBar_thumbImage, R.mipmap.span_min));
         mThumbImageMax = BitmapFactory.decodeResource(getResources(), a.getResourceId(R.styleable.CustomRangeSeekBar_thumbImage, R.mipmap.span_max));
 
         mTempMaxImg = BitmapFactory.decodeResource(getResources(),R.mipmap.max);
@@ -447,6 +447,7 @@ public class CustomRangeSeekBar extends View {
 
     /**
      * 设置已选择最小值的百分比值
+     * [0 , value , 1]
      */
     public void setPercentSelectedMinValue(double value) {
         mPercentSelectedMinValue = Math.max(0d, Math.min(1d, Math.min(value, mPercentSelectedMaxValue)));
@@ -454,6 +455,7 @@ public class CustomRangeSeekBar extends View {
     }
 
     /**
+     * [0 , value , 1]
      * 设置已选择最大值的百分比值
      */
     public void setPercentSelectedMaxValue(double value) {

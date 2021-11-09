@@ -2579,6 +2579,8 @@ int mipmap cursorred 0x0
 int mipmap cursoryellow 0x0
 int mipmap define_view_tools_delete 0x0
 int mipmap define_view_tools_other 0x0
+int mipmap ic_max 0x0
+int mipmap ic_min 0x0
 int mipmap max 0x0
 int mipmap min 0x0
 int mipmap seekbar_bg 0x0

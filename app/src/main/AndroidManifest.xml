@@ -36,11 +36,10 @@
         android:supportsRtl="true"
         android:theme="@style/MyTheme">
         <activity android:name=".ui.TestActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
 
         <service android:name=".ui.preview.record.MediaProjectionService"
@@ -59,15 +58,15 @@
         <activity
             android:name=".ui.MainActivity"
             android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
-            android:launchMode="standard"
+            android:launchMode="singleTop"
             android:theme="@style/MyTheme"
             android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="adjustPan|adjustResize|stateHidden">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>

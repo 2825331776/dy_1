@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
 
 import com.dyt.wcc.common.R;
 import com.dyt.wcc.common.utils.DensityUtil;
-import com.dyt.wcc.common.widget.CustomRangeSeekBar;
+import com.dyt.wcc.common.widget.MyCustomRangeSeekBar;
 
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
@@ -35,7 +35,7 @@ import java.util.List;
  * 有焦点的时候 哪个子VIew获得了，  否则都没有焦点  带焦点的控件有工具栏
  */
 public class DragTempContainer extends RelativeLayout {
-	private CustomRangeSeekBar mSeekBar;
+	private MyCustomRangeSeekBar mSeekBar;
 
 	//点击工具栏之后的控制 响应的事件。删除的事件。
 	public static int perToolsWidthHeightSet = 25;//每个工具栏的宽高
@@ -118,10 +118,10 @@ public class DragTempContainer extends RelativeLayout {
 		initView();
 	}
 
-	public CustomRangeSeekBar getmSeekBar () {
+	public MyCustomRangeSeekBar getmSeekBar () {
 		return mSeekBar;
 	}
-	public void setmSeekBar (CustomRangeSeekBar mSeekBar) {
+	public void setmSeekBar (MyCustomRangeSeekBar mSeekBar) {
 		this.mSeekBar = mSeekBar;
 	}
 

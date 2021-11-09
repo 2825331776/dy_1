@@ -7,7 +7,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/layout/activity_test.xml" value="0.33" />
-        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/activity_test.xml" value="0.3536458333333333" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/activity_test.xml" value="0.25" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/fragment_preview_main.xml" value="0.3536458333333333" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/common/src/main/res/drawable/ic_vector_max.xml" value="0.2635416666666667" />
       </map>
     </option>
   </component>

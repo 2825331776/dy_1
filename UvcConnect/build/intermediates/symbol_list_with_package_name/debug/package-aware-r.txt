@@ -2580,6 +2580,8 @@ mipmap cursorred
 mipmap cursoryellow
 mipmap define_view_tools_delete
 mipmap define_view_tools_other
+mipmap ic_max
+mipmap ic_min
 mipmap max
 mipmap min
 mipmap seekbar_bg
