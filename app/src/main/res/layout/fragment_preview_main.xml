@@ -41,22 +41,24 @@
 
 <!--        左侧按钮-->
 <!--            android:onClick="@{previewViewModel::showPaletteWindow}"-->
+
+
+            <!--        右侧底部设置-->
             <ImageView
-                android:id="@+id/iv_preview_left_palette"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/iv_preview_left_clear"
+                android:id="@+id/iv_preview_right_setting"
+                android:background="@drawable/ic_user_vector_setting_new_24px"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
-                android:layout_marginTop="@dimen/dimen_10dp"
-                android:background="@drawable/ic_user_vector_palette_24px"
+                android:layout_margin="@dimen/dimen_10dp"
                 tools:ignore="ContentDescription" />
 
             <ImageView
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_preview_left_palette"
+                app:layout_constraintTop_toBottomOf="@id/iv_preview_left_company_info"
                 android:id="@+id/iv_preview_left_clear"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
@@ -70,8 +72,7 @@
                 android:id="@+id/iv_preview_left_company_info"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iv_preview_right_setting"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
                 android:layout_margin="@dimen/dimen_5dp"
@@ -186,12 +187,34 @@
                 android:layout_width="@dimen/dimen_1dp"
                 android:layout_height="match_parent"/>
 
+            <ImageView
+                android:id="@+id/iv_preview_left_palette"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="@dimen/dimen_40dp"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:background="@drawable/selector_main_preview_palette"
+                tools:ignore="ContentDescription" />
+<!--            测温模式-->
+            <ImageView
+                android:id="@+id/iv_preview_right_temp_mode"
+                app:layout_constraintTop_toBottomOf="@+id/iv_preview_left_palette"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:background="@drawable/ic_user_vector_draw_temp_mode_24px"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="@dimen/dimen_40dp"
+                android:layout_margin="@dimen/dimen_10dp"
+                tools:ignore="ContentDescription" />
+
 <!--        自定义右侧按钮-->
             <com.dyt.wcc.common.widget.MyToggleView
                 android:id="@+id/toggle_show_high_low_temp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iv_preview_right_temp_mode"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 app:layout_constraintHeight_percent="0.08"
@@ -271,8 +294,7 @@
                 android:id="@+id/toggle_fixed_tempBar"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_inputTemp_rightRL_container"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 app:layout_constraintHeight_percent="0.08"
@@ -289,43 +311,17 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_width="match_parent"
                 android:layout_height="0dp">
-                <ImageView
-                    app:layout_constraintBottom_toTopOf="@id/iv_preview_right_setting"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintHeight_percent="0.2"
-                    app:layout_constraintWidth_percent="0.4"
-                    android:id="@+id/iv_preview_right_temp_mode"
-                    android:background="@drawable/ic_user_vector_draw_temp_mode_24px"
-                    android:layout_width="@dimen/dimen_0dp"
-                    android:layout_height="@dimen/dimen_0dp"
-                    android:layout_margin="@dimen/dimen_10dp"
-                    tools:ignore="ContentDescription" />
-                <!--        右侧底部设置-->
-                <ImageView
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintHeight_percent="0.2"
-                    app:layout_constraintWidth_percent="0.4"
-                    android:id="@+id/iv_preview_right_setting"
-                    android:background="@drawable/ic_user_vector_setting_new_24px"
-                    android:layout_width="@dimen/dimen_0dp"
-                    android:layout_height="@dimen/dimen_0dp"
-                    android:layout_margin="@dimen/dimen_10dp"
-                    tools:ignore="ContentDescription" />
+
+
                 <!--        右侧底部图表-->
                 <ImageView
-                    app:layout_constraintTop_toBottomOf="@id/iv_preview_right_setting"
+                    app:layout_constraintTop_toBottomOf="@+id/iv_preview_right_temp_mode"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintHeight_percent="0.2"
-                    app:layout_constraintWidth_percent="0.4"
                     android:id="@+id/iv_preview_right_chart"
                     android:background="@mipmap/right_container_chart_info"
-                    android:layout_width="@dimen/dimen_0dp"
-                    android:layout_height="@dimen/dimen_0dp"
+                    android:layout_width="@dimen/dimen_40dp"
+                    android:layout_height="@dimen/dimen_40dp"
                     android:layout_margin="@dimen/dimen_10dp"
                     tools:ignore="ContentDescription"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
