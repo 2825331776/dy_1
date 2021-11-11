@@ -37,6 +37,7 @@ import com.dyt.wcc.common.base.BaseFragment;
 import com.dyt.wcc.common.utils.AssetCopyer;
 import com.dyt.wcc.common.utils.CreateBitmap;
 import com.dyt.wcc.common.utils.FontUtils;
+import com.dyt.wcc.common.widget.MyCustomRangeSeekBar;
 import com.dyt.wcc.common.widget.MyToggleView;
 import com.dyt.wcc.common.widget.SwitchMultiButton;
 import com.dyt.wcc.common.widget.dragView.DragTempContainer;
@@ -63,7 +64,9 @@ import com.serenegiant.usb.UVCCamera;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -77,9 +80,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private PreViewViewModel                   mViewModel;
 	private USBMonitor.OnDeviceConnectListener onDeviceConnectListener;
 	private UVCCameraHandler                   mUvcCameraHandler;
-	private Surface stt;
-	private PopupWindow PLRPopupWindows;//点线矩形测温弹窗
-	private PopupWindow allPopupWindows;
+	private Surface                            stt;
+	private PopupWindow                        PLRPopupWindows;//点线矩形测温弹窗
+	private PopupWindow                        allPopupWindows;
+	private Map<String ,Float>                 cameraParams ;
 
 //	private USBMonitor mUsbMonitor ;
 	private int mTextureViewWidth,mTextureViewHeight;
@@ -101,6 +105,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	@Override
 	protected int bindingLayout () {
 		return R.layout.fragment_preview_main;
+	}
+	private void getCameraParams(){//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
+		byte [] tempParams = mUvcCameraHandler.getTemperaturePara(128);
+		cameraParams = ByteUtilsCC.byte2Float(tempParams);
 	}
 
 	@Override
@@ -179,6 +187,40 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.textureViewPreviewFragment.iniTempBitmap(mTextureViewWidth, mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
 		mDataBinding.textureViewPreviewFragment.setDragTempContainer(mDataBinding.dragTempContainerPreviewFragment);
 		mDataBinding.dragTempContainerPreviewFragment.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
+		mDataBinding.customSeekbarPreviewFragment.setmThumbListener(new MyCustomRangeSeekBar.ThumbListener() {
+			@Override
+			public void onUpMinThumb (float maxPercent, float minPercent,float maxValue, float minValue) {
+				Log.e(TAG, "onUpMinThumb: 0-100 percent " + maxPercent + " min == > " +  minPercent);
+				Log.e(TAG, "onUpMinThumb: value " + maxValue + " min == > " +  minValue);
+
+				if (maxPercent >= 100 && minPercent <= 0) {
+					if (mUvcCameraHandler!= null && mUvcCameraHandler.isOpened())mUvcCameraHandler.disWenKuan();
+				}
+			}
+
+			@Override
+			public void onUpMaxThumb (float maxPercent, float minPercent,float maxValue, float minValue) {
+				Log.e(TAG, "onUpMaxThumb: 0-100 percent " + maxPercent + " min == > " +  minPercent);
+				Log.e(TAG, "onUpMaxThumb: value " + maxValue + " min == > " +  minValue);
+				if (maxPercent >= 100 && minPercent <= 0) {
+					if (mUvcCameraHandler!= null && mUvcCameraHandler.isOpened())mUvcCameraHandler.disWenKuan();
+				}
+			}
+
+			@Override
+			public void onMinMove (float maxPercent, float minPercent,float maxValue, float minValue) {
+				Log.e(TAG, "onMinMove: 0-100 percent " + maxPercent + " min == > " +  minPercent);
+				Log.e(TAG, "onMinMove: value " + maxValue + " min == > " +  minValue);
+				if (mUvcCameraHandler!= null && mUvcCameraHandler.isOpened())mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
+			}
+
+			@Override
+			public void onMaxMove (float maxPercent, float minPercent,float maxValue, float minValue) {
+				Log.e(TAG, "onMaxMove: 0-100 percent" + maxPercent + " min == > " +  minPercent);
+				Log.e(TAG, "onMaxMove: value " + maxValue + " min == > " +  minValue);
+				if (mUvcCameraHandler!= null && mUvcCameraHandler.isOpened())mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
+			}
+		});
 
 		paletteType =1;
 		mUvcCameraHandler.PreparePalette(palettePath,paletteType);
@@ -226,8 +268,16 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			e.printStackTrace();
 		}
 
-//		mDataBinding.customSeekbarPreviewFragment.setBackBitmap(tiehong, caihong, hongre, heire, baire, lenglan);
-//		mDataBinding.customSeekbarPreviewFragment.setBackcolor(1);
+		List<Bitmap> bitmaps = new ArrayList<>();
+		bitmaps.add(tiehong);
+		bitmaps.add(caihong);
+		bitmaps.add(hongre);
+		bitmaps.add(heire);
+		bitmaps.add(baire);
+		bitmaps.add(lenglan);
+
+		mDataBinding.customSeekbarPreviewFragment.setmProgressBarSelectBgList(bitmaps);
+		mDataBinding.customSeekbarPreviewFragment.setPalette(0);
 
 		mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
 				mDataBinding.textureViewPreviewFragment,1,
@@ -355,6 +405,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.toggleFixedTempBar.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
 			@Override
 			public void onClick (boolean checkState) {
+				if (mUvcCameraHandler!=null && mUvcCameraHandler.isOpened())mUvcCameraHandler.fixedTempStripChange(checkState);
 				if (checkState){
 					mDataBinding.customSeekbarPreviewFragment.setWidgetMode(1);
 				}else {
@@ -434,12 +485,20 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.ivPreviewLeftCompanyInfo.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_company_info,null);
-				PopCompanyInfoBinding popCompanyInfoBinding = DataBindingUtil.bind(view);
-				assert popCompanyInfoBinding != null;
-				popCompanyInfoBinding.tvCheckVersion.setOnClickListener(chartModeCheckListener);
+				//请求权限
+				PermissionX.init(PreviewFragment.this).permissions(Manifest.permission.INTERNET).request(new RequestCallback() {
+					@Override
+					public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+						if (allGranted){
+							View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_company_info,null);
+							PopCompanyInfoBinding popCompanyInfoBinding = DataBindingUtil.bind(view);
+							assert popCompanyInfoBinding != null;
+							popCompanyInfoBinding.tvCheckVersion.setOnClickListener(chartModeCheckListener);
 
-				showPopWindows(view,80,40,20);
+							showPopWindows(view,80,40,20);
+						}
+					}
+				});
 			}
 		});
 
@@ -460,9 +519,24 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.ivPreviewRightSetting.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
+				if (mUvcCameraHandler.isOpened()){
+					getCameraParams();
+				}
+
+
 				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_setting,null);
 
 				PopSettingBinding popSettingBinding = DataBindingUtil.bind(view);
+
+				if (cameraParams != null){
+					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(cameraParams.get("emiss")));
+					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(cameraParams.get("distance")));
+					popSettingBinding.etCameraSettingReflect.setText(String.valueOf(cameraParams.get("Refltmp")));
+					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(cameraParams.get("Fix")));
+					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf(cameraParams.get("Airtmp")));
+					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf(cameraParams.get("humi")));
+				}
+
 				assert popSettingBinding != null;
 				popSettingBinding.switchChoiceTempUnit.setText(new String[]{"℃","℉","K"}).setSelectedTab(0).setOnSwitchListener(new SwitchMultiButton.OnSwitchListener() {
 					@Override
@@ -470,7 +544,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 						mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(position);
 //						Toast.makeText(mContext.get(),""+position,Toast.LENGTH_SHORT).show();
-
 
 					}
 				});
@@ -707,7 +780,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		}
 		if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing() && id >= 1 && id <=6){
 			mUvcCameraHandler.setPalette(id);
-//			mDataBinding.customSeekbarPreviewFragment.setBackcolor(id);
+			mDataBinding.customSeekbarPreviewFragment.setPalette(id-1);
 			mDataBinding.customSeekbarPreviewFragment.invalidate();//刷新控件
 		}
 	}

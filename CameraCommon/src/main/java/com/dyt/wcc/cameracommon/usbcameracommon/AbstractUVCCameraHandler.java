@@ -142,6 +142,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
     private static final int MSG_SET_AREA = 34;
     private static final int MSG_SHOW_TEMP = 35;
     //长城添加
+    private static final int MSG_FIXED_TEMP_STRIP = 36;
     private static final int MSG_SAVEDATA_FIVESECONDS = 40;//保存五帧数据
     private static final int MSG_SAVE_PICTURE = 50;//截屏
 
@@ -526,11 +527,17 @@ abstract class AbstractUVCCameraHandler extends Handler {
         sendMessage(message);
     }
 
-    //added by wupei
-    public void laWenKuan(float max, float min) {
+    /**
+     * SeekBar 滑动条 范围改变方法。
+     * @param maxPercent 最大值滑动条 百分比
+     * @param minPercent 最小值滑动条 百分比
+     * @param maxValue 最大值滑动条 百分比对应的温度数值
+     * @param minValue 最小值滑动条 百分比对应的温度数值
+     */
+    public void seeKBarRangeSlided(float maxPercent, float minPercent,float maxValue, float minValue) {
         Message message = Message.obtain();
         message.what = MSG_LA_WENKUAN;
-        message.obj = new float[]{max, min};
+        message.obj = new float[]{maxPercent, minPercent,maxValue,minValue};
         sendMessage(message);
     }
 
@@ -538,6 +545,14 @@ abstract class AbstractUVCCameraHandler extends Handler {
     public void disWenKuan() {
         checkReleased();
         sendEmptyMessage(MSG_DIS_WENKUAN);
+    }
+    //固定温度条
+    public void fixedTempStripChange(boolean state) {
+        checkReleased();
+        Message message = Message.obtain();
+        message.what = MSG_FIXED_TEMP_STRIP;
+        message.obj = state;
+        sendMessage(message);
     }
 
     public void openSystemCamera() {
@@ -781,12 +796,18 @@ abstract class AbstractUVCCameraHandler extends Handler {
                 break;
             case MSG_LA_WENKUAN:
                 float[] result = (float[]) msg.obj;
-                float max = result[0];
-                float min = result[1];
-                thread.handleLaWenKuan(max, min);
+                float maxPercent = result[0];
+                float minPercent = result[1];
+                float maxValue = result[2];
+                float minValue = result[3];
+                thread.handleLaWenKuan(maxPercent, minPercent,maxValue,minValue);
                 break;
             case MSG_DIS_WENKUAN:
                 thread.handleDisWenKuan();
+                break;
+            case MSG_FIXED_TEMP_STRIP://固定温度条
+                boolean state = (boolean) msg.obj;
+                thread.handleFixedTempStrip(state);
                 break;
             case MSG_OPEN_SYS_CAMERA:
                 thread.handleOpenSysCamera();
@@ -1997,11 +2018,11 @@ abstract class AbstractUVCCameraHandler extends Handler {
         }
 
         //added by wupei
-        public void handleLaWenKuan(float max, float min) {
+        public void handleLaWenKuan(float maxPercent, float minPercent,float maxValue, float minValue) {
             if ((mUVCCamera == null)) {
                 return;
             }
-            mUVCCamera.laWenKuan(max, min);
+            mUVCCamera.laWenKuan(maxPercent,minPercent,maxValue, minValue);
         }
         public void handleSaveFiveSeconds(String path){//保存五帧 原始数据
             if ((mUVCCamera == null)) {
@@ -2022,6 +2043,13 @@ abstract class AbstractUVCCameraHandler extends Handler {
                 return;
             }
             mUVCCamera.DisWenKuan();
+        }
+        //固定温度条
+        public void handleFixedTempStrip(boolean state) {
+            if ((mUVCCamera == null)) {
+                return;
+            }
+            mUVCCamera.FixedTempStrip(state);
         }
 
         public void handleChangePalette(int typeOfPalette) {

@@ -55,6 +55,10 @@ private:
 
 	unsigned short maxpercent;//画板绘制的 最高的百分比，eg:最低高低差100度，百分比为90，则90-100均为一个 RGBA值
 	unsigned short minpercent;//画板绘制的 最低的百分比
+	float maxThumbValue;//最大值滑块 百分比对应温度
+	float minThumbValue;//最小值滑块 百分比对应温度
+	bool isFixedTempStrip = false;//是否固定温度条
+
 	int mCurrentAndroidVersion;     //标志是否使用OpenCL加速渲染成图
 	/***********************温度************************************/
 	//温度线程
@@ -98,8 +102,9 @@ public:
     void copyFrame(const uint8_t *src, uint8_t *dest, const int width, int height, const int stride_src, const int stride_dest);
 	void copyFrameTO292(const uint8_t *src, uint8_t *dest, const int width, int height, const int stride_src, const int stride_dest);
 	//滑动条更改高低温显示的百分比
-	void showTempRange(float maxtemppersent,float mintemppersent);
+	void showTempRange( float maxPercent,float minPercent,float maxValue ,float minValue);
 	void disTempRange();
+	void fixedTempStripChange(bool state);
 	//设置区域检查
 	void setAreaCheck(int isAreaCheck);
 	void setArea(int* area,int lenght);

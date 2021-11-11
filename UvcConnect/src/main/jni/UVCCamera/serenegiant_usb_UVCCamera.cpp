@@ -442,12 +442,12 @@ static void nativeSetArea(JNIEnv *env, jobject thiz,
 }
 
 static void nativeLaWenKuan(JNIEnv *env, jclass clazz,
-		jlong id_camera, jfloat max, jfloat min) {
+		jlong id_camera, jfloat maxPercent, jfloat minPercent,jfloat maxValue ,jfloat minValue) {
 	// TODO: implement nativeLaWenKuan()
 	ENTER();
 	UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
 	if (LIKELY(camera)) {
-		camera->laWenKuan(max,min);
+		camera->laWenKuan(maxPercent,minPercent, maxValue ,minValue);
 	}
 	EXIT();
 }
@@ -462,6 +462,14 @@ static void nativeDisWenKuan(JNIEnv *env, jclass clazz,
 		camera->disWenKuan();
 	}
 	EXIT();
+}
+//固定温度条
+static void nativeFixedTempStripChange(JNIEnv *env, jclass clazz,
+							 jlong id_camera, jboolean state) {
+	UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
+	if (LIKELY(camera)) {
+		camera->fixedTempStripChange(state);
+	}
 }
 
 
@@ -2290,8 +2298,10 @@ static JNINativeMethod methods[] = {
     { "nativeChangePalette",		"(JI)V", (void *) nativeChangePalette },
     { "nativeSetAreaCheck",		"(JI)V", (void *) nativeSetAreaCheck },
 	{ "nativeSetArea",		"(J[I)V", (void *) nativeSetArea },
-    { "nativeLaWenKuan",		"(JFF)V", (void *) nativeLaWenKuan },
+    { "nativeLaWenKuan",		"(JFFFF)V", (void *) nativeLaWenKuan },
 	{ "nativeDisWenKuan",		"(J)V", (void *) nativeDisWenKuan },
+	{ "nativeFixedTempStripChange",		"(JZ)V", (void *) nativeFixedTempStripChange },
+
     { "nativeSetTempRange",		"(JI)V", (void *) nativeSetTempRange },
     { "nativeSetShutterFix",		"(JF)V", (void *) nativeSetShutterFix },
     { "nativeSetCameraLens",		"(JI)V", (void *) nativeSetCameraLens },

@@ -24,7 +24,6 @@
 package com.serenegiant.usb;
 
 import android.graphics.SurfaceTexture;
-import android.hardware.Camera;
 import android.hardware.usb.UsbDevice;
 import android.text.TextUtils;
 import android.util.Log;
@@ -1180,10 +1179,10 @@ public class UVCCamera {
 	}
 
 	//added by wupei
-	public void  laWenKuan(float max, float min) {
+	public void  laWenKuan(float maxPercent, float minPercent,float maxValue, float minValue) {
 		if (mCtrlBlock != null) {
 			Log.e(TAG, "laWenKuan");
-			nativeLaWenKuan(mNativePtr, max, min);
+			nativeLaWenKuan(mNativePtr, maxPercent, minPercent,maxValue,minValue);
 		}
 	}
 
@@ -1205,6 +1204,14 @@ public class UVCCamera {
 			Log.e(TAG, "DisWenKuan");
 			nativeDisWenKuan(mNativePtr);
 		}
+	}
+	//固定温度条
+	public void FixedTempStrip(boolean state ){
+		if (mCtrlBlock != null) {
+			Log.e(TAG, "FixedTempStrip");
+			nativeFixedTempStripChange(mNativePtr,state);
+		}
+
 	}
 	//更改画板
 	public void  changePalette(int typeOfPalette) {
@@ -1265,8 +1272,9 @@ public class UVCCamera {
 	private static final native void nativeSetArea(final long id_camera, int[] area);
 	private static final native void nativeSetAreaCheck(final long id_camera, int isAreaChecked);
 	private static final native void nativeChangePalette(final long id_camera, int typeOfPalette);
-	private static final native void nativeLaWenKuan(final long id_camera, float max,float min);
+	private static final native void nativeLaWenKuan(final long id_camera, float maxPercent,float minPercent,float maxValue ,float minValue);
 	private static final native void nativeDisWenKuan(final long id_camera);
+	private static final native void nativeFixedTempStripChange(final long id_camera , boolean state );
 	private static final native void nativeSetTempRange(final long id_camera, int range);
 	private static final native void nativeSetShutterFix(final long id_camera, float mShutterFix);
 	//added by wupei,获取资源文件存储路径

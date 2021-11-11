@@ -53,18 +53,21 @@ public class MyCustomRangeSeekBar extends View {
 	private int widgetMode = 0;//控件的绘制模式。0代表简单的绘制最高最低温。非零代表固定温度条模式。
 
 	//progress bar 选中背景
-	private List<Bitmap> mProgressBarSelectBg;//整体的背景颜色
+	private List<Bitmap> mProgressBarSelectBgList;//整体的背景颜色
 	private Bitmap mProgressBarBg;
+	private Bitmap mProgressBarSelectBg;
 
 	//最小值（绝对），取值0-100
-	public static float mAbsoluteMinValue;
+	public static float mAbsoluteMinValue = 0;
 	//最大值（绝对）
-	public static float mAbsoluteMaxValue;
+	public static float mAbsoluteMaxValue = 100;
 
 	//已选标准（占滑动条百分比）最小值 。相对于整体的高度。
 	private double mPercentSelectedMinValue = 0d;
 	//已选标准（占滑动条百分比）最大值。相对于整体的高度。
 	private double mPercentSelectedMaxValue = 1d;
+	//最大值和最小值之间要求的最小范围绝对值，要将 最大值百分比和最小值 百分比 放大100倍之后计算。
+	private float mBetweenAbsoluteValue = 1;
 
 	private RectF mProgressBarRectBg;//条子背景的矩形
 	private RectF mProgressBarSelRect;//色板覆盖的矩形
@@ -103,14 +106,40 @@ public class MyCustomRangeSeekBar extends View {
 		//void onClickMinThumb(Number max, Number min);
 
 		//void onClickMaxThumb();
-		//最小值滑块移动
-		void onUpMinThumb(float max, float min);
-		//最大值的滑块移动
-		void onUpMaxThumb(float max, float min);
 
-		void onMinMove(float max, float min);
+		/**
+		 * 最大值的滑块 抬起
+		 * @param maxPercent 最大值百分比
+		 * @param minPercent    最小值百分比
+		 * @param maxValue  最大值百分比对应的温度数值
+		 * @param minValue  最小百分比对应的温度数值
+		 */
+		void onUpMaxThumb(float maxPercent, float minPercent,float maxValue, float minValue);
+		/**
+		 * 最大值的滑块 抬起
+		 * @param maxPercent 最大值百分比
+		 * @param minPercent    最小值百分比
+		 * @param maxValue  最大值百分比对应的温度数值
+		 * @param minValue  最小百分比对应的温度数值
+		 */
+		void onUpMinThumb(float maxPercent, float minPercent,float maxValue, float minValue);
+		/**
+		 * 最小值滑块移动
+		 * @param maxPercent 最大值百分比
+		 * @param minPercent    最小值百分比
+		 * @param maxValue  最大值百分比对应的温度数值
+		 * @param minValue  最小百分比对应的温度数值
+		 */
+		void onMinMove(float maxPercent, float minPercent,float maxValue, float minValue);
 
-		void onMaxMove(float max, float min);
+		/**
+		 * 最大值滑块移动
+		 * @param maxPercent 最大值百分比
+		 * @param minPercent 最小值百分比
+		 * @param maxValue  最大值百分比对应的温度数值
+		 * @param minValue  最小百分比对应的温度数值
+		 */
+		void onMaxMove(float maxPercent, float minPercent,float maxValue, float minValue);
 	}
 
 
@@ -147,6 +176,20 @@ public class MyCustomRangeSeekBar extends View {
 
 	public int getWidgetMode () { return widgetMode; }
 	public void setWidgetMode (int widgetMode) { this.widgetMode = widgetMode; }
+	public List<Bitmap> getmProgressBarSelectBgList () {
+		return mProgressBarSelectBgList; }
+	public void setmProgressBarSelectBgList (List<Bitmap> mProgressBarSelectBgList) {
+		this.mProgressBarSelectBgList = mProgressBarSelectBgList; }
+
+	public boolean setPalette(int index ){
+		if (mProgressBarSelectBgList!=null && index < mProgressBarSelectBgList.size()){
+			mProgressBarSelectBg = mProgressBarSelectBgList.get(index);
+			return true;
+		}else {
+			return false;
+		}
+	}
+
 
 	/**
 	 *  mMaxTemp 条子最高温， mMinTemp 条子最低温
@@ -216,6 +259,8 @@ public class MyCustomRangeSeekBar extends View {
 
 		Paint.FontMetrics metrics = mPaint.getFontMetrics();
 		seekbarWidth = metrics.descent - metrics.ascent;
+		mThumbHeight = mThumbMaxImage.getHeight();
+		mThumbWidth = mThumbMaxImage.getWidth();
 
 		topBottomPadding = (int) (mThumbMaxImage.getHeight() + seekbarWidth);//顶部底部的padding 为 滑动块高度 加上画笔绘制文字 内容部分的高度
 //		Log.e(TAG, "MyCustomRangeSeekBar: " + topBottomPadding);
@@ -268,7 +313,7 @@ public class MyCustomRangeSeekBar extends View {
 	}
 	private void onDrawBg(Canvas canvas){
 		//绘制全局背景
-		canvas.drawColor(getResources().getColor(R.color.bg_preview_toggle_select));
+//		canvas.drawColor(getResources().getColor(R.color.bg_preview_toggle_select));
 		//绘制条子的整体背景
 		canvas.drawBitmap(mProgressBarBg,null,
 				mProgressBarRectBg,mPaint);
@@ -290,6 +335,12 @@ public class MyCustomRangeSeekBar extends View {
 			recRange.top = topBottomPadding+Temp2Height(rangeMinTemp) - btRangeMaxTemp.getHeight()/4.0f;
 			recRange.bottom = topBottomPadding+Temp2Height(rangeMinTemp) + btRangeMaxTemp.getHeight()/4.0f;
 			canvas.drawBitmap(btRangeMinTemp,null,recRange,mPaint);
+		}
+
+		if (mProgressBarSelectBg != null){
+			RectF recPalette = new RectF(mThumbMaxImage.getWidth(),
+					percent2Height(mPercentSelectedMaxValue),mThumbMaxImage.getWidth() + seekbarWidth,percent2Height(mPercentSelectedMinValue));
+			canvas.drawBitmap(mProgressBarSelectBg ,null ,recPalette,mPaint);
 		}
 	}
 	private void onDrawText(Canvas canvas){
@@ -348,10 +399,220 @@ public class MyCustomRangeSeekBar extends View {
 		return (float) (mMaxTemp - (mMaxTemp- mMinTemp)*(1-percent));
 	}
 
+	public ThumbListener getmThumbListener () { return mThumbListener; }
+	public void setmThumbListener (ThumbListener mThumbListener) {
+		this.mThumbListener = mThumbListener;
+	}
+
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
-		return super.onTouchEvent(event);
+		if (!mEnable)
+			return true;
+		//根据触发的时间去 计算
+		switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				mPressedThumb = evalPressedThumb(event.getY());
+//				Log.e(TAG, "onTouchEvent: "+ mPressedThumb);
+				invalidate();
+				//Intercept parent TouchEvent
+				if (getParent() != null) {
+					getParent().requestDisallowInterceptTouchEvent(true);
+				}
+				break;
+
+			case MotionEvent.ACTION_MOVE:
+//				Log.e(TAG, "onTouchEvent: ACTION_MOVE"  + "  " + mPressedThumb);
+				if (mPressedThumb != null) {
+//					Log.e(TAG, "onTouchEvent: ACTION_MOVE"  + "  " + mPressedThumb);
+					float eventY = event.getY();
+					float maxValue = percentToAbsoluteValue(mPercentSelectedMaxValue);//最高值[0,100]
+					float minValue = percentToAbsoluteValue(mPercentSelectedMinValue);//最低值[0,100]
+					float eventValue = percentToAbsoluteValue(screenToPercent(eventY));//得到点距离顶部的百分比 [0-100]
+//					Log.e(TAG, "onTouchEvent: value  "+ eventValue);
+					if (Thumb.MIN.equals(mPressedThumb)) {
+						minValue = eventValue;
+						if (mBetweenAbsoluteValue > 0 && maxValue - minValue <= mBetweenAbsoluteValue)
+							minValue = new Float((maxValue - mBetweenAbsoluteValue));
+						setPercentSelectedMinValue(absoluteValueToPercent(minValue));
+						if (mThumbListener != null){
+//							if (widgetMode==0){
+								mThumbListener.onMinMove(getSelectedAbsoluteMaxValue(), getSelectedAbsoluteMinValue()
+										,percent2Temp(mPercentSelectedMaxValue),percent2Temp(mPercentSelectedMinValue));
+//							}else {//取交集
+//
+//							}
+						}
+					} else if (Thumb.MAX.equals(mPressedThumb)) {
+						maxValue = eventValue;
+						if (mBetweenAbsoluteValue > 0 && maxValue - minValue <= mBetweenAbsoluteValue)
+							maxValue = new Float(minValue + mBetweenAbsoluteValue);
+
+						setPercentSelectedMaxValue(absoluteValueToPercent(maxValue));
+						if (mThumbListener != null){
+//							if (widgetMode==0){
+								mThumbListener.onMaxMove(getSelectedAbsoluteMaxValue(), getSelectedAbsoluteMinValue()
+										,percent2Temp(mPercentSelectedMaxValue),percent2Temp(mPercentSelectedMinValue));
+//							}else {
+//
+//							}
+						}
+
+					}
+				}
+				//Intercept parent TouchEvent
+				if (getParent() != null) {
+					getParent().requestDisallowInterceptTouchEvent(true);
+				}
+				break;
+
+			case MotionEvent.ACTION_UP:
+//				Log.e(TAG, "onTouchEvent: ACTION_UP"  + "  " + mPressedThumb);
+				//抬起时,判断弹起的是 最高值 还是最低值，并回调对应的 抬起函数
+				if (Thumb.MIN.equals(mPressedThumb)) {
+					if (mThumbListener != null)
+						mThumbListener.onUpMinThumb(getSelectedAbsoluteMaxValue(), getSelectedAbsoluteMinValue()
+								,percent2Temp(mPercentSelectedMaxValue),percent2Temp(mPercentSelectedMinValue));
+				}
+				if (Thumb.MAX.equals(mPressedThumb)) {
+					if (mThumbListener != null)
+						mThumbListener.onUpMaxThumb(getSelectedAbsoluteMaxValue(), getSelectedAbsoluteMinValue()
+								,percent2Temp(mPercentSelectedMaxValue),percent2Temp(mPercentSelectedMinValue));
+				}
+				//Intercept parent TouchEvent
+				if (getParent() != null) {
+					getParent().requestDisallowInterceptTouchEvent(true);
+				}
+				break;
+			case MotionEvent.ACTION_CANCEL:
+//				Log.e(TAG, "onTouchEvent: ACTION_CANCEL"  + "  " + mPressedThumb);
+				mPressedThumb = null;
+				//Intercept parent TouchEvent
+				if (getParent() != null) {
+					getParent().requestDisallowInterceptTouchEvent(true);
+				}
+				break;
+		}
+
+		return true;
 	}
+	/**
+	 * 根据touchY, 判断是哪一个thumb(Min or Max)
+	 * @param touchY 触摸的Y在屏幕中坐标（相对于容器）
+	 */
+	private MyCustomRangeSeekBar.Thumb evalPressedThumb(float touchY) {
+		MyCustomRangeSeekBar.Thumb result = null;
+		boolean minThumbPressed = isInThumbRange(touchY, mPercentSelectedMinValue);
+		boolean maxThumbPressed = isInThumbRange(touchY, mPercentSelectedMaxValue);
+		if (minThumbPressed && maxThumbPressed) {
+			// if both thumbs are pressed (they lie on top of each other), choose the one with more room to drag. this avoids "stalling" the thumbs in a corner, not being able to drag them apart anymore.
+			result = touchY>= percentToScreen(mPercentSelectedMinValue)? MyCustomRangeSeekBar.Thumb.MIN : MyCustomRangeSeekBar.Thumb.MAX;
+		} else if (minThumbPressed) {
+			result = MyCustomRangeSeekBar.Thumb.MIN;
+		} else if (maxThumbPressed) {
+			result = MyCustomRangeSeekBar.Thumb.MAX;
+		}
+		return result;
+	}
+
+	/**
+	 * <p>  判断 touchY 是否在滑块点击范围内    </p>
+	 * @param touchY            需要被检测的 屏幕中的Y坐标（相对于容器）
+	 * @param percentThumbValue 需要检测的滑块 Y 坐标百分比值（滑块Y 坐标）
+	 */
+	private boolean isInThumbRange(float touchY, double percentThumbValue) {
+		return Math.abs(touchY - percentToScreen(percentThumbValue)) <= 2*mThumbHeight;
+	}
+	/**
+	 * <p>  进度值，从百分比值转换到屏幕中坐标值 left&top的绘制模式    </p>
+	 * <p>  (getHeight() - 2 * topBottomPadding)  代表 条子的高度  </p>
+	 * <p>  (1 - percentValue) 代表 距离顶部的百分比  </p>
+	 * <p>  topBottomPadding+ 顶部的距离 就是百分比所在的中心位置    </p>
+	 */
+	private float percentToScreen(double percentValue) {
+		return (float) (topBottomPadding + (1 - percentValue) * (getHeight() - 2 * topBottomPadding));
+	}
+	/**
+	 * 返回最大值滑块 的温度数值
+	 * @return 返回最大值滑块 的温度数值float类型
+	 */
+	public float getSelectedAbsoluteMaxTemp() {
+		return percentToAbsoluteTemp(mPercentSelectedMaxValue); }
+
+	/**
+	 * 滑块最大值百分比 转化成 0-100之间的float数值。
+	 * @return
+	 */
+	public float getSelectedAbsoluteMaxValue() {
+		return percentToAbsoluteValue(mPercentSelectedMaxValue); }
+	/**
+	 * 滑块最小值百分比 转化成 0-100之间的float数值。
+	 * @return
+	 */
+	public float getSelectedAbsoluteMinValue() {
+		return percentToAbsoluteValue(mPercentSelectedMinValue);
+	}
+	/**
+	 * 百分比乘以最大值减去最小值，然后加上最小值。为返回的温度
+	 * @param percent   百分比
+	 * @return      (float) (mMinTemp + percent * (mMaxTemp - mMinTemp));
+	 */
+	private float percentToAbsoluteTemp(double percent) {
+		return (float) (mMinTemp + percent * (mMaxTemp - mMinTemp));
+	}
+	/**
+	 * 进度值，从百分比到绝对值 取值为 0 - 100
+	 * @return  (float) percent * 100;
+	 */
+	private float percentToAbsoluteValue(double percent) {
+		return (float) percent * 100;
+	}
+	/**
+	 * <p>  进度值，转换屏幕像素值到百分比值     </p>
+	 * <p> 返回的是 [0-1] 之间的数值 </p>
+	 *
+	 *
+	 *
+	 */
+	private double screenToPercent(float screenCoord) {
+		int height = getHeight();
+		if (height <= 2 * topBottomPadding) {//整体控件的高度一定要大于上与下的间隔之和
+			// prevent division by zero, simply return 0.
+			return 0d;
+		} else {
+			//点的Y值 对应在 条子的 位置 百分比。  再用1减去百分比，得到点到顶部的百分比。
+			double result = 1 - (screenCoord - topBottomPadding) / (height - 2 * topBottomPadding);//？？？？为什么要用用一减去这个百分比？
+			return Math.min(1d, Math.max(0d, result));//返回的是 0-1 之间的数值
+		}
+	}
+	/**
+	 * 进度值，从绝对值到百分比
+	 * @param value 绝对值 [0,99]
+	 */
+	private double absoluteValueToPercent(float value) {
+		if (0 == mAbsoluteMaxValue - mAbsoluteMinValue) {
+			// prevent division by zero, simply return 0.
+			return 0d;
+		}
+		return (value - mAbsoluteMinValue) / (mAbsoluteMaxValue - mAbsoluteMinValue);
+	}
+	/**
+	 * 设置已选择最小值的百分比值
+	 * [0 , value , 1]
+	 */
+	public void setPercentSelectedMinValue(double value) {
+		mPercentSelectedMinValue = Math.max(0d, Math.min(1d, Math.min(value, mPercentSelectedMaxValue)));
+		invalidate();
+	}
+	/**
+	 * [0 , value , 1]
+	 * 设置已选择最大值的百分比值
+	 */
+	public void setPercentSelectedMaxValue(double value) {
+		mPercentSelectedMaxValue = Math.max(0d, Math.min(1d, Math.max(value, mPercentSelectedMinValue)));
+		invalidate();
+	}
+
+
 
 	@Override
 	protected void onLayout (boolean changed, int left, int top, int right, int bottom) {

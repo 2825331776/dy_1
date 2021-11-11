@@ -151,7 +151,7 @@
         <LinearLayout
             android:id="@+id/ll_container_preview_seekbar"
             android:layout_height="match_parent"
-            android:layout_width="@dimen/dimen_75dp"
+            android:layout_width="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toRightOf="@id/fl_preview"
             app:layout_constraintRight_toLeftOf="@id/rl_right_container"
@@ -245,6 +245,7 @@
                 android:layout_marginEnd="@dimen/dimen_4dp"
                 android:textColorHint="@color/white"
                 android:hint="@string/AlarmTempInput"
+                android:imeOptions="actionDone"
                 android:background="@drawable/shape_bg_pop_setting_edit"
                 android:inputType="numberDecimal"
                 android:maxLength="6"

@@ -459,7 +459,7 @@ void UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_arg
     //LOGE("uvc_preview_frame_callback hold_bytes:%d,preview->frameBytes:%d",hold_bytes,preview->frameBytes);
     if(UNLIKELY(hold_bytes < preview->frameBytes))//判断hold_bytes 不小于preview.frameBytes则跳转到 后面正常运行     UNLIKELY期待值大几率为false时,等价于if(value)
     {
-        LOGE("uvc_preview_frame_callback hold_bytes < preview->frameBytes");
+        LOGE("uvc_preview_frame_callback hold_bytes < 111  preview->frameBytes");
         return;
     }
 //    char i = frameData[0];

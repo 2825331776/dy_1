@@ -437,11 +437,11 @@ void UVCCamera::setArea(int* area,int lenght){
 
 
  //added by wupei,la wen kuan
- void UVCCamera::laWenKuan(float max, float min){
+ void UVCCamera::laWenKuan( float maxPercent,float minPercent,float maxValue ,float minValue){
 	 ENTER();
 	 if (mPreview) {
 //		 mPreview->laWenKuan(max,min);
-		 mFrameImage->showTempRange(max,min);
+		 mFrameImage->showTempRange(maxPercent,minPercent,maxValue,minValue);
 	 }
 	 EXIT();
  }
@@ -451,6 +451,12 @@ void UVCCamera::disWenKuan(){
 	if (mPreview) {
 //		mPreview->disWenKuan();
 		mFrameImage->disTempRange();
+	}
+	EXIT();
+}
+void UVCCamera::fixedTempStripChange(bool state){
+	if (mPreview) {
+		mFrameImage->fixedTempStripChange(state);
 	}
 	EXIT();
 }

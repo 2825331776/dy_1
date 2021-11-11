@@ -174,15 +174,42 @@
                 android:textSize="16sp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
-            <SeekBar
-                android:id="@+id/seekbar_camera_setting_emittance"
+
+            <EditText
+                android:id="@+id/et_camera_setting_emittance"
                 app:layout_constraintTop_toTopOf="@id/tv_camera_setting_emittance"
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_emittance"
                 app:layout_constraintLeft_toRightOf="@id/gl_setting_content"
                 android:layout_marginStart="@dimen/dimen_10dp"
-                android:progressBackgroundTint="@color/white"
-                android:layout_width="@dimen/dimen_150dp"
+                android:hint="@string/AlarmTempInput"
+                android:textColorHint="@color/white"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:inputType="number"
+                android:imeOptions="actionDone"
+                android:background="@drawable/shape_bg_pop_setting_edit"
+                android:singleLine="true"
+                android:layout_width="@dimen/dimen_55dp"
                 android:layout_height="0dp"/>
+            <ImageButton
+                android:id="@+id/ib_camera_setting_emittance"
+                app:layout_constraintTop_toTopOf="@id/tv_camera_setting_emittance"
+                app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_emittance"
+                app:layout_constraintLeft_toRightOf="@id/et_camera_setting_emittance"
+                android:layout_marginStart="@dimen/dimen_5dp"
+                android:background="@drawable/ic_user_vector_confirm_24px"
+                android:layout_width="@dimen/dimen_20dp"
+                android:layout_height="@dimen/dimen_20dp"/>
+
+<!--            <SeekBar-->
+<!--                android:id="@+id/seekbar_camera_setting_emittance"-->
+<!--                app:layout_constraintTop_toTopOf="@id/tv_camera_setting_emittance"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_emittance"-->
+<!--                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"-->
+<!--                android:layout_marginStart="@dimen/dimen_10dp"-->
+<!--                android:progressBackgroundTint="@color/white"-->
+<!--                android:layout_width="@dimen/dimen_150dp"-->
+<!--                android:layout_height="0dp"/>-->
 
 <!--            距离-->
             <TextView
@@ -208,6 +235,7 @@
                 android:textColor="@color/white"
                 android:textSize="15sp"
                 android:inputType="number"
+                android:imeOptions="actionDone"
                 android:background="@drawable/shape_bg_pop_setting_edit"
                 android:singleLine="true"
                 android:layout_width="@dimen/dimen_55dp"
@@ -248,6 +276,7 @@
                 android:inputType="number"
                 android:background="@drawable/shape_bg_pop_setting_edit"
                 android:singleLine="true"
+                android:imeOptions="actionDone"
                 android:layout_width="@dimen/dimen_55dp"
                 android:layout_height="0dp"/>
             <ImageButton
@@ -286,6 +315,7 @@
                 android:inputType="number"
                 android:background="@drawable/shape_bg_pop_setting_edit"
                 android:singleLine="true"
+                android:imeOptions="actionDone"
                 android:layout_width="@dimen/dimen_55dp"
                 android:layout_height="0dp"/>
             <ImageButton
@@ -324,6 +354,7 @@
                 android:inputType="number"
                 android:background="@drawable/shape_bg_pop_setting_edit"
                 android:singleLine="true"
+                android:imeOptions="actionDone"
                 android:layout_width="@dimen/dimen_55dp"
                 android:layout_height="0dp"/>
             <ImageButton
@@ -362,6 +393,7 @@
                 android:inputType="number"
                 android:background="@drawable/shape_bg_pop_setting_edit"
                 android:singleLine="true"
+                android:imeOptions="actionDone"
                 android:layout_width="@dimen/dimen_55dp"
                 android:layout_height="0dp"/>
             <ImageButton

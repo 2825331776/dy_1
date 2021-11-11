@@ -88,13 +88,20 @@ void FrameImage::changePalette(int typeOfPalette){
     mIsPaletteChanged= true;
 }
 //温幅最高最低修改  温度访问改变
-void FrameImage::showTempRange(float maxtemppersent,float mintemppersent){
+void FrameImage::showTempRange(float maxPercent,float minPercent,float maxValue ,float minValue){
     isshowtemprange =true;
-    maxpercent = (unsigned  short )maxtemppersent;
-    minpercent = (unsigned  short )mintemppersent;
+    maxpercent = (unsigned  short )maxPercent;
+    minpercent = (unsigned  short )minPercent;
+    maxThumbValue = maxValue;
+    minThumbValue = minValue;
+    LOGE("temp maxThumbValue = %f , min == %f" ,maxThumbValue,minThumbValue);
 }
 void FrameImage::disTempRange() {//在下一帧图像绘制的时候就不会绘制
     isshowtemprange = false;
+}
+void FrameImage::fixedTempStripChange(bool state) {
+    isFixedTempStrip = state;
+    LOGE(" fixed temp strip  state =  %d" ,isFixedTempStrip);
 }
 void FrameImage::setArea(int *area, int lenght) {//设置区域检查的区域大小
     for(int i=0;i<lenght;i++){
@@ -244,26 +251,38 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
 //    LOGE("max ========== %d", max );
 //    LOGE("min ==========%d",min);
 
-    if (mIsAreachecked) {
-//            LOGE("区域检查");
-            // 是否为区域检查，是则绘制灰度图
-            for (int i = 0; i < requestHeight - 4; i++) {
-                for (int j = 0; j < requestWidth; j++) {
-                    //黑白：灰度值0-255单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
-                    //tmp_buf[i * requestWidth + j 每个数据点。 (AD -min)* (255 / ro) 表示减去最小值 将255分成 ro份，每个ad 值占多少份
-                    int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
-                    if (gray < 0) {
-                        gray = 0;
-                    }
-                    if (gray > 255) {
-                        gray = 255;
-                    }
-                    mBuffer[4 * (i * requestWidth + j)] = gray;
-                    mBuffer[4 * (i * requestWidth + j) + 1] = gray;
-                    mBuffer[4 * (i * requestWidth + j) + 2] = gray;
-                    mBuffer[4 * (i * requestWidth + j) + 3] = 1;
-                }
+    // 不论是否为区域检查，都优先绘制出 一副灰度图
+    for (int i = 0; i < requestHeight - 4; i++) {
+        for (int j = 0; j < requestWidth; j++) {
+            //黑白：灰度值0-255单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
+            //tmp_buf[i * requestWidth + j 每个数据点。 (AD -min)* (255 / ro) 表示减去最小值 将255分成 ro份，每个ad 值占多少份
+            int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
+            if (gray < 0) {
+                gray = 0;
             }
+            if (gray > 255) {
+                gray = 255;
+            }
+            mBuffer[4 * (i * requestWidth + j)] = gray;
+            mBuffer[4 * (i * requestWidth + j) + 1] = gray;
+            mBuffer[4 * (i * requestWidth + j) + 2] = gray;
+            mBuffer[4 * (i * requestWidth + j) + 3] = 1;
+        }
+    }
+    //是否为固定温度条
+    if (isFixedTempStrip){
+        //todo 查询最大值滑块的温度 对应的ad值 ；最小值滑块对应的 ad值
+        int compareIndex = 0;
+        for (int i = 0; i < 16384; ++i) {
+
+        }
+
+    }
+
+
+    if (mIsAreachecked) {
+            //            LOGE("区域检查");//则给选中的区域渲染
+
             if (isshowtemprange) {
                 //LOGE("拉温宽");
                 min = (int) (min + ro * minpercent / 100);
@@ -296,6 +315,7 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
             }
 
         } else {
+        //非区域检查，则根据 色板的 拖动条设置去渲染
             if (isshowtemprange) {
                 //LOGE("非区域检查+拉温宽");
                 min = (int) (min + ro * minpercent / 100);
