@@ -21,6 +21,7 @@ FrameImage::FrameImage(uvc_device_handle_t *devh)  {
             mIsAreachecked = false;
             isshowtemprange = false;
             mTypeOfPalette = 1;
+            isFixedTempStrip = false;
             /**
              * void *memset(void *s, int ch, size_t n);
               函数解释：将s中当前位置后面的n个字节 （typedef unsigned int size_t ）用 ch 替换并返回 s 。
@@ -82,6 +83,40 @@ void FrameImage::shutRefresh()
     isNeedWriteTable=true;
 //    LOGE("===================shutRefresh=============update isNeedWriteTable===============");
 }
+//二分法查找
+int FrameImage::getDichotomySearch(float * data, int length, float value, int startIndex,
+                                   int endIndex) {
+    float * position = data;
+    if (endIndex > length) return -1;
+    int start = startIndex;
+    int end = endIndex -1;//下标
+    int valueIndex = -1;
+
+    if (end<=0)return -1;
+    while (start <= end){
+        int midPont = (start + end+1)/2;//记录的是坐标，所以要在取中点之前+1
+        if (value == position[midPont]){//如果中点坐标的值 恰好等于 目标值，则返回这个 中点坐标
+            valueIndex = midPont;
+            return valueIndex;
+        }
+        if (value > position[midPont] ){
+            start = midPont +1;
+            if ((start) <= end && value < position[start]){
+                valueIndex = midPont;
+                return valueIndex;
+            }
+        }
+        if (value < position[start]){
+            end = midPont -1;
+            if ((end) >= start && value > position[end]){//中点値小志 目标值。但中点値前一位的值又大于了目标值。则返回中点前一位的坐标
+                valueIndex = end;
+                return valueIndex;
+            }
+        }
+    }
+    position = NULL;
+    return valueIndex;
+}
 //更改色板
 void FrameImage::changePalette(int typeOfPalette){
     mTypeOfPalette=typeOfPalette;
@@ -94,13 +129,23 @@ void FrameImage::showTempRange(float maxPercent,float minPercent,float maxValue 
     minpercent = (unsigned  short )minPercent;
     maxThumbValue = maxValue;
     minThumbValue = minValue;
+    LOGE( " isFixedTempStrip   === > %d" , isFixedTempStrip );
+//    if (isFixedTempStrip) {
+////        //todo 查询最大值滑块的温度 对应的ad值 ；最小值滑块对应的 ad值
+//        maxThumbAD = getDichotomySearch(temperatureTable,16384,maxThumbValue,1000,16384);
+//        minThumbAD = getDichotomySearch(temperatureTable,16384,minThumbValue,1000,16384);
+//        roThumb = maxThumbAD - minThumbAD;
+//        LOGE(" maxThumbAD =   %d  minThumbAD = %d  roThumb =   %d" , maxThumbAD, minThumbAD ,roThumb);
+//    }
     LOGE("temp maxThumbValue = %f , min == %f" ,maxThumbValue,minThumbValue);
 }
-void FrameImage::disTempRange() {//在下一帧图像绘制的时候就不会绘制
+void FrameImage::disTempRange() {//在下一帧图像绘制的时候就不会绘制,是否是拉温宽
     isshowtemprange = false;
 }
 void FrameImage::fixedTempStripChange(bool state) {
-    isFixedTempStrip = state;
+    if (state){isFixedTempStrip = true;}
+    else{isFixedTempStrip = false;}
+//    isFixedTempStrip = state;
     LOGE(" fixed temp strip  state =  %d" ,isFixedTempStrip);
 }
 void FrameImage::setArea(int *area, int lenght) {//设置区域检查的区域大小
@@ -237,6 +282,13 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
         }
         mcount++;
     }*/
+
+
+    /**
+     * 渲染逻辑： 功能需求： 框内细查， 非框内细查， 固定温度条。
+     * 固定温度条的时候
+     *
+     */
     if (mIsPaletteChanged){
         currentpalette = DYgetPalette(mTypeOfPalette);
         mIsPaletteChanged = false;
@@ -248,51 +300,43 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
     amountPixels1 = amountPixels1 + 3;//倒数第四行的 第七位
     min = tmp_buf[amountPixels1];
     ro = max - min;
-//    LOGE("max ========== %d", max );
-//    LOGE("min ==========%d",min);
 
-    // 不论是否为区域检查，都优先绘制出 一副灰度图
-    for (int i = 0; i < requestHeight - 4; i++) {
-        for (int j = 0; j < requestWidth; j++) {
-            //黑白：灰度值0-255单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
-            //tmp_buf[i * requestWidth + j 每个数据点。 (AD -min)* (255 / ro) 表示减去最小值 将255分成 ro份，每个ad 值占多少份
-            int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
-            if (gray < 0) {
-                gray = 0;
+//    LOGE(" isfixed temp strip  == %d",isFixedTempStrip);
+//    if (isFixedTempStrip){//固定温度条
+//        //        maxThumbAD = getDichotomySearch(temperatureTable,16384,maxThumbValue,1000,16384);
+//        //        minThumbAD = getDichotomySearch(temperatureTable,16384,minThumbValue,1000,16384);
+//        roThumb = maxThumbAD - minThumbAD;
+//        min = minThumbAD;
+//        ro = roThumb;
+//    }
+
+    //框内细查 先绘制灰度图,根据原有的ad值
+    if (mIsAreachecked){
+        for (int i = 0; i < requestHeight - 4; i++) {
+            for (int j = 0; j < requestWidth; j++) {
+                int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
+                if (gray < 0) {
+                    gray = 0;
+                }
+                if (gray > 255) {
+                    gray = 255;
+                }
+                mBuffer[4 * (i * requestWidth + j)] = gray;
+                mBuffer[4 * (i * requestWidth + j) + 1] = gray;
+                mBuffer[4 * (i * requestWidth + j) + 2] = gray;
+                mBuffer[4 * (i * requestWidth + j) + 3] = 1;
             }
-            if (gray > 255) {
-                gray = 255;
-            }
-            mBuffer[4 * (i * requestWidth + j)] = gray;
-            mBuffer[4 * (i * requestWidth + j) + 1] = gray;
-            mBuffer[4 * (i * requestWidth + j) + 2] = gray;
-            mBuffer[4 * (i * requestWidth + j) + 3] = 1;
         }
-    }
-    //是否为固定温度条
-    if (isFixedTempStrip){
-        //todo 查询最大值滑块的温度 对应的ad值 ；最小值滑块对应的 ad值
-        int compareIndex = 0;
-        for (int i = 0; i < 16384; ++i) {
-
+        //框内细查渲染
+        if (isshowtemprange) { //是否拉温宽
+            min = (int) (min + ro * minpercent / 100);
+            ro = (int) (ro * (maxpercent - minpercent) / 100);
         }
-
-    }
-
-
-    if (mIsAreachecked) {
-            //            LOGE("区域检查");//则给选中的区域渲染
-
-            if (isshowtemprange) {
-                //LOGE("拉温宽");
-                min = (int) (min + ro * minpercent / 100);
-                ro = (int) (ro * (maxpercent - minpercent) / 100);
-            }
-            int loopnum=areasize/4;
-            //LOGE("区域检查 : %d, %d, %d, %d, %d",mCheckArea[0],mCheckArea[1],mCheckArea[2],mCheckArea[3],loopnum);
-            for(int m=0;m<loopnum;m++){
-                for (int i = mCheckArea[4 * m + 2]; i < mCheckArea[4 * m + 3]; i++) {
-                    for (int j = mCheckArea[4 * m]; j < mCheckArea[4 * m + 1]; j++) {
+        int loopnum=areasize/4;
+        for(int m=0;m<loopnum;m++){//渲染区域 为框内
+            for (int i = mCheckArea[4 * m + 2]; i < mCheckArea[4 * m + 3]; i++) {
+                for (int j = mCheckArea[4 * m]; j < mCheckArea[4 * m + 1]; j++) {
+//                    if (tmp_buf[i * requestWidth + j]> minThumbAD && tmp_buf[i * requestWidth + j] < maxThumbAD) {//固定温度条时，存在ad 不在渲染范围内
                         int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
                         if (gray < 0) {
                             gray = 0;
@@ -302,50 +346,80 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
                         }
                         int paletteNum = 3 * gray;
                         mBuffer[4 * (i * requestWidth +
-                                            j)] = (unsigned char) currentpalette[paletteNum];
+                                     j)] = (unsigned char) currentpalette[paletteNum];
                         mBuffer[4 * (i * requestWidth + j) +
-                                       1] = (unsigned char) currentpalette[
+                                1] = (unsigned char) currentpalette[
                                 paletteNum + 1];
                         mBuffer[4 * (i * requestWidth + j) +
-                                       2] = (unsigned char) currentpalette[
+                                2] = (unsigned char) currentpalette[
                                 paletteNum + 2];
                         mBuffer[4 * (i * requestWidth + j) + 3] = 1;
-                    }
-                }
-            }
-
-        } else {
-        //非区域检查，则根据 色板的 拖动条设置去渲染
-            if (isshowtemprange) {
-                //LOGE("非区域检查+拉温宽");
-                min = (int) (min + ro * minpercent / 100);
-                ro = (int) (ro * (maxpercent - minpercent) / 100);
-            }
-//            LOGE("min =======%d,ro ==========%d  maxpercent ======%d  minpercent======%d",min,ro,maxpercent,minpercent );
-//            LOGE("double False=  onepreivewdata================begin======");
-            for (int i = 0; i < requestHeight - 4; i++) {
-                for (int j = 0; j < requestWidth; j++) {
-//                    LOGE("this requestHeight and requestwidth==============%d========================%d",requestHeight,requestWidth);
-                    //黑白：灰度值0-254单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
-//                    LOGE("====================%d======================",tmp_buf[i * requestWidth + j]);
-                    int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
-                    if (gray < 0) {
-                        gray = 0;
-                    }
-                    if (gray > 255) {
-                        gray = 255;
-                    }
-                    int paletteNum = 3 * gray;
-                    mBuffer[4 * (i * requestWidth +
-                                j)] = (unsigned char) currentpalette[paletteNum];
-                    mBuffer[4 * (i * requestWidth + j) + 1] = (unsigned char) currentpalette[
-                            paletteNum + 1];
-                    mBuffer[4 * (i * requestWidth + j) + 2] = (unsigned char) currentpalette[
-                            paletteNum + 2];
-                    mBuffer[4 * (i * requestWidth + j) + 3] = 1;
+//                    }
                 }
             }
         }
+    } else{
+        //非框内细查，则根据 色板的 拖动条设置去渲染
+        if (isshowtemprange) {
+            //LOGE("非区域检查+拉温宽");
+            min = (int) (min + ro * minpercent / 100);
+            ro = (int) (ro * (maxpercent - minpercent) / 100);
+        }
+        for (int i = 0; i < requestHeight - 4; i++) {
+            for (int j = 0; j < requestWidth; j++) {
+//              LOGE("this requestHeight and requestwidth==============%d========================%d",requestHeight,requestWidth);
+                //黑白：灰度值0-254单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
+//              LOGE("====================%d======================",tmp_buf[i * requestWidth + j]);
+                int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
+                if (gray < 0) {
+                    gray = 0;
+                }
+                if (gray > 255) {
+                    gray = 255;
+                }
+                int paletteNum = 3 * gray;
+                mBuffer[4 * (i * requestWidth +
+                             j)] = (unsigned char) currentpalette[paletteNum];
+                mBuffer[4 * (i * requestWidth + j) + 1] = (unsigned char) currentpalette[
+                        paletteNum + 1];
+                mBuffer[4 * (i * requestWidth + j) + 2] = (unsigned char) currentpalette[
+                        paletteNum + 2];
+                mBuffer[4 * (i * requestWidth + j) + 3] = 1;
+            }
+        }
+    }
+
+//        //todo 查询最大值滑块的温度 对应的ad值 ；最小值滑块对应的 ad值
+//        maxThumbAD = getDichotomySearch(temperatureTable,16384,maxThumbValue,1000,16384);
+//        minThumbAD = getDichotomySearch(temperatureTable,16384,minThumbValue,1000,16384);
+//        roThumb = maxThumbAD - minThumbAD;
+//        min = minThumbAD;
+//        ro = roThumb;
+//        LOGE(" maxThumbAD =   %d  minThumbAD = %d  roThumb =   %d" , maxThumbAD, minThumbAD ,roThumb);
+
+//        for (int i = 0; i < requestHeight - 4; i++) {
+//            for (int j = 0; j < requestWidth; j++) {
+////                    LOGE("this requestHeight and requestwidth==============%d========================%d",requestHeight,requestWidth);
+//                //黑白：灰度值0-254单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
+//                if (tmp_buf[i * requestWidth + j]> minThumbAD && tmp_buf[i * requestWidth + j] < maxThumbAD){
+//                    int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - minThumbAD * 1.0) / roThumb);
+//                    if (gray < 0) {
+//                        gray = 0;
+//                    }
+//                    if (gray > 255) {
+//                        gray = 255;
+//                    }
+//                    int paletteNum = 3 * gray;
+//                    mBuffer[4 * (i * requestWidth +
+//                                 j)] = (unsigned char) currentpalette[paletteNum];
+//                    mBuffer[4 * (i * requestWidth + j) + 1] = (unsigned char) currentpalette[
+//                            paletteNum + 1];
+//                    mBuffer[4 * (i * requestWidth + j) + 2] = (unsigned char) currentpalette[
+//                            paletteNum + 2];
+//                    mBuffer[4 * (i * requestWidth + j) + 3] = 1;
+//                }
+//            }
+//        }
     tmp_buf = NULL;
     return mBuffer;
 }
@@ -493,7 +567,15 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
                           &floatFpaTmp,&correction,&Refltmp,&Airtmp,&humi,&emiss,&distance,
                           cameraLens,shutterFix,rangeMode);
         isNeedWriteTable=false;
+
+//        if (isFixedTempStrip) {
+////        //todo 查询最大值滑块的温度 对应的ad值 ；最小值滑块对应的 ad值
+//            maxThumbAD = getDichotomySearch(temperatureTable,16384,maxThumbValue,1000,16384);
+//            minThumbAD = getDichotomySearch(temperatureTable,16384,minThumbValue,1000,16384);
+//        }
+
     }
+
     float* temperatureData=mCbTemper;//temperatureData指向mCbTemper的首地址，更改temperatureData也就是更改mCbTemper
     //根据8004或者8005模式来查表，8005模式下仅输出以上注释的10个参数，8004模式下数据以上参数+全局温度数据
     thermometrySearch(requestWidth,requestHeight,temperatureTable,orgData,temperatureData,rangeMode,OUTPUTMODE);
@@ -508,7 +590,10 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
         //调用java层的 onReceiveTemperature ，传回mNCbTemper（整个图幅温度数据+ 后四行10个温度分析 的数据） 实参
         env->CallVoidMethod(mTemperatureCallbackObj, iTemperatureCallback.onReceiveTemperature, mNCbTemper);
         env->ExceptionClear();
+
+
     }
+
     env->DeleteLocalRef(mNCbTemper);
 
     temperatureData=NULL;

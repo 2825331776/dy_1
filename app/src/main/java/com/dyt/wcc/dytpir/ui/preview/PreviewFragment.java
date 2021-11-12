@@ -190,35 +190,35 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.customSeekbarPreviewFragment.setmThumbListener(new MyCustomRangeSeekBar.ThumbListener() {
 			@Override
 			public void onUpMinThumb (float maxPercent, float minPercent,float maxValue, float minValue) {
-				Log.e(TAG, "onUpMinThumb: 0-100 percent " + maxPercent + " min == > " +  minPercent);
-				Log.e(TAG, "onUpMinThumb: value " + maxValue + " min == > " +  minValue);
+//				Log.e(TAG, "onUpMinThumb: 0-100 percent " + maxPercent + " min == > " +  minPercent);
+//				Log.e(TAG, "onUpMinThumb: value " + maxValue + " min == > " +  minValue);
 
 				if (maxPercent >= 100 && minPercent <= 0) {
-					if (mUvcCameraHandler!= null && mUvcCameraHandler.isOpened())mUvcCameraHandler.disWenKuan();
+					if (mUvcCameraHandler!= null)mUvcCameraHandler.disWenKuan();
 				}
 			}
 
 			@Override
 			public void onUpMaxThumb (float maxPercent, float minPercent,float maxValue, float minValue) {
-				Log.e(TAG, "onUpMaxThumb: 0-100 percent " + maxPercent + " min == > " +  minPercent);
-				Log.e(TAG, "onUpMaxThumb: value " + maxValue + " min == > " +  minValue);
+//				Log.e(TAG, "onUpMaxThumb: 0-100 percent " + maxPercent + " min == > " +  minPercent);
+//				Log.e(TAG, "onUpMaxThumb: value " + maxValue + " min == > " +  minValue);
 				if (maxPercent >= 100 && minPercent <= 0) {
-					if (mUvcCameraHandler!= null && mUvcCameraHandler.isOpened())mUvcCameraHandler.disWenKuan();
+					if (mUvcCameraHandler!= null)mUvcCameraHandler.disWenKuan();
 				}
 			}
 
 			@Override
 			public void onMinMove (float maxPercent, float minPercent,float maxValue, float minValue) {
-				Log.e(TAG, "onMinMove: 0-100 percent " + maxPercent + " min == > " +  minPercent);
-				Log.e(TAG, "onMinMove: value " + maxValue + " min == > " +  minValue);
-				if (mUvcCameraHandler!= null && mUvcCameraHandler.isOpened())mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
+//				Log.e(TAG, "onMinMove: 0-100 percent " + maxPercent + " min == > " +  minPercent);
+//				Log.e(TAG, "onMinMove: value " + maxValue + " min == > " +  minValue);
+				if (mUvcCameraHandler!= null)mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
 			}
 
 			@Override
 			public void onMaxMove (float maxPercent, float minPercent,float maxValue, float minValue) {
-				Log.e(TAG, "onMaxMove: 0-100 percent" + maxPercent + " min == > " +  minPercent);
-				Log.e(TAG, "onMaxMove: value " + maxValue + " min == > " +  minValue);
-				if (mUvcCameraHandler!= null && mUvcCameraHandler.isOpened())mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
+//				Log.e(TAG, "onMaxMove: 0-100 percent" + maxPercent + " min == > " +  minPercent);
+//				Log.e(TAG, "onMaxMove: value " + maxValue + " min == > " +  minValue);
+				if (mUvcCameraHandler!= null)mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
 			}
 		});
 
@@ -405,7 +405,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.toggleFixedTempBar.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
 			@Override
 			public void onClick (boolean checkState) {
-				if (mUvcCameraHandler!=null && mUvcCameraHandler.isOpened())mUvcCameraHandler.fixedTempStripChange(checkState);
+				if (mUvcCameraHandler!=null)mUvcCameraHandler.fixedTempStripChange(checkState);
+
 				if (checkState){
 					mDataBinding.customSeekbarPreviewFragment.setWidgetMode(1);
 				}else {

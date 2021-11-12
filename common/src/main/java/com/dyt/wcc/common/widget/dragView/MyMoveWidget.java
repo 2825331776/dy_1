@@ -167,21 +167,21 @@ public class MyMoveWidget extends View {
 		pointTextPaint.setColor(getResources().getColor(R.color.bg_preview_toggle_select,null));
 		pointTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
-		if (tempWidgetData.getType()==1){
-			if (tempWidgetData.getPointTemp().getType()==1){
-				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorred);
+		if (tempWidgetData.getType()==1){//点模式
+			if (tempWidgetData.getPointTemp().getType()==1){//高温点
+				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_high);
 				pointTextPaint.setColor(getResources().getColor(R.color.max_temp_text_color_red,null));
-			}else if (tempWidgetData.getPointTemp().getType()==2){
-				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorblue);
+			}else if (tempWidgetData.getPointTemp().getType()==2){//低温点
+				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_low);
 				pointTextPaint.setColor(getResources().getColor(R.color.min_temp_text_color_blue,null));
 			}else {
-				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorgreen);
-				maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorgreen);
+				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center2);
+				maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center2);
 			}
 		}else {
 			tempWidgetData.setCanMove(true);
-			minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorblue);
-			maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorred);
+			minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_low);
+			maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_high);
 		}
 
 		maxTempTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
@@ -838,10 +838,10 @@ public class MyMoveWidget extends View {
 		tempNeedH = tempPaint.getFontMetrics().descent - tempPaint.getFontMetrics().ascent;//文字绘制所需高度
 //		tempNeedH = - tempPaint.getFontMetrics().ascent;
 		//定义图片四个边界
-		float picLeft= drawTempX - bp.getWidth()/3.0f;
-		float picRight = drawTempX + bp.getWidth()/3.0f;
-		float picTop = drawTempY - bp.getHeight()/3.0f;
-		float picBottom = drawTempY + bp.getHeight()/3.0f;
+		float picLeft= drawTempX - bp.getWidth()/2.0f;
+		float picRight = drawTempX + bp.getWidth()/2.0f;
+		float picTop = drawTempY - bp.getHeight()/2.0f;
+		float picBottom = drawTempY + bp.getHeight()/2.0f;
 
 //		if (isDebug){
 //			Log.e(TAG, "type 2 = : tempNeedW " + tempNeedW + " tempNeedH " + tempNeedH );

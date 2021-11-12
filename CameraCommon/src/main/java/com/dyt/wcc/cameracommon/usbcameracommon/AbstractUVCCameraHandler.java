@@ -535,6 +535,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
      * @param minValue 最小值滑动条 百分比对应的温度数值
      */
     public void seeKBarRangeSlided(float maxPercent, float minPercent,float maxValue, float minValue) {
+        Log.e(TAG, "seeKBarRangeSlided: ");
         Message message = Message.obtain();
         message.what = MSG_LA_WENKUAN;
         message.obj = new float[]{maxPercent, minPercent,maxValue,minValue};

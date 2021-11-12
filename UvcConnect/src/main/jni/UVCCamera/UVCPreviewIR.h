@@ -15,6 +15,8 @@
 #define DEFAULT_PREVIEW_MODE 0
 #define DEFAULT_BANDWIDTH 1.0f
 
+
+
 typedef uvc_error_t (*convFunc_t)(uvc_frame_t *in, uvc_frame_t *out);
 struct irBuffer//使用专业级图像算法所需要的缓存
 {

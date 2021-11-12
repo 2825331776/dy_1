@@ -24,6 +24,7 @@ using namespace std;
 #include "libuvc_internal.h"
 #include "jpegext.h"
 
+#define LOG_TAG "===UVCPREVIEW==="
 
 #define	LOCAL_DEBUG 0
 #define MAX_FRAME 4
@@ -379,35 +380,16 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
 //                 LOGE("waitPreviewFrame02============================");
 
                 if (isCopyPicturing()){//判断截屏
-//                    pthread_mutex_lock(&screenShot_mutex);
                     LOGE("======mutex===========");
                     memset(picOutBuffer,0,256*196*2);
                     memcpy(picOutBuffer,OutBuffer,256*196*2);
-
-//                unsigned short * spicBuffer = (unsigned short *) preview->picOutBuffer;
-//                unsigned short colorIndex = 0x1388;
-//                for (int i = 0; i < 192; ++i) {
-//                    for (int j = 0; j < 256; ++j) {
-//                        *spicBuffer = colorIndex;
-//                        spicBuffer++;
-//                    }
-//                    if (colorIndex < 0x1F40){
-//                        colorIndex += 100;
-//                    }
-//                }
-//                LOGE("  color index ==================== %d" ,colorIndex);
-//                spicBuffer =NULL;
                     mIsCopyPicture = false;
-//                LOGE("======mutex===22222========");
-//                pthread_mutex_unlock(&preview->screenShot_mutex);
                     signal_save_picture_thread();
                 }
-
 
                 uint8_t *tmp_buf=NULL;
                 //if(OutPixelFormat==3)//RGBA 32bit输出
                 mIsComputed=false;
-
                 mFrameImage->getCameraPara(HoldBuffer);
 
                 // swap the buffers rgba
