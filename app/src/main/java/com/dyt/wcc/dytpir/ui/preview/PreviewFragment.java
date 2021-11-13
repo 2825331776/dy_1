@@ -9,9 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -20,6 +18,7 @@ import android.view.Surface;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -28,9 +27,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
 
-import com.dyt.wcc.cameracommon.encoder.MediaMuxerWrapper;
 import com.dyt.wcc.cameracommon.usbcameracommon.UVCCameraHandler;
 import com.dyt.wcc.common.base.BaseApplication;
 import com.dyt.wcc.common.base.BaseFragment;
@@ -54,11 +51,7 @@ import com.dyt.wcc.dytpir.ui.preview.record.MediaProjectionNotificationEngine;
 import com.dyt.wcc.dytpir.ui.preview.record.MediaRecorderCallback;
 import com.dyt.wcc.dytpir.ui.preview.record.NotificationHelper;
 import com.permissionx.guolindev.PermissionX;
-import com.permissionx.guolindev.callback.ExplainReasonCallback;
-import com.permissionx.guolindev.callback.ForwardToSettingsCallback;
 import com.permissionx.guolindev.callback.RequestCallback;
-import com.permissionx.guolindev.request.ExplainScope;
-import com.permissionx.guolindev.request.ForwardScope;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 
@@ -67,7 +60,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -376,33 +368,52 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 		fl = mDataBinding.flPreview;
 
-		mDataBinding.toggleShowHighLowTemp.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
+		mDataBinding.toggleShowHighLowTemp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
-			public void onClick (boolean checkState) {
-				if (checkState){
-					mDataBinding.dragTempContainerPreviewFragment.openHighLowTemp();
-				}else {
-					mDataBinding.dragTempContainerPreviewFragment.closeHighLowTemp();
-				}
+			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
+
 			}
 		});
+//				.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
+//			@Override
+//			public void onClick (boolean checkState) {
+//				if (checkState){
+//					mDataBinding.dragTempContainerPreviewFragment.openHighLowTemp();
+//				}else {
+//					mDataBinding.dragTempContainerPreviewFragment.closeHighLowTemp();
+//				}
+//			}
+//		});
 		//框内细查
-		mDataBinding.toggleAreaCheck.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
+		mDataBinding.toggleAreaCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
-			public void onClick (boolean checkState) {
-				if (checkState){
-					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
-					int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
-					mUvcCameraHandler.setArea(areaData);
-					mUvcCameraHandler.setAreaCheck(1);
-				}else {//close
-					mUvcCameraHandler.setAreaCheck(0);
-				}
-				Toast.makeText(mContext.get(), "区域检查 = "+ checkState,Toast.LENGTH_SHORT).show();
-//				mDataBinding.dragTempContainerPreviewFragment.closeHighLowTemp();
+			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
+
 			}
 		});
-		mDataBinding.toggleFixedTempBar.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
+//				.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
+//			@Override
+//			public void onClick (boolean checkState) {
+//				if (checkState){
+//					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
+//					int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
+//					mUvcCameraHandler.setArea(areaData);
+//					mUvcCameraHandler.setAreaCheck(1);
+//				}else {//close
+//					mUvcCameraHandler.setAreaCheck(0);
+//				}
+//				Toast.makeText(mContext.get(), "区域检查 = "+ checkState,Toast.LENGTH_SHORT).show();
+////				mDataBinding.dragTempContainerPreviewFragment.closeHighLowTemp();
+//			}
+//		});
+		mDataBinding.toggleFixedTempBar
+//				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//			@Override
+//			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
+//
+//			}
+//		});
+				.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
 			@Override
 			public void onClick (boolean checkState) {
 				if (mUvcCameraHandler!=null)mUvcCameraHandler.fixedTempStripChange(checkState);
@@ -416,27 +427,33 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			}
 		});
 		//高温警告
-		mDataBinding.toggleHighTempAlarm.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
+		mDataBinding.toggleHighTempAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
-			public void onClick (boolean checkState) {
-				//判断键入的值是否符合规范,或者提示用户 键入值的规范。
-				if ( "".equals(mDataBinding.etInputTempRightRLContainer.getText().toString())){
-					Toast.makeText(mContext.get(), "请输入高温界限",Toast.LENGTH_SHORT).show();
-					Log.e(TAG, "onClick: "+ checkState);
-					mDataBinding.toggleHighTempAlarm.setSelected(false);
-					return;
-				}
+			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
 
-				float temp = Float.parseFloat(mDataBinding.etInputTempRightRLContainer.getText().toString());
-				Log.e(TAG, "onClick: temp = >  " + temp);
-
-				if (checkState){
-					mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(temp);
-				}else {
-					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
-				}
 			}
 		});
+//				.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
+//			@Override
+//			public void onClick (boolean checkState) {
+//				//判断键入的值是否符合规范,或者提示用户 键入值的规范。
+//				if ( "".equals(mDataBinding.etInputTempRightRLContainer.getText().toString())){
+//					Toast.makeText(mContext.get(), "请输入高温界限",Toast.LENGTH_SHORT).show();
+//					Log.e(TAG, "onClick: "+ checkState);
+//					mDataBinding.toggleHighTempAlarm.setSelected(false);
+//					return;
+//				}
+//
+//				float temp = Float.parseFloat(mDataBinding.etInputTempRightRLContainer.getText().toString());
+//				Log.e(TAG, "onClick: temp = >  " + temp);
+//
+//				if (checkState){
+//					mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(temp);
+//				}else {
+//					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
+//				}
+//			}
+//		});
 
 		//绘制  温度模式 切换  弹窗
 		mDataBinding.ivPreviewRightTempMode.setOnClickListener(v -> {
@@ -748,11 +765,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				mContext.get().runOnUiThread(new Runnable() {
 					@Override
 					public void run () {
-						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.VISIBLE);
-						mDataBinding.ivPreviewLeftRecord.setImageResource(R.drawable.ic_user_vector_stoprecord_24px);
-						mDataBinding.chronometerRecordTimeInfo.setBase(SystemClock.elapsedRealtime());
-						mDataBinding.chronometerRecordTimeInfo.setFormat("%s");
-						mDataBinding.chronometerRecordTimeInfo.start();
+//						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.VISIBLE);
+//						mDataBinding.ivPreviewLeftRecord.setImageResource(R.drawable.ic_user_vector_stoprecord_24px);
+//						mDataBinding.chronometerRecordTimeInfo.setBase(SystemClock.elapsedRealtime());
+//						mDataBinding.chronometerRecordTimeInfo.setFormat("%s");
+//						mDataBinding.chronometerRecordTimeInfo.start();
 					}
 				});
 
@@ -765,9 +782,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				mContext.get().runOnUiThread(new Runnable() {
 					@Override
 					public void run () {
-						mDataBinding.chronometerRecordTimeInfo.stop();
-						mDataBinding.ivPreviewLeftRecord.setImageResource(R.drawable.ic_user_vector_record_24px);
-						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.INVISIBLE);
+//						mDataBinding.chronometerRecordTimeInfo.stop();
+//						mDataBinding.ivPreviewLeftRecord.setImageResource(R.drawable.ic_user_vector_record_24px);
+//						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.INVISIBLE);
 					}
 				});
 
@@ -836,54 +853,54 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	};
 
 	public void toGallery(View view){
-		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
-				,Manifest.permission.WRITE_EXTERNAL_STORAGE).request(new RequestCallback() {
-			@Override
-			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
-				if (allGranted){
-					Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
-				}
-			}
-		});
+//		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
+//				,Manifest.permission.WRITE_EXTERNAL_STORAGE).request(new RequestCallback() {
+//			@Override
+//			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+//				if (allGranted){
+//					Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
+//				}
+//			}
+//		});
 	}
 
 	public void toClear(View view){
-		mDataBinding.dragTempContainerPreviewFragment.clearAll();
+//		mDataBinding.dragTempContainerPreviewFragment.clearAll();
 	}
 	//拍照
 	public void toImage(View view){
 
-		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
-				,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO)
-				.onExplainRequestReason(new ExplainReasonCallback() {
-					@Override
-					public void onExplainReason (@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
-						//								Toast.makeText(MainActivity.this,"onExplainReason",Toast.LENGTH_SHORT).show();
-						scope.showRequestReasonDialog(deniedList,"没有存储权限，无法实现截图，录制等功能。是否重新授权？","确认","取消");
-						//								shouldShowRequestPermissionRationale(deniedList,"df");
-					}
-				}).onForwardToSettings(new ForwardToSettingsCallback() {
-			@Override
-			public void onForwardToSettings (@NonNull ForwardScope scope, @NonNull List<String> deniedList) {
-				scope.showForwardToSettingsDialog(deniedList,"没有存储权限，无法实现截图，录制等功能。是否去设置打开？","确认","取消");
-			}
-		}).request(new RequestCallback() {
-			@Override
-			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
-				if (allGranted){//拿到权限 去C++ 绘制 传入文件路径path， 点线矩阵
-					//实现截屏操作
-					//生成一个当前的图片地址：  然后设置一个标识位，标识正截屏 或者 录像中
-//					MediaStore.Images.Media.in
-					String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
-					//							String picPath = "/storage/emulated/0/DCIM/DYTCamera/1970-01-01-13-11-32.jpg";//写死一个图片地址 方便用于查看
-//					mUvcCameraHandler.captureStill(picPath);
-					Log.e(TAG, "onResult: java path === "+ picPath);
-				}else {
-					Toast.makeText(mContext.get(),"未获取需要的权限.",Toast.LENGTH_SHORT).show();
-				}
-
-			}
-		});
+//		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
+//				,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO)
+//				.onExplainRequestReason(new ExplainReasonCallback() {
+//					@Override
+//					public void onExplainReason (@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
+//						//								Toast.makeText(MainActivity.this,"onExplainReason",Toast.LENGTH_SHORT).show();
+//						scope.showRequestReasonDialog(deniedList,"没有存储权限，无法实现截图，录制等功能。是否重新授权？","确认","取消");
+//						//								shouldShowRequestPermissionRationale(deniedList,"df");
+//					}
+//				}).onForwardToSettings(new ForwardToSettingsCallback() {
+//			@Override
+//			public void onForwardToSettings (@NonNull ForwardScope scope, @NonNull List<String> deniedList) {
+//				scope.showForwardToSettingsDialog(deniedList,"没有存储权限，无法实现截图，录制等功能。是否去设置打开？","确认","取消");
+//			}
+//		}).request(new RequestCallback() {
+//			@Override
+//			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+//				if (allGranted){//拿到权限 去C++ 绘制 传入文件路径path， 点线矩阵
+//					//实现截屏操作
+//					//生成一个当前的图片地址：  然后设置一个标识位，标识正截屏 或者 录像中
+////					MediaStore.Images.Media.in
+//					String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
+//					//							String picPath = "/storage/emulated/0/DCIM/DYTCamera/1970-01-01-13-11-32.jpg";//写死一个图片地址 方便用于查看
+////					mUvcCameraHandler.captureStill(picPath);
+//					Log.e(TAG, "onResult: java path === "+ picPath);
+//				}else {
+//					Toast.makeText(mContext.get(),"未获取需要的权限.",Toast.LENGTH_SHORT).show();
+//				}
+//
+//			}
+//		});
 
 //		if (mUvcCameraHandler != null){
 //			Toast.makeText(mContext.get(),"toImage ", Toast.LENGTH_SHORT).show();
@@ -901,18 +918,18 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		 * 录制业务逻辑：点击开始录制，判断 是否在录制？ no-> 开始录制，更改录制按钮"结束录制" & 开始计时器
 		 * yes->结束录制。更改录制按钮"录制" （刷新媒体库）& 重置计时器
 		 */
-		new Thread(new Runnable() {
-			@Override
-			public void run () {
-				Log.e(TAG, "toRecord: " + MediaProjectionHelper.getInstance().getRecord_State());
-				if (MediaProjectionHelper.getInstance().getRecord_State() !=0 ){//停止录制
-					MediaProjectionHelper.getInstance().stopMediaRecorder();
-					MediaProjectionHelper.getInstance().stopService(mContext.get());
-				}else {//开始录制
-					MediaProjectionHelper.getInstance().startService(mContext.get());
-				}
-			}
-		}).start();
+//		new Thread(new Runnable() {
+//			@Override
+//			public void run () {
+//				Log.e(TAG, "toRecord: " + MediaProjectionHelper.getInstance().getRecord_State());
+//				if (MediaProjectionHelper.getInstance().getRecord_State() !=0 ){//停止录制
+//					MediaProjectionHelper.getInstance().stopMediaRecorder();
+//					MediaProjectionHelper.getInstance().stopService(mContext.get());
+//				}else {//开始录制
+//					MediaProjectionHelper.getInstance().startService(mContext.get());
+//				}
+//			}
+//		}).start();
 
 
 

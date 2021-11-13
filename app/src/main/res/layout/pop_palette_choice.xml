@@ -22,63 +22,65 @@
                 android:id="@+id/palette_layout_Tiehong"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 tools:ignore="ContentDescription"
-                android:layout_width="@dimen/dimen_50dp"
-                android:layout_height="@dimen/dimen_50dp"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="@dimen/dimen_40dp"
                 android:layout_marginStart="@dimen/dimen_5dp"
-                android:background="@mipmap/temp_mode_tiehong" />
+                android:background="@mipmap/ic_palette_choice_tiehong" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Caihong"
                 app:layout_constraintLeft_toRightOf="@id/palette_layout_Tiehong"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 tools:ignore="ContentDescription"
-                android:layout_width="@dimen/dimen_50dp"
-                android:layout_height="@dimen/dimen_50dp"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="@dimen/dimen_40dp"
                 android:layout_marginStart="@dimen/dimen_5dp"
-                android:background="@mipmap/temp_mode_caihong" />
+                android:background="@mipmap/ic_palette_choice_caihong" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Hongre"
                 app:layout_constraintLeft_toRightOf="@id/palette_layout_Caihong"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 tools:ignore="ContentDescription"
-                android:scaleType="center"
-                android:layout_width="@dimen/dimen_50dp"
-                android:layout_height="@dimen/dimen_50dp"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="@dimen/dimen_40dp"
                 android:layout_marginStart="@dimen/dimen_5dp"
-                android:background="@mipmap/temp_mode_hongre" />
+                android:background="@mipmap/ic_palette_choice_hongre" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Heire"
                 app:layout_constraintLeft_toRightOf="@id/palette_layout_Hongre"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 tools:ignore="ContentDescription"
-                android:scaleType="center"
-                android:layout_width="@dimen/dimen_50dp"
-                android:layout_height="@dimen/dimen_50dp"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="@dimen/dimen_40dp"
                 android:layout_marginStart="@dimen/dimen_5dp"
-                android:background="@mipmap/temp_mode_heire" />
+                android:background="@mipmap/ic_palette_choice_heire" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Baire"
                 app:layout_constraintLeft_toRightOf="@id/palette_layout_Heire"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 tools:ignore="ContentDescription"
-                android:scaleType="center"
-                android:layout_width="@dimen/dimen_50dp"
-                android:layout_height="@dimen/dimen_50dp"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="@dimen/dimen_40dp"
                 android:layout_marginStart="@dimen/dimen_5dp"
-                android:background="@mipmap/temp_mode_baire" />
+                android:background="@mipmap/ic_palette_choice_baire" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Lenglan"
                 app:layout_constraintLeft_toRightOf="@id/palette_layout_Baire"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 tools:ignore="ContentDescription"
-                android:scaleType="center"
-                android:layout_width="@dimen/dimen_50dp"
-                android:layout_height="@dimen/dimen_50dp"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="@dimen/dimen_40dp"
                 android:layout_marginStart="@dimen/dimen_5dp"
                 android:background="@mipmap/temp_mode_lenglan" />
         </androidx.constraintlayout.widget.ConstraintLayout>

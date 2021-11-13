@@ -456,7 +456,7 @@ void UVCCamera::disWenKuan(){
 }
 void UVCCamera::fixedTempStripChange(bool state){
 	if (mPreview) {
-		mFrameImage->fixedTempStripChange(state);
+		mPreview->fixedTempStripChange(state);
 	}
 	EXIT();
 }

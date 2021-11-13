@@ -74,6 +74,8 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh ,FrameImage * frameImage){
     pthread_mutex_init(&temperature_mutex,NULL);//初始化温度线程对象
 
     pthread_mutex_init(&data_callback_mutex,NULL);
+
+    pthread_mutex_init(&fixed_mutex,NULL);
     EXIT();
 
 }
@@ -97,6 +99,7 @@ UVCPreviewIR::~UVCPreviewIR() {
     pthread_cond_destroy(&temperature_sync);
 
     pthread_mutex_destroy(&data_callback_mutex);
+    pthread_mutex_destroy(&fixed_mutex);
     //LOGE("~UVCPreviewIR() 8");
 
 //    if(OutBuffer!=NULL){
@@ -623,6 +626,14 @@ void UVCPreviewIR::do_savePicture() {
         }
         pthread_mutex_unlock(&screenShot_mutex);
     }
+}
+
+void UVCPreviewIR::fixedTempStripChange(bool state) {
+    pthread_mutex_lock(&fixed_mutex);
+    {
+        mFrameImage->fixedTempStripChange(state);
+    }
+    pthread_mutex_unlock(&fixed_mutex);
 }
 
 void UVCPreviewIR::savePicDefineData() {
@@ -1230,6 +1241,7 @@ void UVCPreviewIR::do_temperature_callback(JNIEnv *env, uint8_t *frameData)
 {
 //   LOGE("=========do_temperature_callback ======");
     mFrameImage->do_temperature_callback(env,frameData);
+
 }
 /***************************************温度相关 结束**************************************/
 

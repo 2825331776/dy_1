@@ -13,31 +13,34 @@
 
         <ImageView
             android:id="@+id/iv_temp_mode_point"
-            android:background="@mipmap/temp_mode_point_unselect"
-            android:layout_width="@dimen/dimen_45dp"
-            android:layout_height="@dimen/dimen_50dp"
+            android:background="@drawable/selector_main_preview_measuretemp_point"
+            android:layout_width="@dimen/dimen_40dp"
+            android:layout_height="@dimen/dimen_40dp"
             android:layout_marginStart="@dimen/dimen_10dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <ImageView
             android:id="@+id/iv_temp_mode_line"
-            android:background="@mipmap/temp_mode_line_unselect"
-            android:layout_width="@dimen/dimen_45dp"
-            android:layout_height="@dimen/dimen_50dp"
+            android:background="@drawable/selector_main_preview_measuretemp_line"
+            android:layout_width="@dimen/dimen_40dp"
+            android:layout_height="@dimen/dimen_40dp"
             android:layout_marginStart="@dimen/dimen_10dp"
             app:layout_constraintLeft_toRightOf="@id/iv_temp_mode_point"
             app:layout_constraintRight_toLeftOf="@id/iv_temp_mode_rectangle"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/iv_temp_mode_rectangle"
-            android:background="@mipmap/temp_mode_rectangle_unselect"
-            android:layout_width="@dimen/dimen_45dp"
-            android:layout_height="@dimen/dimen_50dp"
+            android:background="@drawable/selector_main_preview_measuretemp_rectangle"
+            android:layout_width="@dimen/dimen_40dp"
+            android:layout_height="@dimen/dimen_40dp"
             android:layout_marginEnd="@dimen/dimen_10dp"
             android:layout_marginStart="@dimen/dimen_10dp"
             app:layout_constraintLeft_toRightOf="@id/iv_temp_mode_line"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
 

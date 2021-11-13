@@ -114,7 +114,7 @@ private:
 	pthread_cond_t temperature_sync;
 	pthread_mutex_t temperature_mutex;
 
-
+	pthread_mutex_t fixed_mutex;
 
 	int mTypeOfPalette=0;
 	bool mIsTemperaturing;//是否去绘制温度信息
@@ -139,6 +139,8 @@ public:
 //	int stopCapture();
 //    int startCapture();
     int savePicture(const char* path);
+
+	void fixedTempStripChange(bool state);
 
 /***************************温度*****************************/
 	int stopTemp();

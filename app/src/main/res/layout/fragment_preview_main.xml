@@ -43,32 +43,21 @@
 <!--            android:onClick="@{previewViewModel::showPaletteWindow}"-->
 
 
-            <!--        右侧底部设置-->
-            <ImageView
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+            <!--      设置-->
+            <CheckBox
                 android:id="@+id/iv_preview_right_setting"
-                android:background="@drawable/ic_user_vector_setting_new_24px"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
                 android:layout_margin="@dimen/dimen_10dp"
-                tools:ignore="ContentDescription" />
-
-            <ImageView
+                android:layout_marginTop="16dp"
+                android:background="@drawable/selector_main_preview_setting"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_preview_left_company_info"
-                android:id="@+id/iv_preview_left_clear"
-                android:layout_width="@dimen/dimen_40dp"
-                android:layout_height="@dimen/dimen_40dp"
-                android:layout_margin="@dimen/dimen_5dp"
-                android:background="@mipmap/delete_all"
-                android:onClick="@{pf::toClear}"
-                tools:ignore="ContentDescription"/>
-
+                app:layout_constraintTop_toTopOf="parent"
+                android:button="@null"
+                tools:ignore="ContentDescription" />
 <!--            公司信息-->
-            <ImageView
+            <CheckBox
                 android:id="@+id/iv_preview_left_company_info"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -76,42 +65,60 @@
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
                 android:layout_margin="@dimen/dimen_5dp"
-                android:background="@mipmap/left_container_company_info"
+                android:background="@drawable/selector_main_preview_aboutus"
+                android:button="@null"
                 android:layout_centerInParent="true"/>
+            <!--           清除-->
+            <CheckBox
+                android:id="@+id/iv_preview_left_clear"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iv_preview_left_company_info"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="@dimen/dimen_40dp"
+                android:layout_margin="@dimen/dimen_5dp"
+                android:background="@drawable/selector_main_preview_clear"
+                android:onClick="@{pf::toClear}"
+                android:button="@null"
+                tools:ignore="ContentDescription"/>
+
 
             <LinearLayout
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_preview_left_company_info"
+                app:layout_constraintTop_toBottomOf="@id/iv_preview_left_clear"
                 android:orientation="vertical"
                 android:gravity="center|bottom"
                 android:layout_width="match_parent"
                 android:layout_marginTop="@dimen/dimen_5dp"
                 android:layout_marginBottom="@dimen/dimen_5dp"
                 android:layout_height="0dp">
-                <ImageView
+                <CheckBox
                     android:id="@+id/iv_preview_left_takePhoto"
                     android:layout_width="@dimen/dimen_40dp"
                     android:layout_height="@dimen/dimen_40dp"
                     android:maxWidth="@dimen/dimen_40dp"
                     android:onClick="@{pf::toImage}"
-                    android:background="@drawable/ic_user_vector_take_photo_24px"/>
+                    android:button="@null"
+                    android:background="@drawable/selector_main_preview_takephoto"/>
 
-                <ImageView
+                <CheckBox
                     android:id="@+id/iv_preview_left_record"
                     android:layout_width="@dimen/dimen_40dp"
                     android:layout_height="@dimen/dimen_40dp"
                     android:maxWidth="@dimen/dimen_40dp"
                     android:onClick="@{pf::toRecord}"
-                    android:background="@drawable/ic_user_vector_record_24px"/>
+                    android:button="@null"
+                    android:background="@drawable/selector_main_preview_record"/>
 
-                <ImageButton
+                <CheckBox
                     android:id="@+id/iv_preview_left_gallery"
                     android:layout_width="@dimen/dimen_40dp"
                     android:layout_height="@dimen/dimen_40dp"
                     android:maxWidth="@dimen/dimen_40dp"
-                    android:background="@drawable/ic_user_vector_gallery_24px"
+                    android:background="@drawable/selector_main_preview_gallery"
+                    android:button="@null"
                     android:onClick="@{pf::toGallery}"/>
             </LinearLayout>
 
@@ -171,160 +178,204 @@
 <!--        右侧按钮布局-->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/rl_right_container"
-            app:layout_constraintLeft_toRightOf="@id/ll_container_preview_seekbar"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:layout_width="@dimen/dimen_75dp"
             android:layout_height="match_parent"
-            android:background="@color/bg_preview_right">
-<!--            分割线-->
+            android:background="@color/bg_preview_right"
+            app:layout_constraintLeft_toRightOf="@id/ll_container_preview_seekbar"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+            <!--            分割线-->
             <TextView
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_width="@dimen/dimen_1dp"
+                android:layout_height="match_parent"
                 android:layout_alignParentStart="true"
                 android:background="@color/bg_preview_left_cutoff_rule"
-                android:layout_width="@dimen/dimen_1dp"
-                android:layout_height="match_parent"/>
-
-            <ImageView
-                android:id="@+id/iv_preview_left_palette"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <CheckBox
+                android:id="@+id/iv_preview_left_palette"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:background="@drawable/selector_main_preview_palette"
-                tools:ignore="ContentDescription" />
-<!--            测温模式-->
-            <ImageView
-                android:id="@+id/iv_preview_right_temp_mode"
-                app:layout_constraintTop_toBottomOf="@+id/iv_preview_left_palette"
+                android:button="@null"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                android:background="@drawable/ic_user_vector_draw_temp_mode_24px"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription" />
+            <!--            测温模式-->
+            <CheckBox
+                android:id="@+id/iv_preview_right_temp_mode"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
-                android:layout_margin="@dimen/dimen_10dp"
+                android:background="@drawable/ic_user_vector_draw_temp_mode_24px"
+                android:button="@null"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iv_preview_left_palette"
                 tools:ignore="ContentDescription" />
 
-<!--        自定义右侧按钮-->
-            <com.dyt.wcc.common.widget.MyToggleView
+            <!--        自定义右侧按钮-->
+            <CheckBox
                 android:id="@+id/toggle_show_high_low_temp"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="@dimen/dimen_40dp"
+                android:background="@drawable/selector_main_preview_highlowtrace"
+                android:button="@null"
+                app:layout_constraintHeight_percent="0.08"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/iv_preview_right_temp_mode"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintHeight_percent="0.08"
-                android:layout_marginStart="@dimen/dimen_6dp"
-                android:layout_marginEnd="@dimen/dimen_6dp"
-                android:layout_marginTop="@dimen/dimen_10dp"
-                app:showTextContent="@string/ShowHighLowTemp"
-                app:ColorTextUnselect="@color/white"
-                app:showTextSize="12sp"/>
-            <!--框内细查-->
-            <com.dyt.wcc.common.widget.MyToggleView
+                />
+<!--    高低温追踪-->
+<!--            <com.dyt.wcc.common.widget.MyToggleView-->
+<!--                android:id="@+id/toggle_show_high_low_temp"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:layout_marginTop="8dp"-->
+<!--                app:ColorTextUnselect="@color/white"-->
+<!--                app:layout_constraintHeight_percent="0.08"-->
+<!--                app:layout_constraintHorizontal_bias="0.642"-->
+<!--                app:layout_constraintLeft_toLeftOf="parent"-->
+<!--                app:layout_constraintRight_toRightOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/iv_preview_right_temp_mode"-->
+<!--                app:showTextContent="@string/ShowHighLowTemp"-->
+<!--                app:showTextSize="12sp" />-->
+<!--            &lt;!&ndash;框内细查&ndash;&gt;-->
+<!--            <com.dyt.wcc.common.widget.MyToggleView-->
+<!--                android:id="@+id/toggle_area_check"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:layout_marginStart="@dimen/dimen_6dp"-->
+<!--                android:layout_marginTop="@dimen/dimen_10dp"-->
+<!--                android:layout_marginEnd="@dimen/dimen_6dp"-->
+<!--                app:ColorTextUnselect="@color/white"-->
+<!--                app:layout_constraintHeight_percent="0.08"-->
+<!--                app:layout_constraintLeft_toLeftOf="parent"-->
+<!--                app:layout_constraintRight_toRightOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/toggle_show_high_low_temp"-->
+<!--                app:showTextContent="@string/AreaCheck"-->
+<!--                app:showTextSize="12sp" />-->
+                        <!--框内细查-->
+            <CheckBox
                 android:id="@+id/toggle_area_check"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintHeight_percent="0.08"
-                android:layout_marginStart="@dimen/dimen_6dp"
-                android:layout_marginEnd="@dimen/dimen_6dp"
-                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="@dimen/dimen_40dp"
+                android:background="@drawable/selector_main_preview_areacheck"
+                android:button="@null"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/toggle_show_high_low_temp"
-                app:showTextContent="@string/AreaCheck"
-                app:ColorTextUnselect="@color/white"
-                app:showTextSize="12sp"/>
-
-            <com.dyt.wcc.common.widget.MyToggleView
+               />
+<!--超温报警-->
+<!--            <com.dyt.wcc.common.widget.MyToggleView-->
+<!--                android:id="@+id/toggle_high_temp_alarm"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:layout_marginStart="@dimen/dimen_6dp"-->
+<!--                android:layout_marginTop="@dimen/dimen_3dp"-->
+<!--                android:layout_marginEnd="@dimen/dimen_6dp"-->
+<!--                app:ColorTextUnselect="@color/white"-->
+<!--                app:layout_constraintHeight_percent="0.08"-->
+<!--                app:layout_constraintLeft_toLeftOf="parent"-->
+<!--                app:layout_constraintRight_toRightOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/toggle_area_check"-->
+<!--                app:showTextContent="@string/HighTempAlarm"-->
+<!--                app:showTextSize="12sp" />-->
+            <CheckBox
                 android:id="@+id/toggle_high_temp_alarm"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="@dimen/dimen_40dp"
+                android:background="@drawable/selector_main_preview_overtempalarm"
+                android:button="@null"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/toggle_area_check"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintHeight_percent="0.08"
-                android:layout_marginStart="@dimen/dimen_6dp"
-                android:layout_marginEnd="@dimen/dimen_6dp"
-                android:layout_marginTop="@dimen/dimen_3dp"
-                app:showTextContent="@string/HighTempAlarm"
-                app:ColorTextUnselect="@color/white"
-                app:showTextSize="12sp"/>
+                app:layout_constraintTop_toBottomOf="@id/toggle_area_check"/>
 
-<!--        高温报警输入EditText-->
+            <!--        高温报警输入EditText-->
             <EditText
                 android:id="@+id/et_inputTemp_rightRL_container"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/toggle_high_temp_alarm"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layout_constraintHeight_percent="0.1"
-                android:maxHeight="@dimen/dimen_30dp"
                 android:layout_marginStart="@dimen/dimen_4dp"
                 android:layout_marginEnd="@dimen/dimen_4dp"
-                android:textColorHint="@color/white"
+                android:background="@drawable/shape_bg_pop_setting_edit"
+                android:gravity="center"
                 android:hint="@string/AlarmTempInput"
                 android:imeOptions="actionDone"
-                android:background="@drawable/shape_bg_pop_setting_edit"
                 android:inputType="numberDecimal"
+                android:maxHeight="@dimen/dimen_30dp"
                 android:maxLength="6"
-                android:gravity="center"
-                android:textSize="12sp"
+                android:singleLine="true"
                 android:textColor="@color/white"
-                android:singleLine="true"/>
+                android:textColorHint="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintHeight_percent="0.1"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/toggle_high_temp_alarm" />
 
-<!--            <ImageView-->
-<!--                android:id="@+id/iv_togo"-->
-<!--                app:layout_constraintLeft_toRightOf="@id/et_inputTemp_rightRL_container"-->
-<!--                app:layout_constraintRight_toRightOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="@id/et_inputTemp_rightRL_container"-->
-<!--                app:layout_constraintBottom_toBottomOf="@id/et_inputTemp_rightRL_container"-->
-<!--                android:background="@drawable/ic_user_vector_confirm_24px"-->
-<!--                android:layout_width="@dimen/dimen_25dp"-->
-<!--                android:layout_height="@dimen/dimen_25dp"-->
-<!--                tools:ignore="ContentDescription"-->
-<!--                android:scaleType="fitXY"/>-->
+            <!--            <ImageView-->
+            <!--                android:id="@+id/iv_togo"-->
+            <!--                app:layout_constraintLeft_toRightOf="@id/et_inputTemp_rightRL_container"-->
+            <!--                app:layout_constraintRight_toRightOf="parent"-->
+            <!--                app:layout_constraintTop_toTopOf="@id/et_inputTemp_rightRL_container"-->
+            <!--                app:layout_constraintBottom_toBottomOf="@id/et_inputTemp_rightRL_container"-->
+            <!--                android:background="@drawable/ic_user_vector_confirm_24px"-->
+            <!--                android:layout_width="@dimen/dimen_25dp"-->
+            <!--                android:layout_height="@dimen/dimen_25dp"-->
+            <!--                tools:ignore="ContentDescription"-->
+            <!--                android:scaleType="fitXY"/>-->
 
-<!--            固定温度条-->
+            <!--            固定温度条-->
             <com.dyt.wcc.common.widget.MyToggleView
                 android:id="@+id/toggle_fixed_tempBar"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="@dimen/dimen_6dp"
+                app:ColorTextUnselect="@color/white"
+                app:layout_constraintHeight_percent="0.08"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/et_inputTemp_rightRL_container"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintHeight_percent="0.08"
-                android:layout_margin="@dimen/dimen_6dp"
                 app:showTextContent="@string/FixeTempBar"
-                app:ColorTextUnselect="@color/white"
-                app:showTextSize="12sp"/>
+                app:showTextSize="12sp" />
+<!--            <CheckBox-->
+<!--                android:id="@+id/toggle_fixed_tempBar"-->
+<!--                android:layout_width="@dimen/dimen_40dp"-->
+<!--                android:layout_height="@dimen/dimen_40dp"-->
+<!--                android:background="@drawable/selector_main_preview_fixtempstrip"-->
+<!--                android:button="@null"-->
+<!--                app:layout_constraintLeft_toLeftOf="parent"-->
+<!--                app:layout_constraintRight_toRightOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/et_inputTemp_rightRL_container"/>-->
 
-            <!--        右侧底部温度模式-->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/toggle_fixed_tempBar"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
 
 
-                <!--        右侧底部图表-->
-                <ImageView
-                    app:layout_constraintTop_toBottomOf="@+id/iv_preview_right_temp_mode"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    android:id="@+id/iv_preview_right_chart"
-                    android:background="@mipmap/right_container_chart_info"
-                    android:layout_width="@dimen/dimen_40dp"
-                    android:layout_height="@dimen/dimen_40dp"
-                    android:layout_margin="@dimen/dimen_10dp"
-                    tools:ignore="ContentDescription"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+<!--            &lt;!&ndash;        右侧底部温度模式&ndash;&gt;-->
+<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                android:visibility="gone"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="0dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintLeft_toLeftOf="parent"-->
+<!--                app:layout_constraintRight_toRightOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/toggle_fixed_tempBar">-->
+
+
+<!--                &lt;!&ndash;        右侧底部图表&ndash;&gt;-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/iv_preview_right_chart"-->
+<!--                    android:layout_width="@dimen/dimen_40dp"-->
+<!--                    android:layout_height="@dimen/dimen_40dp"-->
+<!--                    android:layout_margin="@dimen/dimen_10dp"-->
+<!--                    android:background="@mipmap/right_container_chart_info"-->
+<!--                    app:layout_constraintLeft_toLeftOf="parent"-->
+<!--                    app:layout_constraintRight_toRightOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    tools:ignore="ContentDescription" />-->
+<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

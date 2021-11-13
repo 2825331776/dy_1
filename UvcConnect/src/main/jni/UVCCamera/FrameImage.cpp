@@ -84,7 +84,7 @@ void FrameImage::shutRefresh()
 //    LOGE("===================shutRefresh=============update isNeedWriteTable===============");
 }
 //二分法查找
-int FrameImage::getDichotomySearch(float * data, int length, float value, int startIndex,
+int FrameImage::getDichotomySearch(float * data, int length,float  value, int startIndex,
                                    int endIndex) {
     float * position = data;
     if (endIndex > length) return -1;
@@ -130,13 +130,13 @@ void FrameImage::showTempRange(float maxPercent,float minPercent,float maxValue 
     maxThumbValue = maxValue;
     minThumbValue = minValue;
     LOGE( " isFixedTempStrip   === > %d" , isFixedTempStrip );
-//    if (isFixedTempStrip) {
+    if (isFixedTempStrip) {
 ////        //todo 查询最大值滑块的温度 对应的ad值 ；最小值滑块对应的 ad值
-//        maxThumbAD = getDichotomySearch(temperatureTable,16384,maxThumbValue,1000,16384);
-//        minThumbAD = getDichotomySearch(temperatureTable,16384,minThumbValue,1000,16384);
+//        maxThumbAD = getDichotomySearch(temperatureTable,16384,&maxThumbValue,1000,16384);
+//        minThumbAD = getDichotomySearch(temperatureTable,16384,&minThumbValue,1000,16384);
 //        roThumb = maxThumbAD - minThumbAD;
-//        LOGE(" maxThumbAD =   %d  minThumbAD = %d  roThumb =   %d" , maxThumbAD, minThumbAD ,roThumb);
-//    }
+        LOGE(" maxThumbAD =   %d  minThumbAD = %d  roThumb =   %d" , maxThumbAD, minThumbAD ,roThumb);
+    }
     LOGE("temp maxThumbValue = %f , min == %f" ,maxThumbValue,minThumbValue);
 }
 void FrameImage::disTempRange() {//在下一帧图像绘制的时候就不会绘制,是否是拉温宽
