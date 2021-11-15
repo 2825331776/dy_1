@@ -175,8 +175,8 @@ public class MyMoveWidget extends View {
 				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_low);
 				pointTextPaint.setColor(getResources().getColor(R.color.min_temp_text_color_blue,null));
 			}else {
-				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center2);
-				maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center2);
+				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center);
+				maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center);
 			}
 		}else {
 			tempWidgetData.setCanMove(true);

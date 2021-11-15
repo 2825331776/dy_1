@@ -6,7 +6,53 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_highlowtemp_low_select_1.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_main_preview_aboutus_select.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_main_preview_aboutus_unselect.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_main_preview_palette_select.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_main_preview_palette_unselect.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_main_preview_record_close.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_main_preview_record_open.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_main_preview_takephoto_select.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_main_preview_takephoto_unselect.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_mian_preview_areacheck_select.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_mian_preview_areacheck_unselect.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_user_vector_clear_24px.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_user_vector_confirm_24px.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_user_vector_draw_temp_mode_24px.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_user_vector_gallery_24px.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_user_vector_high_temp_alarm_24dp.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_user_vector_high_temp_trace_24px.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_user_vector_label_24px.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_user_vector_palette_24px.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_user_vector_record_24px.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_user_vector_setting_24px.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_user_vector_setting_new_24px.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_user_vector_stoprecord_24px.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_user_vector_take_photo_24px.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/ic_user_vector_temp_mode_24px.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_aboutus.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_areacheck.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_clear.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_draw_mode.xml" value="0.27708333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_fixtempstrip.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_gallery.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_highlowtrace.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_highlowtrace_center.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_highlowtrace_high.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_highlowtrace_low.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_measuretemp.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_measuretemp_line.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_measuretemp_point.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_measuretemp_rectangle.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_overtempalarm.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_palette.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_record.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_setting.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_setting_language.xml" value="0.21145833333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_takephoto.xml" value="0.21145833333333333" />
         <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/layout/activity_test.xml" value="0.33" />
+        <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/layout/fragment_preview_main.xml" value="0.33" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/activity_test.xml" value="0.25" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/fragment_preview_main.xml" value="0.3536458333333333" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/common/src/main/res/drawable/ic_vector_max.xml" value="0.2635416666666667" />
