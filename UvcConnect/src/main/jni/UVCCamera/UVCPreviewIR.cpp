@@ -75,7 +75,7 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh ,FrameImage * frameImage){
 
     pthread_mutex_init(&data_callback_mutex,NULL);
 
-    pthread_mutex_init(&fixed_mutex,NULL);
+//    pthread_mutex_init(&fixed_mutex,NULL);
     EXIT();
 
 }
@@ -99,7 +99,7 @@ UVCPreviewIR::~UVCPreviewIR() {
     pthread_cond_destroy(&temperature_sync);
 
     pthread_mutex_destroy(&data_callback_mutex);
-    pthread_mutex_destroy(&fixed_mutex);
+//    pthread_mutex_destroy(&fixed_mutex);
     //LOGE("~UVCPreviewIR() 8");
 
 //    if(OutBuffer!=NULL){
@@ -629,11 +629,11 @@ void UVCPreviewIR::do_savePicture() {
 }
 
 void UVCPreviewIR::fixedTempStripChange(bool state) {
-    pthread_mutex_lock(&fixed_mutex);
+//    pthread_mutex_lock(&fixed_mutex);
     {
         mFrameImage->fixedTempStripChange(state);
     }
-    pthread_mutex_unlock(&fixed_mutex);
+//    pthread_mutex_unlock(&fixed_mutex);
 }
 
 void UVCPreviewIR::savePicDefineData() {

@@ -24,6 +24,7 @@ import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -47,9 +48,9 @@ public class DragTempContainer extends RelativeLayout {
 	private static final String TAG = "MyDragContainer";
 	private boolean isControlItem = false;//是否是操作子View
 
-	private List<MyMoveWidget> highLowTempLists;
-	private List<MyMoveWidget> userAdd;
-	private Bitmap pointBt, maxTempBt, minTempBt;//三张图片 ：单点温度、线和矩阵的 最高、最低温的图片
+	private CopyOnWriteArrayList<MyMoveWidget>                 highLowTempLists;
+	private CopyOnWriteArrayList<MyMoveWidget> userAdd;
+	private Bitmap                             pointBt, maxTempBt, minTempBt;//三张图片 ：单点温度、线和矩阵的 最高、最低温的图片
 
 	private float WRatio, HRatio;//相机数据大小  与 显示屏幕大小的比值。
 
@@ -211,8 +212,8 @@ public class DragTempContainer extends RelativeLayout {
 	}
 	private void initView(){
 		drawTempMode = -1;
-		userAdd = new ArrayList<>();
-		highLowTempLists = new ArrayList<>();
+		userAdd = new CopyOnWriteArrayList<>();
+		highLowTempLists = new CopyOnWriteArrayList<>();
 		tempSource = new float[256*196+10];
 		minAddWidgetWidth = minAddWidgetHeight = DensityUtil.dp2px(mContext.get(),70);//最小为50个dp
 

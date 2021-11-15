@@ -43,6 +43,8 @@ FrameImage::FrameImage(uvc_device_handle_t *devh)  {
               rangeMode=120;//可更改
               mTemperatureCallbackObj = NULL;
 
+//    pthread_mutex_init(&fixed_mutex,NULL);
+
 //              mFrameCallbackObj = NULL;
 //              OutPixelFormat=3;
 }
@@ -51,6 +53,7 @@ FrameImage::~FrameImage() {
     ENTER();
 //    pthread_mutex_destroy(&temperature_mutex);
     delete [] mBuffer;
+//    pthread_mutex_destroy(&fixed_mutex);
     EXIT();
 }
 
@@ -84,38 +87,42 @@ void FrameImage::shutRefresh()
 //    LOGE("===================shutRefresh=============update isNeedWriteTable===============");
 }
 //二分法查找
-int FrameImage::getDichotomySearch(float * data, int length,float  value, int startIndex,
+void FrameImage::getDichotomySearch(float * data, int length,float  value, int startIndex,
                                    int endIndex) {
+    LOGE(" length =  %d, value = %f , startIndex = %d  , endIndex = %d" ,length,value , startIndex , endIndex);
     float * position = data;
-    if (endIndex > length) return -1;
+    if (endIndex > length) return ;
     int start = startIndex;
     int end = endIndex -1;//下标
     int valueIndex = -1;
 
-    if (end<=0)return -1;
+    if (end<=0)return ;
     while (start <= end){
         int midPont = (start + end+1)/2;//记录的是坐标，所以要在取中点之前+1
         if (value == position[midPont]){//如果中点坐标的值 恰好等于 目标值，则返回这个 中点坐标
             valueIndex = midPont;
-            return valueIndex;
+//            *AD = valueIndex;
+            return ;
         }
         if (value > position[midPont] ){
             start = midPont +1;
             if ((start) <= end && value < position[start]){
                 valueIndex = midPont;
-                return valueIndex;
+//                *AD = valueIndex;
+                return ;
             }
         }
         if (value < position[start]){
             end = midPont -1;
             if ((end) >= start && value > position[end]){//中点値小志 目标值。但中点値前一位的值又大于了目标值。则返回中点前一位的坐标
                 valueIndex = end;
-                return valueIndex;
+//                *AD = valueIndex;
+                return;
             }
         }
     }
     position = NULL;
-    return valueIndex;
+//    *AD = valueIndex;
 }
 //更改色板
 void FrameImage::changePalette(int typeOfPalette){
@@ -130,21 +137,23 @@ void FrameImage::showTempRange(float maxPercent,float minPercent,float maxValue 
     maxThumbValue = maxValue;
     minThumbValue = minValue;
     LOGE( " isFixedTempStrip   === > %d" , isFixedTempStrip );
-    if (isFixedTempStrip) {
+//    if (isFixedTempStrip) {
 ////        //todo 查询最大值滑块的温度 对应的ad值 ；最小值滑块对应的 ad值
 //        maxThumbAD = getDichotomySearch(temperatureTable,16384,&maxThumbValue,1000,16384);
 //        minThumbAD = getDichotomySearch(temperatureTable,16384,&minThumbValue,1000,16384);
 //        roThumb = maxThumbAD - minThumbAD;
-        LOGE(" maxThumbAD =   %d  minThumbAD = %d  roThumb =   %d" , maxThumbAD, minThumbAD ,roThumb);
-    }
+//        LOGE(" maxThumbAD =   %d  minThumbAD = %d  roThumb =   %d" , maxThumbAD, minThumbAD ,roThumb);
+//    }
     LOGE("temp maxThumbValue = %f , min == %f" ,maxThumbValue,minThumbValue);
 }
 void FrameImage::disTempRange() {//在下一帧图像绘制的时候就不会绘制,是否是拉温宽
     isshowtemprange = false;
 }
 void FrameImage::fixedTempStripChange(bool state) {
+//    pthread_mutex_lock(&fixed_mutex);
     if (state){isFixedTempStrip = true;}
     else{isFixedTempStrip = false;}
+//    pthread_mutex_unlock(&fixed_mutex);
 //    isFixedTempStrip = state;
     LOGE(" fixed temp strip  state =  %d" ,isFixedTempStrip);
 }
@@ -302,13 +311,13 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
     ro = max - min;
 
 //    LOGE(" isfixed temp strip  == %d",isFixedTempStrip);
+//    pthread_mutex_lock(&fixed_mutex);
 //    if (isFixedTempStrip){//固定温度条
-//        //        maxThumbAD = getDichotomySearch(temperatureTable,16384,maxThumbValue,1000,16384);
-//        //        minThumbAD = getDichotomySearch(temperatureTable,16384,minThumbValue,1000,16384);
 //        roThumb = maxThumbAD - minThumbAD;
 //        min = minThumbAD;
 //        ro = roThumb;
 //    }
+//    pthread_mutex_unlock(&fixed_mutex);
 
     //框内细查 先绘制灰度图,根据原有的ad值
     if (mIsAreachecked){
@@ -579,7 +588,7 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
     float* temperatureData=mCbTemper;//temperatureData指向mCbTemper的首地址，更改temperatureData也就是更改mCbTemper
     //根据8004或者8005模式来查表，8005模式下仅输出以上注释的10个参数，8004模式下数据以上参数+全局温度数据
     thermometrySearch(requestWidth,requestHeight,temperatureTable,orgData,temperatureData,rangeMode,OUTPUTMODE);
-    //LOGE("centerTmp:%.2f,maxTmp:%.2f,minTmp:%.2f,avgTmp:%.2f\n",temperatureData[0],temperatureData[3],temperatureData[6],temperatureData[9]);
+//    LOGE("centerTmp:%.2f,maxTmp:%.2f,minTmp:%.2f,avgTmp:%.2f\n",temperatureData[0],temperatureData[3],temperatureData[6],temperatureData[9]);
     jfloatArray mNCbTemper= env->NewFloatArray(requestWidth*(requestHeight-4)+10);
     /**
      *从mCbTemper 取出10+requestWidth*(requestHeight-4) 个长度的值给 mNCbTemper（这个值要传递给Java层）
@@ -593,6 +602,8 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
 
 
     }
+//    getDichotomySearch(temperatureTable,16384,maxThumbValue,1000,16384,);
+//    getDichotomySearch(temperatureTable,16384,minThumbValue,1000,16384);
 
     env->DeleteLocalRef(mNCbTemper);
 
