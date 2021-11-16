@@ -31,9 +31,11 @@ public class DYConstants {
 	public static final String HighLowTemp_Toggle_info = "highLowTemp_toggle";//高低温追踪 开关
 	public static final String areaCheck_Toggle_info = "areaCheck_toggle";//框内细查 开关
 
-	public static final String palette_number_info = "palette_number";//画板设置
-	public static final String language_setting = "language_setting";//语言设置
-	public static final String tempUnit_setting = "tempUnit";//温度单位
+	public static final String PALETTE_NUMBER = "palette_number";//画板设置
+	public static final String LANGUAGE_SETTING = "language_setting";//语言设置
+	public static final String TEMP_UNIT_SETTING = "temp_unit";//温度单位
+
+	public static final String SP_NAME = "DYT_IR_SP";
 
 
 }

@@ -13,7 +13,7 @@
     <color name="bg_preview_left_cutoff_rule">#FF666666</color>
 
 <!--    整体背景颜色-->
-    <color name="bg_preview_right">#FF071750</color>
+    <color name="bg_preview_right">#FF071132</color>
 <!--    布局右侧按钮颜色-->
     <color name="bg_preview_toggle_select">#FF4AD662</color>
     <color name="bg_preview_toggle_unselect">#FFDDDDDD</color>

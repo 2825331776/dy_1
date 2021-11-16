@@ -249,16 +249,16 @@ public class MyCustomRangeSeekBar extends View {
 
 		mProgressBarBg = BitmapFactory.decodeResource(getResources(),R.mipmap.seekbar_bg);//整体的背景颜色
 
-		mThumbMaxImage = BitmapFactory.decodeResource(getResources(), R.mipmap.span_max);
-		mThumbMinImage = BitmapFactory.decodeResource(getResources(),R.mipmap.span_min);
-		btRangeMaxTemp = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_max);
-		btRangeMinTemp = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_min);
+		mThumbMaxImage = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_temp_seekbar_thumb_max_arrow);
+		mThumbMinImage = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_temp_seekbar_thumb_min_arrow);
+		btRangeMaxTemp = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_temp_seekbar_realtime_max_arrow);
+		btRangeMinTemp = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_temp_seekbar_realtime_min_arrow);
 
 		mTextSize = a.getDimension(R.styleable.MyCustomRangeSeekBar_SeekBarAllTextSize, dp2px(context, 12));
 		mPaint.setTextSize(mTextSize);
 
-		Paint.FontMetrics metrics = mPaint.getFontMetrics();
-		seekbarWidth = metrics.descent - metrics.ascent;
+//		Paint.FontMetrics metrics = mPaint.getFontMetrics();
+		seekbarWidth = dp2px(context, 8);
 		mThumbHeight = mThumbMaxImage.getHeight();
 		mThumbWidth = mThumbMaxImage.getWidth();
 
@@ -294,7 +294,7 @@ public class MyCustomRangeSeekBar extends View {
 		}
 		//宽度 = 滑动条宽度（包含了文字的宽度） + 条子宽度 + 右边文字的宽度 + 实时最高最低温图片的宽度
 		int width = (int)(mThumbMaxImage.getWidth() + seekbarWidth + btRangeMaxTemp.getWidth()
-				+ mPaint.measureText("1000") );
+				+ mPaint.measureText("999.9") );
 //		if (MeasureSpec.UNSPECIFIED != MeasureSpec.getMode(widthMeasureSpec)) {
 //			width = Math.min(width, MeasureSpec.getSize(widthMeasureSpec));
 //		}
@@ -366,16 +366,16 @@ public class MyCustomRangeSeekBar extends View {
 //		canvas.drawLine(mThumbMaxImage.getWidth() + seekbarWidth ,
 //				0,mThumbMaxImage.getWidth() + seekbarWidth ,
 //				topBottomPadding,mPaint);
-		//起始刻度
-		canvas.drawLine(mThumbMaxImage.getWidth(),topBottomPadding,mThumbMaxImage.getWidth()+seekbarWidth,topBottomPadding,mPaint);
-		//四分之一刻度
-		canvas.drawLine(mThumbMaxImage.getWidth(),(getHeight()-2.0f*topBottomPadding)/4+topBottomPadding,
-				mThumbMaxImage.getWidth()+seekbarWidth,(getHeight()-2.0f*topBottomPadding)/4+topBottomPadding,mPaint);
-		//四分之二刻度
-		canvas.drawLine(mThumbMaxImage.getWidth(),getHeight()/2.0f,mThumbMaxImage.getWidth()+seekbarWidth,getHeight()/2.0f,mPaint);
-		//四分之三刻度
-		canvas.drawLine(mThumbMaxImage.getWidth(),(getHeight()-2.0f*topBottomPadding)/4*3+topBottomPadding,
-				mThumbMaxImage.getWidth()+seekbarWidth,(getHeight()-2.0f*topBottomPadding)/4*3+topBottomPadding,mPaint);
+//		//起始刻度
+//		canvas.drawLine(mThumbMaxImage.getWidth(),topBottomPadding,mThumbMaxImage.getWidth()+seekbarWidth,topBottomPadding,mPaint);
+//		//四分之一刻度
+//		canvas.drawLine(mThumbMaxImage.getWidth(),(getHeight()-2.0f*topBottomPadding)/4+topBottomPadding,
+//				mThumbMaxImage.getWidth()+seekbarWidth,(getHeight()-2.0f*topBottomPadding)/4+topBottomPadding,mPaint);
+//		//四分之二刻度
+//		canvas.drawLine(mThumbMaxImage.getWidth(),getHeight()/2.0f,mThumbMaxImage.getWidth()+seekbarWidth,getHeight()/2.0f,mPaint);
+//		//四分之三刻度
+//		canvas.drawLine(mThumbMaxImage.getWidth(),(getHeight()-2.0f*topBottomPadding)/4*3+topBottomPadding,
+//				mThumbMaxImage.getWidth()+seekbarWidth,(getHeight()-2.0f*topBottomPadding)/4*3+topBottomPadding,mPaint);
 	}
 
 	/**

@@ -58,10 +58,14 @@ private:
 	float maxThumbValue;//最大值滑块 百分比对应温度
 	float minThumbValue;//最小值滑块 百分比对应温度
 	volatile bool isFixedTempStrip;//是否固定温度条
+	volatile bool isNeedFreshAD;
 	volatile int minThumbAD;
 	volatile int maxThumbAD;
 	int roThumb;
-//	pthread_mutex_t fixed_mutex;
+	pthread_mutex_t fixed_mutex;
+	pthread_cond_t  fixed_cond;
+	float tempData[16384];
+	pthread_t  fixed_thread;
 
 	int mCurrentAndroidVersion;     //标志是否使用OpenCL加速渲染成图
 	/***********************温度************************************/
@@ -124,7 +128,7 @@ public:
 	void do_temperature_callback(JNIEnv *env, uint8_t *frameData);//设置温度回调
 	void shutRefresh();
 
-	inline void getDichotomySearch(float * data, int length ,float value, int startIndex, int endIndex);//二分法查找
+	int getDichotomySearch(float *& data, int length ,float value, int startIndex, int endIndex);//二分法查找
 
 /*******************************录制*******************************************/
 //	int setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format);

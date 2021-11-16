@@ -2580,12 +2580,17 @@ mipmap cursorred
 mipmap cursoryellow
 mipmap define_view_tools_delete
 mipmap define_view_tools_other
+mipmap ic_areacheck_tools_delete
 mipmap ic_higlowtemp_draw_widget_center
 mipmap ic_higlowtemp_draw_widget_center2
 mipmap ic_higlowtemp_draw_widget_high
 mipmap ic_higlowtemp_draw_widget_low
 mipmap ic_max
 mipmap ic_min
+mipmap ic_temp_seekbar_realtime_max_arrow
+mipmap ic_temp_seekbar_realtime_min_arrow
+mipmap ic_temp_seekbar_thumb_max_arrow
+mipmap ic_temp_seekbar_thumb_min_arrow
 mipmap max
 mipmap min
 mipmap seekbar_bg

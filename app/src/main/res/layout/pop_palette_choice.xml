@@ -16,7 +16,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:background="@drawable/shape_bg_pop_palette_choice"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dimen_50dp">
+            android:layout_height="@dimen/dimen_40dp">
 
             <ImageButton
                 android:id="@+id/palette_layout_Tiehong"

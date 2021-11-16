@@ -9,12 +9,14 @@ import android.graphics.RectF;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.dyt.wcc.common.R;
 import com.dyt.wcc.common.utils.DensityUtil;
@@ -39,7 +41,7 @@ public class DragTempContainer extends RelativeLayout {
 	private MyCustomRangeSeekBar mSeekBar;
 
 	//点击工具栏之后的控制 响应的事件。删除的事件。
-	public static int perToolsWidthHeightSet = 25;//每个工具栏的宽高
+	public static int perToolsWidthHeightSet = 35;//每个工具栏的宽高
 	public static int perToolsMargin = 5;//每个工具栏的margin
 
 	private static final int UPDATE_TEMP_DATA = 1;
@@ -249,6 +251,18 @@ public class DragTempContainer extends RelativeLayout {
 	}
 	//查询 分发事件
 
+
+	@Nullable
+	@Override
+	protected Parcelable onSaveInstanceState () {
+		return super.onSaveInstanceState();
+	}
+
+	@Override
+	protected void onRestoreInstanceState (Parcelable state) {
+		super.onRestoreInstanceState(state);
+	}
+
 	@Override
 	protected void onDraw (Canvas canvas) {
 		super.onDraw(canvas);
@@ -318,7 +332,7 @@ public class DragTempContainer extends RelativeLayout {
 			tempWidget.setCanMove(true);
 			tempWidget.setSelect(false);
 			tempWidget.setTempTextSize(20);
-			tempWidget.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete, R.mipmap.define_view_tools_other});
+			tempWidget.setToolsPicRes(new int[]{R.mipmap.ic_areacheck_tools_delete});
 			tempWidget.setOtherTemp(otherTempWidget);
 
 			MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),tempWidget,screenWidth,screenHeight);
@@ -569,7 +583,7 @@ public class DragTempContainer extends RelativeLayout {
 		widget.setCanMove(true);
 		widget.setSelect(false);
 		widget.setTempTextSize(20);
-		widget.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete, R.mipmap.define_view_tools_other});
+		widget.setToolsPicRes(new int[]{R.mipmap.ic_areacheck_tools_delete});
 		widget.setPointTemp(pointTempWidget);
 
 		resetUserAddView(widget);
@@ -594,7 +608,7 @@ public class DragTempContainer extends RelativeLayout {
 			tempWidget.setCanMove(true);
 			tempWidget.setSelect(false);
 			tempWidget.setTempTextSize(20);
-			tempWidget.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete, R.mipmap.define_view_tools_other});
+			tempWidget.setToolsPicRes(new int[]{R.mipmap.ic_areacheck_tools_delete});
 			tempWidget.setOtherTemp(otherTempWidget);
 
 			//todo 重置userAddView的集合

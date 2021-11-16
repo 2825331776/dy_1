@@ -4,7 +4,9 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.app.Notification;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbDevice;
@@ -27,6 +29,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.dyt.wcc.cameracommon.usbcameracommon.UVCCameraHandler;
 import com.dyt.wcc.common.base.BaseApplication;
@@ -35,7 +38,6 @@ import com.dyt.wcc.common.utils.AssetCopyer;
 import com.dyt.wcc.common.utils.CreateBitmap;
 import com.dyt.wcc.common.utils.FontUtils;
 import com.dyt.wcc.common.widget.MyCustomRangeSeekBar;
-import com.dyt.wcc.common.widget.MyToggleView;
 import com.dyt.wcc.common.widget.SwitchMultiButton;
 import com.dyt.wcc.common.widget.dragView.DragTempContainer;
 import com.dyt.wcc.common.widget.dragView.TempWidgetObj;
@@ -76,6 +78,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private PopupWindow                        PLRPopupWindows;//点线矩形测温弹窗
 	private PopupWindow                        allPopupWindows;
 	private Map<String ,Float>                 cameraParams ;
+	private SharedPreferences sp;
 
 //	private USBMonitor mUsbMonitor ;
 	private int mTextureViewWidth,mTextureViewHeight;
@@ -217,14 +220,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		paletteType =1;
 		mUvcCameraHandler.PreparePalette(palettePath,paletteType);
 		mUvcCameraHandler.setAreaCheck(0);
-//		mUvcCameraHandler.watermarkOnOff(isWatermark);//是否显示水印
-		mUvcCameraHandler.setPalette(0);
+//		mUvcCameraHandler.setPalette(2);
 
 		//是否进行温度的绘制
 		isTempShow = 0;
 		mUvcCameraHandler.tempShowOnOff(isTempShow);//是否显示绘制的温度 0不显示，1显示。最终调用的是UVCCameraTextureView的绘制线程。
-//		mDataBinding.textureViewPreviewFragment.setBitmap(mCursorRed, mCursorGreen, mCursorBlue, mCursorYellow, mWatermarkLogo);//红色最高温，绿色？， 蓝色最低温，黄色中心温，LOGO
-		// 注意显示水印的时候要设置这个水印图片
 
 		mUvcCameraHandler.startPreview(stt);
 		mUvcCameraHandler.startTemperaturing();//温度回调
@@ -233,6 +233,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 	@Override
 	protected void initView () {
+		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
+
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		int screenWidth = dm.widthPixels;
 		int screenHeight = dm.heightPixels;
@@ -269,7 +271,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		bitmaps.add(lenglan);
 
 		mDataBinding.customSeekbarPreviewFragment.setmProgressBarSelectBgList(bitmaps);
+//		Log.e(TAG, "initView: sp.get Palette_Number = " + sp.getInt(DYConstants.PALETTE_NUMBER,0));
 		mDataBinding.customSeekbarPreviewFragment.setPalette(0);
+		mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING,0));
 
 		mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
 				mDataBinding.textureViewPreviewFragment,1,
@@ -368,10 +372,14 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 		fl = mDataBinding.flPreview;
 
+		//高低温开关
 		mDataBinding.toggleShowHighLowTemp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
-
+				if (isChecked){
+					mDataBinding.dragTempContainerPreviewFragment.openHighLowTemp();
+				}else {
+					mDataBinding.dragTempContainerPreviewFragment.closeHighLowTemp(); }
 			}
 		});
 //				.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
@@ -388,7 +396,14 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.toggleAreaCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
-
+				if (isChecked){
+					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
+					int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
+					mUvcCameraHandler.setArea(areaData);
+					mUvcCameraHandler.setAreaCheck(1);
+				}else {//close
+					mUvcCameraHandler.setAreaCheck(0);
+				}
 			}
 		});
 //				.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
@@ -406,27 +421,34 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 ////				mDataBinding.dragTempContainerPreviewFragment.closeHighLowTemp();
 //			}
 //		});
+		//固定温度条
 		mDataBinding.toggleFixedTempBar
-//				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//			@Override
-//			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
-//
-//			}
-//		});
-				.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
+				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
-			public void onClick (boolean checkState) {
-				if (mUvcCameraHandler!=null)mUvcCameraHandler.fixedTempStripChange(checkState);
+			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
+				if (mUvcCameraHandler!=null)mUvcCameraHandler.fixedTempStripChange(isChecked);
 
-				if (checkState){
+				if (isChecked){
 					mDataBinding.customSeekbarPreviewFragment.setWidgetMode(1);
 				}else {
 					mDataBinding.customSeekbarPreviewFragment.setWidgetMode(0);
 				}
-
 			}
 		});
-		//高温警告
+//				.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
+//			@Override
+//			public void onClick (boolean checkState) {
+//				if (mUvcCameraHandler!=null)mUvcCameraHandler.fixedTempStripChange(checkState);
+//
+//				if (checkState){
+//					mDataBinding.customSeekbarPreviewFragment.setWidgetMode(1);
+//				}else {
+//					mDataBinding.customSeekbarPreviewFragment.setWidgetMode(0);
+//				}
+//
+//			}
+//		});
+		//超温警告
 		mDataBinding.toggleHighTempAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
@@ -538,15 +560,14 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onClick (View v) {
 				if (mUvcCameraHandler.isOpened()){
-					getCameraParams();
+					getCameraParams();//
 				}
-
-
 				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_setting,null);
 
 				PopSettingBinding popSettingBinding = DataBindingUtil.bind(view);
+				assert popSettingBinding != null;
 
-				if (cameraParams != null){
+				if (cameraParams != null) {
 					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(cameraParams.get("emiss")));
 					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(cameraParams.get("distance")));
 					popSettingBinding.etCameraSettingReflect.setText(String.valueOf(cameraParams.get("Refltmp")));
@@ -554,42 +575,16 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf(cameraParams.get("Airtmp")));
 					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf(cameraParams.get("humi")));
 				}
+				int temp_unit = sp.getInt(DYConstants.TEMP_UNIT_SETTING,0);
 
-				assert popSettingBinding != null;
-				popSettingBinding.switchChoiceTempUnit.setText(new String[]{"℃","℉","K"}).setSelectedTab(0).setOnSwitchListener(new SwitchMultiButton.OnSwitchListener() {
+				popSettingBinding.switchChoiceTempUnit.setText("℃","℉","K").setSelectedTab(temp_unit).setOnSwitchListener(new SwitchMultiButton.OnSwitchListener() {
 					@Override
 					public void onSwitch (int position, String tabText) {
-
 						mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(position);
-//						Toast.makeText(mContext.get(),""+position,Toast.LENGTH_SHORT).show();
-
+						sp.edit().putInt(DYConstants.TEMP_UNIT_SETTING,position).apply();
 					}
 				});
 
-//				popSettingBinding.btLanguage.setOnClickListener(new View.OnClickListener() {
-//					@Override
-//					public void onClick (View v) {
-//						Toast.makeText(mContext.get(), "btLanguage ",Toast.LENGTH_SHORT).show();
-//						AlertDialog alertDialog = new AlertDialog.Builder(mContext.get()).setTitle("ssss").setMessage("1111").create();
-//
-//						alertDialog.show();
-//						LayoutInflater inflater = (LayoutInflater) mContext.get().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//						View viewBt = inflater.from(mContext.get()).inflate(R.layout.pop_palette_choice,null );
-//						PopupWindow popBt = new PopupWindow(viewBt,LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//						popBt.setFocusable(true);
-//						popBt.setOutsideTouchable(true);
-//						popBt.setTouchable(true);
-//
-//						popBt.showAsDropDown(popSettingBinding.btLanguage,15,-popBt.getHeight()-20, Gravity.CENTER);
-//					}
-//				});
-//				popSettingBinding.spinnerLanguage.attachDataSource(DYConstants.languageArray);
-//				popSettingBinding.spinnerLanguage.setOnSpinnerItemSelectedListener(new OnSpinnerItemSelectedListener() {
-//					@Override
-//					public void onItemSelected (MySpinner parent, View view, int position, long id) {
-////						Toast.makeText(mContext.get(), " "+position,Toast.LENGTH_SHORT).show();
-//					}
-//				});
 
 				PopupWindow popupWindow = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 				popupWindow.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
@@ -599,21 +594,22 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					popupWindow.setHeight(popupWindow.getContentView().getMeasuredHeight());
 				}
 				popupWindow.setWidth(fl.getWidth()- 30);
-
 				popupWindow.setFocusable(true);
 				popupWindow.setOutsideTouchable(true);
 				popupWindow.setTouchable(true);
 
 				popupWindow.showAsDropDown(mDataBinding.flPreview,15,-popupWindow.getHeight()-20, Gravity.CENTER);
-
+				//语言spinner
 				ArrayAdapter<String> adapterSpinner = new ArrayAdapter<String>(mContext.get(),R.layout.item_select, DYConstants.languageArray);
 				adapterSpinner.setDropDownViewResource(R.layout.item_dropdown);
 				popSettingBinding.spinnerSettingLanguage.setAdapter(adapterSpinner);
-				popSettingBinding.spinnerSettingLanguage.setSelection(0);//从本地拿
+				int language_index = sp.getInt(DYConstants.LANGUAGE_SETTING,0);
+				popSettingBinding.spinnerSettingLanguage.setSelection(language_index);//从本地拿
 				popSettingBinding.spinnerSettingLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 					@Override
 					public void onItemSelected (AdapterView<?> parent, View view, int position, long id) {
 //						Toast.makeText(mContext.get(),"spinner item  = "+position,Toast.LENGTH_SHORT).show();
+						sp.edit().putInt(DYConstants.LANGUAGE_SETTING,position).apply();
 					}
 
 					@Override
@@ -796,9 +792,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		if (allPopupWindows != null){
 			allPopupWindows.dismiss();
 		}
-		if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing() && id >= 1 && id <=6){
-			mUvcCameraHandler.setPalette(id);
-			mDataBinding.customSeekbarPreviewFragment.setPalette(id-1);
+		if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing() &&id <6){
+//			sp.edit().putInt(DYConstants.PALETTE_NUMBER,id).apply();
+			mUvcCameraHandler.setPalette(id+1);
+			mDataBinding.customSeekbarPreviewFragment.setPalette(id);
 			mDataBinding.customSeekbarPreviewFragment.invalidate();//刷新控件
 		}
 	}
@@ -808,27 +805,27 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		public void onClick (View v) {
 			switch (v.getId()){
 				case R.id.palette_layout_Tiehong:
-					setPalette(1);
+					setPalette(0);
 					Toast.makeText(mContext.get(),"palette_layout_Tiehong ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.palette_layout_Caihong:
-					setPalette(2);
+					setPalette(1);
 					Toast.makeText(mContext.get(),"palette_layout_Caihong ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.palette_layout_Hongre:
-					setPalette(3);
+					setPalette(2);
 					Toast.makeText(mContext.get(),"palette_layout_Hongre ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.palette_layout_Heire:
-					setPalette(4);
+					setPalette(3);
 					Toast.makeText(mContext.get(),"palette_layout_Heire ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.palette_layout_Baire:
-					setPalette(5);
+					setPalette(4);
 					Toast.makeText(mContext.get(),"palette_layout_Baire ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.palette_layout_Lenglan:
-					setPalette(6);
+					setPalette(5);
 					Toast.makeText(mContext.get(),"palette_layout_Lenglan ", Toast.LENGTH_SHORT).show();
 					break;
 			}
@@ -853,19 +850,21 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	};
 
 	public void toGallery(View view){
-//		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
-//				,Manifest.permission.WRITE_EXTERNAL_STORAGE).request(new RequestCallback() {
-//			@Override
-//			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
-//				if (allGranted){
-//					Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
-//				}
-//			}
-//		});
+//		mDataBinding.dragTempContainerPreviewFragment.clearAll();
+
+		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
+				,Manifest.permission.WRITE_EXTERNAL_STORAGE).request(new RequestCallback() {
+			@Override
+			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+				if (allGranted){
+					Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
+				}
+			}
+		});
 	}
 
 	public void toClear(View view){
-//		mDataBinding.dragTempContainerPreviewFragment.clearAll();
+		mDataBinding.dragTempContainerPreviewFragment.clearAll();
 	}
 	//拍照
 	public void toImage(View view){

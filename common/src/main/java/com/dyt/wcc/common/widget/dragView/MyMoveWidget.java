@@ -224,7 +224,7 @@ public class MyMoveWidget extends View {
 //		Log.e(TAG, "initData: =============");
 		//工具栏是否为空，为空时默认添加一个删除按钮。
 		if (tempWidgetData.getToolsPicRes() ==null){
-			tempWidgetData.setToolsPicRes(new int[]{R.mipmap.define_view_tools_delete});
+			tempWidgetData.setToolsPicRes(new int[]{R.mipmap.ic_areacheck_tools_delete});
 		}
 		if (!tempWidgetData.isCanMove()){//不管什么类型，不能移动绝对不能选中
 			tempWidgetData.setSelect(false);
@@ -690,7 +690,6 @@ public class MyMoveWidget extends View {
 	 *             以工具栏背景的坐标为基准
 	 */
 	private void drawTool(@NonNull TempWidgetObj data, @NonNull Canvas canvas){
-			canvas.drawRoundRect(rectToolsBg,5,5,bgRoundPaint);
 			int [] resPic = data.getToolsPicRes();
 			RectF perToolsPic ;
 			float left , right , top , bottom;
@@ -757,9 +756,6 @@ public class MyMoveWidget extends View {
 				canvas.drawLine(zoomBoxRight,zoomBoxBottom,
 						zoomBoxRight,zoomBoxBottom - zoomLineLength,recZoomBox);
 
-			}else {
-				//绘制内容的背景
-				canvas.drawRoundRect(rectContentBg,minTempBt.getWidth()/4.0f,minTempBt.getWidth()/4.0f,bgRoundPaint);
 			}
 			drawTool(tempWidgetData,canvas); //绘制工具栏 背景及其颜色
 		}
