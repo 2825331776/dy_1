@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
@@ -33,8 +34,13 @@ public class MyCustomRangeSeekBar extends View {
 	//条子的最高最低温度。
 	private float mMaxTemp = 100;
 	private float mMinTemp = 0;
+	private float mViewWidth;
+	private float mViewHeight;
 
 	private DecimalFormat df = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
+	private static final String MAX_LENGTH_TEMP = "999.9";
+	private Rect maxTempTextRect;//最大值温度文字的矩形
+	private String tempUnitText = "℃";//温度的单位，绘制在顶部
 
 	//滑块的最高最低温度 及其 滑块的图片
 	private float mThumbMaxTemp;
@@ -68,8 +74,10 @@ public class MyCustomRangeSeekBar extends View {
 	private double mPercentSelectedMaxValue = 1d;
 	//最大值和最小值之间要求的最小范围绝对值，要将 最大值百分比和最小值 百分比 放大100倍之后计算。
 	private float mBetweenAbsoluteValue = 1;
-
-	private RectF mProgressBarRectBg;//条子背景的矩形
+	/**
+	 * 条子背景的矩形
+	 */
+	private RectF mProgressBarRectBg;
 	private RectF mProgressBarSelRect;//色板覆盖的矩形
 
 	//是否可以滑动
@@ -103,9 +111,14 @@ public class MyCustomRangeSeekBar extends View {
 	 * 滑块事件
 	 */
 	public interface ThumbListener {
-		//void onClickMinThumb(Number max, Number min);
-
-		//void onClickMaxThumb();
+		/**
+		 * 最大最小值是否改变
+		 * @param maxPercent 最大值百分比
+		 * @param minPercent    最小值百分比
+		 * @param maxValue  最大值百分比对应的温度数值
+		 * @param minValue  最小百分比对应的温度数值
+		 */
+		void thumbChanged(float maxPercent, float minPercent,float maxValue, float minValue);
 
 		/**
 		 * 最大值的滑块 抬起
@@ -142,6 +155,9 @@ public class MyCustomRangeSeekBar extends View {
 		void onMaxMove(float maxPercent, float minPercent,float maxValue, float minValue);
 	}
 
+	public void setTempUnitText (String tempUnitText) {
+		this.tempUnitText = tempUnitText;
+	}
 
 	public Handler mHandler = new Handler(){
 		@Override
@@ -208,11 +224,9 @@ public class MyCustomRangeSeekBar extends View {
 
 			mPercentSelectedMaxValue = (mThumbMaxTemp - mMinTemp)/(mMaxTemp - mMinTemp);
 			mPercentSelectedMinValue = (mThumbMinTemp - mMinTemp)/(mMaxTemp - mMinTemp);
-
+			//回调给View层更改了画面数据。修改C++层的最大最小AD值
 			//todo 计算变化之后的 滑块温度范围 对应的 百分比值。
-
-		}else {
-
+			mThumbListener.thumbChanged(getSelectedAbsoluteMaxValue(), getSelectedAbsoluteMinValue(),mThumbMaxTemp,mThumbMinTemp);
 		}
 	}
 
@@ -228,7 +242,7 @@ public class MyCustomRangeSeekBar extends View {
 	}
 	//具体的温度转化成相对于 条子最高温距离的 百分比
 	private double TempToPercent(float temp){
-		return ( mMaxTemp- temp)/(mMaxTemp - mMinTemp);
+		return Math.max(0,(mMaxTemp- temp)/(mMaxTemp - mMinTemp));
 	}
 	//百分比
 	private float Temp2Height(float temp){
@@ -254,24 +268,25 @@ public class MyCustomRangeSeekBar extends View {
 		btRangeMaxTemp = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_temp_seekbar_realtime_max_arrow);
 		btRangeMinTemp = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_temp_seekbar_realtime_min_arrow);
 
-		mTextSize = a.getDimension(R.styleable.MyCustomRangeSeekBar_SeekBarAllTextSize, dp2px(context, 12));
-		mPaint.setTextSize(mTextSize);
-
-//		Paint.FontMetrics metrics = mPaint.getFontMetrics();
-		seekbarWidth = dp2px(context, 8);
-		mThumbHeight = mThumbMaxImage.getHeight();
-		mThumbWidth = mThumbMaxImage.getWidth();
-
-		topBottomPadding = (int) (mThumbMaxImage.getHeight() + seekbarWidth);//顶部底部的padding 为 滑动块高度 加上画笔绘制文字 内容部分的高度
-//		Log.e(TAG, "MyCustomRangeSeekBar: " + topBottomPadding);
-//		Log.e(TAG, "MyCustomRangeSeekBar:  " + metrics.descent + "   " +  metrics.ascent);
-
-		mPaint.setStyle(Paint.Style.FILL);
-		mPaint.setColor(ContextCompat.getColor(context,R.color.max_temp_text_color_red));
-		mPaint.setAlpha(255);
+		mTextSize = a.getDimension(R.styleable.MyCustomRangeSeekBar_SeekBarAllTextSize, dp2px(context, 14));
+		mPaint.setColor(ContextCompat.getColor(context,R.color.white));
+		initPaint();//必须放这里
 
 		initView();
-		initPaint();
+
+
+		seekbarWidth = dp2px(context, 8);//条子的宽度
+		mThumbHeight = Math.max(mThumbMaxImage.getHeight(),dp2px(context, 17));//滑动块的高度
+		mThumbWidth = Math.max(Math.max(mThumbMaxImage.getWidth(),dp2px(context, 50)),mPaint.measureText(MAX_LENGTH_TEMP));//滑块的宽度
+
+		maxTempTextRect = new Rect();
+		mPaint.getTextBounds(MAX_LENGTH_TEMP,0,MAX_LENGTH_TEMP.length(),maxTempTextRect);
+		//必须在画笔初始化之后去计算文字的高度
+		topBottomPadding = (int) (mThumbHeight*2 + maxTempTextRect.height()*2);//顶部底部的padding 为 滑动块高度加2倍文字的高度
+
+		mProgressBarRectBg = new RectF(mThumbWidth,topBottomPadding,mThumbWidth + seekbarWidth,getHeight()- topBottomPadding);
+		mProgressBarSelRect = new RectF(0,0,mThumbWidth,mThumbHeight);
+
 
 		a.recycle();
 	}
@@ -281,7 +296,9 @@ public class MyCustomRangeSeekBar extends View {
 	}
 
 	private void initPaint(){
-
+		mPaint.setTextSize(mTextSize);
+		mPaint.setStyle(Paint.Style.FILL);
+		mPaint.setAlpha(255);
 	}
 
 	@Override
@@ -293,7 +310,7 @@ public class MyCustomRangeSeekBar extends View {
 			height = MeasureSpec.getSize(heightMeasureSpec);
 		}
 		//宽度 = 滑动条宽度（包含了文字的宽度） + 条子宽度 + 右边文字的宽度 + 实时最高最低温图片的宽度
-		int width = (int)(mThumbMaxImage.getWidth() + seekbarWidth + btRangeMaxTemp.getWidth()
+		int width = (int)(mThumbWidth + seekbarWidth + btRangeMaxTemp.getWidth()
 				+ mPaint.measureText("999.9") );
 //		if (MeasureSpec.UNSPECIFIED != MeasureSpec.getMode(widthMeasureSpec)) {
 //			width = Math.min(width, MeasureSpec.getSize(widthMeasureSpec));
@@ -305,15 +322,13 @@ public class MyCustomRangeSeekBar extends View {
 	@Override
 	protected void onDraw (Canvas canvas) {
 		super.onDraw(canvas);
-		mProgressBarRectBg = new RectF(mThumbMaxImage.getWidth(),topBottomPadding,mThumbMaxImage.getWidth()+seekbarWidth,getHeight()- topBottomPadding);
+		mProgressBarRectBg.bottom = getHeight() - topBottomPadding;
 
 		onDrawBg(canvas);
 		onDrawBp(canvas);
 		onDrawText(canvas);
 	}
 	private void onDrawBg(Canvas canvas){
-		//绘制全局背景
-//		canvas.drawColor(getResources().getColor(R.color.bg_preview_toggle_select));
 		//绘制条子的整体背景
 		canvas.drawBitmap(mProgressBarBg,null,
 				mProgressBarRectBg,mPaint);
@@ -321,45 +336,54 @@ public class MyCustomRangeSeekBar extends View {
 
 	private void onDrawBp(Canvas canvas){
 		//绘制滑动条
-		canvas.drawBitmap(mThumbMaxImage,0,percent2Height(mPercentSelectedMaxValue) - mThumbMaxImage.getHeight(),mPaint);
-		canvas.drawBitmap(mThumbMinImage,0,     percent2Height(mPercentSelectedMinValue),mPaint);
+		mProgressBarSelRect.bottom = percent2Height(mPercentSelectedMaxValue);
+		mProgressBarSelRect.top = percent2Height(mPercentSelectedMaxValue) - mThumbHeight;
+		canvas.drawBitmap(mThumbMaxImage,null,mProgressBarSelRect,mPaint);
+		mProgressBarSelRect.bottom = percent2Height(mPercentSelectedMinValue)+ mThumbHeight;
+		mProgressBarSelRect.top = percent2Height(mPercentSelectedMinValue);
+		canvas.drawBitmap(mThumbMinImage,null,mProgressBarSelRect,mPaint);
 
-		if (widgetMode ==1 ){
-			RectF recRange = new RectF(mThumbMaxImage.getWidth() + seekbarWidth ,
-					0,mThumbMaxImage.getWidth() + seekbarWidth + btRangeMaxTemp.getWidth()/2.0f,0);
+		if (widgetMode ==1 ){//固定温度条模式
+			RectF recRange = new RectF(mThumbWidth + seekbarWidth ,
+					0,mThumbWidth + seekbarWidth + btRangeMaxTemp.getWidth(),0);
 			//绘制实时最高最低温图片
-			recRange.top = topBottomPadding+ Temp2Height(rangeMaxTemp) - btRangeMaxTemp.getHeight()/4.0f;
-			recRange.bottom =topBottomPadding+ Temp2Height(rangeMaxTemp) + btRangeMaxTemp.getHeight()/4.0f;
+			recRange.top = topBottomPadding+ Temp2Height(rangeMaxTemp) - btRangeMaxTemp.getHeight()/2.0f;
+			recRange.bottom =topBottomPadding+ Temp2Height(rangeMaxTemp) + btRangeMaxTemp.getHeight()/2.0f;
 			canvas.drawBitmap(btRangeMaxTemp,null,recRange,mPaint);
 
-			recRange.top = topBottomPadding+Temp2Height(rangeMinTemp) - btRangeMaxTemp.getHeight()/4.0f;
-			recRange.bottom = topBottomPadding+Temp2Height(rangeMinTemp) + btRangeMaxTemp.getHeight()/4.0f;
+			recRange.top = topBottomPadding+Temp2Height(rangeMinTemp) - btRangeMaxTemp.getHeight()/2.0f;
+			recRange.bottom = topBottomPadding+Temp2Height(rangeMinTemp) + btRangeMaxTemp.getHeight()/2.0f;
 			canvas.drawBitmap(btRangeMinTemp,null,recRange,mPaint);
 		}
 
 		if (mProgressBarSelectBg != null){
-			RectF recPalette = new RectF(mThumbMaxImage.getWidth(),
-					percent2Height(mPercentSelectedMaxValue),mThumbMaxImage.getWidth() + seekbarWidth,percent2Height(mPercentSelectedMinValue));
-			canvas.drawBitmap(mProgressBarSelectBg ,null ,recPalette,mPaint);
+			RectF recPalette = new RectF(mThumbWidth,
+					percent2Height(mPercentSelectedMaxValue),mThumbWidth + seekbarWidth,percent2Height(mPercentSelectedMinValue));
+			canvas.drawBitmap(mProgressBarSelectBg ,null ,recPalette,mPaint);//绘制滑块中间的颜色
 		}
 	}
 	private void onDrawText(Canvas canvas){
+		//绘制温度单位。
+		canvas.drawText(tempUnitText,mThumbWidth,maxTempTextRect.height() - mPaint.ascent(),mPaint);
 		//绘制条子最高温、条子最低温
-		canvas.drawText(Float2Str(mMaxTemp), mThumbMaxImage.getWidth()+ seekbarWidth/2 - mPaint.measureText(Float2Str(mMaxTemp))/2,
-				mThumbMaxImage.getHeight() - mPaint.ascent() - mPaint.descent(),mPaint);
-		canvas.drawText(Float2Str(mMinTemp), mThumbMaxImage.getWidth()+ seekbarWidth/2 - mPaint.measureText(Float2Str(mMinTemp))/2,
-				getHeight()- mThumbMaxImage.getHeight(),mPaint);
+		canvas.drawText(Float2Str(mMaxTemp), mThumbWidth+ seekbarWidth/2 - mPaint.measureText(Float2Str(mMaxTemp))/2,
+				 topBottomPadding - mThumbHeight,mPaint);
+		canvas.drawText(Float2Str(mMinTemp), mThumbWidth+ seekbarWidth/2 - mPaint.measureText(Float2Str(mMinTemp))/2,
+				getHeight() - topBottomPadding + (mThumbHeight - mPaint.getFontMetrics().bottom) - mPaint.ascent(),mPaint);
 		//绘制滑块最高温、最低温
+		//计算滑块文字的X轴位置：(mthumbwidth- mpaint.measuretext("maxtempStr"))/2
+//		Math.abs((mThumbWidth-20) - mPaint.measureText(Float2Str(mThumbMaxTemp)))/2
 		canvas.drawText(Float2Str(percent2Temp(mPercentSelectedMaxValue)),0,
-				percent2Height(mPercentSelectedMaxValue) - mThumbMaxImage.getHeight() - mPaint.ascent() + mPaint.descent(),mPaint);
+				percent2Height(mPercentSelectedMaxValue) - mThumbHeight/2.0f + mPaint.descent(),mPaint);
 
-		canvas.drawText(Float2Str(percent2Temp(mPercentSelectedMinValue)),0,percent2Height(mPercentSelectedMinValue)- mPaint.ascent() + mPaint.descent(),mPaint);
+		canvas.drawText(Float2Str(percent2Temp(mPercentSelectedMinValue)),0,
+				percent2Height(mPercentSelectedMinValue) + mThumbHeight/2.0f + mPaint.descent(),mPaint);
 
 		//绘制实时最高最低温文字
 		if (widgetMode ==1 ){
-			canvas.drawText(Float2Str(rangeMaxTemp),mThumbMaxImage.getWidth() + seekbarWidth + btRangeMaxTemp.getWidth()/2.0f,
+			canvas.drawText(Float2Str(rangeMaxTemp),mThumbWidth + seekbarWidth + btRangeMaxTemp.getWidth(),
 					topBottomPadding+ Temp2Height(rangeMaxTemp)+mPaint.descent(),mPaint);
-			canvas.drawText(Float2Str(rangeMinTemp),mThumbMaxImage.getWidth() + seekbarWidth + btRangeMaxTemp.getWidth()/2.0f,
+			canvas.drawText(Float2Str(rangeMinTemp),mThumbWidth + seekbarWidth + btRangeMaxTemp.getWidth(),
 					topBottomPadding+ Temp2Height(rangeMinTemp)+mPaint.descent(),mPaint);
 		}
 //		//右侧实时高低温的左边界线

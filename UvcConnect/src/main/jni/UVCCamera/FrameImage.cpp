@@ -45,8 +45,8 @@ FrameImage::FrameImage(uvc_device_handle_t *devh)  {
 
               maxThumbAD =0;
               minThumbAD = 0;
-              pthread_mutex_init(&fixed_mutex,NULL);
-              pthread_cond_init(&fixed_cond,NULL);
+//              pthread_mutex_init(&fixed_mutex,NULL);
+//              pthread_cond_init(&fixed_cond,NULL);
 
              isNeedFreshAD = false;
 
@@ -58,8 +58,8 @@ FrameImage::~FrameImage() {
     ENTER();
 //    pthread_mutex_destroy(&temperature_mutex);
     delete [] mBuffer;
-    pthread_mutex_destroy(&fixed_mutex);
-    pthread_cond_destroy(&fixed_cond);
+//    pthread_mutex_destroy(&fixed_mutex);
+//    pthread_cond_destroy(&fixed_cond);
     EXIT();
 }
 
@@ -93,12 +93,10 @@ void FrameImage::shutRefresh()
 //    LOGE("===================shutRefresh=============update isNeedWriteTable===============");
 }
 //二分法查找
-int FrameImage::getDichotomySearch(float*& data, int length,float  value, int startIndex,
+int FrameImage::getDichotomySearch(const float* data, int length,float  value, int startIndex,
                                    int endIndex) {
 //    LOGE("=================    > %f" , data[8000]);
 //    LOGE("enter :  length =  %d, value = %f , startIndex = %d  , endIndex = %d" ,length,value , startIndex , endIndex);
-    float * position ;
-    position = data;
     if (endIndex > length) return -1;
     int start = startIndex;
     int end = endIndex -1;//下标
@@ -107,28 +105,28 @@ int FrameImage::getDichotomySearch(float*& data, int length,float  value, int st
     if (end<=0)return -1 ;
     while (start <= end){
         int midPont = (start + end+1)/2;//记录的是坐标，所以要在取中点之前+1
-        if (value == position[midPont]){//如果中点坐标的值 恰好等于 目标值，则返回这个 中点坐标
+        if (value == data[midPont]){//如果中点坐标的值 恰好等于 目标值，则返回这个 中点坐标
             valueIndex = midPont;
             return valueIndex;
         }
 
-        if (value > position[midPont] ){
+        if (value > data[midPont] ){
             start = midPont +1;
-            if ((start) <= end && value < position[start]){
+            if ((start) <= end && value < data[start]){
                 valueIndex = midPont;
                 return valueIndex;
             }
         }
-        if (value < position[midPont]){
+        if (value < data[midPont]){
             end = midPont -1;
-            if ((end) >= start && value > position[end]){//中点値小志 目标值。但中点値前一位的值又大于了目标值。则返回中点前一位的坐标
+            if ((end) >= start && value > data[end]){//中点値小志 目标值。但中点値前一位的值又大于了目标值。则返回中点前一位的坐标
                 valueIndex = end;
                 return valueIndex;
             }
         }
     }
     LOGE("exit");
-    position = NULL;
+//    position = NULL;
     return valueIndex;
 }
 //更改色板
@@ -141,12 +139,12 @@ void FrameImage::showTempRange(float maxPercent,float minPercent,float maxValue 
     isshowtemprange =true;
     maxpercent = (unsigned  short )maxPercent;
     minpercent = (unsigned  short )minPercent;
-    pthread_mutex_lock(&fixed_mutex);{
+//    pthread_mutex_lock(&fixed_mutex);{
         maxThumbValue = maxValue;
         minThumbValue = minValue;
         isNeedFreshAD = true;
-    }
-    pthread_mutex_unlock(&fixed_mutex);
+//    }
+//    pthread_mutex_unlock(&fixed_mutex);
     LOGE( " isFixedTempStrip   === > %d" , isFixedTempStrip );
 //    if (isFixedTempStrip) {
 ////        //todo 查询最大值滑块的温度 对应的ad值 ；最小值滑块对应的 ad值
@@ -161,7 +159,7 @@ void FrameImage::disTempRange() {//在下一帧图像绘制的时候就不会绘
     isshowtemprange = false;
 }
 void FrameImage::fixedTempStripChange(bool state) {
-    pthread_mutex_lock(&fixed_mutex);
+//    pthread_mutex_lock(&fixed_mutex);
     isNeedFreshAD = true;
     if (state){
         isFixedTempStrip = true;
@@ -170,7 +168,7 @@ void FrameImage::fixedTempStripChange(bool state) {
     else{
         isFixedTempStrip = false;
     }
-    pthread_mutex_unlock(&fixed_mutex);
+//    pthread_mutex_unlock(&fixed_mutex);
 //    isFixedTempStrip = state;
     LOGE(" fixed temp strip  state =  %d" ,isFixedTempStrip);
 }
@@ -327,15 +325,17 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
     min = tmp_buf[amountPixels1];
     ro = max - min;
 
+    if (isshowtemprange) {//拉温宽
+        //LOGE("非区域检查+拉温宽");
+        min = (int) (min + ro * minpercent / 100);
+        ro = (int) (ro * (maxpercent - minpercent) / 100);
+    }
 //    LOGE(" isfixed temp strip  == %d",isFixedTempStrip);
-//    pthread_mutex_lock(&fixed_mutex);
     if (isFixedTempStrip){//固定温度条
         roThumb = maxThumbAD - minThumbAD;
         min = minThumbAD;
         ro = roThumb;
     }
-//    pthread_mutex_unlock(&fixed_mutex);
-//    pthread_cond_signal(&fixed_cond);
 
     //框内细查 先绘制灰度图,根据原有的ad值
     if (mIsAreachecked){
@@ -354,16 +354,10 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
                 mBuffer[4 * (i * requestWidth + j) + 3] = 1;
             }
         }
-        //框内细查渲染
-        if (isshowtemprange) { //是否拉温宽
-            min = (int) (min + ro * minpercent / 100);
-            ro = (int) (ro * (maxpercent - minpercent) / 100);
-        }
         int loopnum=areasize/4;
         for(int m=0;m<loopnum;m++){//渲染区域 为框内
             for (int i = mCheckArea[4 * m + 2]; i < mCheckArea[4 * m + 3]; i++) {
                 for (int j = mCheckArea[4 * m]; j < mCheckArea[4 * m + 1]; j++) {
-//                    if (tmp_buf[i * requestWidth + j]> minThumbAD && tmp_buf[i * requestWidth + j] < maxThumbAD) {//固定温度条时，存在ad 不在渲染范围内
                         int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
                         if (gray < 0) {
                             gray = 0;
@@ -381,17 +375,12 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
                                 2] = (unsigned char) currentpalette[
                                 paletteNum + 2];
                         mBuffer[4 * (i * requestWidth + j) + 3] = 1;
-//                    }
                 }
             }
         }
     } else{
         //非框内细查，则根据 色板的 拖动条设置去渲染
-        if (isshowtemprange) {
-            //LOGE("非区域检查+拉温宽");
-            min = (int) (min + ro * minpercent / 100);
-            ro = (int) (ro * (maxpercent - minpercent) / 100);
-        }
+
         for (int i = 0; i < requestHeight - 4; i++) {
             for (int j = 0; j < requestWidth; j++) {
 //              LOGE("this requestHeight and requestwidth==============%d========================%d",requestHeight,requestWidth);
@@ -415,38 +404,6 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
             }
         }
     }
-
-//        //todo 查询最大值滑块的温度 对应的ad值 ；最小值滑块对应的 ad值
-//        maxThumbAD = getDichotomySearch(temperatureTable,16384,maxThumbValue,1000,16384);
-//        minThumbAD = getDichotomySearch(temperatureTable,16384,minThumbValue,1000,16384);
-//        roThumb = maxThumbAD - minThumbAD;
-//        min = minThumbAD;
-//        ro = roThumb;
-//        LOGE(" maxThumbAD =   %d  minThumbAD = %d  roThumb =   %d" , maxThumbAD, minThumbAD ,roThumb);
-
-//        for (int i = 0; i < requestHeight - 4; i++) {
-//            for (int j = 0; j < requestWidth; j++) {
-////                    LOGE("this requestHeight and requestwidth==============%d========================%d",requestHeight,requestWidth);
-//                //黑白：灰度值0-254单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
-//                if (tmp_buf[i * requestWidth + j]> minThumbAD && tmp_buf[i * requestWidth + j] < maxThumbAD){
-//                    int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - minThumbAD * 1.0) / roThumb);
-//                    if (gray < 0) {
-//                        gray = 0;
-//                    }
-//                    if (gray > 255) {
-//                        gray = 255;
-//                    }
-//                    int paletteNum = 3 * gray;
-//                    mBuffer[4 * (i * requestWidth +
-//                                 j)] = (unsigned char) currentpalette[paletteNum];
-//                    mBuffer[4 * (i * requestWidth + j) + 1] = (unsigned char) currentpalette[
-//                            paletteNum + 1];
-//                    mBuffer[4 * (i * requestWidth + j) + 2] = (unsigned char) currentpalette[
-//                            paletteNum + 2];
-//                    mBuffer[4 * (i * requestWidth + j) + 3] = 1;
-//                }
-//            }
-//        }
     tmp_buf = NULL;
     return mBuffer;
 }
@@ -624,23 +581,23 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
 
 
     }
-    pthread_mutex_lock(&fixed_mutex);
+//    pthread_mutex_lock(&fixed_mutex);
     if (isNeedFreshAD){
 //        LOGE(" 8000 %f",temperatureTable[8000]);
 //        LOGE(" 4000   %f",temperatureTable[4000]);
 //        LOGE("12000  %f",temperatureTable[12000]);
 //        LOGE("6000  %f",temperatureTable[6000]);
-        float* a = &temperatureTable[0];
+//        float* a = &temperatureTable[0];
 //        memcpy(tempData,temperatureTable,16384*4);
-        maxThumbAD = getDichotomySearch(a,16384,maxThumbValue,4000,12000);
-        minThumbAD = getDichotomySearch(a,16384,minThumbValue,4000,12000);
+        maxThumbAD = getDichotomySearch(temperatureTable,16384,maxThumbValue,4000,12000);
+        minThumbAD = getDichotomySearch(temperatureTable,16384,minThumbValue,4000,12000);
         isNeedFreshAD = false;
-        LOGE("maxt == %f    mint ==> %f   maxad %d  minad =%d ",temperatureData[3],temperatureData[6],maxThumbAD,minThumbAD);
+//        LOGE("maxt == %f    mint ==> %f   maxad %d  minad =%d ",temperatureData[3],temperatureData[6],maxThumbAD,minThumbAD);
 //        LOGE("max temp   = %f  , min temp = %f",)
     }
 
 
-    pthread_mutex_unlock(&fixed_mutex);
+//    pthread_mutex_unlock(&fixed_mutex);
 
     env->DeleteLocalRef(mNCbTemper);
 

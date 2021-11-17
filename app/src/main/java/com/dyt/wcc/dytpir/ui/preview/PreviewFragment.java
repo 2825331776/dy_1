@@ -181,8 +181,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 		mDataBinding.textureViewPreviewFragment.iniTempBitmap(mTextureViewWidth, mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
 		mDataBinding.textureViewPreviewFragment.setDragTempContainer(mDataBinding.dragTempContainerPreviewFragment);
-		mDataBinding.dragTempContainerPreviewFragment.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
 		mDataBinding.customSeekbarPreviewFragment.setmThumbListener(new MyCustomRangeSeekBar.ThumbListener() {
+			@Override
+			public void thumbChanged (float maxPercent, float minPercent,float maxValue, float minValue) {
+				if (mUvcCameraHandler!= null)mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
+			}
+
 			@Override
 			public void onUpMinThumb (float maxPercent, float minPercent,float maxValue, float minValue) {
 //				Log.e(TAG, "onUpMinThumb: 0-100 percent " + maxPercent + " min == > " +  minPercent);
@@ -273,8 +277,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.customSeekbarPreviewFragment.setmProgressBarSelectBgList(bitmaps);
 //		Log.e(TAG, "initView: sp.get Palette_Number = " + sp.getInt(DYConstants.PALETTE_NUMBER,0));
 		mDataBinding.customSeekbarPreviewFragment.setPalette(0);
+		mDataBinding.dragTempContainerPreviewFragment.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
 		mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING,0));
 
+		mDataBinding.textureViewPreviewFragment.setAspectRatio(256/(float)192);
 		mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
 				mDataBinding.textureViewPreviewFragment,1,
 				384,292,1,null,0);

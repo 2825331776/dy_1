@@ -53,27 +53,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <Button
+                    android:layout_margin="@dimen/dimen_5dp"
                     android:id="@+id/bt_all_gallery_rightRl"
+                    android:background="@drawable/bg_main_gallery_bt_radius"
                     android:text="@string/MediaBrowser_all"
                     android:layout_width="match_parent"
                     android:layout_weight="1"
                     android:layout_height="@dimen/dimen_0dp"/>
                 <Button
+                    android:layout_margin="@dimen/dimen_5dp"
                     android:id="@+id/bt_pic_gallery_rightRl"
+                    android:background="@drawable/bg_main_gallery_bt_radius"
                     android:text="@string/MediaBrowser_pic"
                     android:layout_width="match_parent"
                     android:layout_weight="1"
                     android:layout_height="@dimen/dimen_0dp"/>
                 <Button
+                    android:layout_margin="@dimen/dimen_5dp"
                     android:id="@+id/bt_video_gallery_rightRl"
                     android:text="@string/MediaBrowser_video"
                     android:layout_width="match_parent"
+                    android:background="@drawable/bg_main_gallery_bt_radius"
                     android:layout_weight="1"
                     android:layout_height="@dimen/dimen_0dp"/>
                 <Button
-                    android:layout_marginTop="@dimen/dimen_10dp"
+                    android:layout_margin="@dimen/dimen_5dp"
                     android:text="@string/MediaBrowser_delete"
                     android:id="@+id/bt_delete_gallery_rightRl"
+                    android:background="@drawable/bg_main_gallery_bt_radius"
                     android:layout_width="match_parent"
                     android:layout_weight="1"
                     android:layout_height="@dimen/dimen_0dp"/>

@@ -133,8 +133,8 @@
 
             <com.dyt.wcc.cameracommon.widget.UVCCameraTextureView
                 android:id="@+id/textureView_preview_fragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_width="@dimen/dimen_0dp"
+                android:layout_height="@dimen/dimen_0dp"/>
 
             <com.dyt.wcc.common.widget.dragView.DragTempContainer
 
@@ -166,12 +166,11 @@
             app:layout_constraintRight_toLeftOf="@id/rl_right_container"
             android:orientation="vertical"
             android:gravity="center"
+            android:padding="@dimen/dimen_5dp"
             android:background="@color/bg_preview_right">
 
             <com.dyt.wcc.common.widget.MyCustomRangeSeekBar
                 android:id="@+id/custom_seekbar_preview_fragment"
-                android:layout_marginTop="@dimen/dimen_20dp"
-                android:layout_marginBottom="@dimen/dimen_20dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
         </LinearLayout>
@@ -179,7 +178,7 @@
 <!--        右侧按钮布局-->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/rl_right_container"
-            android:layout_width="@dimen/dimen_75dp"
+            android:layout_width="@dimen/dimen_65dp"
             android:layout_height="match_parent"
             android:background="@color/bg_preview_right"
             app:layout_constraintLeft_toRightOf="@id/ll_container_preview_seekbar"
@@ -294,7 +293,7 @@
                 android:button="@null"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/toggle_area_check"/>
+                app:layout_constraintTop_toBottomOf="@id/et_inputTemp_rightRL_container"/>
 
             <!--        高温报警输入EditText-->
             <EditText
@@ -316,7 +315,7 @@
                 android:textSize="12sp"
                 app:layout_constraintHeight_percent="0.1"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/toggle_high_temp_alarm" />
+                app:layout_constraintTop_toBottomOf="@id/toggle_area_check" />
 
             <!--            <ImageView-->
             <!--                android:id="@+id/iv_togo"-->
@@ -352,7 +351,7 @@
                 android:button="@null"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/et_inputTemp_rightRL_container"/>
+                app:layout_constraintTop_toBottomOf="@id/toggle_high_temp_alarm"/>
 
 
 

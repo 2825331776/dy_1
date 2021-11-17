@@ -345,10 +345,14 @@ public class DragTempContainer extends RelativeLayout {
 	}
 
 	/**
-	 * 给温度设置后缀
+	 * <p> 给数值设置后缀。</p>
+	 * <p> 给接收数据的滑动条 控件也设置 温度单位。</p>
+	 * <p> throws NullPointerException 初始化没设置滑动条</p>
 	 */
-	public void setTempSuffix(int suffixType){
+	public void setTempSuffix(int suffixType) throws NullPointerException{
 		tempSuffixMode = suffixType;
+		//给滑动条也设置温度单位
+		if (mSeekBar!=null) mSeekBar.setTempUnitText(tempSuffixList[tempSuffixMode]);
 	}
 
 	//更新点的温度

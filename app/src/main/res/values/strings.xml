@@ -16,7 +16,7 @@
     <string name="FixeTempBar">FixeTempBar</string>
     <string name="DynamicTempBar">DynamicTempBar</string>
 
-    <string name="AlarmTempInput">Input</string>
+    <string name="AlarmTempInput">HighTemp Input</string>
 
     <string name="CheckLatestVersion">Check the latest version</string>
     <string name="VersionName">Version Name：</string>
