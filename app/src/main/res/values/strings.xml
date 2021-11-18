@@ -35,4 +35,7 @@
     <string name="SettingCameraParams_Revise">Revise:</string>
     <string name="SettingCameraParams_FreeAirTemp">Free Air Temperature :</string>
     <string name="SettingCameraParams_Humidity">Humidity :</string>
+
+    <string name="setting_language_chinese">Chinese</string>
+    <string name="setting_language_english">English</string>
 </resources>

@@ -34,4 +34,7 @@
     <string name="SettingCameraParams_Revise">校 正 :</string>
     <string name="SettingCameraParams_FreeAirTemp">环境温度 :</string>
     <string name="SettingCameraParams_Humidity">湿 度 :</string>
+
+    <string name="setting_language_chinese">中 文</string>
+    <string name="setting_language_english">英 语</string>
 </resources>

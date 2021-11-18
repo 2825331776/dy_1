@@ -133,8 +133,8 @@
 
             <com.dyt.wcc.cameracommon.widget.UVCCameraTextureView
                 android:id="@+id/textureView_preview_fragment"
-                android:layout_width="@dimen/dimen_0dp"
-                android:layout_height="@dimen/dimen_0dp"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
             <com.dyt.wcc.common.widget.dragView.DragTempContainer
 
@@ -180,6 +180,8 @@
             android:id="@+id/rl_right_container"
             android:layout_width="@dimen/dimen_65dp"
             android:layout_height="match_parent"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:background="@color/bg_preview_right"
             app:layout_constraintLeft_toRightOf="@id/ll_container_preview_seekbar"
             app:layout_constraintRight_toRightOf="parent"

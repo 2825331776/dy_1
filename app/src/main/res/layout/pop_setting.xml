@@ -13,6 +13,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:padding="@dimen/dimen_20dp"
             android:background="@drawable/shape_bg_pop_temp_mode_chioce">
 
@@ -162,7 +164,7 @@
                 android:layout_height="wrap_content"/>
 
 
-<!--辐射率-->
+<!--发射率-->
             <TextView
                 android:id="@+id/tv_camera_setting_emittance"
                 app:layout_constraintLeft_toLeftOf="@id/gl_setting_title"
@@ -185,7 +187,7 @@
                 android:textColorHint="@color/white"
                 android:textColor="@color/white"
                 android:textSize="15sp"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:imeOptions="actionDone"
                 android:background="@drawable/shape_bg_pop_setting_edit"
                 android:singleLine="true"
@@ -272,8 +274,8 @@
                 android:hint="@string/AlarmTempInput"
                 android:textColorHint="@color/white"
                 android:textColor="@color/white"
-                android:textSize="15sp"
-                android:inputType="number"
+                android:focusable="true"
+                android:inputType="numberDecimal|numberSigned"
                 android:background="@drawable/shape_bg_pop_setting_edit"
                 android:singleLine="true"
                 android:imeOptions="actionDone"
@@ -312,7 +314,7 @@
                 android:textColorHint="@color/white"
                 android:textColor="@color/white"
                 android:textSize="15sp"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:background="@drawable/shape_bg_pop_setting_edit"
                 android:singleLine="true"
                 android:imeOptions="actionDone"
@@ -351,7 +353,7 @@
                 android:textColorHint="@color/white"
                 android:textColor="@color/white"
                 android:textSize="15sp"
-                android:inputType="number"
+                android:inputType="numberDecimal|numberSigned"
                 android:background="@drawable/shape_bg_pop_setting_edit"
                 android:singleLine="true"
                 android:imeOptions="actionDone"
@@ -390,7 +392,7 @@
                 android:textColorHint="@color/white"
                 android:textColor="@color/white"
                 android:textSize="15sp"
-                android:inputType="number"
+                android:inputType="numberDecimal|numberSigned"
                 android:background="@drawable/shape_bg_pop_setting_edit"
                 android:singleLine="true"
                 android:imeOptions="actionDone"

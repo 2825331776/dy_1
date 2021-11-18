@@ -157,6 +157,14 @@ public class DragTempContainer extends RelativeLayout {
 		return areaData;
 	}
 
+	public boolean isHighTempAlarmToggle () {
+		return highTempAlarmToggle;
+	}
+
+	public void setHighTempAlarmToggle (boolean highTempAlarmToggle) {
+		this.highTempAlarmToggle = highTempAlarmToggle;
+	}
+
 	/**
 	 * 超温报警 数据源是摄氏度.传入的带温度单位的数值。
 	 * <p>超温报警逻辑：</p>

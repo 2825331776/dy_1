@@ -11,7 +11,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -31,7 +33,9 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.dyt.wcc.cameracommon.encoder.MediaMuxerWrapper;
 import com.dyt.wcc.cameracommon.usbcameracommon.UVCCameraHandler;
+import com.dyt.wcc.cameracommon.utils.ByteUtil;
 import com.dyt.wcc.common.base.BaseApplication;
 import com.dyt.wcc.common.base.BaseFragment;
 import com.dyt.wcc.common.utils.AssetCopyer;
@@ -48,12 +52,19 @@ import com.dyt.wcc.dytpir.databinding.PopCompanyInfoBinding;
 import com.dyt.wcc.dytpir.databinding.PopPaletteChoiceBinding;
 import com.dyt.wcc.dytpir.databinding.PopSettingBinding;
 import com.dyt.wcc.dytpir.databinding.PopTempModeChoiceBinding;
+import com.dyt.wcc.dytpir.ui.DYTApplication;
+import com.dyt.wcc.dytpir.ui.MainActivity;
 import com.dyt.wcc.dytpir.ui.preview.record.MediaProjectionHelper;
 import com.dyt.wcc.dytpir.ui.preview.record.MediaProjectionNotificationEngine;
 import com.dyt.wcc.dytpir.ui.preview.record.MediaRecorderCallback;
 import com.dyt.wcc.dytpir.ui.preview.record.NotificationHelper;
+import com.dyt.wcc.dytpir.utils.LanguageUtils;
 import com.permissionx.guolindev.PermissionX;
+import com.permissionx.guolindev.callback.ExplainReasonCallback;
+import com.permissionx.guolindev.callback.ForwardToSettingsCallback;
 import com.permissionx.guolindev.callback.RequestCallback;
+import com.permissionx.guolindev.request.ExplainScope;
+import com.permissionx.guolindev.request.ForwardScope;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 
@@ -61,7 +72,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -91,6 +104,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private Bitmap mCursorBlue, mCursorRed, mCursorYellow, mCursorGreen, mWatermarkLogo;//显示温度的数据(基础温度数据：最高,最低,中心,LOGO)
 	//customSeekBar
 	private Bitmap tiehong = null, caihong = null, baire = null, heire = null, hongre = null, lenglan = null;
+	private SendCommand mSendCommand;
 
 	@Override
 	protected boolean isInterceptBackPress () {
@@ -135,6 +149,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		super.onDestroyView();
 		if (isDebug)Log.e(TAG, "onDestroyView: ");
 
+		if (mDataBinding.dragTempContainerPreviewFragment.isHighTempAlarmToggle()){
+			mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
+		}
+
 		if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened()){
 //			Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
 			mUvcCameraHandler.stopTemperaturing();
@@ -144,6 +162,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
 			mViewModel.getMUsbMonitor().getValue().unregister();
 		}
+
 	}
 
 	@Override
@@ -159,7 +178,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			if (isDebug)Log.e(TAG, "usb devices  == " + udv.toString());
 			if (isDebug)Log.e(TAG, "udv.getProductName()" + udv.getProductName());
 			if (udv.getVendorId() == 5396 && udv.getProductId() ==1 ) {
-				Log.e(TAG, "onResume: "+ " S0 " + udv.getProductId() + " "  + udv.getVendorId() );
+				if (isDebug)Log.e(TAG, "onResume: "+ " S0 " + udv.getProductId() + " "  + udv.getVendorId() );
 				BaseApplication.deviceName = udv.getProductName();
 			}
 		}
@@ -189,8 +208,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 			@Override
 			public void onUpMinThumb (float maxPercent, float minPercent,float maxValue, float minValue) {
-//				Log.e(TAG, "onUpMinThumb: 0-100 percent " + maxPercent + " min == > " +  minPercent);
-//				Log.e(TAG, "onUpMinThumb: value " + maxValue + " min == > " +  minValue);
+//				if (isDebug)Log.e(TAG, "onUpMinThumb: 0-100 percent " + maxPercent + " min == > " +  minPercent);
+//				if (isDebug)Log.e(TAG, "onUpMinThumb: value " + maxValue + " min == > " +  minValue);
 
 				if (maxPercent >= 100 && minPercent <= 0) {
 					if (mUvcCameraHandler!= null)mUvcCameraHandler.disWenKuan();
@@ -199,8 +218,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 			@Override
 			public void onUpMaxThumb (float maxPercent, float minPercent,float maxValue, float minValue) {
-//				Log.e(TAG, "onUpMaxThumb: 0-100 percent " + maxPercent + " min == > " +  minPercent);
-//				Log.e(TAG, "onUpMaxThumb: value " + maxValue + " min == > " +  minValue);
+//				if (isDebug)Log.e(TAG, "onUpMaxThumb: 0-100 percent " + maxPercent + " min == > " +  minPercent);
+//				if (isDebug)Log.e(TAG, "onUpMaxThumb: value " + maxValue + " min == > " +  minValue);
 				if (maxPercent >= 100 && minPercent <= 0) {
 					if (mUvcCameraHandler!= null)mUvcCameraHandler.disWenKuan();
 				}
@@ -208,15 +227,15 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 			@Override
 			public void onMinMove (float maxPercent, float minPercent,float maxValue, float minValue) {
-//				Log.e(TAG, "onMinMove: 0-100 percent " + maxPercent + " min == > " +  minPercent);
-//				Log.e(TAG, "onMinMove: value " + maxValue + " min == > " +  minValue);
+//				if (isDebug)Log.e(TAG, "onMinMove: 0-100 percent " + maxPercent + " min == > " +  minPercent);
+//				if (isDebug)Log.e(TAG, "onMinMove: value " + maxValue + " min == > " +  minValue);
 				if (mUvcCameraHandler!= null)mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
 			}
 
 			@Override
 			public void onMaxMove (float maxPercent, float minPercent,float maxValue, float minValue) {
-//				Log.e(TAG, "onMaxMove: 0-100 percent" + maxPercent + " min == > " +  minPercent);
-//				Log.e(TAG, "onMaxMove: value " + maxValue + " min == > " +  minValue);
+//				if (isDebug)Log.e(TAG, "onMaxMove: 0-100 percent" + maxPercent + " min == > " +  minPercent);
+//				if (isDebug)Log.e(TAG, "onMaxMove: value " + maxValue + " min == > " +  minValue);
 				if (mUvcCameraHandler!= null)mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
 			}
 		});
@@ -238,6 +257,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	@Override
 	protected void initView () {
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
+		mSendCommand = new SendCommand();
 
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		int screenWidth = dm.widthPixels;
@@ -280,7 +300,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.dragTempContainerPreviewFragment.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
 		mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING,0));
 
-		mDataBinding.textureViewPreviewFragment.setAspectRatio(256/(float)192);
+//		mDataBinding.textureViewPreviewFragment.setAspectRatio(256/(float)192);
 		mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
 				mDataBinding.textureViewPreviewFragment,1,
 				384,292,1,null,0);
@@ -458,7 +478,22 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.toggleHighTempAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
+								//判断键入的值是否符合规范,或者提示用户 键入值的规范。
+				if (TextUtils.isEmpty(mDataBinding.etInputTempRightRLContainer.getText().toString())){
+					Toast.makeText(mContext.get(), "请输入高温界限",Toast.LENGTH_SHORT).show();
+//					Log.e(TAG, "onClick: "+ isChecked);
+					mDataBinding.toggleHighTempAlarm.setChecked(false);
+//					mDataBinding.toggleHighTempAlarm.setSelected(false);
+					return;
+				}
 
+				float temp = Float.parseFloat(mDataBinding.etInputTempRightRLContainer.getText().toString());
+				Log.e(TAG, "onClick: temp = >  " + temp);
+				if (isChecked){
+					mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(temp);
+				}else {
+					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
+				}
 			}
 		});
 //				.setOnClickChangedState(new MyToggleView.OnClickChangedState() {
@@ -565,6 +600,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.ivPreviewRightSetting.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
+				//打开设置第一步：获取机芯数据。
 				if (mUvcCameraHandler.isOpened()){
 					getCameraParams();//
 				}
@@ -572,17 +608,108 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 				PopSettingBinding popSettingBinding = DataBindingUtil.bind(view);
 				assert popSettingBinding != null;
-
+				//第二步：将获取的数据 展示在输入框内
 				if (cameraParams != null) {
-					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(cameraParams.get("emiss")));
-					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(cameraParams.get("distance")));
-					popSettingBinding.etCameraSettingReflect.setText(String.valueOf(cameraParams.get("Refltmp")));
-					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(cameraParams.get("Fix")));
-					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf(cameraParams.get("Airtmp")));
-					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf(cameraParams.get("humi")));
+					popSettingBinding.etCameraSettingEmittance.setHint(String.valueOf(cameraParams.get("emiss")));
+					popSettingBinding.etCameraSettingDistance.setHint(String.valueOf(cameraParams.get("distance")));
+					popSettingBinding.etCameraSettingReflect.setHint(String.valueOf((cameraParams.get("Refltmp"))));
+					popSettingBinding.etCameraSettingRevise.setHint(String.valueOf(cameraParams.get("Fix")));
+					popSettingBinding.etCameraSettingFreeAirTemp.setHint(String.valueOf(cameraParams.get("Airtmp")));
+					popSettingBinding.etCameraSettingHumidity.setHint(String.valueOf(cameraParams.get("humi")));
+
+					//设置按钮的监听器
+					popSettingBinding.ibCameraSettingDistance.setOnClickListener(v1 -> {// 距离的数值在[0,20]
+						//第一步 校验输入数值。
+						//第二步 设置机芯。
+						//第三步 成功 失败 反馈
+//						Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+						if (TextUtils.isEmpty(popSettingBinding.etCameraSettingDistance.getText().toString()))return;
+						int value = Integer.parseInt(popSettingBinding.etCameraSettingDistance.getText().toString());
+						if (value > 20 || value < 0){
+							Toast.makeText(mContext.get(),"取值范围[0,20]",Toast.LENGTH_SHORT).show();
+							return;
+						}
+						byte[] bIputDi = new byte[4];
+						ByteUtil.putInt(bIputDi,value,0);
+						if (mUvcCameraHandler!= null) {
+							mSendCommand.sendShortCommand(5 * 4, bIputDi[0], bIputDi[1], 20, 40, 60);
+							Toast.makeText(mContext.get(),"距离设置完成",Toast.LENGTH_SHORT).show();
+						}
+
+					});
+					popSettingBinding.ibCameraSettingEmittance.setOnClickListener(v1 -> {// 发射率 [0,1]
+						if (TextUtils.isEmpty(popSettingBinding.etCameraSettingEmittance.getText().toString()))return;
+						float value = Float.parseFloat(popSettingBinding.etCameraSettingEmittance.getText().toString());
+						if (value > 1 || value < 0){
+							Toast.makeText(mContext.get(),"取值范围为[0,1]",Toast.LENGTH_SHORT).show();
+							return;
+						}
+						byte[] iputEm = new byte[4];
+						ByteUtil.putFloat(iputEm,value,0);
+						if (mUvcCameraHandler!= null) {
+							mSendCommand.sendFloatCommand(4 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+							Toast.makeText(mContext.get(),"发射率设置完成",Toast.LENGTH_SHORT).show();
+						}
+					});
+					popSettingBinding.ibCameraSettingFreeAirTemp.setOnClickListener(v1 -> {//环境温度 [-10,40]
+						if (TextUtils.isEmpty(popSettingBinding.etCameraSettingFreeAirTemp.getText().toString()))return;
+						float value = Float.parseFloat(popSettingBinding.etCameraSettingFreeAirTemp.getText().toString());
+						if (value > 40 || value < -10){
+							Toast.makeText(mContext.get(),"取值范围[-10,40]",Toast.LENGTH_SHORT).show();
+							return;
+						}
+						byte[] iputEm = new byte[4];
+						ByteUtil.putFloat(iputEm,value,0);
+						if (mUvcCameraHandler!= null) {
+							mSendCommand.sendFloatCommand(2 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+							Toast.makeText(mContext.get(),"环境温度设置完成",Toast.LENGTH_SHORT).show();
+						}
+					});
+					popSettingBinding.ibCameraSettingHumidity.setOnClickListener(v1 -> {//湿度 [0,1]
+						if (TextUtils.isEmpty(popSettingBinding.etCameraSettingHumidity.getText().toString()))return;
+						float value = Float.parseFloat(popSettingBinding.etCameraSettingHumidity.getText().toString());
+						if (value > 1 || value < 0){
+							Toast.makeText(mContext.get(),"取值范围[0,1]",Toast.LENGTH_SHORT).show();
+							return;
+						}
+						byte[] iputEm = new byte[4];
+						ByteUtil.putFloat(iputEm,value,0);
+						if (mUvcCameraHandler!= null) {
+							mSendCommand.sendFloatCommand(3 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+							Toast.makeText(mContext.get(),"湿度设置完成",Toast.LENGTH_SHORT).show();
+						}
+					});
+					popSettingBinding.ibCameraSettingReflect.setOnClickListener(v1 -> {//反射温度 [-10,40]
+						if (TextUtils.isEmpty(popSettingBinding.etCameraSettingReflect.getText().toString()))return;
+						float value = Float.parseFloat(popSettingBinding.etCameraSettingReflect.getText().toString());
+						if (value > 40 || value < -10){
+							Toast.makeText(mContext.get(),"取值范围[-10,40]",Toast.LENGTH_SHORT).show();
+							return;
+						}
+						byte[] iputEm = new byte[4];
+						ByteUtil.putFloat(iputEm,value,0);
+						if (mUvcCameraHandler!= null) {
+							mSendCommand.sendFloatCommand(1 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+							Toast.makeText(mContext.get(),"反射温度设置完成",Toast.LENGTH_SHORT).show();
+						}
+					});
+					popSettingBinding.ibCameraSettingRevise.setOnClickListener(v1 -> {//校正 [-3,3]
+						if (TextUtils.isEmpty(popSettingBinding.etCameraSettingRevise.getText().toString()))return;
+						float value = Float.parseFloat(popSettingBinding.etCameraSettingRevise.getText().toString());
+						if (value > 3 || value < -3){
+							Toast.makeText(mContext.get(),"取值范围[-3,3]",Toast.LENGTH_SHORT).show();
+							return;
+						}
+						byte[] iputEm = new byte[4];
+						ByteUtil.putFloat(iputEm,value,0);
+						if (mUvcCameraHandler!= null) {
+							mSendCommand.sendFloatCommand(0 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+							Toast.makeText(mContext.get(),"校正设置完成",Toast.LENGTH_SHORT).show();
+						}
+					});
 				}
 				int temp_unit = sp.getInt(DYConstants.TEMP_UNIT_SETTING,0);
-
+				//第三步：初始化自定义控件
 				popSettingBinding.switchChoiceTempUnit.setText("℃","℉","K").setSelectedTab(temp_unit).setOnSwitchListener(new SwitchMultiButton.OnSwitchListener() {
 					@Override
 					public void onSwitch (int position, String tabText) {
@@ -603,18 +730,20 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				popupWindow.setFocusable(true);
 				popupWindow.setOutsideTouchable(true);
 				popupWindow.setTouchable(true);
-
+				//第四步：显示控件
 				popupWindow.showAsDropDown(mDataBinding.flPreview,15,-popupWindow.getHeight()-20, Gravity.CENTER);
 				//语言spinner
 				ArrayAdapter<String> adapterSpinner = new ArrayAdapter<String>(mContext.get(),R.layout.item_select, DYConstants.languageArray);
 				adapterSpinner.setDropDownViewResource(R.layout.item_dropdown);
 				popSettingBinding.spinnerSettingLanguage.setAdapter(adapterSpinner);
 				int language_index = sp.getInt(DYConstants.LANGUAGE_SETTING,0);
+				Log.e(TAG, "onClick: language_index   " + language_index);
 				popSettingBinding.spinnerSettingLanguage.setSelection(language_index);//从本地拿
 				popSettingBinding.spinnerSettingLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 					@Override
 					public void onItemSelected (AdapterView<?> parent, View view, int position, long id) {
 //						Toast.makeText(mContext.get(),"spinner item  = "+position,Toast.LENGTH_SHORT).show();
+						toSetLanguage(position);
 						sp.edit().putInt(DYConstants.LANGUAGE_SETTING,position).apply();
 					}
 
@@ -700,24 +829,46 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				case R.id.iv_temp_mode_point:
 					PLRPopupWindows.dismiss();
 					mDataBinding.dragTempContainerPreviewFragment.setDrawTempMode(1);
-					Toast.makeText(mContext.get(),"point ", Toast.LENGTH_SHORT).show();
+					if (isDebug)Toast.makeText(mContext.get(),"point ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.iv_temp_mode_line:
 					PLRPopupWindows.dismiss();
 					mDataBinding.dragTempContainerPreviewFragment.setDrawTempMode(2);
-					Toast.makeText(mContext.get(),"line ", Toast.LENGTH_SHORT).show();
+					if (isDebug)Toast.makeText(mContext.get(),"line ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.iv_temp_mode_rectangle:
 					PLRPopupWindows.dismiss();
 					mDataBinding.dragTempContainerPreviewFragment.setDrawTempMode(3);
-					Toast.makeText(mContext.get(),"rectangle ", Toast.LENGTH_SHORT).show();
+					if (isDebug)Toast.makeText(mContext.get(),"rectangle ", Toast.LENGTH_SHORT).show();
 					break;
 			}
 		}
 	};
+//	//设置界面的点击监听器
+//	View.OnClickListener preview_setting_click = new View.OnClickListener() {
+//		@Override
+//		public void onClick (View v) {
+//			switch (v.getId()){
+//				case R.id.ib_camera_setting_distance://距离
+//
+//					break;
+//				case R.id.ib_camera_setting_emittance://发射率
+//					break;
+//				case R.id.ib_camera_setting_freeAirTemp://环境温度
+//					break;
+//				case R.id.ib_camera_setting_humidity://湿度
+//					break;
+//				case R.id.ib_camera_setting_reflect://反射温度
+//					break;
+//				case R.id.ib_camera_setting_revise://校正
+//					break;
+//
+//			}
+//		}
+//	};
 	//初始化录制的相关方法
 	private void initRecord(){
-		Log.e(TAG, "initRecord: ");
+		if (isDebug)Log.e(TAG, "initRecord: ");
 
 		MediaProjectionHelper.getInstance().setNotificationEngine(new MediaProjectionNotificationEngine() {
 			@Override
@@ -812,27 +963,27 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			switch (v.getId()){
 				case R.id.palette_layout_Tiehong:
 					setPalette(0);
-					Toast.makeText(mContext.get(),"palette_layout_Tiehong ", Toast.LENGTH_SHORT).show();
+//					if (isDebug)Toast.makeText(mContext.get(),"palette_layout_Tiehong ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.palette_layout_Caihong:
 					setPalette(1);
-					Toast.makeText(mContext.get(),"palette_layout_Caihong ", Toast.LENGTH_SHORT).show();
+//					if (isDebug)Toast.makeText(mContext.get(),"palette_layout_Caihong ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.palette_layout_Hongre:
 					setPalette(2);
-					Toast.makeText(mContext.get(),"palette_layout_Hongre ", Toast.LENGTH_SHORT).show();
+//					if (isDebug)Toast.makeText(mContext.get(),"palette_layout_Hongre ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.palette_layout_Heire:
 					setPalette(3);
-					Toast.makeText(mContext.get(),"palette_layout_Heire ", Toast.LENGTH_SHORT).show();
+//					if (isDebug)Toast.makeText(mContext.get(),"palette_layout_Heire ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.palette_layout_Baire:
 					setPalette(4);
-					Toast.makeText(mContext.get(),"palette_layout_Baire ", Toast.LENGTH_SHORT).show();
+//					if (isDebug)Toast.makeText(mContext.get(),"palette_layout_Baire ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.palette_layout_Lenglan:
 					setPalette(5);
-					Toast.makeText(mContext.get(),"palette_layout_Lenglan ", Toast.LENGTH_SHORT).show();
+//					if (isDebug)Toast.makeText(mContext.get(),"palette_layout_Lenglan ", Toast.LENGTH_SHORT).show();
 					break;
 			}
 		}
@@ -843,13 +994,13 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		public void onClick (View v) {
 			switch (v.getId()){
 				case R.id.iv_chart_mode_point:
-					Toast.makeText(mContext.get(),"iv_chart_mode_point ", Toast.LENGTH_SHORT).show();
+					if (isDebug)Toast.makeText(mContext.get(),"iv_chart_mode_point ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.iv_chart_mode_rectangle:
-					Toast.makeText(mContext.get(),"iv_chart_mode_rectangle ", Toast.LENGTH_SHORT).show();
+					if (isDebug)Toast.makeText(mContext.get(),"iv_chart_mode_rectangle ", Toast.LENGTH_SHORT).show();
 					break;
-				case R.id.tv_check_version:
-					Toast.makeText(mContext.get(),"company check_version ", Toast.LENGTH_SHORT).show();
+				case R.id.tv_check_version://版本更新
+					if (isDebug)Toast.makeText(mContext.get(),"company check_version ", Toast.LENGTH_SHORT).show();
 					break;
 			}
 		}
@@ -875,37 +1026,42 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	//拍照
 	public void toImage(View view){
 
-//		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
-//				,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO)
-//				.onExplainRequestReason(new ExplainReasonCallback() {
-//					@Override
-//					public void onExplainReason (@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
-//						//								Toast.makeText(MainActivity.this,"onExplainReason",Toast.LENGTH_SHORT).show();
-//						scope.showRequestReasonDialog(deniedList,"没有存储权限，无法实现截图，录制等功能。是否重新授权？","确认","取消");
-//						//								shouldShowRequestPermissionRationale(deniedList,"df");
-//					}
-//				}).onForwardToSettings(new ForwardToSettingsCallback() {
-//			@Override
-//			public void onForwardToSettings (@NonNull ForwardScope scope, @NonNull List<String> deniedList) {
-//				scope.showForwardToSettingsDialog(deniedList,"没有存储权限，无法实现截图，录制等功能。是否去设置打开？","确认","取消");
-//			}
-//		}).request(new RequestCallback() {
-//			@Override
-//			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
-//				if (allGranted){//拿到权限 去C++ 绘制 传入文件路径path， 点线矩阵
-//					//实现截屏操作
-//					//生成一个当前的图片地址：  然后设置一个标识位，标识正截屏 或者 录像中
-////					MediaStore.Images.Media.in
-//					String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
-//					//							String picPath = "/storage/emulated/0/DCIM/DYTCamera/1970-01-01-13-11-32.jpg";//写死一个图片地址 方便用于查看
-////					mUvcCameraHandler.captureStill(picPath);
-//					Log.e(TAG, "onResult: java path === "+ picPath);
-//				}else {
-//					Toast.makeText(mContext.get(),"未获取需要的权限.",Toast.LENGTH_SHORT).show();
-//				}
-//
-//			}
-//		});
+		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
+				,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO)
+				.onExplainRequestReason(new ExplainReasonCallback() {
+					@Override
+					public void onExplainReason (@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
+						//	if (isDebug)Toast.makeText(MainActivity.this,"onExplainReason",Toast.LENGTH_SHORT).show();
+						scope.showRequestReasonDialog(deniedList,"没有存储权限，无法实现截图，录制等功能。是否重新授权？","确认","取消");
+						//								shouldShowRequestPermissionRationale(deniedList,"df");
+					}
+				}).onForwardToSettings(new ForwardToSettingsCallback() {
+			@Override
+			public void onForwardToSettings (@NonNull ForwardScope scope, @NonNull List<String> deniedList) {
+				scope.showForwardToSettingsDialog(deniedList,"没有存储权限，无法实现截图，录制等功能。是否去设置打开？","确认","取消");
+
+			}
+		}).request(new RequestCallback() {
+			@Override
+			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+				if (allGranted){//拿到权限 去C++ 绘制 传入文件路径path， 点线矩阵
+					//生成一个当前的图片地址：  然后设置一个标识位，标识正截屏 或者 录像中
+
+					if (!mUvcCameraHandler.isReleased()){
+						String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
+						//String picPath = "/storage/emulated/0/DCIM/DYTCamera/1970-01-01-13-11-32.jpg";//写死一个图片地址 方便用于查看
+						mUvcCameraHandler.captureStill(picPath);
+						Toast.makeText(mContext.get(),"保存路径为："+picPath , Toast.LENGTH_SHORT).show();
+						if (isDebug)Log.e(TAG, "onResult: java path === "+ picPath);
+					}else {
+						Toast.makeText(mContext.get(),"请先连接相机" , Toast.LENGTH_SHORT).show();
+					}
+				}else {
+					Toast.makeText(mContext.get(),"未获取需要的权限.",Toast.LENGTH_SHORT).show();
+				}
+
+			}
+		});
 
 //		if (mUvcCameraHandler != null){
 //			Toast.makeText(mContext.get(),"toImage ", Toast.LENGTH_SHORT).show();
@@ -935,9 +1091,126 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //				}
 //			}
 //		}).start();
+	}
+	private void toSetLanguage(int type) {//切换语言
+		Locale locale;
+		Context context = DYTApplication.getInstance();
+		if (type == 0) {
+			locale = LanguageUtils.getSystemLocale();
+			LanguageUtils.saveAppLocaleLanguage(LanguageUtils.SYSTEM_LANGUAGE_TGA);
+		}  else if (type == 1) {
+			locale = Locale.US;
+			LanguageUtils.saveAppLocaleLanguage(locale.toLanguageTag());
+		} else {
+			return;
+		}
+		if (LanguageUtils.isSimpleLanguage(context, locale)) {
+			Toast.makeText(context, "选择的语言和当前语言相同", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		LanguageUtils.updateLanguage(context, locale);//更新语言参数
 
+		Intent intent = new Intent(context, MainActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		//		this.finish();
+		context.startActivity(intent);
+	}
 
+	public class SendCommand {
+		int psitionAndValue0 = 0, psitionAndValue1 = 0, psitionAndValue2 = 0, psitionAndValue3 = 0;
 
+		public void sendFloatCommand(int position, byte value0, byte value1, byte value2, byte value3, int interval0, int interval1, int interval2, int interval3, int interval4) {
+			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
+			Handler handler0 = new Handler();
+			handler0.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0);
+				}
+			}, interval0);
+
+			psitionAndValue1 = ((position + 1) << 8) | (0x000000ff & value1);
+			handler0.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue1);
+				}
+			}, interval1);
+			psitionAndValue2 = ((position + 2) << 8) | (0x000000ff & value2);
+
+			handler0.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue2);
+				}
+			}, interval2);
+
+			psitionAndValue3 = ((position + 3) << 8) | (0x000000ff & value3);
+
+			handler0.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue3);
+				}
+			}, interval3);
+
+			handler0.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mUvcCameraHandler.whenShutRefresh();
+				}
+			}, interval4);
+		}
+
+		private void whenChangeTempPara() {
+			if (mUvcCameraHandler != null) {
+				mUvcCameraHandler.whenChangeTempPara();
+			}
+		}
+
+		public void sendShortCommand(int position, byte value0, byte value1, int interval0, int interval1, int interval2) {
+			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
+			Handler handler0 = new Handler();
+			handler0.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0);
+				}
+			}, interval0);
+
+			psitionAndValue1 = ((position + 1) << 8) | (0x000000ff & value1);
+			handler0.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue1);
+				}
+			}, interval1);
+
+			handler0.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mUvcCameraHandler.whenShutRefresh();
+				}
+			}, interval2);
+
+		}
+
+		public void sendByteCommand(int position, byte value0, int interval0) {
+			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
+			Handler handler0 = new Handler();
+			handler0.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0);
+				}
+			}, interval0);
+			handler0.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mUvcCameraHandler.whenShutRefresh();
+				}
+			}, interval0 + 20);
+		}
 	}
 
 

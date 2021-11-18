@@ -35,6 +35,9 @@ public class DYConstants {
 	public static final String LANGUAGE_SETTING = "language_setting";//语言设置
 	public static final String TEMP_UNIT_SETTING = "temp_unit";//温度单位
 
+	public static final String LOCALE_LANGUAGE = "locale_language";
+	public static final String SPTAG = "Main";
+
 	public static final String SP_NAME = "DYT_IR_SP";
 
 
