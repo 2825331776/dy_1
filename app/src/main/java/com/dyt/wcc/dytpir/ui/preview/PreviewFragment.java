@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -53,7 +54,6 @@ import com.dyt.wcc.dytpir.databinding.PopPaletteChoiceBinding;
 import com.dyt.wcc.dytpir.databinding.PopSettingBinding;
 import com.dyt.wcc.dytpir.databinding.PopTempModeChoiceBinding;
 import com.dyt.wcc.dytpir.ui.DYTApplication;
-import com.dyt.wcc.dytpir.ui.MainActivity;
 import com.dyt.wcc.dytpir.ui.preview.record.MediaProjectionHelper;
 import com.dyt.wcc.dytpir.ui.preview.record.MediaProjectionNotificationEngine;
 import com.dyt.wcc.dytpir.ui.preview.record.MediaRecorderCallback;
@@ -178,7 +178,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			if (isDebug)Log.e(TAG, "usb devices  == " + udv.toString());
 			if (isDebug)Log.e(TAG, "udv.getProductName()" + udv.getProductName());
 			if (udv.getVendorId() == 5396 && udv.getProductId() ==1 ) {
-				if (isDebug)Log.e(TAG, "onResume: "+ " S0 " + udv.getProductId() + " "  + udv.getVendorId() );
+//				if (isDebug)Log.e(TAG, "onResume: "+ " S0 " + udv.getProductId() + " "  + udv.getVendorId() );
 				BaseApplication.deviceName = udv.getProductName();
 			}
 		}
@@ -392,9 +392,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		});
 
 
-		DisplayMetrics metrics = new DisplayMetrics();
-		metrics = getResources().getDisplayMetrics();
-		if (isDebug)Log.e(TAG, "initView: " + metrics.heightPixels + "wid = " + metrics.widthPixels);
+//		DisplayMetrics metrics = new DisplayMetrics();
+//		metrics = getResources().getDisplayMetrics();
+//		if (isDebug)Log.e(TAG, "initView: " + metrics.heightPixels + "wid = " + metrics.widthPixels);
 
 		fl = mDataBinding.flPreview;
 
@@ -483,7 +483,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					Toast.makeText(mContext.get(), "请输入高温界限",Toast.LENGTH_SHORT).show();
 //					Log.e(TAG, "onClick: "+ isChecked);
 					mDataBinding.toggleHighTempAlarm.setChecked(false);
-//					mDataBinding.toggleHighTempAlarm.setSelected(false);
 					return;
 				}
 
@@ -518,9 +517,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //			}
 //		});
 
-		//绘制  温度模式 切换  弹窗
+		//测温模式。绘制  温度模式 切换  弹窗
 		mDataBinding.ivPreviewRightTempMode.setOnClickListener(v -> {
-
 			if (isResumed()){
 				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_temp_mode_choice,null);
 				PopTempModeChoiceBinding tempModeChoiceBinding = DataBindingUtil.bind(view);
@@ -531,15 +529,15 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 				PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 				PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
-				PLRPopupWindows.setHeight(PLRPopupWindows.getContentView().getMeasuredHeight());
-				PLRPopupWindows.setWidth(fl.getWidth()- 60);
+				PLRPopupWindows.setHeight(mDataBinding.llContainerPreviewSeekbar.getHeight());
+				PLRPopupWindows.setWidth(mDataBinding.llContainerPreviewSeekbar.getWidth());
 
 				PLRPopupWindows.setFocusable(true);
 				//				popupWindow.setBackgroundDrawable(getResources().getDrawable(R.mipmap.temp_mode_bg_tempback));
 				PLRPopupWindows.setOutsideTouchable(true);
 				PLRPopupWindows.setTouchable(true);
 
-				PLRPopupWindows.showAsDropDown(mDataBinding.flPreview,30,-PLRPopupWindows.getHeight()-20, Gravity.CENTER);
+				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,0,-mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 			}
 		});
 
@@ -548,17 +546,27 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onClick (View v) {
 				if (isResumed()){
-				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_palette_choice,null);
-				PopPaletteChoiceBinding popPaletteChoice = DataBindingUtil.bind(view);
-				assert popPaletteChoice != null;
-				popPaletteChoice.paletteLayoutTiehong.setOnClickListener(paletteChoiceListener);
-				popPaletteChoice.paletteLayoutCaihong.setOnClickListener(paletteChoiceListener);
-				popPaletteChoice.paletteLayoutHongre.setOnClickListener(paletteChoiceListener);
-				popPaletteChoice.paletteLayoutHeire.setOnClickListener(paletteChoiceListener);
-				popPaletteChoice.paletteLayoutBaire.setOnClickListener(paletteChoiceListener);
-				popPaletteChoice.paletteLayoutLenglan.setOnClickListener(paletteChoiceListener);
+					View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_palette_choice,null);
+					PopPaletteChoiceBinding popPaletteChoice = DataBindingUtil.bind(view);
+					assert popPaletteChoice != null;
+					popPaletteChoice.paletteLayoutTiehong.setOnClickListener(paletteChoiceListener);
+					popPaletteChoice.paletteLayoutCaihong.setOnClickListener(paletteChoiceListener);
+					popPaletteChoice.paletteLayoutHongre.setOnClickListener(paletteChoiceListener);
+					popPaletteChoice.paletteLayoutHeire.setOnClickListener(paletteChoiceListener);
+					popPaletteChoice.paletteLayoutBaire.setOnClickListener(paletteChoiceListener);
+					popPaletteChoice.paletteLayoutLenglan.setOnClickListener(paletteChoiceListener);
 
-				showPopWindows(view,20,10,20);
+	//				showPopWindows(view,20,10,20);
+					allPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+					allPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
+					allPopupWindows.setHeight(mDataBinding.llContainerPreviewSeekbar.getHeight());
+					allPopupWindows.setWidth(mDataBinding.llContainerPreviewSeekbar.getWidth());
+
+					allPopupWindows.setFocusable(true);
+					allPopupWindows.setOutsideTouchable(true);
+					allPopupWindows.setTouchable(true);
+
+					allPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,0,-mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 				}
 			}
 		});
@@ -743,19 +751,33 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					@Override
 					public void onItemSelected (AdapterView<?> parent, View view, int position, long id) {
 //						Toast.makeText(mContext.get(),"spinner item  = "+position,Toast.LENGTH_SHORT).show();
-						toSetLanguage(position);
-						sp.edit().putInt(DYConstants.LANGUAGE_SETTING,position).apply();
+						Log.e(TAG, "onItemSelected: now " + sp.getInt(DYConstants.LANGUAGE_SETTING,0));
+						if (position != sp.getInt(DYConstants.LANGUAGE_SETTING,0)){
+							sp.edit().putInt(DYConstants.LANGUAGE_SETTING,position).apply();
+							Log.e(TAG, "onItemSelected:  changed position == " + position);
+							Locale primaryLocal;
+							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+								primaryLocal = getResources().getConfiguration().getLocales().get(0);
+							}else {
+								primaryLocal = getResources().getConfiguration().locale;
+							}
+							String local = primaryLocal.getDisplayName();
+							Log.e(TAG, "onItemSelected: local str " + local);
+//							toSetLanguage(position);
+						}
 					}
+
 
 					@Override
 					public void onNothingSelected (AdapterView<?> parent) {
-//						if (isDebug)Toast.makeText(mContext.get(),"spinner item  = onNothingSelected",Toast.LENGTH_SHORT).show();
+						if (isDebug)Toast.makeText(mContext.get(),"spinner item  = onNothingSelected",Toast.LENGTH_SHORT).show();
 					}
 				});
 
 			}
 		});
 
+		//工具栏被点击监听器
 		mDataBinding.dragTempContainerPreviewFragment.setChildToolsClickListener(new DragTempContainer.OnChildToolsClickListener() {
 			@Override
 			public void onChildToolsClick (TempWidgetObj child, int position) {
@@ -1007,8 +1029,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	};
 
 	public void toGallery(View view){
-//		mDataBinding.dragTempContainerPreviewFragment.clearAll();
-
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
 				,Manifest.permission.WRITE_EXTERNAL_STORAGE).request(new RequestCallback() {
 			@Override
@@ -1079,9 +1099,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		 * 录制业务逻辑：点击开始录制，判断 是否在录制？ no-> 开始录制，更改录制按钮"结束录制" & 开始计时器
 		 * yes->结束录制。更改录制按钮"录制" （刷新媒体库）& 重置计时器
 		 */
-//		new Thread(new Runnable() {
-//			@Override
-//			public void run () {
 //				Log.e(TAG, "toRecord: " + MediaProjectionHelper.getInstance().getRecord_State());
 //				if (MediaProjectionHelper.getInstance().getRecord_State() !=0 ){//停止录制
 //					MediaProjectionHelper.getInstance().stopMediaRecorder();
@@ -1089,14 +1106,16 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //				}else {//开始录制
 //					MediaProjectionHelper.getInstance().startService(mContext.get());
 //				}
-//			}
-//		}).start();
 	}
 	private void toSetLanguage(int type) {//切换语言
 		Locale locale;
+//		Resources resources = getResources();
+//		DisplayMetrics dm = resources.getDisplayMetrics();
+//		Configuration configuration = resources.getConfiguration();
+
 		Context context = DYTApplication.getInstance();
 		if (type == 0) {
-			locale = LanguageUtils.getSystemLocale();
+			locale = Locale.SIMPLIFIED_CHINESE;
 			LanguageUtils.saveAppLocaleLanguage(LanguageUtils.SYSTEM_LANGUAGE_TGA);
 		}  else if (type == 1) {
 			locale = Locale.US;
@@ -1104,16 +1123,22 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		} else {
 			return;
 		}
+//		configuration.locale = locale;
+//		resources.updateConfiguration(configuration,dm);
+
 		if (LanguageUtils.isSimpleLanguage(context, locale)) {
 			Toast.makeText(context, "选择的语言和当前语言相同", Toast.LENGTH_SHORT).show();
 			return;
 		}
 		LanguageUtils.updateLanguage(context, locale);//更新语言参数
 
-		Intent intent = new Intent(context, MainActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		//		this.finish();
-		context.startActivity(intent);
+//		Intent intent = new Intent(mContext.get(), MainActivity.class);
+//		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//		//		this.finish();
+//		context.startActivity(intent);
+//
+//		android.os.Process.killProcess(android.os.Process.myPid());
+//		System.exit(0);
 	}
 
 	public class SendCommand {

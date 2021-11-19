@@ -26,7 +26,6 @@
                 app:layout_constraintRight_toRightOf="parent"
                 android:text="@string/SettingGeneral"
                 android:textSize="18sp"
-                android:textStyle="bold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -114,8 +113,8 @@
                 app:strokeWidth="@dimen/dimen_1dp"
                 app:text_Size="14sp"
                 android:layout_marginStart="@dimen/dimen_10dp"
-                android:layout_width="@dimen/dimen_150dp"
-                android:layout_height="@dimen/dimen_25dp" />
+                android:layout_width="@dimen/dimen_120dp"
+                android:layout_height="@dimen/dimen_20dp" />
             <!--        <include-->
             <!--            app:layout_constraintLeft_toRightOf="@id/tv_temp_unit_choice_info"-->
             <!--            app:layout_constraintTop_toTopOf="@id/tv_temp_unit_choice_info"-->
@@ -131,7 +130,6 @@
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:text="@string/SettingCameraParams"
                 android:textSize="18sp"
-                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 

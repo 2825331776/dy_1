@@ -2581,7 +2581,6 @@ int mipmap define_view_tools_delete 0x0
 int mipmap define_view_tools_other 0x0
 int mipmap ic_areacheck_tools_delete 0x0
 int mipmap ic_higlowtemp_draw_widget_center 0x0
-int mipmap ic_higlowtemp_draw_widget_center2 0x0
 int mipmap ic_higlowtemp_draw_widget_high 0x0
 int mipmap ic_higlowtemp_draw_widget_low 0x0
 int mipmap ic_max 0x0

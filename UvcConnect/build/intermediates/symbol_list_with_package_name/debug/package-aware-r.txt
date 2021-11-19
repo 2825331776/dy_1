@@ -2582,7 +2582,6 @@ mipmap define_view_tools_delete
 mipmap define_view_tools_other
 mipmap ic_areacheck_tools_delete
 mipmap ic_higlowtemp_draw_widget_center
-mipmap ic_higlowtemp_draw_widget_center2
 mipmap ic_higlowtemp_draw_widget_high
 mipmap ic_higlowtemp_draw_widget_low
 mipmap ic_max

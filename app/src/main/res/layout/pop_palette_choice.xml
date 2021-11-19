@@ -10,78 +10,72 @@
     <ScrollView
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:background="@drawable/shape_bg_pop_palette_choice"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dimen_40dp">
+            android:layout_height="wrap_content">
 
             <ImageButton
                 android:id="@+id/palette_layout_Tiehong"
                 app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                tools:ignore="ContentDescription"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
-                android:layout_marginStart="@dimen/dimen_5dp"
+                android:layout_marginTop="@dimen/dimen_5dp"
                 android:background="@mipmap/ic_palette_choice_tiehong" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Caihong"
-                app:layout_constraintLeft_toRightOf="@id/palette_layout_Tiehong"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                tools:ignore="ContentDescription"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/palette_layout_Tiehong"
+                android:layout_marginTop="@dimen/dimen_5dp"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
-                android:layout_marginStart="@dimen/dimen_5dp"
                 android:background="@mipmap/ic_palette_choice_caihong" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Hongre"
-                app:layout_constraintLeft_toRightOf="@id/palette_layout_Caihong"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                tools:ignore="ContentDescription"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/palette_layout_Caihong"
+                android:layout_marginTop="@dimen/dimen_5dp"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
-                android:layout_marginStart="@dimen/dimen_5dp"
                 android:background="@mipmap/ic_palette_choice_hongre" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Heire"
-                app:layout_constraintLeft_toRightOf="@id/palette_layout_Hongre"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                tools:ignore="ContentDescription"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/palette_layout_Hongre"
+                android:layout_marginTop="@dimen/dimen_5dp"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
-                android:layout_marginStart="@dimen/dimen_5dp"
                 android:background="@mipmap/ic_palette_choice_heire" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Baire"
-                app:layout_constraintLeft_toRightOf="@id/palette_layout_Heire"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                tools:ignore="ContentDescription"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/palette_layout_Heire"
+                android:layout_marginTop="@dimen/dimen_5dp"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
-                android:layout_marginStart="@dimen/dimen_5dp"
                 android:background="@mipmap/ic_palette_choice_baire" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Lenglan"
-                app:layout_constraintLeft_toRightOf="@id/palette_layout_Baire"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                tools:ignore="ContentDescription"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/palette_layout_Baire"
+                android:layout_marginTop="@dimen/dimen_5dp"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
-                android:layout_marginStart="@dimen/dimen_5dp"
                 android:background="@mipmap/temp_mode_lenglan" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

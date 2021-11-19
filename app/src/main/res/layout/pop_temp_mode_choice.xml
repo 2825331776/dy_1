@@ -7,8 +7,8 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="@dimen/dimen_300dp"
-        android:layout_height="@dimen/dimen_50dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@drawable/shape_bg_pop_temp_mode_chioce">
 
         <ImageView
@@ -16,32 +16,30 @@
             android:background="@drawable/selector_main_preview_measuretemp_point"
             android:layout_width="@dimen/dimen_40dp"
             android:layout_height="@dimen/dimen_40dp"
-            android:layout_marginStart="@dimen/dimen_10dp"
+            android:layout_marginTop="@dimen/dimen_10dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <ImageView
             android:id="@+id/iv_temp_mode_line"
             android:background="@drawable/selector_main_preview_measuretemp_line"
             android:layout_width="@dimen/dimen_40dp"
             android:layout_height="@dimen/dimen_40dp"
-            android:layout_marginStart="@dimen/dimen_10dp"
-            app:layout_constraintLeft_toRightOf="@id/iv_temp_mode_point"
-            app:layout_constraintRight_toLeftOf="@id/iv_temp_mode_rectangle"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_marginTop="@dimen/dimen_10dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_temp_mode_point"/>
 
         <ImageView
             android:id="@+id/iv_temp_mode_rectangle"
             android:background="@drawable/selector_main_preview_measuretemp_rectangle"
             android:layout_width="@dimen/dimen_40dp"
             android:layout_height="@dimen/dimen_40dp"
-            android:layout_marginEnd="@dimen/dimen_10dp"
-            android:layout_marginStart="@dimen/dimen_10dp"
-            app:layout_constraintLeft_toRightOf="@id/iv_temp_mode_line"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_marginTop="@dimen/dimen_10dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_temp_mode_line"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

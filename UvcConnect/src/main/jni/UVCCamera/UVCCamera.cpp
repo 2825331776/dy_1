@@ -280,7 +280,7 @@ char *UVCCamera::getSupportedSize() {
 int UVCCamera::setPreviewSize(int width, int height, int min_fps, int max_fps, int mode, float bandwidth,int currentAndroidVersion) {
 	ENTER();
 	int result = EXIT_FAILURE;
-    LOGE("will it fail444");
+//    LOGE("will it fail444");
 	if (mPreview) {
         LOGE("will it fail5555");
 		result = mPreview->setPreviewSize(width, height, min_fps, max_fps, mode, bandwidth,currentAndroidVersion);

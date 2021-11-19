@@ -56,7 +56,7 @@ import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 
 public final class USBMonitor {
 
-	private static final boolean DEBUG = false;	// TODO set false on production
+	private static final boolean DEBUG = true;	// TODO set false on production
 	private static final String TAG = "USBMonitor";
 
 	private static final String ACTION_USB_PERMISSION_BASE = "com.serenegiant.USB_PERMISSION.";
@@ -180,10 +180,10 @@ public final class USBMonitor {
 				context.registerReceiver(mUsbReceiver, filter);
 			}
 			// start connection check
-			LogUtils.e("=====register============before==========mDeviceCheckRunnable=======");
+			if (DEBUG)Log.e(TAG,"=====register============before==========mDeviceCheckRunnable=======");
 			mDeviceCounts = 0;
 			mAsyncHandler.postDelayed(mDeviceCheckRunnable, 1000);
-			LogUtils.e("=====register============behind==========mDeviceCheckRunnable=======");
+			if (DEBUG)Log.e(TAG,"=====register============behind==========mDeviceCheckRunnable=======");
 		}
 	}
 
@@ -481,19 +481,19 @@ public final class USBMonitor {
 			if (destroyed) return;
 			final String action = intent.getAction();
 			if (ACTION_USB_PERMISSION.equals(action)) {
-				LogUtils.e("=====register============before==========BroadcastReceiver mUsbReceiver processConnect device=======");
+				if (DEBUG)Log.e(TAG,"=====register============before==========BroadcastReceiver mUsbReceiver processConnect device=======");
 				// when received the result of requesting USB permission
 				synchronized (USBMonitor.this) {
 					final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 					if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
 						if (device != null) {
 							// get permission, call onConnect
-							LogUtils.e("UsbMonitor.register.broadcastReceiver.mUsbReceiver.OnReceiver=device !=null!!!====todo connect");
+							if (DEBUG)Log.e(TAG,"UsbMonitor.register.broadcastReceiver.mUsbReceiver.OnReceiver=device !=null!!!====todo connect");
 							processConnect(device);
 						}
 					} else {
 						// failed to get permission
-						LogUtils.e("UsbMonitor.register.broadcastReceiver.mUsbReceiver.OnReceiver=device ==null!!!====todo processCancel");
+						if (DEBUG)Log.e(TAG,"UsbMonitor.register.broadcastReceiver.mUsbReceiver.OnReceiver=device ==null!!!====todo processCancel");
 						processCancel(device);
 					}
 				}
@@ -543,7 +543,7 @@ public final class USBMonitor {
 				if (mOnDeviceConnectListener != null) {
 					for (int i = 0; i < n; i++) {
 						final UsbDevice device = devices.get(i);
-						LogUtils.e("==========usbmonitor contains devices getProductName =====>"+device.getProductName());
+						if (DEBUG)Log.e(TAG,"==========usbmonitor contains devices getProductName =====>"+device.getProductName());
 						if(device.getVendorId() == 5396 && device.getProductId() ==1 ) {
 							mAsyncHandler.post(new Runnable() {
 								@Override
@@ -566,8 +566,8 @@ public final class USBMonitor {
 	private final void processConnect(final UsbDevice device) {
 		if (destroyed) return;
 		updatePermission(device, true);
-		if (DEBUG) Log.v(TAG, "processConnect:device=" + device);
-		LogUtils.e("=================processConnect===========================");
+		if (DEBUG) Log.e(TAG, "processConnect:device=" + device);
+		if (DEBUG)Log.e(TAG,"=================processConnect===========================");
 		UsbControlBlock ctrlBlock;
 		final boolean createNew;
 		ctrlBlock = mCtrlBlocks.get(device);
@@ -607,7 +607,7 @@ public final class USBMonitor {
 
 	private final void processCancel(final UsbDevice device) {
 		if (destroyed) return;
-		if (DEBUG) Log.v(TAG, "processCancel:");
+		if (DEBUG) Log.e(TAG, "processCancel:");
 		updatePermission(device, false);
 		if (mOnDeviceConnectListener != null) {
 			mAsyncHandler.post(new Runnable() {
@@ -621,7 +621,7 @@ public final class USBMonitor {
 
 	private final void processAttach(final UsbDevice device) {
 		if (destroyed) return;
-		if (DEBUG) Log.v(TAG, "processAttach:");
+		if (DEBUG) Log.e(TAG, "processAttach:");
 		if (mOnDeviceConnectListener != null) {
 			mAsyncHandler.post(new Runnable() {
 				@Override
@@ -634,7 +634,7 @@ public final class USBMonitor {
 
 	private final void processDettach(final UsbDevice device) {
 		if (destroyed) return;
-		if (DEBUG) Log.v(TAG, "processDettach:");
+		if (DEBUG) Log.e(TAG, "processDettach:");
 		if (mOnDeviceConnectListener != null) {
 			mAsyncHandler.post(new Runnable() {
 				@Override
