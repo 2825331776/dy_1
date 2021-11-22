@@ -700,34 +700,25 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				popupWindow.setTouchable(true);
 				//第四步：显示控件
 				popupWindow.showAsDropDown(mDataBinding.flPreview,15,-popupWindow.getHeight()-20, Gravity.CENTER);
-				//语言spinner
+				// 切换语言 spinner
+
 				ArrayAdapter<String> adapterSpinner = new ArrayAdapter<String>(mContext.get(),R.layout.item_select, DYConstants.languageArray);
 				adapterSpinner.setDropDownViewResource(R.layout.item_dropdown);
 				popSettingBinding.spinnerSettingLanguage.setAdapter(adapterSpinner);
 				int language_index = sp.getInt(DYConstants.LANGUAGE_SETTING,0);
-				Log.e(TAG, "onClick: language_index   " + language_index);
+//				Log.e(TAG, "onClick: language_index   " + language_index);
 				popSettingBinding.spinnerSettingLanguage.setSelection(language_index);//从本地拿
 				popSettingBinding.spinnerSettingLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 					@Override
 					public void onItemSelected (AdapterView<?> parent, View view, int position, long id) {
-//						Toast.makeText(mContext.get(),"spinner item  = "+position,Toast.LENGTH_SHORT).show();
 						Log.e(TAG, "onItemSelected: now " + sp.getInt(DYConstants.LANGUAGE_SETTING,0));
 						if (position != sp.getInt(DYConstants.LANGUAGE_SETTING,0)){
 							sp.edit().putInt(DYConstants.LANGUAGE_SETTING,position).apply();
-							Log.e(TAG, "onItemSelected:  changed position == " + position);
-//							Locale primaryLocal;
-//							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-//								primaryLocal = getResources().getConfiguration().getLocales().get(0);
-//							}else {
-//								primaryLocal = getResources().getConfiguration().locale;
-//							}
-//							String local = primaryLocal.getDisplayName();
-//							Log.e(TAG, "onItemSelected: local str " + local);
+//							Log.e(TAG, "onItemSelected:  changed position == " + position);
+							popupWindow.dismiss();
 							toSetLanguage(position);
 						}
 					}
-
-
 					@Override
 					public void onNothingSelected (AdapterView<?> parent) {
 						if (isDebug)Toast.makeText(mContext.get(),"spinner item  = onNothingSelected",Toast.LENGTH_SHORT).show();
@@ -791,8 +782,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.setPf(this);
 		mViewModel = new ViewModelProvider(getViewModelStore(),
 				new ViewModelProvider.AndroidViewModelFactory((Application) mContext.get().getApplicationContext())).get(PreViewViewModel.class);
-		mDataBinding.setPreviewViewModel(mViewModel);
-
 		PermissionX.init(this).permissions(Manifest.permission.CAMERA).request(new RequestCallback() {
 			@Override
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
@@ -801,6 +790,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				}
 			}
 		});
+
+		mDataBinding.setPreviewViewModel(mViewModel);
 
 	}
 
@@ -1083,11 +1074,13 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //					MediaProjectionHelper.getInstance().startService(mContext.get());
 //				}
 	}
+
+	/**
+	 * 设置语言
+	 * @param type
+	 */
 	private void toSetLanguage(int type) {//切换语言
 		Locale locale;
-//		Resources resources = getResources();
-//		DisplayMetrics dm = resources.getDisplayMetrics();
-//		Configuration configuration = resources.getConfiguration();
 
 		Context context = DYTApplication.getInstance();
 		if (type == 0) {
@@ -1099,9 +1092,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		} else {
 			return;
 		}
-//		configuration.locale = locale;
-//		resources.updateConfiguration(configuration,dm);
-
 		if (LanguageUtils.isSimpleLanguage(context, locale)) {
 			Toast.makeText(context, "选择的语言和当前语言相同", Toast.LENGTH_SHORT).show();
 			return;

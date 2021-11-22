@@ -846,7 +846,7 @@ public class MyMoveWidget extends View {
 				direction = WIDGET_DIRECTION_STATE_LEFT_BOTTOM;
 			}
 
-			Log.e(TAG, "drawMinMaxTemp: direction = = > " + direction);
+//			Log.e(TAG, "drawMinMaxTemp: direction = = > " + direction);
 			if (direction ==WIDGET_DIRECTION_STATE_RIGHT_BOTTOM ){direction = WIDGET_DIRECTION_STATE_RIGHT_TOP;}
 			if (direction ==WIDGET_DIRECTION_STATE_LEFT_BOTTOM ){direction = WIDGET_DIRECTION_STATE_LEFT_TOP;}
 			switch (direction){
