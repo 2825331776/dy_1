@@ -175,8 +175,10 @@ public class MyMoveWidget extends View {
 				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_low);
 				pointTextPaint.setColor(getResources().getColor(R.color.min_temp_text_color_blue,null));
 			}else {
+				Log.e(TAG, "initPaint:  obj type = " + tempWidgetData.getType() + " point type = " + tempWidgetData.getPointTemp().getType()) ;
 				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center);
 				maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center);
+				pointTextPaint.setColor(getResources().getColor(R.color.min_temp_text_color_blue,null));
 			}
 		}else {
 			tempWidgetData.setCanMove(true);
@@ -332,6 +334,14 @@ public class MyMoveWidget extends View {
 		}
 		return direction;
 	}
+
+	/**
+	 * 通过文字的宽高 方位，及其 自身的类型
+	 * @param width 文字所需的宽度
+	 * @param height 文字所需的高度
+	 * @param direction 文字计算所得的方位
+	 * @param type  自身的类型：点、线、矩形
+	 */
 	private void getStrCoordinate(float width ,float height ,int direction, int type){
 		if (type==1){
 			if (direction == WIDGET_DIRECTION_STATE_LEFT_TOP){
@@ -479,26 +489,16 @@ public class MyMoveWidget extends View {
 				//有背景 线和矩形的大小看 最高最低点图片的绘制是否影响控件的尺寸
 				float min,max ;
 				//点模式，计算最左的坐标
-//				min = Math.min(tempWidgetData.getOtherTemp().getMinTempX()- minTempBt.getWidth()/2.0f,tempWidgetData.getOtherTemp().getMaxTempX()- maxTempBt.getWidth()/2.0f);
-//				min = Math.min(min,contentBgLeft);
 				min = Math.min(contentBgLeft,toolsBgLeft);
 				minLeft = min;
-//				min = Math.min(tempWidgetData.getOtherTemp().getMinTempY()- minTempBt.getHeight()/2.0f,tempWidgetData.getOtherTemp().getMaxTempY()- maxTempBt.getHeight()/2.0f);
-//				min = Math.min(min,contentBgTop);
 				min = Math.min(contentBgTop,toolsBgTop);
-//				min = Math.min(contentBgTop,toolsBgTop);
 				minTop = min;
 
-//				max = Math.max(tempWidgetData.getOtherTemp().getMinTempX() + minTempBt.getWidth()/2.0f,tempWidgetData.getOtherTemp().getMaxTempX()+ maxTempBt.getWidth()/2.0f);
-//				max = Math.max(max,contentBgRight);
 				max = Math.max(contentBgRight,toolsBgRight);
 //				max = Math.max(contentBgRight,toolsBgRight);
 				maxRight = max;
 
-//				max = Math.max(tempWidgetData.getOtherTemp().getMinTempY() + minTempBt.getHeight()/2.0f,tempWidgetData.getOtherTemp().getMaxTempY()+ maxTempBt.getHeight()/2.0f);
-//				max = Math.max(max,contentBgBottom);
 				max = Math.max(contentBgBottom,toolsBgBottom);
-//				max = Math.max(contentBgBottom,toolsBgBottom);
 				maxBottom = max;
 				//线及矩形的偏移量不是这样算
 				xOffset = minLeft;
@@ -531,22 +531,14 @@ public class MyMoveWidget extends View {
 				textNeedHeight = (int) getStrHeight(maxTempTextPaint,maxTempStr);
 				float min,max ;
 				//点模式，计算最左的坐标
-//				min = Math.min(tempWidgetData.getOtherTemp().getMinTempX()- minTempBt.getWidth()/2.0f,tempWidgetData.getOtherTemp().getMaxTempX()- maxTempBt.getWidth()/2.0f);
 				min = Math.min(contentBgLeft,contentLeft);;
 				minLeft = min;
-//				min = Math.min(tempWidgetData.getOtherTemp().getMinTempY()- minTempBt.getHeight()/2.0f,tempWidgetData.getOtherTemp().getMaxTempY()- maxTempBt.getHeight()/2.0f);
-//				min = Math.min(min,tempWidgetData.getOtherTemp().getMinTempY()-textNeedHeight);
-//				min = Math.min(min,tempWidgetData.getOtherTemp().getMaxTempY()-textNeedHeight);
 				min = Math.min(contentBgTop,contentTop);;
 				minTop = min;
 
-//				max = Math.max(tempWidgetData.getOtherTemp().getMinTempX() + minTempBt.getWidth()/2.0f,tempWidgetData.getOtherTemp().getMaxTempX()+ maxTempBt.getWidth()/2.0f);
 				max = Math.max(contentBgRight,contentRight);;
 				maxRight = max;
 
-//				max = Math.max(tempWidgetData.getOtherTemp().getMinTempY() + minTempBt.getHeight()/2.0f,tempWidgetData.getOtherTemp().getMaxTempY()+ maxTempBt.getHeight()/2.0f);
-//				max = Math.max(max,tempWidgetData.getOtherTemp().getMinTempY()+textNeedHeight);
-//				max = Math.max(max,tempWidgetData.getOtherTemp().getMaxTempY()+textNeedHeight);
 				max = Math.max(contentBgBottom,contentBottom);
 				maxBottom = max;
 				//线及矩形的偏移量不是这样算
@@ -555,7 +547,6 @@ public class MyMoveWidget extends View {
 
 				hMeasureSpecSize = maxBottom - minTop;
 				wMeasureSpecSize = maxRight - minLeft;
-
 //				Log.e(TAG, "doMeasure: 2*TH = > " + 2* textNeedHeight + " hM = " + hMeasureSpecSize + " WM "+ wMeasureSpecSize) ;
 			}
 		}

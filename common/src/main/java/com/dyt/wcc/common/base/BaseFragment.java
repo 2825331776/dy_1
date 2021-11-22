@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +33,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
 	protected final String             TAG = this.getClass().getSimpleName();
 	protected T                        mDataBinding;
 	protected boolean                  isDebug = true;
+	protected Toast mToast;
 
 	@Nullable
 	@Override
@@ -40,7 +42,23 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
 		View view = mDataBinding.getRoot();
 		mContext = new WeakReference<>(getActivity());
 		initView();
+		mToast = Toast.makeText(mContext.get(),"",Toast.LENGTH_SHORT);
+
 		return view;
+	}
+
+	protected void showToast(int resId){
+//		mToast.cancel();
+		mToast.setText(resId);
+		mToast.show();
+	}
+	protected void showToast(String str){
+//		mToast.cancel();
+		mToast.setText(str);
+		mToast.show();
+	}
+	protected void cancelToast(){
+		if (mToast!= null)mToast.cancel();
 	}
 
 	////设置绑定布局

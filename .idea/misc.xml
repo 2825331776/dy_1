@@ -53,8 +53,12 @@
         <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_takephoto.xml" value="0.21145833333333333" />
         <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/layout/activity_test.xml" value="0.33" />
         <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/layout/fragment_preview_main.xml" value="0.33" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_highlowtrace_high.xml" value="0.3697916666666667" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/activity_test.xml" value="0.25" />
-        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/fragment_preview_main.xml" value="0.3536458333333333" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/fragment_preview_main.xml" value="0.5" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/pop_highlowcenter_trace.xml" value="0.75" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/pop_palette_choice.xml" value="0.3536458333333333" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/pop_setting.xml" value="0.3536458333333333" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/common/src/main/res/drawable/ic_vector_max.xml" value="0.2635416666666667" />
       </map>
     </option>

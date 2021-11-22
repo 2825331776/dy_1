@@ -60,6 +60,18 @@ public class DragTempContainer extends RelativeLayout {
 	private int           drawTempMode = -1;
 	private WeakReference<Context> mContext;
 
+	/**
+	 * temperatureData[0]=centerTmp;
+	 * 	temperatureData[1]=(float)maxx1;
+	 * 	temperatureData[2]=(float)maxy1;
+	 * 	temperatureData[3]=maxTmp;
+	 * 	temperatureData[4]=(float)minx1;
+	 * 	temperatureData[5]=(float)miny1;
+	 * 	temperatureData[6]=minTmp;
+	 * 	temperatureData[7]=point1Tmp;
+	 * 	temperatureData[8]=point2Tmp;
+	 * 	temperatureData[9]=point3Tmp;
+	 */
 	private float [] tempSource;
 
 	private int pointNum = 0;
@@ -223,7 +235,7 @@ public class DragTempContainer extends RelativeLayout {
 	private void initView(){
 		drawTempMode = -1;
 		userAdd = new CopyOnWriteArrayList<>();
-		highLowTempLists = new CopyOnWriteArrayList<>();
+		highLowTempLists = new CopyOnWriteArrayList<>();//初始化高低中心点 温度 追踪集合
 		tempSource = new float[256*196+10];
 		minAddWidgetWidth = minAddWidgetHeight = DensityUtil.dp2px(mContext.get(),70);//最小为50个dp
 
@@ -258,6 +270,21 @@ public class DragTempContainer extends RelativeLayout {
 		invalidate();
 	}
 	//查询 分发事件
+
+	/**
+	 * 查询在 绘制页面有没有添加 高温 低温 中心 的点坐标
+	 * @param type
+	 * @return
+	 */
+	public boolean hasOpenToggleByType(int type){
+		if (highLowTempLists.size()==0)return false;
+		for (MyMoveWidget pointChild : highLowTempLists){
+			if (pointChild.getView().getPointTemp().getType()== type){
+				return true;
+			}
+		}
+		return false;
+	}
 
 
 	@Nullable
@@ -530,12 +557,22 @@ public class DragTempContainer extends RelativeLayout {
 	 * @param id 控件的id
 	 */
 	private void addHighLowTempWidget(float x , float y , float temp , int type , int id ){
+//		for (MyMoveWidget obj : highLowTempLists){
+//			if (obj.getView().getPointTemp().getType() == type){
+//				return;
+//			}
+//		}
 		TempWidgetObj highTemp = new TempWidgetObj();
 
 		PointTempWidget high= new PointTempWidget();
-		high.setStartPointX((int) getXByWRatio(x));
-		high.setStartPointY((int) getYByHRatio(y));
-		high.setType(type);//1最高温 ,2 最低温
+		if (type==3){//中心点直接是屏幕的坐标 所以不需要计算数据源的坐标
+			high.setStartPointX(x);
+			high.setStartPointY(y);
+		}else {
+			high.setStartPointX((int) getXByWRatio(x));
+			high.setStartPointY((int) getYByHRatio(y));
+		}
+		high.setType(type);//1最高温 ,2 最低温, 3中心点温度
 		high.setTemp(getTempStrByMode(temp));
 
 		highTemp.setCanMove(false);
@@ -546,28 +583,44 @@ public class DragTempContainer extends RelativeLayout {
 
 		MyMoveWidget highWidget = new MyMoveWidget(mContext.get(),highTemp,screenWidth,screenHeight);
 		highWidget.setFocusable(false);
-//		highWidget.setBackgroundColor(getResources().getColor(R.color.bg_preview_toggle_unselect));
 
 		addView(highWidget);
 		highLowTempLists.add(highWidget);
+		highWidget.requestLayout();
 	}
 
 	/**
 	 * 打开高低温追踪，暴露给外部调用
 	 */
-	public void openHighLowTemp(){
-		addHighLowTempWidget(tempSource[1],tempSource[2],tempSource[3],1,1);
-		addHighLowTempWidget(tempSource[4],tempSource[5],tempSource[6],2,2);
+	public void openHighLowTemp(int type){
+		switch (type){
+			case 1:
+				addHighLowTempWidget(tempSource[1],tempSource[2],tempSource[3],1,1);
+				break;
+			case 2:
+				addHighLowTempWidget(tempSource[4],tempSource[5],tempSource[6],2,2);
+				break;
+			case 3:
+				addHighLowTempWidget(getMeasuredWidth()/2.0f,getMeasuredHeight()/2.0f,tempSource[0],3,3);
+//				if (isDebug)Log.e(TAG, "openHighLowTemp: center point == > " + getMeasuredWidth()/2.0f + "  getMeasuredHeight " + getMeasuredHeight() /2.0f);
+//				if (isDebug)Log.e(TAG, "openHighLowTemp:  size  " + highLowTempLists.size() );
+				break;
+		}
 	}
 
 	/**
 	 * 关闭高低温追踪，暴露给外部调用
 	 */
-	public void closeHighLowTemp(){
+	public void closeHighLowTemp(int type){
+		Log.e(TAG, "openHighLowTemp: center point == > "+  type);
 		for (MyMoveWidget widget: highLowTempLists){
-			removeView(widget);
+			if (widget.getView().getPointTemp().getType() == type){
+				removeView(widget);
+				highLowTempLists.remove(widget);
+				invalidate();
+			}
 		}
-		highLowTempLists.clear();
+		Log.e(TAG, "closeHighLowTemp: highLowLists close before size " + highLowTempLists.size() );
 	}
 
 	/**
@@ -908,16 +961,23 @@ public class DragTempContainer extends RelativeLayout {
 				}
 				//刷新高低温追踪的数据
 				if (highLowTempLists.size()!=0){
-					highLowTempLists.get(0).getView().getPointTemp().setStartPointX((int) getXByWRatio(tempSource[1]));
-					highLowTempLists.get(0).getView().getPointTemp().setStartPointY((int) getYByHRatio(tempSource[2]));
-					highLowTempLists.get(0).getView().getPointTemp().setTemp(getTempStrByMode(tempSource[3]));
-					highLowTempLists.get(0).requestLayout();
-					highLowTempLists.get(0).invalidate();
-
-					highLowTempLists.get(1).getView().getPointTemp().setStartPointX((int) getXByWRatio(tempSource[4]));
-					highLowTempLists.get(1).getView().getPointTemp().setStartPointY((int) getYByHRatio(tempSource[5]));
-					highLowTempLists.get(1).getView().getPointTemp().setTemp(getTempStrByMode(tempSource[6]));
-					highLowTempLists.get(1).requestLayout();
+					for (MyMoveWidget myMoveWidget : highLowTempLists){
+						if (myMoveWidget.getView().getPointTemp().getType() == 1){
+							myMoveWidget.getView().getPointTemp().setStartPointX((int) getXByWRatio(tempSource[1]));
+							myMoveWidget.getView().getPointTemp().setStartPointY((int) getYByHRatio(tempSource[2]));
+							myMoveWidget.getView().getPointTemp().setTemp(getTempStrByMode(tempSource[3]));
+						}
+						if (myMoveWidget.getView().getPointTemp().getType()==2){
+							myMoveWidget.getView().getPointTemp().setStartPointX((int) getXByWRatio(tempSource[4]));
+							myMoveWidget.getView().getPointTemp().setStartPointY((int) getYByHRatio(tempSource[5]));
+							myMoveWidget.getView().getPointTemp().setTemp(getTempStrByMode(tempSource[6]));
+						}
+						if (myMoveWidget.getView().getPointTemp().getType() == 3){
+							myMoveWidget.getView().getPointTemp().setTemp(getTempStrByMode(tempSource[0]));
+						}
+						myMoveWidget.requestLayout();
+						myMoveWidget.invalidate();
+					}
 				}
 				if (userAdd.size()!= 0){//点线测温有数据
 					//todo 更新温度

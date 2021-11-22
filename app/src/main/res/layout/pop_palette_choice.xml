@@ -7,16 +7,15 @@
 
     </data>
 
-    <ScrollView
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+<!--    <ScrollView-->
+<!--        android:orientation="vertical"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:background="@drawable/shape_bg_pop_palette_choice"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <ImageButton
                 android:id="@+id/palette_layout_Tiehong"
@@ -79,5 +78,5 @@
                 android:background="@mipmap/temp_mode_lenglan" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </ScrollView>
+<!--    </ScrollView>-->
 </layout>

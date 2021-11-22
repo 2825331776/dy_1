@@ -195,7 +195,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-<!--            色板-->
+            <!--            切换色板-->
             <CheckBox
                 android:id="@+id/iv_preview_left_palette"
                 android:layout_width="@dimen/dimen_40dp"
@@ -219,7 +219,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/iv_preview_left_palette"
                 tools:ignore="ContentDescription" />
 
-            <!--        测温模式-->
+            <!--        高 低 中心点 温度追踪-->
             <CheckBox
                 android:id="@+id/toggle_show_high_low_temp"
                 android:layout_width="@dimen/dimen_40dp"

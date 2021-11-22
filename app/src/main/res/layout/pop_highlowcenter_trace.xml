@@ -10,32 +10,35 @@
         android:background="@drawable/shape_bg_pop_palette_choice"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <ImageButton
-            android:id="@+id/ib_main_preview_highlowcenter_trace_high"
+        <CheckBox
+            android:id="@+id/cb_main_preview_highlowcenter_trace_high"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:button="@null"
             android:layout_width="@dimen/dimen_40dp"
             android:layout_height="@dimen/dimen_40dp"
             android:layout_marginTop="@dimen/dimen_5dp"
             android:background="@drawable/selector_main_preview_highlowtrace_high" />
-        <ImageButton
-            android:id="@+id/ib_main_preview_highlowcenter_trace_low"
+        <CheckBox
+            android:id="@+id/cb_main_preview_highlowcenter_trace_low"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ib_main_preview_highlowcenter_trace_high"
+            app:layout_constraintTop_toBottomOf="@id/cb_main_preview_highlowcenter_trace_high"
             android:layout_width="@dimen/dimen_40dp"
             android:layout_height="@dimen/dimen_40dp"
             android:layout_marginTop="@dimen/dimen_5dp"
+            android:button="@null"
             android:background="@drawable/selector_main_preview_highlowtrace_low" />
-        <ImageButton
-            android:id="@+id/ib_main_preview_highlowcenter_trace_ceter"
+        <CheckBox
+            android:id="@+id/cb_main_preview_highlowcenter_trace_center"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ib_main_preview_highlowcenter_trace_low"
+            app:layout_constraintTop_toBottomOf="@id/cb_main_preview_highlowcenter_trace_low"
             android:layout_width="@dimen/dimen_40dp"
             android:layout_height="@dimen/dimen_40dp"
             android:layout_marginTop="@dimen/dimen_5dp"
+            android:button="@null"
             android:background="@drawable/selector_main_preview_highlowtrace_center" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

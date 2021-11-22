@@ -159,18 +159,14 @@ void FrameImage::disTempRange() {//在下一帧图像绘制的时候就不会绘
     isshowtemprange = false;
 }
 void FrameImage::fixedTempStripChange(bool state) {
-//    pthread_mutex_lock(&fixed_mutex);
     isNeedFreshAD = true;
     if (state){
         isFixedTempStrip = true;
-//        int result = pthread_create(&fixed_thread,NULL,fixed_thread_func,NULL,(void*) this);
     }
     else{
         isFixedTempStrip = false;
     }
-//    pthread_mutex_unlock(&fixed_mutex);
-//    isFixedTempStrip = state;
-    LOGE(" fixed temp strip  state =  %d" ,isFixedTempStrip);
+//    LOGE(" fixed temp strip  state =  %d" ,isFixedTempStrip);
 }
 void FrameImage::setArea(int *area, int lenght) {//设置区域检查的区域大小
     for(int i=0;i<lenght;i++){

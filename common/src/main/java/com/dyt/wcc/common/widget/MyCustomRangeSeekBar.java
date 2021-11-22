@@ -36,6 +36,7 @@ public class MyCustomRangeSeekBar extends View {
 	private float mMinTemp = 0;
 	private float mViewWidth;
 	private float mViewHeight;
+	private int dataChangeCount = 0;
 
 	private DecimalFormat df = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
 	private static final String MAX_LENGTH_TEMP = "999.9";
@@ -171,7 +172,7 @@ public class MyCustomRangeSeekBar extends View {
 					rangeMinTemp = temp[1];//实时最低温
 					if (widgetMode ==0) {//普通模式
 						mMaxTemp = rangeMaxTemp;//条子的最高温
-						mMinTemp = rangeMinTemp;//控件的最低温
+						mMinTemp = rangeMinTemp;//条子的最低温
 					}else {//固定温度条
 						calculateMaxMin(rangeMaxTemp,rangeMinTemp);
 					}
@@ -191,7 +192,14 @@ public class MyCustomRangeSeekBar extends View {
 	}
 
 	public int getWidgetMode () { return widgetMode; }
-	public void setWidgetMode (int widgetMode) { this.widgetMode = widgetMode; }
+	public void setWidgetMode (int widgetMode) {
+		if (this.widgetMode == 1 && widgetMode ==0){//由固定温度条模式转化为正常模式
+			mPercentSelectedMinValue = 0d;
+			mPercentSelectedMaxValue = 1.0d;
+		}
+		dataChangeCount = 50;
+		this.widgetMode = widgetMode;
+	}
 	public List<Bitmap> getmProgressBarSelectBgList () {
 		return mProgressBarSelectBgList; }
 	public void setmProgressBarSelectBgList (List<Bitmap> mProgressBarSelectBgList) {
@@ -215,7 +223,12 @@ public class MyCustomRangeSeekBar extends View {
 	 */
 	private void calculateMaxMin(float maxTemp ,float minTemp){
 		if (Math.abs(mMaxTemp - maxTemp) < 10 || Math.abs(minTemp - mMinTemp)  < 10 //如果实时高温+15大于了 条子高温， 或者 实时低温减去10 还小于条子低温
-		||Math.abs(mMaxTemp - maxTemp) >= 20 || Math.abs(minTemp - mMinTemp) >= 20) {
+		||Math.abs(mMaxTemp - maxTemp) >= 20 || Math.abs(minTemp - mMinTemp) >= 20 ) {
+			dataChangeCount++;
+		}else {//不满足变化的条件，重置计数器
+			dataChangeCount =0;
+		}
+		if (dataChangeCount >= 50){
 			mMaxTemp = ((int)maxTemp/10)*10 + 20;
 			mMinTemp = ((int)minTemp/10)*10 - 10;
 
@@ -227,6 +240,7 @@ public class MyCustomRangeSeekBar extends View {
 			//回调给View层更改了画面数据。修改C++层的最大最小AD值
 			//todo 计算变化之后的 滑块温度范围 对应的 百分比值。
 			mThumbListener.thumbChanged(getSelectedAbsoluteMaxValue(), getSelectedAbsoluteMinValue(),mThumbMaxTemp,mThumbMinTemp);
+			dataChangeCount = 0;
 		}
 	}
 
