@@ -549,7 +549,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
     }
     //固定温度条
     public void fixedTempStripChange(boolean state) {
-        checkReleased();
+//        checkReleased();
         Message message = Message.obtain();
         message.what = MSG_FIXED_TEMP_STRIP;
         message.obj = state;

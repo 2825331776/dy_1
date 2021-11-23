@@ -90,7 +90,12 @@ public class DragTempContainer extends RelativeLayout {
 
 	//温度数值的模式。0摄氏度， 1华氏度， 2开氏度
 	private int tempSuffixMode  =0;
-	private String []tempSuffixList = new String[]{"℃","℉","K"};
+	/**
+	 * 温度单位 String
+	 * tempSuffixList
+	 * "℃","℉","K"
+	 */
+	public static String []tempSuffixList = new String[]{"℃","℉","K"};
 
 
 	private Paint testPaint;
@@ -387,7 +392,7 @@ public class DragTempContainer extends RelativeLayout {
 	public void setTempSuffix(int suffixType) throws NullPointerException{
 		tempSuffixMode = suffixType;
 		//给滑动条也设置温度单位
-		if (mSeekBar!=null) mSeekBar.setTempUnitText(tempSuffixList[tempSuffixMode]);
+		if (mSeekBar!=null) mSeekBar.setTempUnitText(tempSuffixMode);
 	}
 
 	//更新点的温度
@@ -557,11 +562,6 @@ public class DragTempContainer extends RelativeLayout {
 	 * @param id 控件的id
 	 */
 	private void addHighLowTempWidget(float x , float y , float temp , int type , int id ){
-//		for (MyMoveWidget obj : highLowTempLists){
-//			if (obj.getView().getPointTemp().getType() == type){
-//				return;
-//			}
-//		}
 		TempWidgetObj highTemp = new TempWidgetObj();
 
 		PointTempWidget high= new PointTempWidget();
@@ -957,7 +957,7 @@ public class DragTempContainer extends RelativeLayout {
 				invalidate();//重新绘制
 
 				if (mSeekBar!=null){//更新滑动温度条
-					mSeekBar.Update(getTempByMode(tempSource[3]),getTempByMode(tempSource[6]));
+					mSeekBar.Update(tempSource[3],tempSource[6]);
 				}
 				//刷新高低温追踪的数据
 				if (highLowTempLists.size()!=0){

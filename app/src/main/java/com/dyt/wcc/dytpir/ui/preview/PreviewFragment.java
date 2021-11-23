@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
 import android.os.Environment;
@@ -102,7 +101,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private int mFontSize;
 	private int paletteType , isWatermark ,isTempShow;
 	private String palettePath;
-	private Bitmap mCursorBlue, mCursorRed, mCursorYellow, mCursorGreen, mWatermarkLogo;//显示温度的数据(基础温度数据：最高,最低,中心,LOGO)
+//	private Bitmap mCursorBlue, mCursorRed, mCursorYellow, mCursorGreen, mWatermarkLogo;//显示温度的数据(基础温度数据：最高,最低,中心,LOGO)
 	//customSeekBar
 	private Bitmap tiehong = null, caihong = null, baire = null, heire = null, hongre = null, lenglan = null;
 	private SendCommand mSendCommand;
@@ -269,11 +268,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		palettePath = requireActivity().getExternalFilesDir(null).getAbsolutePath();
 
 		//测温点标志
-		mWatermarkLogo = BitmapFactory.decodeResource(getResources(), R.mipmap.logo);//水印
-		mCursorYellow = BitmapFactory.decodeResource(getResources(), R.mipmap.cursoryellow);
-		mCursorRed = BitmapFactory.decodeResource(getResources(), R.mipmap.cursorred);
-		mCursorBlue = BitmapFactory.decodeResource(getResources(), R.mipmap.cursorblue);
-		mCursorGreen = BitmapFactory.decodeResource(getResources(), R.mipmap.cursorgreen);
+//		mWatermarkLogo = BitmapFactory.decodeResource(getResources(), R.mipmap.logo);//水印
+//		mCursorYellow = BitmapFactory.decodeResource(getResources(), R.mipmap.cursoryellow);
+//		mCursorRed = BitmapFactory.decodeResource(getResources(), R.mipmap.cursorred);
+//		mCursorBlue = BitmapFactory.decodeResource(getResources(), R.mipmap.cursorblue);
+//		mCursorGreen = BitmapFactory.decodeResource(getResources(), R.mipmap.cursorgreen);
 
 		CreateBitmap createBitmap = new CreateBitmap();
 		try {
@@ -378,8 +377,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				if (isDebug)Log.e(TAG, "DD  onCancel: ");
 			}
 		};
-
-//		mUsbMonitor = new USBMonitor(mContext.get(),deviceConnectListener);
 
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
 				,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO,Manifest.permission.RECORD_AUDIO).request(new RequestCallback() {
@@ -497,14 +494,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,0,-mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 
-//					PLRPopupWindows.setOnDismissListener(new PopupWindow.OnDismissListener() {
-//						@Override
-//						public void onDismiss () {
-//							popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceHigh.setChecked(false);
-//							popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceLow.setChecked(false);
-//							popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceCenter.setChecked(false);
-//						}
-//					});
 				}
 			}
 		});
@@ -711,7 +700,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				popSettingBinding.spinnerSettingLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 					@Override
 					public void onItemSelected (AdapterView<?> parent, View view, int position, long id) {
-						Log.e(TAG, "onItemSelected: now " + sp.getInt(DYConstants.LANGUAGE_SETTING,0));
+//						Log.e(TAG, "onItemSelected: now " + sp.getInt(DYConstants.LANGUAGE_SETTING,0));
 						if (position != sp.getInt(DYConstants.LANGUAGE_SETTING,0)){
 							sp.edit().putInt(DYConstants.LANGUAGE_SETTING,position).apply();
 //							Log.e(TAG, "onItemSelected:  changed position == " + position);
@@ -1067,12 +1056,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		 * yes->结束录制。更改录制按钮"录制" （刷新媒体库）& 重置计时器
 		 */
 //				Log.e(TAG, "toRecord: " + MediaProjectionHelper.getInstance().getRecord_State());
-//				if (MediaProjectionHelper.getInstance().getRecord_State() !=0 ){//停止录制
-//					MediaProjectionHelper.getInstance().stopMediaRecorder();
-//					MediaProjectionHelper.getInstance().stopService(mContext.get());
-//				}else {//开始录制
-//					MediaProjectionHelper.getInstance().startService(mContext.get());
-//				}
+		if (MediaProjectionHelper.getInstance().getRecord_State() !=0 ){//停止录制
+			MediaProjectionHelper.getInstance().stopMediaRecorder();
+			MediaProjectionHelper.getInstance().stopService(mContext.get());
+		}else {//开始录制
+			MediaProjectionHelper.getInstance().startService(mContext.get());
+		}
 	}
 
 	/**

@@ -166,7 +166,6 @@
             app:layout_constraintRight_toLeftOf="@id/rl_right_container"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="@dimen/dimen_5dp"
             android:background="@color/bg_preview_right">
 
             <com.dyt.wcc.common.widget.MyCustomRangeSeekBar
