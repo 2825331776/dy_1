@@ -10,10 +10,23 @@ import android.net.Uri;
  * <p>PackagePath: com.dyt.wcc.dytpir.ui.gallry     </p>
  */
 public class GalleryBean {
+	//Uri地址
 	private Uri uriAddress;
+	//绝对地址
 	private String AbsoluteAddress;
+	//类型
 	private int type;
+	//是否被选中
 	private boolean isSelect ;
+	//视频时长
+	private int videoDuration ;
+
+	public int getVideoDuration () {
+		return videoDuration;
+	}
+	public void setVideoDuration (int videoDuration) {
+		this.videoDuration = videoDuration;
+	}
 
 	public boolean isSelect () {
 		return isSelect;

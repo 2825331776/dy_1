@@ -7,111 +7,127 @@
             name="FgGallery"
             type="com.dyt.wcc.dytpir.ui.gallry.GalleryFragment" />
     </data>
-
-    <RelativeLayout
+<!-- android:background="@color/bg_preview_right"-->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:background="@color/bg_preview_right"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include
-            app:FgGallery ="@{FgGallery}"
-            android:id="@+id/include_gallery"
-            layout="@layout/gallery_actionbar"/>
+<!--        Act-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_main_gallery_actionbar"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_50dp">
+<!--            返回按钮-->
+            <ImageView
+                android:id="@+id/iv_back_gallery"
+                android:src="@mipmap/ic_gallery_back_arrow_left"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:scaleType="fitCenter"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="match_parent" />
+<!--标题-->
+            <TextView
+                android:id="@+id/tv_tittle"
+                android:text="@string/MediaBrowser"
+                android:textColor="@color/white"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+<!--工具栏-->
+            <ImageView
+                android:id="@+id/iv_more_gallery"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_width="@dimen/dimen_45dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/dimen_5dp"
+                android:src="@mipmap/ic_gallery_more" />
+
+            <Button
+                android:id="@+id/bt_all_gallery_rightRl"
+                android:layout_width="@dimen/dimen_45dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/dimen_5dp"
+                app:layout_constraintRight_toLeftOf="@id/bt_pic_gallery_rightRl"
+                android:background="@drawable/bg_main_gallery_bt_radius"
+                android:text="@string/MediaBrowser_all" />
+
+            <Button
+                android:id="@+id/bt_pic_gallery_rightRl"
+                android:layout_width="@dimen/dimen_45dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/dimen_5dp"
+                app:layout_constraintRight_toLeftOf="@id/bt_video_gallery_rightRl"
+                android:background="@drawable/bg_main_gallery_bt_radius"
+                android:text="@string/MediaBrowser_pic" />
+
+            <Button
+                android:id="@+id/bt_video_gallery_rightRl"
+                android:layout_width="@dimen/dimen_45dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/dimen_5dp"
+                app:layout_constraintRight_toLeftOf="@id/bt_delete_gallery_rightRl"
+                android:background="@drawable/bg_main_gallery_bt_radius"
+                android:text="@string/MediaBrowser_video" />
+
+            <Button
+                android:id="@+id/bt_delete_gallery_rightRl"
+                android:layout_width="@dimen/dimen_45dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/dimen_5dp"
+                app:layout_constraintRight_toLeftOf="@id/iv_more_gallery"
+                android:background="@drawable/bg_main_gallery_bt_radius"
+                android:text="@string/MediaBrowser_delete" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:id="@+id/cutoff_rule_gallery"
-            android:layout_below="@id/include_gallery"
+            app:layout_constraintTop_toBottomOf="@id/cl_main_gallery_actionbar"
+            android:layout_below="@id/cl_main_gallery_actionbar"
             android:layout_marginTop="@dimen/dimen_2dp"
             android:background="@color/bg_cutoff_rule"
             android:layout_width="match_parent"
-            android:layout_height="1px"/>
+            android:layout_height="@dimen/dimen_1dp"/>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView_gallery"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cutoff_rule_gallery"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/cutoff_rule_gallery"
-            android:layout_alignParentStart="true"
-            android:layout_toStartOf="@id/rl_gallery_right" />
+            android:layout_height="0dp"/>
 
-        <RelativeLayout
-            android:id="@+id/rl_gallery_right"
-            android:layout_below="@id/cutoff_rule_gallery"
-            android:layout_width="@dimen/dimen_150dp"
-            android:layout_alignParentEnd="true"
-            android:layout_height="match_parent">
-            <TextView
-                android:id="@+id/tv_cutLine_rightRl"
-                android:background="@color/bg_cutoff_rule"
-                android:layout_width="@dimen/dimen_2dp"
-                android:layout_height="match_parent"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_gallery_shared_rightRl_1"-->
+<!--                android:layout_width="@dimen/dimen_50dp"-->
+<!--                android:layout_height="@dimen/dimen_50dp"-->
+<!--                android:layout_below="@id/ll_container_gallery_rightRL"-->
+<!--                android:layout_marginStart="@dimen/dimen_25dp"-->
+<!--                android:visibility="gone"-->
+<!--                android:src="@mipmap/appicon" />-->
 
-            <LinearLayout
-                android:id="@+id/ll_container_gallery_rightRL"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen_180dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="@dimen/dimen_10dp">
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_gallery_shared_rightRl_2"-->
+<!--                android:layout_width="@dimen/dimen_50dp"-->
+<!--                android:layout_height="@dimen/dimen_50dp"-->
+<!--                android:layout_below="@id/ll_container_gallery_rightRL"-->
+<!--                android:layout_toEndOf="@id/iv_gallery_shared_rightRl_1"-->
+<!--                android:visibility="gone"-->
+<!--                android:src="@mipmap/appicon" />-->
 
-                <Button
-                    android:id="@+id/bt_all_gallery_rightRl"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen_0dp"
-                    android:layout_margin="@dimen/dimen_5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_main_gallery_bt_radius"
-                    android:text="@string/MediaBrowser_all" />
-
-                <Button
-                    android:id="@+id/bt_pic_gallery_rightRl"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen_0dp"
-                    android:layout_margin="@dimen/dimen_5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_main_gallery_bt_radius"
-                    android:text="@string/MediaBrowser_pic" />
-
-                <Button
-                    android:id="@+id/bt_video_gallery_rightRl"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen_0dp"
-                    android:layout_margin="@dimen/dimen_5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_main_gallery_bt_radius"
-                    android:text="@string/MediaBrowser_video" />
-
-                <Button
-                    android:id="@+id/bt_delete_gallery_rightRl"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen_0dp"
-                    android:layout_margin="@dimen/dimen_5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_main_gallery_bt_radius"
-                    android:text="@string/MediaBrowser_delete" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/iv_gallery_shared_rightRl_1"
-                android:layout_width="@dimen/dimen_50dp"
-                android:layout_height="@dimen/dimen_50dp"
-                android:layout_below="@id/ll_container_gallery_rightRL"
-                android:layout_marginStart="@dimen/dimen_25dp"
-                android:visibility="gone"
-                android:src="@mipmap/appicon" />
-
-            <ImageView
-                android:id="@+id/iv_gallery_shared_rightRl_2"
-                android:layout_width="@dimen/dimen_50dp"
-                android:layout_height="@dimen/dimen_50dp"
-                android:layout_below="@id/ll_container_gallery_rightRL"
-                android:layout_toEndOf="@id/iv_gallery_shared_rightRl_1"
-                android:visibility="gone"
-                android:src="@mipmap/appicon" />
-
-        </RelativeLayout>
-
-
-
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

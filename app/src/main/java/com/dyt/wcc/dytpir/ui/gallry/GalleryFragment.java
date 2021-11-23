@@ -95,7 +95,7 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 				Uri uriAll =  MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 				//查询的数据
 				String [] projection = new String[]{
-						MediaStore.Images.Media._ID ,MediaStore.Images.Media.DATA};
+						MediaStore.Images.Thumbnails._ID ,MediaStore.Images.Thumbnails.DATA};
 				//条件
 				String selection = MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?";
 				//条件参数
@@ -131,7 +131,7 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 
 				Uri uriVideo =  MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 				//查询的数据
-				String [] videoProjection = new String[]{MediaStore.Video.Media._ID ,MediaStore.Video.Media.DATA};
+				String [] videoProjection = new String[]{MediaStore.Video.Media._ID ,MediaStore.Video.Media.DATA ,MediaStore.Video.Media.DURATION};
 				//条件
 				String videoSelection = MediaStore.Video.Media.MIME_TYPE + "=?";
 				//条件参数
@@ -147,6 +147,8 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 				// 获取data字段是第几列，该方法最好在循环之前做好
 				int videoDataIndex = videoCursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
 
+//				int duration = videoCursor.getColumnIndexOrThrow(MediaStore.MediaColumns.)
+
 				while (videoCursor.moveToNext()) {
 					long id = videoCursor.getLong(videoIdIndex);
 					// 获取到每张图片的uri
@@ -154,12 +156,14 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 					//uri转 绝对路径， 如果路径是DYTCamera 结尾，则添加到list
 					// 获取到每张图片的绝对路径
 					String path = videoCursor.getString(videoDataIndex);
+
 					if (path.contains(DYConstants.PIC_PATH)){
 
 						GalleryBean videoBean = new GalleryBean();
 						videoBean.setType(1);
 						videoBean.setAbsoluteAddress(path);
 						videoBean.setUriAddress(imageUri);
+//						videoBean.setVideoDuration();
 
 						imagePathList.add(videoBean);
 					}
@@ -332,7 +336,7 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 		mDataBinding.btDeleteGalleryRightRl.setOnClickListener(this);
 
 		mDataBinding.setFgGallery(this);
-		mDataBinding.includeGallery.ivBackGallery.setOnClickListener(new View.OnClickListener() {
+		mDataBinding.ivBackGallery.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
 				Navigation.findNavController(mDataBinding.getRoot()).navigateUp();
