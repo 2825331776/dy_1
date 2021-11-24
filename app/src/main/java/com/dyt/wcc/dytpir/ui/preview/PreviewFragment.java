@@ -12,6 +12,7 @@ import android.hardware.usb.UsbDevice;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -855,7 +856,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	//初始化录制的相关方法
 	private void initRecord(){
 		if (isDebug)Log.e(TAG, "initRecord: ");
-
 		MediaProjectionHelper.getInstance().setNotificationEngine(new MediaProjectionNotificationEngine() {
 			@Override
 			public Notification getNotification () {
@@ -904,11 +904,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				mContext.get().runOnUiThread(new Runnable() {
 					@Override
 					public void run () {
-//						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.VISIBLE);
-//						mDataBinding.ivPreviewLeftRecord.setImageResource(R.drawable.ic_user_vector_stoprecord_24px);
-//						mDataBinding.chronometerRecordTimeInfo.setBase(SystemClock.elapsedRealtime());
-//						mDataBinding.chronometerRecordTimeInfo.setFormat("%s");
-//						mDataBinding.chronometerRecordTimeInfo.start();
+						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.VISIBLE);
+//						mDataBinding.ivPreviewLeftRecord.setChecked(true);
+						mDataBinding.chronometerRecordTimeInfo.setBase(SystemClock.elapsedRealtime());
+						mDataBinding.chronometerRecordTimeInfo.setFormat("%s");
+						mDataBinding.chronometerRecordTimeInfo.start();
 					}
 				});
 
@@ -917,13 +917,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onStopCounting () {
 				super.onStopCounting();
-
 				mContext.get().runOnUiThread(new Runnable() {
 					@Override
 					public void run () {
-//						mDataBinding.chronometerRecordTimeInfo.stop();
-//						mDataBinding.ivPreviewLeftRecord.setImageResource(R.drawable.ic_user_vector_record_24px);
-//						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.INVISIBLE);
+						mDataBinding.chronometerRecordTimeInfo.stop();
+//						mDataBinding.ivPreviewLeftRecord.setChecked(false);
+						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.INVISIBLE);
 					}
 				});
 

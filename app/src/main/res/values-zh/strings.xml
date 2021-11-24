@@ -37,4 +37,6 @@
 
     <string name="setting_language_chinese">中文</string>
     <string name="setting_language_english">英语</string>
+
+    <string name="value_zero">0</string>
 </resources>

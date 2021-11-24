@@ -38,4 +38,6 @@
 
     <string name="setting_language_chinese">Chinese</string>
     <string name="setting_language_english">English</string>
+
+    <string name="value_zero">0</string>
 </resources>

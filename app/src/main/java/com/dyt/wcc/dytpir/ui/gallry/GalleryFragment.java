@@ -147,7 +147,7 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 				// 获取data字段是第几列，该方法最好在循环之前做好
 				int videoDataIndex = videoCursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
 
-//				int duration = videoCursor.getColumnIndexOrThrow(MediaStore.MediaColumns.)
+				int duration = videoCursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.DURATION);
 
 				while (videoCursor.moveToNext()) {
 					long id = videoCursor.getLong(videoIdIndex);
@@ -156,6 +156,7 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 					//uri转 绝对路径， 如果路径是DYTCamera 结尾，则添加到list
 					// 获取到每张图片的绝对路径
 					String path = videoCursor.getString(videoDataIndex);
+					int durations = videoCursor.getInt(duration);
 
 					if (path.contains(DYConstants.PIC_PATH)){
 
@@ -163,7 +164,7 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 						videoBean.setType(1);
 						videoBean.setAbsoluteAddress(path);
 						videoBean.setUriAddress(imageUri);
-//						videoBean.setVideoDuration();
+						videoBean.setVideoDuration(durations);
 
 						imagePathList.add(videoBean);
 					}
@@ -246,15 +247,18 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 	public void onClick (View v) {
 		switch (v.getId()){
 			case R.id.bt_all_gallery_rightRl:
+//				mDataBinding.btAllGalleryRightRl.setSelected(!mDataBinding.btAllGalleryRightRl.isSelected());
 				selectCondition = 0;
 				getImageList();
 				break;
 			case R.id.bt_pic_gallery_rightRl:
+//				mDataBinding.btPicGalleryRightRl.setSelected(!mDataBinding.btPicGalleryRightRl.isSelected());
 				showList.clear();
 				selectCondition = 1;
 				getImageList();
 				break;
 			case R.id.bt_video_gallery_rightRl:
+//				mDataBinding.btVideoGalleryRightRl.setSelected(!mDataBinding.btVideoGalleryRightRl.isSelected());
 				showList.clear();
 				selectCondition = 2;
 				getImageList();
@@ -335,6 +339,9 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 		mDataBinding.btVideoGalleryRightRl.setOnClickListener(this);
 		mDataBinding.btDeleteGalleryRightRl.setOnClickListener(this);
 
+//		mDataBinding.btAllGalleryRightRl.setSelected(!mDataBinding.btAllGalleryRightRl.isSelected());
+
+
 		mDataBinding.setFgGallery(this);
 		mDataBinding.ivBackGallery.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -343,7 +350,7 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 			}
 		});
 
-		gridLayoutManager = new GridLayoutManager(mContext.get(),4);
+		gridLayoutManager = new GridLayoutManager(mContext.get(),5);
 		galleryAdapter = new GalleryAdapter(mContext.get(),showList);
 
 		mDataBinding.recyclerViewGallery.setLayoutManager(gridLayoutManager);
@@ -371,10 +378,10 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 			}
 		});
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
 			getImageList();
-		}else {
-
-		}
+//		}else {
+//
+//		}
 	}
 }

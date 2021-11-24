@@ -1,13 +1,11 @@
 package com.dyt.wcc.dytpir.ui.gallry;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.dyt.wcc.dytpir.R;
 
+import java.util.Formatter;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -53,23 +53,43 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 		return new GalleryHolder(mInflater.inflate(R.layout.item_photo_gallery, parent, false));
 	}
 
+	public static String stringForTime(int timeMs) {
+		if (timeMs <= 0 || timeMs >= 24 * 60 * 60 * 1000) {
+			return "00:00";
+		}
+		int totalSeconds = timeMs / 1000;
+		int seconds = totalSeconds % 60;
+		int minutes = (totalSeconds / 60) % 60;
+		int hours = totalSeconds / 3600;
+		StringBuilder stringBuilder = new StringBuilder();
+		Formatter mFormatter = new Formatter(stringBuilder, Locale.getDefault());
+		if (hours > 0) {
+			return mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
+		} else {
+			return mFormatter.format("%02d:%02d", minutes, seconds).toString();
+		}
+	}
 
 	@Override
 	public void onBindViewHolder (@NonNull GalleryHolder holder, int position) {
 		if (photoList.get(position).getType() == 0) {
-			holder.iv_item_play.setVisibility(View.GONE);
+			holder.ivItemPlayVideo.setVisibility(View.GONE);
 		}else {
-			holder.iv_item_play.setVisibility(View.VISIBLE);
+			holder.ivItemPlayVideo.setVisibility(View.VISIBLE);
+			holder.tvItemVideoLength.setVisibility(View.VISIBLE);
+			holder.tvItemVideoLength.setTextColor(mContext.getResources().getColor(R.color.white));
+			holder.tvItemVideoLength.setText(stringForTime(photoList.get(position).getVideoDuration()));
 		}
-		holder.cb_item_photo.setChecked(photoList.get(position).isSelect());
-		Glide.with(mContext).load(photoList.get(position).getUriAddress()).into(holder.iv_item_photo);
-		holder.cb_item_photo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		holder.ivItemCheck.setSelected(photoList.get(position).isSelect());
+		Glide.with(mContext).load(photoList.get(position).getUriAddress()).into(holder.ivItemPhoto);
+		holder.ll_main_gallery_item.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
-				Log.e(TAG, "onCheckedChanged: " + isChecked + position);
-				photoList.get(position).setSelect(isChecked);
+			public void onClick (View v) {
+				photoList.get(position).setSelect(!photoList.get(position).isSelect());
+				holder.ivItemCheck.setSelected(photoList.get(position).isSelect());
 			}
 		});
+
 
 		holder.cl_item_container.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -89,22 +109,22 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 		return photoList.size();
 	}
 	static class GalleryHolder extends RecyclerView.ViewHolder{
-		final ImageView        iv_item_photo;
-		final CheckBox         cb_item_photo;
-		final ImageView        iv_item_play;
-		final TextView  tv_video_length;
-		final ConstraintLayout cl_item_container;
+		final ImageView        ivItemPhoto;
+		final ImageView         ivItemCheck;
+		final ImageView        ivItemPlayVideo;
+		final TextView  tvItemVideoLength;
+		final ConstraintLayout cl_item_container;//整个item 父布局
+		final LinearLayout ll_main_gallery_item;//选中框的父布局
 
 
 		public GalleryHolder (@NonNull View itemView) {
 			super(itemView);
 			this.cl_item_container = itemView.findViewById(R.id.cl_item_container);
-			this.iv_item_photo = itemView.findViewById(R.id.iv_item_photo_gallery);
-			this.cb_item_photo = itemView.findViewById(R.id.checkBox_photo_gallery);
-			this.iv_item_play = itemView.findViewById(R.id.iv_play_item_photo_gallery);
-			this.tv_video_length = itemView.findViewById(R.id.tv_video_length);
+			this.ivItemPhoto = itemView.findViewById(R.id.iv_main_gallery_item_photo_gallery);
+			this.ivItemCheck = itemView.findViewById(R.id.iv_main_gallery_item_check);
+			this.ivItemPlayVideo = itemView.findViewById(R.id.iv_main_gallery_item_playVideo);
+			this.tvItemVideoLength = itemView.findViewById(R.id.tv_main_gallery_item_video_length);
+			this.ll_main_gallery_item = itemView.findViewById(R.id.ll_main_gallery_item_check);
 		}
 	}
-
-
 }
