@@ -102,7 +102,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private int mFontSize;
 	private int paletteType , isWatermark ,isTempShow;
 	private String palettePath;
-//	private Bitmap mCursorBlue, mCursorRed, mCursorYellow, mCursorGreen, mWatermarkLogo;//显示温度的数据(基础温度数据：最高,最低,中心,LOGO)
 	//customSeekBar
 	private Bitmap tiehong = null, caihong = null, baire = null, heire = null, hongre = null, lenglan = null;
 	private SendCommand mSendCommand;
@@ -123,7 +122,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 	@Override
 	public void onPause () {
-
 		super.onPause();
 		if (isDebug)Log.e(TAG, "onPause: ");
 	}
@@ -187,6 +185,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		if (!mViewModel.getMUsbMonitor().getValue().isRegistered()){
 			mViewModel.getMUsbMonitor().getValue().register();
 		}
+//		Log.e(TAG, "onResume: before  ===  " +System.currentTimeMillis());
 	}
 	private int setValue(final int flag, final int value) {//设置机芯参数,调用JNI层
 		return mUvcCameraHandler != null ? mUvcCameraHandler.setValue(flag, value) : 0;
@@ -257,6 +256,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 	@Override
 	protected void initView () {
+//		Log.e(TAG, "initView: before" +System.currentTimeMillis());
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
 		mSendCommand = new SendCommand();
 
@@ -268,12 +268,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		//		Log.e(TAG,"===========getExternalFilesDir=========="+this.getExternalFilesDir(null).getAbsolutePath());
 		palettePath = requireActivity().getExternalFilesDir(null).getAbsolutePath();
 
-		//测温点标志
-//		mWatermarkLogo = BitmapFactory.decodeResource(getResources(), R.mipmap.logo);//水印
-//		mCursorYellow = BitmapFactory.decodeResource(getResources(), R.mipmap.cursoryellow);
-//		mCursorRed = BitmapFactory.decodeResource(getResources(), R.mipmap.cursorred);
-//		mCursorBlue = BitmapFactory.decodeResource(getResources(), R.mipmap.cursorblue);
-//		mCursorGreen = BitmapFactory.decodeResource(getResources(), R.mipmap.cursorgreen);
 
 		CreateBitmap createBitmap = new CreateBitmap();
 		try {
@@ -396,21 +390,21 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
 								//判断键入的值是否符合规范,或者提示用户 键入值的规范。
-				if (TextUtils.isEmpty(mDataBinding.etInputTempRightRLContainer.getText().toString())){
-					showToast("请输入高温界限");
-//					Toast.makeText(mContext.get(), ,Toast.LENGTH_SHORT).show();
-//					Log.e(TAG, "onClick: "+ isChecked);
-					mDataBinding.toggleHighTempAlarm.setChecked(false);
-					return;
-				}
-
-				float temp = Float.parseFloat(mDataBinding.etInputTempRightRLContainer.getText().toString());
-				Log.e(TAG, "onClick: temp = >  " + temp);
-				if (isChecked){
-					mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(temp);
-				}else {
-					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
-				}
+//				if (TextUtils.isEmpty(mDataBinding.etInputTempRightRLContainer.getText().toString())){
+//					showToast("请输入高温界限");
+////					Toast.makeText(mContext.get(), ,Toast.LENGTH_SHORT).show();
+////					Log.e(TAG, "onClick: "+ isChecked);
+//					mDataBinding.toggleHighTempAlarm.setChecked(false);
+//					return;
+//				}
+//
+//				float temp = Float.parseFloat(mDataBinding.etInputTempRightRLContainer.getText().toString());
+//				Log.e(TAG, "onClick: temp = >  " + temp);
+//				if (isChecked){
+//					mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(temp);
+//				}else {
+//					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
+//				}
 			}
 		});
 
@@ -783,6 +777,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 		mDataBinding.setPreviewViewModel(mViewModel);
 
+//		Log.e(TAG, "initView: behind =  " +System.currentTimeMillis());
+
 	}
 
 	/**
@@ -935,7 +931,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			allPopupWindows.dismiss();
 		}
 		if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing() &&id <6){
-//			sp.edit().putInt(DYConstants.PALETTE_NUMBER,id).apply();
 			mUvcCameraHandler.setPalette(id+1);
 			mDataBinding.customSeekbarPreviewFragment.setPalette(id);
 			mDataBinding.customSeekbarPreviewFragment.invalidate();//刷新控件
@@ -976,13 +971,13 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		public void onClick (View v) {
 			switch (v.getId()){
 				case R.id.iv_chart_mode_point:
-					if (isDebug)Toast.makeText(mContext.get(),"iv_chart_mode_point ", Toast.LENGTH_SHORT).show();
+//					if (isDebug)Toast.makeText(mContext.get(),"iv_chart_mode_point ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.iv_chart_mode_rectangle:
-					if (isDebug)Toast.makeText(mContext.get(),"iv_chart_mode_rectangle ", Toast.LENGTH_SHORT).show();
+//					if (isDebug)Toast.makeText(mContext.get(),"iv_chart_mode_rectangle ", Toast.LENGTH_SHORT).show();
 					break;
 				case R.id.tv_check_version://版本更新
-					if (isDebug)Toast.makeText(mContext.get(),"company check_version ", Toast.LENGTH_SHORT).show();
+//					if (isDebug)Toast.makeText(mContext.get(),"company check_version ", Toast.LENGTH_SHORT).show();
 					break;
 			}
 		}
@@ -1023,10 +1018,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 				if (allGranted){//拿到权限 去C++ 绘制 传入文件路径path， 点线矩阵
 					//生成一个当前的图片地址：  然后设置一个标识位，标识正截屏 或者 录像中
-					if (!mUvcCameraHandler.isReleased()){
+					if (mUvcCameraHandler != null){
 						String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
-						mUvcCameraHandler.captureStill(picPath);
-						showToast("保存路径为："+picPath );
+//						mUvcCameraHandler.captureStill(picPath);
+						if (mUvcCameraHandler.captureStill(picPath))showToast("保存路径为："+picPath );
+
+
 //						if (isDebug)Log.e(TAG, "onResult: java path === "+ picPath);
 					}else {
 						showToast("请先连接相机");

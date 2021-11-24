@@ -3,7 +3,7 @@
     <string name="app_name">DytSpectrumOwl</string>
     <string name="Gallery">Gallery</string>
     <string name="Welcome">Welcome</string>
-    <string name="MediaBrowser">Media Browser</string>
+    <string name="MediaBrowser">Gallery</string>
 
     <string name="MediaBrowser_all">All</string>
     <string name="MediaBrowser_pic">Picture</string>
@@ -39,5 +39,5 @@
     <string name="setting_language_chinese">Chinese</string>
     <string name="setting_language_english">English</string>
 
-    <string name="value_zero">0</string>
+    <string name="value_zero">0.0</string>
 </resources>

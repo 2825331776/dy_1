@@ -35,9 +35,8 @@
         <ImageView
             android:id="@+id/iv_main_gallery_item_check"
             android:background="@drawable/selector_main_gallery_item_checkbox"
-            android:button="@null"
-            android:layout_width="@dimen/dimen_15dp"
-            android:layout_height="@dimen/dimen_15dp"
+            android:layout_width="@dimen/dimen_25dp"
+            android:layout_height="@dimen/dimen_25dp"
             />
     </LinearLayout>
 

@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 
@@ -87,7 +88,6 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-//				String filePath = DYConstants.PIC_PATH;
 				imagePathList.clear();
 
 				ContentResolver contentResolver = mContext.get().getContentResolver();
@@ -177,41 +177,41 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 		}).start();
 	}
 
-//	@Override
-//	public void onResume () {
-//		super.onResume();
-//		Log.e(TAG, "onResume: ");
-//	}
-//
-//	@Override
-//	public void onStop () {
-//		super.onStop();
-//		Log.e(TAG, "onStop: ");
-//	}
-//
-//	@Override
-//	public void onDestroyView () {
-//		super.onDestroyView();
-//		Log.e(TAG, "onDestroyView: ");
-//	}
-//
-//	@Override
-//	public void onDestroy () {
-//		super.onDestroy();
-//		Log.e(TAG, "onDestroy: ");
-//	}
-//
-//	@Override
-//	public void onDetach () {
-//		super.onDetach();
-//		Log.e(TAG, "onDetach: ");
-//	}
+	@Override
+	public void onResume () {
+		super.onResume();
+		Log.e(TAG, "onResume: ");
+	}
 
-//	@Override
-//	public void onCreate (@Nullable Bundle savedInstanceState) {
-//		super.onCreate(savedInstanceState);
-//		Log.e(TAG, "onCreate: ");
-//	}
+	@Override
+	public void onStop () {
+		super.onStop();
+		Log.e(TAG, "onStop: ");
+	}
+
+	@Override
+	public void onDestroyView () {
+		super.onDestroyView();
+		Log.e(TAG, "onDestroyView: ");
+	}
+
+	@Override
+	public void onDestroy () {
+		super.onDestroy();
+		Log.e(TAG, "onDestroy: ");
+	}
+
+	@Override
+	public void onDetach () {
+		super.onDetach();
+		Log.e(TAG, "onDetach: ");
+	}
+
+	@Override
+	public void onCreate (@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		Log.e(TAG, "onCreate: ");
+	}
 
 	/**
 	 * 检查扩展名，得到图片格式的文件

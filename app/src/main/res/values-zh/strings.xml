@@ -3,7 +3,7 @@
     <string name="app_name">点扬红外</string>
     <string name="Gallery">相册</string>
     <string name="Welcome">欢迎</string>
-    <string name="MediaBrowser">媒体浏览</string>
+    <string name="MediaBrowser">图库</string>
 
     <string name="MediaBrowser_all">全部</string>
     <string name="MediaBrowser_pic">照片</string>
@@ -38,5 +38,5 @@
     <string name="setting_language_chinese">中文</string>
     <string name="setting_language_english">英语</string>
 
-    <string name="value_zero">0</string>
+    <string name="value_zero">0.0</string>
 </resources>

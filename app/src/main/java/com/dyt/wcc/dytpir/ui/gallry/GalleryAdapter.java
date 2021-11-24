@@ -89,8 +89,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 				holder.ivItemCheck.setSelected(photoList.get(position).isSelect());
 			}
 		});
-
-
 		holder.cl_item_container.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {

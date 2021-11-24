@@ -368,6 +368,12 @@ abstract class AbstractUVCCameraHandler extends Handler {
         checkReleased();
         sendEmptyMessage(MSG_CAPTURE_STILL);
     }
+    protected boolean captureStill(final String path) {
+//        checkReleased();
+        if (isReleased())return false;
+        sendMessage(obtainMessage(MSG_CAPTURE_STILL, path));
+        return true;
+    }
 
     public void makeReport() {
         checkReleased();
@@ -389,10 +395,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
     }
 
 
-    protected void captureStill(final String path) {
-        checkReleased();
-        sendMessage(obtainMessage(MSG_CAPTURE_STILL, path));
-    }
+
 
     public void startRecording() {
         checkReleased();
@@ -1332,8 +1335,8 @@ abstract class AbstractUVCCameraHandler extends Handler {
             if (DEBUG) Log.v(TAG_THREAD, "handleCaptureStill:");
             final Activity parent = mWeakParent.get();
             if (parent == null) return;
-
-            mSoundPool.play(mSoundId, 1f, 1f, 1, 1, 1.0f);    // play shutter sound
+    //播放拍照音频
+    //            mSoundPool.play(mSoundId, 1f, 1f, 1, 1, 1.0f);    // play shutter sound
             try {
                 final Bitmap bitmap = mWeakCameraView.get().captureStillImage();
 //                if (mIsTemperaturing) {
