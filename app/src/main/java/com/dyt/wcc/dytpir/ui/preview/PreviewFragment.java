@@ -17,15 +17,18 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -91,6 +94,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private Surface                            stt;
 	private PopupWindow                        PLRPopupWindows;//点线矩形测温弹窗
 	private PopupWindow                        allPopupWindows;
+	private View popView;
 	private Map<String ,Float>                 cameraParams ;
 	private SharedPreferences sp;
 
@@ -115,15 +119,15 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	protected int bindingLayout () {
 		return R.layout.fragment_preview_main;
 	}
-	private void getCameraParams(){//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
-		byte [] tempParams = mUvcCameraHandler.getTemperaturePara(128);
-		cameraParams = ByteUtilsCC.byte2Float(tempParams);
-	}
-
 	@Override
 	public void onPause () {
 		super.onPause();
 		if (isDebug)Log.e(TAG, "onPause: ");
+	}
+
+	private void getCameraParams(){//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
+		byte [] tempParams = mUvcCameraHandler.getTemperaturePara(128);
+		cameraParams = ByteUtilsCC.byte2Float(tempParams);
 	}
 
 	@Override
@@ -429,7 +433,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					allPopupWindows.setHeight(mDataBinding.llContainerPreviewSeekbar.getHeight());
 					allPopupWindows.setWidth(mDataBinding.llContainerPreviewSeekbar.getWidth());
 
-					allPopupWindows.setFocusable(true);
+					allPopupWindows.setFocusable(false);
 					allPopupWindows.setOutsideTouchable(true);
 					allPopupWindows.setTouchable(true);
 
@@ -453,7 +457,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				PLRPopupWindows.setHeight(mDataBinding.llContainerPreviewSeekbar.getHeight());
 				PLRPopupWindows.setWidth(mDataBinding.llContainerPreviewSeekbar.getWidth());
 
-				PLRPopupWindows.setFocusable(true);
+				PLRPopupWindows.setFocusable(false);
 				//				popupWindow.setBackgroundDrawable(getResources().getDrawable(R.mipmap.temp_mode_bg_tempback));
 				PLRPopupWindows.setOutsideTouchable(true);
 				PLRPopupWindows.setTouchable(true);
@@ -483,7 +487,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					PLRPopupWindows.setHeight(mDataBinding.llContainerPreviewSeekbar.getHeight());
 					PLRPopupWindows.setWidth(mDataBinding.llContainerPreviewSeekbar.getWidth());
 
-					PLRPopupWindows.setFocusable(true);
+					PLRPopupWindows.setFocusable(false);
 					PLRPopupWindows.setOutsideTouchable(true);
 					PLRPopupWindows.setTouchable(true);
 
@@ -551,112 +555,146 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				assert popSettingBinding != null;
 				//第二步：将获取的数据 展示在输入框内
 				if (cameraParams != null) {
-					popSettingBinding.etCameraSettingEmittance.setHint(String.valueOf(cameraParams.get("emiss")));
-					popSettingBinding.etCameraSettingDistance.setHint(String.valueOf(cameraParams.get("distance")));
-					popSettingBinding.etCameraSettingReflect.setHint(String.valueOf((cameraParams.get("Refltmp"))));
-					popSettingBinding.etCameraSettingRevise.setHint(String.valueOf(cameraParams.get("Fix")));
-					popSettingBinding.etCameraSettingFreeAirTemp.setHint(String.valueOf(cameraParams.get("Airtmp")));
-					popSettingBinding.etCameraSettingHumidity.setHint(String.valueOf(cameraParams.get("humi")));
+					popSettingBinding.etCameraSettingEmittance.setHint(String.valueOf(cameraParams.get("emiss")));//发射率 0-1
+					popSettingBinding.etCameraSettingDistance.setHint(String.valueOf(cameraParams.get("distance")));//距离 0-5
+					popSettingBinding.etCameraSettingReflect.setHint(String.valueOf((cameraParams.get("Refltmp"))));//反射温度 -10-40
+					popSettingBinding.etCameraSettingRevise.setHint(String.valueOf(cameraParams.get("Fix")));//修正 -3 -3
+					popSettingBinding.etCameraSettingFreeAirTemp.setHint(String.valueOf(cameraParams.get("Airtmp")));//环境温度 -10 -40
+					popSettingBinding.etCameraSettingHumidity.setHint(String.valueOf(cameraParams.get("humi")));//湿度 0-100
 
-					//设置按钮的监听器
-					popSettingBinding.ibCameraSettingDistance.setOnClickListener(v1 -> {// 距离的数值在[0,20]
-						//第一步 校验输入数值。
-						//第二步 设置机芯。
-						//第三步 成功 失败 反馈
-//						Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
-						if (TextUtils.isEmpty(popSettingBinding.etCameraSettingDistance.getText().toString()))return;
-						int value = Integer.parseInt(popSettingBinding.etCameraSettingDistance.getText().toString());
-						if (value > 20 || value < 0){
-							showToast("取值范围[0,20]");
-							return;
-						}
-						byte[] bIputDi = new byte[4];
-						ByteUtil.putInt(bIputDi,value,0);
-						if (mUvcCameraHandler!= null) {
-							mSendCommand.sendShortCommand(5 * 4, bIputDi[0], bIputDi[1], 20, 40, 60);
-//							Toast.makeText(mContext.get(),"距离设置完成",Toast.LENGTH_SHORT).show();
-							showToast("距离设置完成");
-						}
+					//发射率
+					popSettingBinding.etCameraSettingEmittance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+						@Override
+						public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
+							if (actionId == EditorInfo.IME_ACTION_DONE){
+								if (TextUtils.isEmpty(v.getText().toString()))return true;
+								float value = Float.parseFloat(v.getText().toString());
+								if (value > 1 || value < 0){
+									showToast("取值范围为[0,1]");
+									return true;
+								}
+								v.clearFocus();
+								byte[] iputEm = new byte[4];
+								ByteUtil.putFloat(iputEm,value,0);
+								if (mUvcCameraHandler!= null) {
+									mSendCommand.sendFloatCommand(4 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+									showToast("发射率设置完成");
+								}
 
-					});
-					popSettingBinding.ibCameraSettingEmittance.setOnClickListener(v1 -> {// 发射率 [0,1]
-						if (TextUtils.isEmpty(popSettingBinding.etCameraSettingEmittance.getText().toString()))return;
-						float value = Float.parseFloat(popSettingBinding.etCameraSettingEmittance.getText().toString());
-						if (value > 1 || value < 0){
-//							Toast.makeText(mContext.get(),"取值范围为[0,1]",Toast.LENGTH_SHORT).show();
-							showToast("取值范围为[0,1]");
-							return;
-						}
-						byte[] iputEm = new byte[4];
-						ByteUtil.putFloat(iputEm,value,0);
-						if (mUvcCameraHandler!= null) {
-							mSendCommand.sendFloatCommand(4 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
-//							Toast.makeText(mContext.get(),"发射率设置完成",Toast.LENGTH_SHORT).show();
-							showToast("发射率设置完成");
+							}
+							return true;
 						}
 					});
-					popSettingBinding.ibCameraSettingFreeAirTemp.setOnClickListener(v1 -> {//环境温度 [-10,40]
-						if (TextUtils.isEmpty(popSettingBinding.etCameraSettingFreeAirTemp.getText().toString()))return;
-						float value = Float.parseFloat(popSettingBinding.etCameraSettingFreeAirTemp.getText().toString());
-						if (value > 40 || value < -10){
-//							Toast.makeText(mContext.get(),"取值范围[-10,40]",Toast.LENGTH_SHORT).show();
-							showToast("取值范围[-10,40]");
-							return;
-						}
-						byte[] iputEm = new byte[4];
-						ByteUtil.putFloat(iputEm,value,0);
-						if (mUvcCameraHandler!= null) {
-							mSendCommand.sendFloatCommand(2 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
-//							Toast.makeText(mContext.get(),"环境温度设置完成",Toast.LENGTH_SHORT).show();
-							showToast("环境温度设置完成");
-						}
-					});
-					popSettingBinding.ibCameraSettingHumidity.setOnClickListener(v1 -> {//湿度 [0,1]
-						if (TextUtils.isEmpty(popSettingBinding.etCameraSettingHumidity.getText().toString()))return;
-						float value = Float.parseFloat(popSettingBinding.etCameraSettingHumidity.getText().toString());
-						if (value > 1 || value < 0){
-//							Toast.makeText(mContext.get(),"取值范围[0,1]",Toast.LENGTH_SHORT).show();
-							showToast("取值范围[0,1]");
-							return;
-						}
-						byte[] iputEm = new byte[4];
-						ByteUtil.putFloat(iputEm,value,0);
-						if (mUvcCameraHandler!= null) {
-							mSendCommand.sendFloatCommand(3 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
-//							Toast.makeText(mContext.get(),"湿度设置完成",Toast.LENGTH_SHORT).show();
-							showToast("湿度设置完成");
+					//距离设置
+					popSettingBinding.etCameraSettingDistance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+						@Override
+						public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
+							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+							if (actionId == EditorInfo.IME_ACTION_DONE){
+								if (TextUtils.isEmpty(v.getText().toString()))return true;
+								int value = Integer.parseInt(v.getText().toString());
+								if (value > 5 || value < 0){
+									showToast("取值范围(0-5)");
+									return true;
+								}
+								byte[] bIputDi = new byte[4];
+								ByteUtil.putInt(bIputDi,value,0);
+								if (mUvcCameraHandler!= null) {
+									mSendCommand.sendShortCommand(5 * 4, bIputDi[0], bIputDi[1], 20, 40, 60);
+									showToast("距离设置完成");
+								}
+							}
+							return true;
 						}
 					});
-					popSettingBinding.ibCameraSettingReflect.setOnClickListener(v1 -> {//反射温度 [-10,40]
-						if (TextUtils.isEmpty(popSettingBinding.etCameraSettingReflect.getText().toString()))return;
-						float value = Float.parseFloat(popSettingBinding.etCameraSettingReflect.getText().toString());
-						if (value > 40 || value < -10){
-//							Toast.makeText(mContext.get(),"取值范围[-10,40]",Toast.LENGTH_SHORT).show();
-							showToast("取值范围[-10,40]");
-							return;
-						}
-						byte[] iputEm = new byte[4];
-						ByteUtil.putFloat(iputEm,value,0);
-						if (mUvcCameraHandler!= null) {
-							mSendCommand.sendFloatCommand(1 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
-//							Toast.makeText(mContext.get(),"反射温度设置完成",Toast.LENGTH_SHORT).show();
-							showToast("反射温度设置完成");
+		//反射温度设置
+					popSettingBinding.etCameraSettingReflect.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+						@Override
+						public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
+							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+							if (actionId == EditorInfo.IME_ACTION_DONE){
+								if (TextUtils.isEmpty(v.getText().toString()))return true;
+								float value = Float.parseFloat(v.getText().toString());
+								if (value > 40 || value < -10){
+									showToast("取值范围(-10-40)");
+									return true;
+								}
+								byte[] iputEm = new byte[4];
+								ByteUtil.putFloat(iputEm,value,0);
+								if (mUvcCameraHandler!= null) {
+									mSendCommand.sendFloatCommand(1 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+									showToast("反射温度设置完成");
+								}
+							}
+							return true;
 						}
 					});
-					popSettingBinding.ibCameraSettingRevise.setOnClickListener(v1 -> {//校正 [-3,3]
-						if (TextUtils.isEmpty(popSettingBinding.etCameraSettingRevise.getText().toString()))return;
-						float value = Float.parseFloat(popSettingBinding.etCameraSettingRevise.getText().toString());
-						if (value > 3 || value < -3){
-//							Toast.makeText(mContext.get(),"取值范围[-3,3]",Toast.LENGTH_SHORT).show();
-							showToast("取值范围[-3,3]");
-							return;
+
+					//校正设置
+					popSettingBinding.etCameraSettingRevise.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+						@Override
+						public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
+							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+							if (actionId == EditorInfo.IME_ACTION_DONE){
+								if (TextUtils.isEmpty(v.getText().toString()))return true;
+								float value = Float.parseFloat(v.getText().toString());
+								if (value > 3 || value < -3){
+									showToast("取值范围(-3-3)");
+									return true;
+								}
+								byte[] iputEm = new byte[4];
+								ByteUtil.putFloat(iputEm,value,0);
+								if (mUvcCameraHandler!= null) {
+									mSendCommand.sendFloatCommand(0 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+									showToast("校正设置完成");
+								}
+							}
+							return true;
 						}
-						byte[] iputEm = new byte[4];
-						ByteUtil.putFloat(iputEm,value,0);
-						if (mUvcCameraHandler!= null) {
-							mSendCommand.sendFloatCommand(0 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
-//							Toast.makeText(mContext.get(),"校正设置完成",Toast.LENGTH_SHORT).show();
-							showToast("校正设置完成");
+					});
+					//环境温度设置
+					popSettingBinding.etCameraSettingFreeAirTemp.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+						@Override
+						public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
+							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+							if (actionId == EditorInfo.IME_ACTION_DONE){
+								if (TextUtils.isEmpty(v.getText().toString()))return true;
+								float value = Float.parseFloat(v.getText().toString());
+								if (value > 40 || value < -10){
+									showToast("取值范围(-10-40)");
+									return true;
+								}
+								byte[] iputEm = new byte[4];
+								ByteUtil.putFloat(iputEm,value,0);
+								if (mUvcCameraHandler!= null) {
+									mSendCommand.sendFloatCommand(2 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+									showToast("环境温度设置完成");
+								}
+							}
+							return true;
+						}
+					});
+					//湿度设置
+					popSettingBinding.etCameraSettingHumidity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+						@Override
+						public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
+							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+							if (actionId == EditorInfo.IME_ACTION_DONE){
+								if (TextUtils.isEmpty(v.getText().toString()))return true;
+								int value = Integer.parseInt(v.getText().toString());
+								if (value > 100 || value < 0){
+									showToast("取值范围(0-100)");
+									return true;
+								}
+								float fvalue = value/100.0f;
+								byte[] iputEm = new byte[4];
+								ByteUtil.putFloat(iputEm,fvalue,0);
+								if (mUvcCameraHandler!= null) {
+									mSendCommand.sendFloatCommand(3 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+									showToast("湿度设置完成");
+								}
+							}
+							return true;
 						}
 					});
 				}
@@ -685,6 +723,14 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				//第四步：显示控件
 				popupWindow.showAsDropDown(mDataBinding.flPreview,15,-popupWindow.getHeight()-20, Gravity.CENTER);
 				// 切换语言 spinner
+
+//				popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+//					@Override
+//					public void onDismiss () {
+//						InputMethodManager imm = (InputMethodManager) mContext.get().getSystemService(MainActivity.INPUT_METHOD_SERVICE);
+//						imm.hideSoftInputFromWindow(popupWindow.getContentView().getWindowToken(), 0);
+//					}
+//				});
 
 				ArrayAdapter<String> adapterSpinner = new ArrayAdapter<String>(mContext.get(),R.layout.item_select, DYConstants.languageArray);
 				adapterSpinner.setDropDownViewResource(R.layout.item_dropdown);
@@ -834,17 +880,17 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				case R.id.iv_temp_mode_point:
 					PLRPopupWindows.dismiss();
 					mDataBinding.dragTempContainerPreviewFragment.setDrawTempMode(1);
-					if (isDebug)showToast("point ");
+//					if (isDebug)showToast("point ");
 					break;
 				case R.id.iv_temp_mode_line:
 					PLRPopupWindows.dismiss();
 					mDataBinding.dragTempContainerPreviewFragment.setDrawTempMode(2);
-					if (isDebug)showToast("line ");
+//					if (isDebug)showToast("line ");
 					break;
 				case R.id.iv_temp_mode_rectangle:
 					PLRPopupWindows.dismiss();
 					mDataBinding.dragTempContainerPreviewFragment.setDrawTempMode(3);
-					if (isDebug)showToast("rectangle ");
+//					if (isDebug)showToast("rectangle ");
 					break;
 			}
 		}

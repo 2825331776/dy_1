@@ -370,12 +370,8 @@ public class MyCustomRangeSeekBar extends View {
 		return (float) ((getHeight() - 2* topBottomPadding) * TempToPercent(temp));
 	}
 
-
-
 	public MyCustomRangeSeekBar (Context context) {
 		super(context);
-
-
 	}
 
 	public MyCustomRangeSeekBar (Context context, @Nullable AttributeSet attrs) {
@@ -500,12 +496,12 @@ public class MyCustomRangeSeekBar extends View {
 		//绘制温度单位。
 		canvas.drawText(DragTempContainer.tempSuffixList[tempUnitMode],
 				maxTempTextLength+ realTimeHighLowPicWidth + seekbarWidth/2.0f - mPaint.measureText(DragTempContainer.tempSuffixList[tempUnitMode])
-				,maxTempTextRect.height() - mPaint.ascent(),mPaint);
+				,maxTempTextRect.height()+mPaint.descent(),mPaint);
 		//绘制顶部最高温、底部最低温
 		canvas.drawText(Float2Str(mMaxTemp), maxTempTextLength+ realTimeHighLowPicWidth + (seekbarWidth - maxTempTextLength)/2,
-				 topBottomPadding - mThumbHeight,mPaint);
+				 maxTempTextRect.height()*2-mPaint.ascent(),mPaint);
 		canvas.drawText(Float2Str(mMinTemp), maxTempTextLength+ realTimeHighLowPicWidth + (seekbarWidth - maxTempTextLength)/2,
-				getHeight() - topBottomPadding + (mThumbHeight - mPaint.getFontMetrics().bottom) - mPaint.ascent(),mPaint);
+				getHeight() - maxTempTextRect.height()*2- mPaint.descent(),mPaint);
 		//绘制滑块最高温、最低温
 		//计算滑块文字的X轴位置：(mthumbwidth- mpaint.measuretext("maxtempStr"))/2
 //		Math.abs((mThumbWidth-20) - mPaint.measureText(Float2Str(mThumbMaxTemp)))/2

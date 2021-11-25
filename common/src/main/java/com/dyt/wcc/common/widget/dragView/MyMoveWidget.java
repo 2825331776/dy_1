@@ -165,7 +165,7 @@ public class MyMoveWidget extends View {
 		pointTextPaint.setStrokeWidth(2);
 		pointTextPaint.setTextSize(DensityUtil.dp2px(mContext,tempWidgetData.getTempTextSize()));
 		pointTextPaint.setColor(getResources().getColor(R.color.bg_preview_toggle_select,null));
-		pointTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
+//		pointTextPaint.setTypeface(Typeface.FILL_AND_STROKE);
 
 		if (tempWidgetData.getType()==1){//点模式
 			if (tempWidgetData.getPointTemp().getType()==1){//高温点

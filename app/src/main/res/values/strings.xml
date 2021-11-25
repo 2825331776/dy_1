@@ -16,7 +16,7 @@
     <string name="FixeTempBar">FixeTempBar</string>
     <string name="DynamicTempBar">DynamicTempBar</string>
 
-    <string name="AlarmTempInput">HighTemp Input</string>
+    <string name="AlarmTempInput">Input</string>
 
     <string name="CheckLatestVersion">Check the latest version</string>
     <string name="VersionName">Version Name：</string>
@@ -26,15 +26,16 @@
 
     <!--    设置页-->
     <string name="SettingGeneral">General</string>
-    <string name="SettingLanguage">Language :</string>
-    <string name="SettingTemperatureUnit">Temperature Unit :</string>
-    <string name="SettingCameraParams">Camera Params</string>
-    <string name="SettingCameraParams_Emittance">Emittance :</string>
-    <string name="SettingCameraParams_Distance">Distance :</string>
-    <string name="SettingCameraParams_ReflectTemp">Reflect Temp :</string>
-    <string name="SettingCameraParams_Revise">Revise:</string>
-    <string name="SettingCameraParams_FreeAirTemp">Free Air Temperature :</string>
-    <string name="SettingCameraParams_Humidity">Humidity :</string>
+    <string name="SettingLanguage">Language</string>
+    <string name="SettingTemperatureUnit">Temperature Unit</string>
+    <string name="SettingIsRecordAudio">Record with Audio</string>
+    <string name="SettingCameraParams">Thermal Parameters</string>
+    <string name="SettingCameraParams_Emittance">Emissivity (0.01–1.00)</string>
+    <string name="SettingCameraParams_Distance">Distance (0–5)</string>
+    <string name="SettingCameraParams_ReflectTemp">Reflection Temperature</string>
+    <string name="SettingCameraParams_Revise">Temperature Adjustment</string>
+    <string name="SettingCameraParams_FreeAirTemp">Ambient Temperature</string>
+    <string name="SettingCameraParams_Humidity">Humidity (0–100)</string>
 
     <string name="setting_language_chinese">Chinese</string>
     <string name="setting_language_english">English</string>

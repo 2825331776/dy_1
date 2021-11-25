@@ -17,8 +17,8 @@
 <!--    布局右侧按钮颜色-->
     <color name="bg_preview_toggle_select">#FF4AD662</color>
     <color name="bg_preview_toggle_unselect">#FFDDDDDD</color>
-
-    <color name="bg_three_choice_one">#FF41C7DB</color>
+<!--    设置界面：选择温度单位的颜色-->
+    <color name="bg_three_choice_one">#81D8CF</color>
 
 
     <color name="bg_move_layout_round_bg">#66797B78</color>

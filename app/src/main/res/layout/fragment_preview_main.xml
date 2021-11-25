@@ -198,7 +198,7 @@
         <FrameLayout
             android:id="@+id/fl_preview"
             app:layout_constraintLeft_toRightOf="@id/gl_main_left"
-            app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"
+            app:layout_constraintRight_toLeftOf="@id/tv_line2"
             android:layout_width="@dimen/dimen_0dp"
             android:layout_height="match_parent">
 
@@ -215,6 +215,7 @@
 
         </FrameLayout>
 
+<!--        计时器-->
         <Chronometer
             app:layout_constraintLeft_toRightOf="@id/gl_main_left"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -225,6 +226,14 @@
             android:visibility="invisible"
             android:textColor="@color/red"
             android:textSize="20sp" />
+<!--        分割线-->
+        <TextView
+            android:id="@+id/tv_line2"
+            app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"
+            android:layout_marginEnd="@dimen/dimen_1dp"
+            android:layout_width="@dimen/dimen_1dp"
+            android:layout_height="match_parent"
+            android:background="@color/bg_preview_left_cutoff_rule"/>
 
 <!--        拖动条布局-->
         <LinearLayout
@@ -237,10 +246,6 @@
             android:orientation="horizontal"
             android:gravity="center"
             android:background="@color/bg_preview_right">
-            <TextView
-                android:layout_width="@dimen/dimen_1dp"
-                android:layout_height="match_parent"
-                android:background="@color/bg_preview_left_cutoff_rule"/>
 
             <com.dyt.wcc.common.widget.MyCustomRangeSeekBar
                 android:id="@+id/custom_seekbar_preview_fragment"
