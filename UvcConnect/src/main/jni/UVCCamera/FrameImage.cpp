@@ -173,6 +173,11 @@ void FrameImage::setArea(int *area, int lenght) {//设置区域检查的区域�
         mCheckArea[i]=*(area + i);
     }
     areasize=lenght;
+    if (areasize > 0){
+        setAreaCheck(true);
+    } else{
+        setAreaCheck(false);
+    }
 }
 void FrameImage::setAreaCheck(int isAreaCheck) {//是否设置区域检查
     if(isAreaCheck){
@@ -335,22 +340,49 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
 
     //框内细查 先绘制灰度图,根据原有的ad值
     if (mIsAreachecked){
-        for (int i = 0; i < requestHeight - 4; i++) {
-            for (int j = 0; j < requestWidth; j++) {
-                int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
-                if (gray < 0) {
-                    gray = 0;
+        int loopnum=areasize/4;
+
+        if (loopnum != 0){//有框
+            for (int i = 0; i < requestHeight - 4; i++) {
+                for (int j = 0; j < requestWidth; j++) {
+                    int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
+                    if (gray < 0) {
+                        gray = 0;
+                    }
+                    if (gray > 255) {
+                        gray = 255;
+                    }
+                    mBuffer[4 * (i * requestWidth + j)] = gray;
+                    mBuffer[4 * (i * requestWidth + j) + 1] = gray;
+                    mBuffer[4 * (i * requestWidth + j) + 2] = gray;
+                    mBuffer[4 * (i * requestWidth + j) + 3] = 1;
                 }
-                if (gray > 255) {
-                    gray = 255;
+            }
+        } else{//无框。直接渲染成 彩色
+            for (int i = 0; i < requestHeight - 4; i++) {
+                for (int j = 0; j < requestWidth; j++) {
+//              LOGE("this requestHeight and requestwidth==============%d========================%d",requestHeight,requestWidth);
+                    //黑白：灰度值0-254单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
+//              LOGE("====================%d======================",tmp_buf[i * requestWidth + j]);
+                    int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
+                    if (gray < 0) {
+                        gray = 0;
+                    }
+                    if (gray > 255) {
+                        gray = 255;
+                    }
+                    int paletteNum = 3 * gray;
+                    mBuffer[4 * (i * requestWidth +
+                                 j)] = (unsigned char) currentpalette[paletteNum];
+                    mBuffer[4 * (i * requestWidth + j) + 1] = (unsigned char) currentpalette[
+                            paletteNum + 1];
+                    mBuffer[4 * (i * requestWidth + j) + 2] = (unsigned char) currentpalette[
+                            paletteNum + 2];
+                    mBuffer[4 * (i * requestWidth + j) + 3] = 1;
                 }
-                mBuffer[4 * (i * requestWidth + j)] = gray;
-                mBuffer[4 * (i * requestWidth + j) + 1] = gray;
-                mBuffer[4 * (i * requestWidth + j) + 2] = gray;
-                mBuffer[4 * (i * requestWidth + j) + 3] = 1;
             }
         }
-        int loopnum=areasize/4;
+
         for(int m=0;m<loopnum;m++){//渲染区域 为框内
             for (int i = mCheckArea[4 * m + 2]; i < mCheckArea[4 * m + 3]; i++) {
                 for (int j = mCheckArea[4 * m]; j < mCheckArea[4 * m + 1]; j++) {

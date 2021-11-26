@@ -905,8 +905,13 @@ public class DragTempContainer extends RelativeLayout {
 						endPressY = (int) event.getY();
 //					}
 
-					if (drawTempMode == 2 || drawTempMode ==3){
+					if (drawTempMode == 2){
 						createLineOrRecView();
+					}else if (drawTempMode ==3){
+						createLineOrRecView();
+						if (mChildToolsClickListener!=null){
+							mChildToolsClickListener.onRectChangedListener();
+						}
 					}else if (drawTempMode ==1) {
 							createPointView();
 					}

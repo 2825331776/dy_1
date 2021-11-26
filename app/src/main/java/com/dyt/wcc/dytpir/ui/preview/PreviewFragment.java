@@ -27,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -207,7 +208,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.customSeekbarPreviewFragment.setmThumbListener(new MyCustomRangeSeekBar.ThumbListener() {
 			@Override
 			public void thumbChanged (float maxPercent, float minPercent,float maxValue, float minValue) {
-				if (mUvcCameraHandler!= null)mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
+				if (mUvcCameraHandler!= null &&!Float.isNaN(maxValue) && !Float.isNaN(minValue))mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
 			}
 
 			@Override
@@ -232,15 +233,16 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onMinMove (float maxPercent, float minPercent,float maxValue, float minValue) {
 //				if (isDebug)Log.e(TAG, "onMinMove: 0-100 percent " + maxPercent + " min == > " +  minPercent);
-//				if (isDebug)Log.e(TAG, "onMinMove: value " + maxValue + " min == > " +  minValue);
-				if (mUvcCameraHandler!= null)mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
+				if (isDebug)Log.e(TAG, "onMinMove: value == >" + maxValue + " min == > " +  minValue);
+				if (mUvcCameraHandler!= null && !Float.isNaN(maxValue) && !Float.isNaN(minValue))mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
 			}
 
 			@Override
 			public void onMaxMove (float maxPercent, float minPercent,float maxValue, float minValue) {
 //				if (isDebug)Log.e(TAG, "onMaxMove: 0-100 percent" + maxPercent + " min == > " +  minPercent);
-//				if (isDebug)Log.e(TAG, "onMaxMove: value " + maxValue + " min == > " +  minValue);
-				if (mUvcCameraHandler!= null)mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
+				if (isDebug)Log.e(TAG, "onMaxMove: value == > " + maxValue + " min == > " +  minValue);
+				// && maxValue != Float.NaN && minValue != Float.NaN
+				if (mUvcCameraHandler!= null&& !Float.isNaN(maxValue) && !Float.isNaN(minValue))mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
 			}
 		});
 
@@ -393,6 +395,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.toggleHighTempAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
+				if (isChecked)mDataBinding.toggleHighTempAlarm.setChecked(false);
 								//判断键入的值是否符合规范,或者提示用户 键入值的规范。
 //				if (TextUtils.isEmpty(mDataBinding.etInputTempRightRLContainer.getText().toString())){
 //					showToast("请输入高温界限");
@@ -408,6 +411,38 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //					mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(temp);
 //				}else {
 //					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
+//				}
+
+//				if (isResumed()){
+//					View overTempChoiceView = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_overtemp_alarm,null);
+//					PopOvertempAlarmBinding overTempBinding = DataBindingUtil.bind(overTempChoiceView);
+//					assert overTempBinding != null;
+//					//init numberPicker
+//					overTempBinding.numberPickerHundredsMainPreviewOverTempPop.setMinValue(0);
+//					overTempBinding.numberPickerHundredsMainPreviewOverTempPop.setMinValue(9);
+////					overTempBinding.numberPickerHundredsMainPreviewOverTempPop.setText
+//					overTempBinding.numberPickerDecimalMainPreviewOverTempPop.setMinValue(0);
+//					overTempBinding.numberPickerDecimalMainPreviewOverTempPop.setMinValue(9);
+//					overTempBinding.numberPickerUnitMainPreviewOverTempPop.setMinValue(0);
+//					overTempBinding.numberPickerUnitMainPreviewOverTempPop.setMinValue(9);
+//					overTempBinding.numberPickerDecadeMainPreviewOverTempPop.setMinValue(0);
+//					overTempBinding.numberPickerDecadeMainPreviewOverTempPop.setMinValue(9);
+//
+//					overTempBinding.numberPickerHundredsMainPreviewOverTempPop.setOnValueChangedListener(valueChangeListener);
+//					overTempBinding.numberPickerDecimalMainPreviewOverTempPop.setOnValueChangedListener(valueChangeListener);
+//					overTempBinding.numberPickerUnitMainPreviewOverTempPop.setOnValueChangedListener(valueChangeListener);
+//					overTempBinding.numberPickerDecadeMainPreviewOverTempPop.setOnValueChangedListener(valueChangeListener);
+//					//init NumberPicker Data
+//
+//					//showPopWindows
+//					allPopupWindows = new PopupWindow(overTempChoiceView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//					allPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
+//
+//					allPopupWindows.setFocusable(false);
+//					allPopupWindows.setOutsideTouchable(true);
+//					allPopupWindows.setTouchable(true);
+//
+//					allPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,0,-mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 //				}
 			}
 		});
@@ -555,12 +590,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				assert popSettingBinding != null;
 				//第二步：将获取的数据 展示在输入框内
 				if (cameraParams != null) {
-					popSettingBinding.etCameraSettingEmittance.setHint(String.valueOf(cameraParams.get("emiss")));//发射率 0-1
-					popSettingBinding.etCameraSettingDistance.setHint(String.valueOf(cameraParams.get("distance")));//距离 0-5
-					popSettingBinding.etCameraSettingReflect.setHint(String.valueOf((cameraParams.get("Refltmp"))));//反射温度 -10-40
-					popSettingBinding.etCameraSettingRevise.setHint(String.valueOf(cameraParams.get("Fix")));//修正 -3 -3
-					popSettingBinding.etCameraSettingFreeAirTemp.setHint(String.valueOf(cameraParams.get("Airtmp")));//环境温度 -10 -40
-					popSettingBinding.etCameraSettingHumidity.setHint(String.valueOf(cameraParams.get("humi")));//湿度 0-100
+					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(cameraParams.get("emiss")));//发射率 0-1
+					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(cameraParams.get("distance")));//距离 0-5
+					popSettingBinding.etCameraSettingReflect.setText(String.valueOf((cameraParams.get("Refltmp"))));//反射温度 -10-40
+					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(cameraParams.get("Fix")));//修正 -3 -3
+					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf(cameraParams.get("Airtmp")));//环境温度 -10 -40
+					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int)(cameraParams.get("humi")*100)));//湿度 0-100
 
 					//发射率
 					popSettingBinding.etCameraSettingEmittance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -982,6 +1017,14 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			mDataBinding.customSeekbarPreviewFragment.invalidate();//刷新控件
 		}
 	}
+	//超温警告页面 数值变化监听器
+	NumberPicker.OnValueChangeListener valueChangeListener = new NumberPicker.OnValueChangeListener() {
+		@Override
+		public void onValueChange (NumberPicker picker, int oldVal, int newVal) {
+
+		}
+	};
+
 	//温度度量模式切换
 	View.OnClickListener paletteChoiceListener = v -> {
 		switch (v.getId()){

@@ -83,6 +83,14 @@
 <!--                android:layout_marginStart="@dimen/dimen_20dp"-->
 <!--                android:layout_width="wrap_content"-->
 <!--                android:layout_height="wrap_content"/>-->
+            <Button
+                android:id="@+id/bt_main_preview_setting_choice_language"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintRight_toLeftOf="@id/gl_setting_content"
+                app:layout_constraintTop_toTopOf="@id/tv_language"
+                app:layout_constraintBottom_toBottomOf="@id/tv_language"/>
 
             <Spinner
                 android:id="@+id/spinner_setting_language"
@@ -209,7 +217,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_emittance"
                 app:layout_constraintRight_toLeftOf="@id/gl_setting_content"
                 android:gravity="center"
-                android:hint="@string/value_zero"
+                android:text="@string/value_zero"
                 android:textColorHint="@color/white"
                 android:textColor="@color/white"
                 android:textSize="16sp"
@@ -259,7 +267,7 @@
                 app:layout_constraintRight_toLeftOf="@id/gl_setting_content"
                 android:layout_marginStart="@dimen/dimen_10dp"
                 android:gravity="center"
-                android:hint="@string/value_zero"
+                android:text="@string/value_zero"
                 android:textColorHint="@color/white"
                 android:textColor="@color/white"
                 android:textSize="16sp"
@@ -298,7 +306,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_freeAirTemp"
                 app:layout_constraintRight_toLeftOf="@id/gl_setting_content"
                 android:layout_marginStart="@dimen/dimen_10dp"
-                android:hint="@string/value_zero"
+                android:text="@string/value_zero"
                 android:textColorHint="@color/white"
                 android:gravity="center"
                 android:textColor="@color/white"
@@ -339,7 +347,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_humidity"
                 app:layout_constraintRight_toLeftOf="@id/gl_setting_content"
                 android:layout_marginStart="@dimen/dimen_10dp"
-                android:hint="@string/value_zero"
+                android:text="@string/value_zero"
                 android:gravity="center"
                 android:textColorHint="@color/white"
                 android:textColor="@color/white"
@@ -380,7 +388,7 @@
                 app:layout_constraintRight_toLeftOf="@id/gl_setting_content"
                 android:layout_marginStart="@dimen/dimen_10dp"
                 android:gravity="center"
-                android:hint="@string/value_zero"
+                android:text="@string/value_zero"
                 android:textColorHint="@color/white"
                 android:textColor="@color/white"
                 android:textSize="16sp"
@@ -420,7 +428,7 @@
                 app:layout_constraintRight_toLeftOf="@id/gl_setting_content"
                 android:layout_marginStart="@dimen/dimen_10dp"
                 android:gravity="center"
-                android:hint="@string/value_zero"
+                android:text="@string/value_zero"
                 android:textColorHint="@color/white"
                 android:textColor="@color/white"
                 android:textSize="16sp"

@@ -113,8 +113,6 @@ public class MyCustomRangeSeekBar extends View {
 	private ThumbListener            mThumbListener;
 	public static final int UPDATE_VALUE = 1005;
 
-
-
 	private final Paint mPaint = new Paint();
 
 	//控件最小高度
@@ -126,8 +124,8 @@ public class MyCustomRangeSeekBar extends View {
 	private float seekbarWidth;
 	//实时温度 图片的宽度
 	private int realTimeHighLowPicWidth;
-//	//滑动块的宽度
-//	private int highLowThumbWidth;
+	private static float MAX_TEMP = 500.0f;
+	private static float MIN_TEMP = -100.0f;
 
 	/**
 	 * Thumb枚举， 最大或最小
@@ -197,6 +195,13 @@ public class MyCustomRangeSeekBar extends View {
 					float[] temp = (float[]) msg.obj;
 					realTimeMaxDCTemp = temp[0];
 					realTimeMinDCTemp = temp[1];
+//					if (realTimeMaxDCTemp > 100.0f || realTimeMinDCTemp < MIN_TEMP){
+//						realTimeMaxDCTemp = Float.NaN;
+//						realTimeMinDCTemp = Float.NaN;
+//						rangeMaxTemp = Float.NaN;
+//						rangeMinTemp = Float.NaN;
+//						break;
+//					}
 
 					rangeMaxTemp = getTempFloatByMode(temp[0]);//实时最高温
 					rangeMinTemp = getTempFloatByMode(temp[1]);//实时最低温
@@ -222,6 +227,9 @@ public class MyCustomRangeSeekBar extends View {
 	 *
 	 */
 	private void calculateMaxMin(float maxTemp ,float minTemp){
+		if (Float.isNaN(mMaxTemp) && !Float.isNaN(realTimeMaxDCTemp)){//针对于又nan 变成了正常温度 。
+			calculateSeekBarTopBottomTemp();
+		}
 		//实时最大值 大于 （底部 -5）  或者 实时最大值 小于（底部-20）
 		if (realTimeMaxDCTemp > temp2DegreeCentigrade(mMaxTemp) - 5
 				||realTimeMaxDCTemp < temp2DegreeCentigrade(mMaxTemp) - 20) {
@@ -238,21 +246,28 @@ public class MyCustomRangeSeekBar extends View {
 		}
 
 		if (thumbMaxCount >= 30 || thumbMinCount >=30 ){
-			mMaxTemp = getTempFloatByMode( (((int)realTimeMaxDCTemp+5)/10)*10 + 10);
-			mMinTemp = getTempFloatByMode( (((int)realTimeMinDCTemp+5)/10)*10 - 10);
-
-			mThumbMaxTemp = getTempFloatByMode(realTimeMaxDCTemp + 2);
-			mThumbMinTemp = getTempFloatByMode(realTimeMaxDCTemp - 2);
-
-			mPercentSelectedMaxValue = (mThumbMaxTemp - mMinTemp)/(mMaxTemp - mMinTemp);
-			mPercentSelectedMinValue = (mThumbMinTemp - mMinTemp)/(mMaxTemp - mMinTemp);
-			//回调给View层更改了画面数据。修改C++层的最大最小AD值
-			//todo 计算变化之后的 滑块温度范围 对应的 百分比值。 重新计算滑块百分比之后 更改JNI层的渲染范围
-			mThumbListener.thumbChanged(getSelectedAbsoluteMaxValue(), getSelectedAbsoluteMinValue()
-					,percent2DegreeCentigrade(mPercentSelectedMaxValue),percent2DegreeCentigrade(mPercentSelectedMinValue));
-			thumbMaxCount = 0;
-			thumbMinCount = 0;
+			calculateSeekBarTopBottomTemp();
 		}
+	}
+
+	/**
+	 * 计算滑动条 顶部及其底部的温度。并计算滑动条的温度，百分比 。重置计数器
+	 */
+	private void calculateSeekBarTopBottomTemp(){
+		mMaxTemp = getTempFloatByMode( (((int)realTimeMaxDCTemp+5)/10)*10 + 10);
+		mMinTemp = getTempFloatByMode( (((int)realTimeMinDCTemp+5)/10)*10 - 10);
+
+		mThumbMaxTemp = getTempFloatByMode(realTimeMaxDCTemp + 2);
+		mThumbMinTemp = getTempFloatByMode(realTimeMaxDCTemp - 2);
+
+		mPercentSelectedMaxValue = (mThumbMaxTemp - mMinTemp)/(mMaxTemp - mMinTemp);
+		mPercentSelectedMinValue = (mThumbMinTemp - mMinTemp)/(mMaxTemp - mMinTemp);
+		//回调给View层更改了画面数据。修改C++层的最大最小AD值
+		//todo 计算变化之后的 滑块温度范围 对应的 百分比值。 重新计算滑块百分比之后 更改JNI层的渲染范围
+		mThumbListener.thumbChanged(getSelectedAbsoluteMaxValue(), getSelectedAbsoluteMinValue()
+				,percent2DegreeCentigrade(mPercentSelectedMaxValue),percent2DegreeCentigrade(mPercentSelectedMinValue));
+		thumbMaxCount = 0;
+		thumbMinCount = 0;
 	}
 
 	/**
@@ -493,6 +508,18 @@ public class MyCustomRangeSeekBar extends View {
 	}
 	//绘制所有的文字
 	private void onDrawText(Canvas canvas){
+		if (realTimeMaxDCTemp > MAX_TEMP || realTimeMinDCTemp < MIN_TEMP){
+			realTimeMaxDCTemp = Float.NaN;
+			realTimeMinDCTemp = Float.NaN;
+//
+			mMaxTemp = Float.NaN;
+			mMinTemp = Float.NaN;
+
+			rangeMaxTemp = Float.NaN;
+			rangeMinTemp = Float.NaN;
+		}
+
+
 		//绘制温度单位。
 		canvas.drawText(DragTempContainer.tempSuffixList[tempUnitMode],
 				maxTempTextLength+ realTimeHighLowPicWidth + seekbarWidth/2.0f - mPaint.measureText(DragTempContainer.tempSuffixList[tempUnitMode])
