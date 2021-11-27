@@ -77,6 +77,7 @@ public class SwitchMultiButton extends View {
         initPaint();
     }
 
+
     /**
      * 通过attrs得到设置的值
      * @param context 初始化的上下文对象
