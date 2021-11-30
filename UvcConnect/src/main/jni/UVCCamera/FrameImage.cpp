@@ -28,12 +28,6 @@ FrameImage::FrameImage(uvc_device_handle_t *devh)  {
              */
             memset(palette, 0, 3*256*sizeof(unsigned char));
             memset(cameraSoftVersion, 0, 16);
-//            frameWidth=DEFAULT_PREVIEW_WIDTH;
-//            frameHeight=DEFAULT_PREVIEW_HEIGHT;
-//            frameBytes=DEFAULT_PREVIEW_WIDTH * DEFAULT_PREVIEW_HEIGHT * 2;	// YUYV
-//            frameMode=0,
-//            previewBytes=DEFAULT_PREVIEW_WIDTH * DEFAULT_PREVIEW_HEIGHT * PREVIEW_PIXEL_BYTES;
-//            previewFormat= WINDOW_FORMAT_RGBA_8888;
 
 //            pthread_mutex_init(&temperature_mutex,NULL);
               isNeedWriteTable=true;//是否需要刷新温度对照表，刚开始要刷新。

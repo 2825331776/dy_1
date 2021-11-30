@@ -30,7 +30,6 @@ import android.graphics.SurfaceTexture;
 import android.hardware.usb.UsbDevice;
 import android.media.AudioManager;
 import android.media.MediaScannerConnection;
-import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -44,7 +43,6 @@ import android.view.SurfaceHolder;
 
 import androidx.annotation.RequiresApi;
 
-import com.dyt.wcc.cameracommon.R;
 import com.dyt.wcc.cameracommon.encoder.MediaEncoder;
 import com.dyt.wcc.cameracommon.encoder.MediaMuxerWrapper;
 import com.dyt.wcc.cameracommon.encoder.MediaSurfaceEncoder;
@@ -863,7 +861,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
         /**
          * shutter sound
          */
-        private SoundPool            mSoundPool;
+//        private SoundPool            mSoundPool;
         private int mSoundId;
         private AbstractUVCCameraHandler mHandler;
         /**
@@ -884,6 +882,8 @@ abstract class AbstractUVCCameraHandler extends Handler {
         private int cameraType = 1; // 1为uvc,2为tcp
 
         /************************/
+
+        private float[] temperatureData = new float[640 * 512 + 10];
 
         /**
          * @param clazz           Class extends AbstractUVCCameraHandler
@@ -907,8 +907,8 @@ abstract class AbstractUVCCameraHandler extends Handler {
             //Log.e(TAG, "CameraThread: ================start");
             mHandlerClass = clazz;
             mEncoderType = encoderType;
-            Log.e(TAG,"构造函数的 mEncodertype======================"+ mEncoderType);
-//            mEncoderType=2;
+            Log.e(TAG,"构造函数的 mEncodertype======================");
+            //            mEncoderType=2;
             mWidth = width;//探测器的面阵
             mHeight = height;
 
@@ -924,8 +924,6 @@ abstract class AbstractUVCCameraHandler extends Handler {
             loadShutterSound(parent);
             Log.e(TAG, "CameraThread: ================end");
         }
-
-        private float[] temperatureData = new float[640 * 512 + 10];
         private byte[] ByteTemperatureData = new byte[(640 * 512 + 10) * 4];
         private short[] ShortTemperatureData = new short[640 * 512 + 10];
         private Handler mMySubHandler;
@@ -1891,17 +1889,17 @@ abstract class AbstractUVCCameraHandler extends Handler {
             } catch (final Exception e) {
                 streamType = AudioManager.STREAM_SYSTEM;    // set appropriate according to your app policy
             }
-            if (mSoundPool != null) {
-                try {
-                    mSoundPool.release();
-                } catch (final Exception e) {
-                }
-                mSoundPool = null;
-            }
+//            if (mSoundPool != null) {
+//                try {
+//                    mSoundPool.release();
+//                } catch (final Exception e) {
+//                }
+//                mSoundPool = null;
+//            }
             //added by wupei,快门声音设置
             // load shutter sound from resource
-            mSoundPool = new SoundPool(2, streamType, 0);
-            mSoundId = mSoundPool.load(context, R.raw.camera_click, 1);
+//            mSoundPool = new SoundPool(2, streamType, 0);
+//            mSoundId = mSoundPool.load(context, R.raw.camera_click, 1);
         }
 
         @Override
@@ -1929,10 +1927,10 @@ abstract class AbstractUVCCameraHandler extends Handler {
                     mSync.notifyAll();
                 }
                 Looper.loop();
-                if (mSoundPool != null) {
-                    mSoundPool.release();
-                    mSoundPool = null;
-                }
+//                if (mSoundPool != null) {
+//                    mSoundPool.release();
+//                    mSoundPool = null;
+//                }
                 if (mHandler != null) {
                     mHandler.mReleased = true;
                 }

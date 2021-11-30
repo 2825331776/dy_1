@@ -11,6 +11,7 @@
     <color name="colorAccent">#D81B60</color>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
+    <color name="gray">#666666</color>
     <color name="green">#4CAF50</color>
     <color name="red">#FF0000</color>
     <color name="white">#FFFFFF</color>
@@ -51,7 +52,7 @@
     <string name="scale_type_none">none</string>
     <string name="select">Select Xtherm device</string>
     <style name="SeekBarPreference_summary" parent="@android:style/TextAppearance.Small">
-		<!-- <item name="android:textColor">#ffa500</item> -->
+		
 	</style>
     <style name="SeekBarPreference_title" parent="@android:style/TextAppearance.Large"/>
 </resources>

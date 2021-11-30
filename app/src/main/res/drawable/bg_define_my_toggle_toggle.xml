@@ -4,8 +4,8 @@
 
     <corners android:radius="@dimen/dimen_5dp"/>
 
-    <stroke android:color="@color/bg_preview_toggle_select"
-        android:width="2dp"/>
+    <stroke android:color="@color/bg_three_choice_one"
+        android:width="1dp"/>
 
     <padding android:top="10dp"
         android:left="5dp"

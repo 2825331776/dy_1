@@ -7,6 +7,7 @@ color black
 color colorAccent
 color colorPrimary
 color colorPrimaryDark
+color gray
 color green
 color red
 color white

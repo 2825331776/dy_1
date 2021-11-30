@@ -54,6 +54,10 @@
         <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/layout/activity_test.xml" value="0.33" />
         <entry key="..\:/Users/Administrator/Desktop/DYTPIRCamera/app/src/main/res/layout/fragment_preview_main.xml" value="0.33" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/bg_define_my_toggle_toggle.xml" value="0.3697916666666667" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/bg_main_gallery_bt_radius.xml" value="0.3697916666666667" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/bg_main_preview_overtemp_pop.xml" value="0.3697916666666667" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/bg_main_preview_setting_pop.xml" value="0.67" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/bg_main_priview_overtemp_pop.xml" value="0.3697916666666667" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/ic_celsius.xml" value="0.3697916666666667" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/ic_english.xml" value="0.3697916666666667" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/ic_kelvin.xml" value="0.3697916666666667" />
@@ -100,9 +104,10 @@
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/gallery_actionbar.xml" value="0.3536458333333333" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/item_photo_gallery.xml" value="0.5" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/item_select.xml" value="0.3536458333333333" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/pop_company_info.xml" value="0.3536458333333333" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/pop_draw_chart.xml" value="0.3536458333333333" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/pop_highlowcenter_trace.xml" value="0.75" />
-        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/pop_overtemp_alarm.xml" value="0.5279937791601866" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/pop_overtemp_alarm.xml" value="0.5" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/pop_palette_choice.xml" value="0.3536458333333333" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/pop_setting.xml" value="0.33" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/pop_temp_mode_choice.xml" value="0.5" />

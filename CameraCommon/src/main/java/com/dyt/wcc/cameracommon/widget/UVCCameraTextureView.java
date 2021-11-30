@@ -23,6 +23,9 @@
 
 package com.dyt.wcc.cameracommon.widget;
 
+import static com.serenegiant.glutils.ShaderConst.GL_TEXTURE_2D;
+import static com.serenegiant.glutils.ShaderConst.GL_TEXTURE_EXTERNAL_OES;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -52,9 +55,6 @@ import com.serenegiant.utils.FpsCounter;
 
 import java.util.Calendar;
 import java.util.TimeZone;
-
-import static com.serenegiant.glutils.ShaderConst.GL_TEXTURE_2D;
-import static com.serenegiant.glutils.ShaderConst.GL_TEXTURE_EXTERNAL_OES;
 
 
 /**
@@ -92,11 +92,12 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
     }
 
     public UVCCameraTextureView(final Context context, final AttributeSet attrs, final int defStyle) {
-        super(context, attrs, defStyle);
 
+        super(context, attrs, defStyle);
+        Log.e(TAG, "UVCCameraTextureView: "+ System.currentTimeMillis());
         Log.e("UVCCameraTextureView","===============constructor");
         setSurfaceTextureListener(this);
-
+        Log.e(TAG, "UVCCameraTextureView: "+ System.currentTimeMillis());
     }
 
     @Override

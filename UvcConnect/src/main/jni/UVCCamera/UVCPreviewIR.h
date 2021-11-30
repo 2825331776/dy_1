@@ -44,7 +44,7 @@ private:
 	/******************截屏**********************/
 	volatile bool mIsCopyPicture;//是否在拷贝图片
 	unsigned char *picOutBuffer;//生成图片时保存的原始数据
-	unsigned char *picRgbaOutBuffer;// 截屏时， 拷贝的rgba数据
+//	unsigned char *picRgbaOutBuffer;// 截屏时， 拷贝的rgba数据
 	char savePicPath[100];
 
 

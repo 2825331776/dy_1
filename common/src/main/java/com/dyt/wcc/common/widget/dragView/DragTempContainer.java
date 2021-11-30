@@ -395,6 +395,10 @@ public class DragTempContainer extends RelativeLayout {
 		if (mSeekBar!=null) mSeekBar.setTempUnitText(tempSuffixMode);
 	}
 
+	public int getTempSuffixMode () {
+		return tempSuffixMode;
+	}
+
 	//更新点的温度
 	private float updatePointTemp(float x , float y){
 		//数据源上的坐标

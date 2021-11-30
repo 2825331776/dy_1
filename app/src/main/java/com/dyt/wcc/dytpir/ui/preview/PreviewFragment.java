@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -33,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -90,7 +92,6 @@ import java.util.Objects;
  */
 public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private PreViewViewModel                   mViewModel;
-	private USBMonitor.OnDeviceConnectListener onDeviceConnectListener;
 	private UVCCameraHandler                   mUvcCameraHandler;
 	private Surface                            stt;
 	private PopupWindow                        PLRPopupWindows;//点线矩形测温弹窗
@@ -118,6 +119,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 	@Override
 	protected int bindingLayout () {
+		Log.e(TAG, "bindingLayout: "+ System.currentTimeMillis());
 		return R.layout.fragment_preview_main;
 	}
 	@Override
@@ -135,6 +137,18 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	public void onDetach () {
 		super.onDetach();
 		if (isDebug)Log.e(TAG, "onDetach: ");
+	}
+
+	@Override
+	public void onStart () {
+		super.onStart();
+		if (isDebug)Log.e(TAG, "onStart: ");
+	}
+
+	@Override
+	public void onCreate (@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if (isDebug)Log.e(TAG, "onCreate: ");
 	}
 
 	@Override
@@ -169,10 +183,83 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 	}
 
+	private USBMonitor.OnDeviceConnectListener onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
+		@Override
+		public void onAttach (UsbDevice device) {
+			if (isDebug)Log.e(TAG, "DD  onAttach: "+ device.toString());
+			Handler handler = new Handler();
+			handler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					if (isDebug)Log.e(TAG, "检测到设备========");
+					mViewModel.getMUsbMonitor().getValue().requestPermission(device);
+				}
+			}, 100);
+		}
+		@Override
+		public void onConnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock, boolean createNew) {
+			if (isDebug)Log.e(TAG, "onConnect: ");
+
+			if (mUvcCameraHandler != null && !mUvcCameraHandler.isReleased()){
+				if (isDebug)Log.e(TAG, "onConnect: != null");
+
+				mUvcCameraHandler.open(ctrlBlock);
+				startPreview();
+
+				Handler handler = new Handler();
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
+					}
+				}, 300);
+			}else {
+				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
+						mDataBinding.textureViewPreviewFragment,1,
+						384,292,1,null,0);
+
+				mUvcCameraHandler.open(ctrlBlock);
+				startPreview();
+
+				Handler handler = new Handler();
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
+					}
+				}, 300);
+			}
+		}
+		@Override
+		public void onDettach (UsbDevice device) {
+			//				mUvcCameraHandler.close();
+			if (isDebug)Log.e(TAG, "DD  onDetach: ");
+
+			if (mUvcCameraHandler != null){
+				//					Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
+				//					SurfaceTexture stt = mDataBinding.textureViewPreviewFragment.getSurfaceTexture();
+				mUvcCameraHandler.stopTemperaturing();
+				mUvcCameraHandler.stopPreview();
+				mUvcCameraHandler.release();//拔出之时没释放掉这个资源。关闭窗口之时必须释放
+			}
+		}
+		@Override
+		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
+			if (isDebug)Log.e(TAG, " DD  onDisconnect: ");
+
+
+
+		}
+		@Override
+		public void onCancel (UsbDevice device) {
+			if (isDebug)Log.e(TAG, "DD  onCancel: ");
+		}
+	};
+
 	@Override
 	public void onResume () {
 		super.onResume();
-//		if (isDebug)Log.e(TAG, "onResume: ");
+		if (isDebug)Log.e(TAG, "onResume: ");
 
 
 		//		Spinner
@@ -201,7 +288,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 		mTextureViewWidth = mDataBinding.textureViewPreviewFragment.getWidth();
 		mTextureViewHeight = mDataBinding.textureViewPreviewFragment.getHeight();
-		if (isDebug)Log.e(TAG,"height =="+ mTextureViewHeight + " width==" + mTextureViewWidth);
+//		if (isDebug)Log.e(TAG,"height =="+ mTextureViewHeight + " width==" + mTextureViewWidth);
 
 		mDataBinding.textureViewPreviewFragment.iniTempBitmap(mTextureViewWidth, mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
 		mDataBinding.textureViewPreviewFragment.setDragTempContainer(mDataBinding.dragTempContainerPreviewFragment);
@@ -262,7 +349,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 	@Override
 	protected void initView () {
-//		Log.e(TAG, "initView: before" +System.currentTimeMillis());
+
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
 		mSendCommand = new SendCommand();
 
@@ -305,79 +392,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
 				mDataBinding.textureViewPreviewFragment,1,
 				384,292,1,null,0);
-
-		onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
-			@Override
-			public void onAttach (UsbDevice device) {
-				if (isDebug)Log.e(TAG, "DD  onAttach: "+ device.toString());
-					Handler handler = new Handler();
-					handler.postDelayed(new Runnable() {
-						@Override
-						public void run() {
-							if (isDebug)Log.e(TAG, "检测到设备========");
-							mViewModel.getMUsbMonitor().getValue().requestPermission(device);
-						}
-					}, 100);
-			}
-			@Override
-			public void onConnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock, boolean createNew) {
-				if (isDebug)Log.e(TAG, "onConnect: ");
-
-				if (mUvcCameraHandler != null && !mUvcCameraHandler.isReleased()){
-					if (isDebug)Log.e(TAG, "onConnect: != null");
-
-					mUvcCameraHandler.open(ctrlBlock);
-					startPreview();
-
-					Handler handler = new Handler();
-					handler.postDelayed(new Runnable() {
-						@Override
-						public void run() {
-							setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
-						}
-					}, 300);
-				}else {
-					mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
-							mDataBinding.textureViewPreviewFragment,1,
-							384,292,1,null,0);
-
-					mUvcCameraHandler.open(ctrlBlock);
-					startPreview();
-
-					Handler handler = new Handler();
-					handler.postDelayed(new Runnable() {
-						@Override
-						public void run() {
-							setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
-						}
-					}, 300);
-				}
-			}
-			@Override
-			public void onDettach (UsbDevice device) {
-//				mUvcCameraHandler.close();
-				if (isDebug)Log.e(TAG, "DD  onDetach: ");
-
-				if (mUvcCameraHandler != null){
-					//					Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
-					//					SurfaceTexture stt = mDataBinding.textureViewPreviewFragment.getSurfaceTexture();
-					mUvcCameraHandler.stopTemperaturing();
-					mUvcCameraHandler.stopPreview();
-					mUvcCameraHandler.release();//拔出之时没释放掉这个资源。关闭窗口之时必须释放
-				}
-			}
-			@Override
-			public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
-				if (isDebug)Log.e(TAG, " DD  onDisconnect: ");
-
-
-
-			}
-			@Override
-			public void onCancel (UsbDevice device) {
-				if (isDebug)Log.e(TAG, "DD  onCancel: ");
-			}
-		};
+		Log.e(TAG, "initView: before" +System.currentTimeMillis());
 
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
 				,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO,Manifest.permission.RECORD_AUDIO).request(new RequestCallback() {
@@ -395,29 +410,45 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.toggleHighTempAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
-				if (isChecked)mDataBinding.toggleHighTempAlarm.setChecked(false);
-								//判断键入的值是否符合规范,或者提示用户 键入值的规范。
-//				if (TextUtils.isEmpty(mDataBinding.etInputTempRightRLContainer.getText().toString())){
-//					showToast("请输入高温界限");
-////					Toast.makeText(mContext.get(), ,Toast.LENGTH_SHORT).show();
-////					Log.e(TAG, "onClick: "+ isChecked);
-//					mDataBinding.toggleHighTempAlarm.setChecked(false);
-//					return;
-//				}
-//
-//				float temp = Float.parseFloat(mDataBinding.etInputTempRightRLContainer.getText().toString());
-//				Log.e(TAG, "onClick: temp = >  " + temp);
-//				if (isChecked){
-//					mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(temp);
-//				}else {
-//					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
-//				}
 
-//				if (isResumed()){
+//				AlertDialog.Builder builder = new AlertDialog.Builder(mContext.get());
+//				builder.setTitle("1123").setMessage("content hsisaskdfhjshdfjkashk").create();
+//				builder.show();
+//				mDataBinding.toggleHighTempAlarm.setChecked(false);
+				Log.e(TAG, "onCheckedChanged: " + "isChecked  ==  == " + isChecked  );
+				if (isChecked){
+//					mDataBinding.toggleHighTempAlarm.setChecked(false);
+					OverTempDialog dialog = new OverTempDialog(mContext.get(),sp.getFloat("overTemp",0.0f),
+							mDataBinding.dragTempContainerPreviewFragment.getTempSuffixMode());
+					dialog.setListener(new OverTempDialog.SetCompleteListener() {
+						@Override
+						public void onSetComplete (float setValue) {
+//							Log.e(TAG, "onSetComplete: " + "confirm "  );
+							mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(setValue);
+							sp.edit().putFloat("overTemp",setValue).apply();
+						}
+
+						@Override
+						public void onCancelListener () {
+//							Log.e(TAG, "onCancelListener: " + "cancel "  );
+							mDataBinding.toggleHighTempAlarm.setChecked(false);
+						}
+					});
+					dialog.setCancelable(false);
+					dialog.show();
+
+				}else {
+					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
+				}
+
+
+								//判断键入的值是否符合规范,或者提示用户 键入值的规范。
+
+//				if (isResumed()&& isChecked){
 //					View overTempChoiceView = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_overtemp_alarm,null);
 //					PopOvertempAlarmBinding overTempBinding = DataBindingUtil.bind(overTempChoiceView);
 //					assert overTempBinding != null;
-//					//init numberPicker
+					//init numberPicker
 //					overTempBinding.numberPickerHundredsMainPreviewOverTempPop.setMinValue(0);
 //					overTempBinding.numberPickerHundredsMainPreviewOverTempPop.setMinValue(9);
 ////					overTempBinding.numberPickerHundredsMainPreviewOverTempPop.setText
@@ -432,17 +463,17 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //					overTempBinding.numberPickerDecimalMainPreviewOverTempPop.setOnValueChangedListener(valueChangeListener);
 //					overTempBinding.numberPickerUnitMainPreviewOverTempPop.setOnValueChangedListener(valueChangeListener);
 //					overTempBinding.numberPickerDecadeMainPreviewOverTempPop.setOnValueChangedListener(valueChangeListener);
-//					//init NumberPicker Data
-//
-//					//showPopWindows
+					//init NumberPicker Data
+
+					//showPopWindows
 //					allPopupWindows = new PopupWindow(overTempChoiceView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 //					allPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
 //
-//					allPopupWindows.setFocusable(false);
+//					allPopupWindows.setFocusable(true);
 //					allPopupWindows.setOutsideTouchable(true);
 //					allPopupWindows.setTouchable(true);
 //
-//					allPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,0,-mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+//					allPopupWindows.showAtLocation(mDataBinding.textureViewPreviewFragment,Gravity.CENTER,0,0);
 //				}
 			}
 		});
@@ -907,7 +938,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		}
 	};
 
-	//温度度量模式切换
+	//用户添加 测温模式 切换
 	View.OnClickListener tempModeCheckListener = new View.OnClickListener() {
 		@Override
 		public void onClick (View v) {
@@ -1025,7 +1056,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		}
 	};
 
-	//温度度量模式切换
+	//色板切换
 	View.OnClickListener paletteChoiceListener = v -> {
 		switch (v.getId()){
 			case R.id.palette_layout_Tiehong:
@@ -1107,12 +1138,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 				if (allGranted){//拿到权限 去C++ 绘制 传入文件路径path， 点线矩阵
 					//生成一个当前的图片地址：  然后设置一个标识位，标识正截屏 或者 录像中
-					if (mUvcCameraHandler != null){
+					if (mUvcCameraHandler.isOpened()){
 						String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
 //						mUvcCameraHandler.captureStill(picPath);
 						if (mUvcCameraHandler.captureStill(picPath))showToast("保存路径为："+picPath );
-
-
 //						if (isDebug)Log.e(TAG, "onResult: java path === "+ picPath);
 					}else {
 						showToast("请先连接相机");
