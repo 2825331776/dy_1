@@ -138,7 +138,9 @@ public class UVCCameraHandler extends AbstractUVCCameraHandler {
 	public static synchronized UVCCameraHandler getInstance(){
 		return mUVCCameraHandler;
 	}
+
 	protected UVCCameraHandler(final CameraThread thread) {
+		//调用父类的构造函数。仔细了解 constructor 类
 		super(thread);
 	}
 

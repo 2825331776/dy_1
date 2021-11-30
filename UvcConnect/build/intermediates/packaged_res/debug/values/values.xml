@@ -52,7 +52,7 @@
     <string name="scale_type_none">none</string>
     <string name="select">Select Xtherm device</string>
     <style name="SeekBarPreference_summary" parent="@android:style/TextAppearance.Small">
-		
+		<!-- <item name="android:textColor">#ffa500</item> -->
 	</style>
     <style name="SeekBarPreference_title" parent="@android:style/TextAppearance.Large"/>
 </resources>

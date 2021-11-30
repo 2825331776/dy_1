@@ -24,11 +24,9 @@
 package com.dyt.wcc.cameracommon.usbcameracommon;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.hardware.usb.UsbDevice;
-import android.media.AudioManager;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -74,7 +72,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -921,7 +918,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
             mBandwidthFactor = bandwidthFactor;
             mWeakParent = new WeakReference<Activity>(parent);
             mWeakCameraView = new WeakReference<UVCCameraTextureView>(cameraView);
-            loadShutterSound(parent);
+//            loadShutterSound(parent);
             Log.e(TAG, "CameraThread: ================end");
         }
         private byte[] ByteTemperatureData = new byte[(640 * 512 + 10) * 4];
@@ -1879,28 +1876,28 @@ abstract class AbstractUVCCameraHandler extends Handler {
          * prepare and load shutter sound for still image capturing
          */
         @SuppressWarnings("deprecation")
-        private void loadShutterSound(final Context context) {
-            // get system stream type using reflection
-            int streamType;
-            try {
-                final Class<?> audioSystemClass = Class.forName("android.media.AudioSystem");
-                final Field sseField = audioSystemClass.getDeclaredField("STREAM_SYSTEM_ENFORCED");
-                streamType = sseField.getInt(null);
-            } catch (final Exception e) {
-                streamType = AudioManager.STREAM_SYSTEM;    // set appropriate according to your app policy
-            }
-//            if (mSoundPool != null) {
-//                try {
-//                    mSoundPool.release();
-//                } catch (final Exception e) {
-//                }
-//                mSoundPool = null;
+//        private void loadShutterSound(final Context context) {
+//            // get system stream type using reflection
+//            int streamType;
+//            try {
+//                final Class<?> audioSystemClass = Class.forName("android.media.AudioSystem");
+//                final Field sseField = audioSystemClass.getDeclaredField("STREAM_SYSTEM_ENFORCED");
+//                streamType = sseField.getInt(null);
+//            } catch (final Exception e) {
+//                streamType = AudioManager.STREAM_SYSTEM;    // set appropriate according to your app policy
 //            }
-            //added by wupei,快门声音设置
-            // load shutter sound from resource
-//            mSoundPool = new SoundPool(2, streamType, 0);
-//            mSoundId = mSoundPool.load(context, R.raw.camera_click, 1);
-        }
+////            if (mSoundPool != null) {
+////                try {
+////                    mSoundPool.release();
+////                } catch (final Exception e) {
+////                }
+////                mSoundPool = null;
+////            }
+//            //added by wupei,快门声音设置
+//            // load shutter sound from resource
+////            mSoundPool = new SoundPool(2, streamType, 0);
+////            mSoundId = mSoundPool.load(context, R.raw.camera_click, 1);
+//        }
 
         @Override
         public void run() {
@@ -1908,7 +1905,9 @@ abstract class AbstractUVCCameraHandler extends Handler {
             AbstractUVCCameraHandler handler = null;
             try {
                 Log.e(TAG, "run: ============ start");
+                //通过 UvcCameraHandler的 UvcCameraHandler(CameraThread cameraThread)构造方法 得到一个UvcCameraHandler的 构造函数对象
                 final Constructor<? extends AbstractUVCCameraHandler> constructor = mHandlerClass.getDeclaredConstructor(CameraThread.class);
+                //通过 子类的 构造函数对象 得到一个父类对象？
                 handler = constructor.newInstance(this);
                 Log.e(TAG, "run: ============ end");
 

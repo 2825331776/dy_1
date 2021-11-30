@@ -217,7 +217,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
 						mDataBinding.textureViewPreviewFragment,1,
 						384,292,1,null,0);
-
 				mUvcCameraHandler.open(ctrlBlock);
 				startPreview();
 
