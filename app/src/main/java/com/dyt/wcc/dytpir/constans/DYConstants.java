@@ -40,5 +40,7 @@ public class DYConstants {
 
 	public static final String SP_NAME = "DYT_IR_SP";
 
+	public static final String [] paletteArrays = new String[]{"1.dat","2.dat","3.dat","4.dat","5.dat","6.dat"};
+
 
 }

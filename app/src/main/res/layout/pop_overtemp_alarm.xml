@@ -123,7 +123,7 @@
 
         <Button
             android:id="@+id/bt_submit"
-            android:text="确认"
+            android:text="@string/confirm"
             app:layout_constraintHorizontal_weight="1"
             android:textSize="12sp"
             android:gravity="center"
@@ -144,7 +144,7 @@
             android:layout_marginEnd="@dimen/dimen_10dp"
             android:textColor="@color/white"
             android:background="@drawable/bg_define_my_toggle_toggle"
-            android:text="取消"
+            android:text="@string/cancel"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/bt_submit"
             app:layout_constraintLeft_toLeftOf="parent"

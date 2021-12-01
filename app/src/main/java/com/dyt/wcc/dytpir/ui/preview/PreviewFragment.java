@@ -28,7 +28,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,8 +43,8 @@ import com.dyt.wcc.cameracommon.usbcameracommon.UVCCameraHandler;
 import com.dyt.wcc.cameracommon.utils.ByteUtil;
 import com.dyt.wcc.common.base.BaseApplication;
 import com.dyt.wcc.common.base.BaseFragment;
-import com.dyt.wcc.common.utils.AssetCopyer;
-import com.dyt.wcc.common.utils.CreateBitmap;
+import com.dyt.wcc.dytpir.utils.AssetCopyer;
+import com.dyt.wcc.dytpir.utils.CreateBitmap;
 import com.dyt.wcc.common.utils.FontUtils;
 import com.dyt.wcc.common.widget.MyCustomRangeSeekBar;
 import com.dyt.wcc.common.widget.SwitchMultiButton;
@@ -276,7 +275,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		if (!mViewModel.getMUsbMonitor().getValue().isRegistered()){
 			mViewModel.getMUsbMonitor().getValue().register();
 		}
-//		Log.e(TAG, "onResume: before  ===  " +System.currentTimeMillis());
+		Log.e(TAG, "onResume: before  ===  " +System.currentTimeMillis());
 	}
 	private int setValue(final int flag, final int value) {//设置机芯参数,调用JNI层
 		return mUvcCameraHandler != null ? mUvcCameraHandler.setValue(flag, value) : 0;
@@ -352,13 +351,26 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
 		mSendCommand = new SendCommand();
 
+
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		int screenWidth = dm.widthPixels;
 		int screenHeight = dm.heightPixels;
-		mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);//
-		AssetCopyer.copyAllAssets(requireActivity().getApplicationContext(), requireActivity().getExternalFilesDir(null).getAbsolutePath());
-		//		Log.e(TAG,"===========getExternalFilesDir=========="+this.getExternalFilesDir(null).getAbsolutePath());
-		palettePath = requireActivity().getExternalFilesDir(null).getAbsolutePath();
+		PermissionX.init(this).permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE).request(new RequestCallback() {
+			@Override
+			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+				if (allGranted){
+					Log.e(TAG, "initView: file is exits ? === " + AssetCopyer.checkPaletteFile(mContext.get(),DYConstants.paletteArrays));
+
+					mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);//
+					Log.e(TAG, "initView:  ==444444= " + System.currentTimeMillis());
+					AssetCopyer.copyAllAssets(DYTApplication.getInstance(), mContext.get().getExternalFilesDir(null).getAbsolutePath());
+					//		Log.e(TAG,"===========getExternalFilesDir=========="+this.getExternalFilesDir(null).getAbsolutePath());
+					palettePath = mContext.get().getExternalFilesDir(null).getAbsolutePath();
+					Log.e(TAG, "initView:  ==333333= " + System.currentTimeMillis());
+				}
+			}
+		});
+
 
 
 		CreateBitmap createBitmap = new CreateBitmap();
@@ -381,17 +393,23 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		bitmaps.add(baire);
 		bitmaps.add(lenglan);
 
+		Log.e(TAG, "initView:  ==222222= " + System.currentTimeMillis());
+
 		mDataBinding.customSeekbarPreviewFragment.setmProgressBarSelectBgList(bitmaps);
 //		Log.e(TAG, "initView: sp.get Palette_Number = " + sp.getInt(DYConstants.PALETTE_NUMBER,0));
 		mDataBinding.customSeekbarPreviewFragment.setPalette(0);
 		mDataBinding.dragTempContainerPreviewFragment.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
 		mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING,0));
+//		Log.e(TAG, "initView: ==================== " + mDataBinding.toggleAreaCheck.isChecked());
+//		Log.e(TAG, "initView:  ===== 111 ===  " + mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray());
 
+		Log.e(TAG, "initView:  ==111111= " + System.currentTimeMillis());
 //		mDataBinding.textureViewPreviewFragment.setAspectRatio(256/(float)192);
 		mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
 				mDataBinding.textureViewPreviewFragment,1,
 				384,292,1,null,0);
-		Log.e(TAG, "initView: before" +System.currentTimeMillis());
+		Log.e(TAG, "initView: before  " +System.currentTimeMillis());
+
 
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
 				,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO,Manifest.permission.RECORD_AUDIO).request(new RequestCallback() {
@@ -622,10 +640,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				if (cameraParams != null) {
 					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(cameraParams.get("emiss")));//发射率 0-1
 					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(cameraParams.get("distance")));//距离 0-5
-					popSettingBinding.etCameraSettingReflect.setText(String.valueOf((cameraParams.get("Refltmp"))));//反射温度 -10-40
-					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(cameraParams.get("Fix")));//修正 -3 -3
-					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf(cameraParams.get("Airtmp")));//环境温度 -10 -40
 					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int)(cameraParams.get("humi")*100)));//湿度 0-100
+					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(cameraParams.get("Fix")));//修正 -3 -3
+					popSettingBinding.etCameraSettingReflect.setText(String.valueOf((cameraParams.get("Refltmp"))));//反射温度 -10-40
+					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf(cameraParams.get("Airtmp")));//环境温度 -10 -40
 
 					//发射率
 					popSettingBinding.etCameraSettingEmittance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -782,7 +800,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					popupWindow.setHeight(popupWindow.getContentView().getMeasuredHeight());
 				}
 				popupWindow.setWidth(fl.getWidth()- 30);
-				popupWindow.setFocusable(true);
+				popupWindow.setFocusable(false);
 				popupWindow.setOutsideTouchable(true);
 				popupWindow.setTouchable(true);
 				//第四步：显示控件
@@ -836,6 +854,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 							PopCompanyInfoBinding popCompanyInfoBinding = DataBindingUtil.bind(view);
 							assert popCompanyInfoBinding != null;
 							popCompanyInfoBinding.tvCheckVersion.setOnClickListener(chartModeCheckListener);
+							popCompanyInfoBinding.tvVersionName.setText(""+ LanguageUtils.getVersionName(mContext.get()));
 
 							showPopWindows(view,80,40,20);
 						}
@@ -905,7 +924,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		allPopupWindows.setHeight(allPopupWindows.getContentView().getMeasuredHeight());
 		allPopupWindows.setWidth(fl.getWidth()- widthMargin);
 
-		allPopupWindows.setFocusable(true);
+		allPopupWindows.setFocusable(false);
 		allPopupWindows.setOutsideTouchable(true);
 		allPopupWindows.setTouchable(true);
 
@@ -1036,7 +1055,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			}
 		});
 	}
-
+	//设置画板
 	private void setPalette(int id){
 		if (allPopupWindows != null){
 			allPopupWindows.dismiss();
@@ -1047,13 +1066,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			mDataBinding.customSeekbarPreviewFragment.invalidate();//刷新控件
 		}
 	}
-	//超温警告页面 数值变化监听器
-	NumberPicker.OnValueChangeListener valueChangeListener = new NumberPicker.OnValueChangeListener() {
-		@Override
-		public void onValueChange (NumberPicker picker, int oldVal, int newVal) {
-
-		}
-	};
 
 	//色板切换
 	View.OnClickListener paletteChoiceListener = v -> {
@@ -1101,23 +1113,24 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			}
 		}
 	};
-	//去多媒体相册
+	//相册 按钮
 	public void toGallery(View view){
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
 				,Manifest.permission.WRITE_EXTERNAL_STORAGE).request(new RequestCallback() {
 			@Override
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 				if (allGranted){
+//					mDataBinding.dragTempContainerPreviewFragment.clearAll();
 					Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
 				}
 			}
 		});
 	}
-	//清除
+	//清除 按钮
 	public void toClear(View view){
 		mDataBinding.dragTempContainerPreviewFragment.clearAll();
 	}
-	//拍照
+	//拍照 按钮
 	public void toImage(View view){
 
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
@@ -1152,13 +1165,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			}
 		});
 
-//		if (mUvcCameraHandler != null){
-//			Toast.makeText(mContext.get(),"toImage ", Toast.LENGTH_SHORT).show();
-//			mUvcCameraHandler.startPreview(stt);
-//			mUvcCameraHandler.startTemperaturing();
-//		}
-		//		NavHostFragment.findNavController(PreviewFragment.this).popBackStack();
-		//		Navigation.findNavController(mDataBinding.getRoot()).popBackStack();
 
 	}
 	//录制
@@ -1202,13 +1208,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 		Intent intent = new Intent(context, MainActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		//		this.finish();
 		context.startActivity(intent);
 //
 //		android.os.Process.killProcess(android.os.Process.myPid());
 //		System.exit(0);
 	}
-
+	//修改机芯参数
 	public class SendCommand {
 		int psitionAndValue0 = 0, psitionAndValue1 = 0, psitionAndValue2 = 0, psitionAndValue3 = 0;
 

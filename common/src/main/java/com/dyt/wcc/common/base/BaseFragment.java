@@ -3,7 +3,6 @@ package com.dyt.wcc.common.base;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +39,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
 	@Override
 	public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		mDataBinding = DataBindingUtil.inflate(inflater,bindingLayout(),container,false);
-		Log.e(TAG, "onCreateView: "+ System.currentTimeMillis());
+//		Log.e(TAG, "onCreateView:  === "+ System.currentTimeMillis());
 		View view = mDataBinding.getRoot();
 		mContext = new WeakReference<>(getActivity());
 		initView();

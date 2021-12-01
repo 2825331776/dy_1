@@ -1,4 +1,4 @@
-package com.dyt.wcc.common.utils;
+package com.dyt.wcc.dytpir.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;

@@ -39,7 +39,7 @@
             app:layout_constraintTop_toTopOf="@id/tv_version_name_info"
             app:layout_constraintBottom_toBottomOf="@id/tv_version_name_info"
             app:layout_constraintLeft_toRightOf="@id/tv_version_name_info"
-            android:text="1.0.0"
+            android:text="0.0.0"
             android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

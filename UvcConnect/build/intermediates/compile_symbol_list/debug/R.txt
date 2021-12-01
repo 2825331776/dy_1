@@ -2613,6 +2613,7 @@ int mipmap ic_areacheck_tools_delete 0x0
 int mipmap ic_higlowtemp_draw_widget_center 0x0
 int mipmap ic_higlowtemp_draw_widget_high 0x0
 int mipmap ic_higlowtemp_draw_widget_low 0x0
+int mipmap ic_main_preview_measuretemp_point 0x0
 int mipmap ic_max 0x0
 int mipmap ic_min 0x0
 int mipmap ic_temp_seekbar_realtime_max_arrow 0x0

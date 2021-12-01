@@ -5,6 +5,8 @@ import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.text.TextUtils;
@@ -25,6 +27,18 @@ import java.util.Locale;
 
 public class LanguageUtils {
     public static final String SYSTEM_LANGUAGE_TGA = "systemLanguageTag";
+
+    public static synchronized String getVersionName(Context context) {//得到软件版本名，eg:1.0
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(
+                    context.getPackageName(), 0);
+            return packageInfo.versionName;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     /**
      * 更新该context的config语言配置，对于application进行反射更新
      * @param context

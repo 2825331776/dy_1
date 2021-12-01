@@ -1,9 +1,10 @@
 /**
  * copy the files and folders of assets to sdCard to ensure that we can read files in JNI part
  */
-package com.dyt.wcc.common.utils;
+package com.dyt.wcc.dytpir.utils;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,6 +24,25 @@ public class AssetCopyer {
         copyAssetsToDst(context,"",destination);
     }
 
+    public static boolean checkPaletteFile(Context context, String [] res){
+        if (res != null){
+            //+File.separator +res[0]
+            Log.e(TAG, "checkPaletteFile: " + context.getFilesDir().getAbsolutePath());
+            String [] filesStr = context.fileList();
+            Log.e(TAG, "checkPaletteFile:  res [0] " + res[0]);
+            Log.e(TAG, "checkPaletteFile: " + filesStr.length);
+            for (String f1 : filesStr){
+//                    Environment.getExternalStorageState(file);
+                Log.e(TAG, "checkPaletteFile: private dirs File name  ; === " + f1);
+                if ( res[0].equals(f1)){
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    }
+
     /**
      *
      * @param context :application context
@@ -39,7 +59,7 @@ public class AssetCopyer {
                 file.mkdirs();
                 for (String fileName : fileNames)
                 {
-                    if(srcPath!="")
+                    if(srcPath!="" && fileName.endsWith(".dat"))
                     {
                         copyAssetsToDst(context,srcPath + "/" + fileName,dstPath+"/"+fileName);
                     }else{

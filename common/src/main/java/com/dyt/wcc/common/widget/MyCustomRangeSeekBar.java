@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.dyt.wcc.common.R;
+import com.dyt.wcc.common.utils.DensityUtil;
 import com.dyt.wcc.common.widget.dragView.DragTempContainer;
 
 import java.text.DecimalFormat;
@@ -366,16 +367,16 @@ public class MyCustomRangeSeekBar extends View {
 
 
 
-	/**
-	 * 将dip或dp值转换为px值，保证尺寸大小不变
-	 *
-	 * @param dipValue （DisplayMetrics类中属性density）
-	 * @return
-	 */
-	private int dp2px(Context context, float dipValue) {
-		final float scale = context.getResources().getDisplayMetrics().density;
-		return (int) (dipValue * scale + 0.5f);
-	}
+//	/**
+//	 * 将dip或dp值转换为px值，保证尺寸大小不变
+//	 *
+//	 * @param dipValue （DisplayMetrics类中属性density）
+//	 * @return
+//	 */
+//	private int dp2px(Context context, float dipValue) {
+//		final float scale = context.getResources().getDisplayMetrics().density;
+//		return (int) (dipValue * scale + 0.5f);
+//	}
 	//具体的温度转化成相对于 条子最高温距离的 百分比
 	private double TempToPercent(float temp){
 		return Math.max(0,(mMaxTemp- temp)/(mMaxTemp - mMinTemp));
@@ -400,17 +401,18 @@ public class MyCustomRangeSeekBar extends View {
 		btRangeMaxTemp = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_temp_seekbar_realtime_max_arrow);
 		btRangeMinTemp = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_temp_seekbar_realtime_min_arrow);
 
-		mTextSize = a.getDimension(R.styleable.MyCustomRangeSeekBar_SeekBarAllTextSize, dp2px(context, 14));
+		mTextSize = a.getDimension(R.styleable.MyCustomRangeSeekBar_SeekBarAllTextSize, DensityUtil.dp2px(context, 14));
 		mPaint.setColor(ContextCompat.getColor(context,R.color.white));
 		initPaint();//必须放这里
 
 		initView();
 
-		seekbarWidth = dp2px(context, 8);//条子的宽度
-		realTimeHighLowPicWidth = dp2px(context,20);
-		mThumbHeight = Math.max(mThumbMaxImage.getHeight(),dp2px(context, 17));//滑动块的高度
+		seekbarWidth = DensityUtil.dp2px(context, 8);//条子的宽度
+		realTimeHighLowPicWidth = DensityUtil.dp2px(context,20);
+		mThumbHeight = Math.max(mThumbMaxImage.getHeight(),DensityUtil.dp2px(context, 17));//滑动块的高度
 		//滑块的宽度为 尖角的宽度 + 内容设置的宽度
-		mThumbWidth = dp2px(context,5)+Math.max(Math.max(mThumbMaxImage.getWidth(),dp2px(context, 40)),mPaint.measureText(MAX_LENGTH_TEMP));//滑块的宽度
+		mThumbWidth = DensityUtil.dp2px(context,5)+Math.max(Math.max(mThumbMaxImage.getWidth(),
+				DensityUtil.dp2px(context, 40)),mPaint.measureText(MAX_LENGTH_TEMP));//滑块的宽度
 		// MyCustomRangeSeekBar: 40 dp == 40 999.9 length = > 35.0
 //		Log.e(TAG, "MyCustomRangeSeekBar: 40 dp == " + dp2px(context,40) + " 999.9 length = > " + mPaint.measureText(MAX_LENGTH_TEMP));
 

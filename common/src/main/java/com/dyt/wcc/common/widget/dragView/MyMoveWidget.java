@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import com.dyt.wcc.common.R;
 import com.dyt.wcc.common.utils.DensityUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -49,7 +50,7 @@ public class MyMoveWidget extends View {
 	private Paint bgRoundPaint,recZoomBox;//绘制背景画笔，绘制矩形八个方位的画笔
 	private int recZoomBoxPaintStroke;
 
-	private Context mContext;
+	private WeakReference<Context> mContext;
 
 	private int padLeft, padRight, padTop ,padBottom;//内容布局的四周margin
 
@@ -100,13 +101,13 @@ public class MyMoveWidget extends View {
 		this(context, attrs,0);
 	}
 	public MyMoveWidget (Context context, AttributeSet attrs, int defStyleAttr) { super(context, attrs, defStyleAttr);
-		mContext = context;
+		mContext = new WeakReference<>(context);
 		initView();
 		initPaint();
 	}
 	public MyMoveWidget(Context context, TempWidgetObj view , int maxWidth, int maxHeight){
 		super(context);
-		mContext = context;
+		mContext = new WeakReference<>(context);
 		tempWidgetData = view;
 		moveMaxWidth = maxWidth;
 		moveMaxHeight = maxHeight;
@@ -121,10 +122,10 @@ public class MyMoveWidget extends View {
 	}
 
 	private void initView(){
-		padTop = padBottom= padLeft = padRight = 14;//设置背景间距,动态计算。不同dpi有明显差异  3DP
-		mMinHeight = mMinWidth = 15*padLeft;//矩形的最小宽高等于五倍pad
-		recZoomBoxPaintStroke = DensityUtil.dp2px(mContext,5) ;
-		zoomLineLength = DensityUtil.dp2px(mContext,20);
+		padTop = padBottom= padLeft = padRight = DensityUtil.dp2px(mContext.get(),3);//设置背景间距,动态计算。不同dpi有明显差异  3DP
+		mMinHeight = mMinWidth = 15*padLeft;//矩形的最小宽高等于五倍padding  15dp
+		recZoomBoxPaintStroke = DensityUtil.dp2px(mContext.get(),5) ;
+		zoomLineLength = DensityUtil.dp2px(mContext.get(),20);
 	}
 	private Timer mTimer = null;
 	private TimerTask mTimeTask;
@@ -158,12 +159,12 @@ public class MyMoveWidget extends View {
 		pointPaint = new Paint();
 		pointPaint.setColor(getResources().getColor(R.color.bg_preview_toggle_select));
 		linePaint = new Paint();
-		linePaint.setStrokeWidth(DensityUtil.dp2px(mContext,3));
+		linePaint.setStrokeWidth(DensityUtil.dp2px(mContext.get(),3));
 		linePaint.setColor(getResources().getColor(R.color.teal_200));
 
 		pointTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 		pointTextPaint.setStrokeWidth(2);
-		pointTextPaint.setTextSize(DensityUtil.dp2px(mContext,tempWidgetData.getTempTextSize()));
+		pointTextPaint.setTextSize(DensityUtil.dp2px(mContext.get(),tempWidgetData.getTempTextSize()));
 		pointTextPaint.setColor(getResources().getColor(R.color.bg_preview_toggle_select,null));
 //		pointTextPaint.setTypeface(Typeface.FILL_AND_STROKE);
 
@@ -174,11 +175,15 @@ public class MyMoveWidget extends View {
 			}else if (tempWidgetData.getPointTemp().getType()==2){//低温点
 				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_low);
 				pointTextPaint.setColor(getResources().getColor(R.color.min_temp_text_color_blue,null));
-			}else {
+			}else if (tempWidgetData.getPointTemp().getType()==3){
 				Log.e(TAG, "initPaint:  obj type = " + tempWidgetData.getType() + " point type = " + tempWidgetData.getPointTemp().getType()) ;
 				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center);
 				maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center);
-				pointTextPaint.setColor(getResources().getColor(R.color.min_temp_text_color_blue,null));
+				pointTextPaint.setColor(getResources().getColor(R.color.white,null));
+			}else {
+				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_main_preview_measuretemp_point);
+				maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_main_preview_measuretemp_point);
+				pointTextPaint.setColor(getResources().getColor(R.color.white,null));
 			}
 		}else {
 			tempWidgetData.setCanMove(true);
@@ -187,12 +192,12 @@ public class MyMoveWidget extends View {
 		}
 
 		maxTempTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-		maxTempTextPaint.setTextSize(DensityUtil.dp2px(mContext,tempWidgetData.getTempTextSize()));
+		maxTempTextPaint.setTextSize(DensityUtil.dp2px(mContext.get(),tempWidgetData.getTempTextSize()));
 		maxTempTextPaint.setColor(getResources().getColor(R.color.max_temp_text_color_red));
 		maxTempTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
 		minTempTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-		minTempTextPaint.setTextSize(DensityUtil.dp2px(mContext,tempWidgetData.getTempTextSize()));
+		minTempTextPaint.setTextSize(DensityUtil.dp2px(mContext.get(),tempWidgetData.getTempTextSize()));
 		minTempTextPaint.setColor(getResources().getColor(R.color.min_temp_text_color_blue));
 		minTempTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
@@ -233,7 +238,7 @@ public class MyMoveWidget extends View {
 		}
 		hasBackGroundAndTools = tempWidgetData.isCanMove()&& tempWidgetData.isSelect();//初始化是否有工具栏及其背景
 		//√计算工具栏的所需宽高
-		toolsNeedWidth = DensityUtil.dp2px(mContext,(DragTempContainer.perToolsWidthHeightSet + DragTempContainer.perToolsMargin*2));
+		toolsNeedWidth = DensityUtil.dp2px(mContext.get(),(DragTempContainer.perToolsWidthHeightSet + DragTempContainer.perToolsMargin*2));
 		toolsNeedHeight = tempWidgetData.getToolsNumber() * toolsNeedWidth;//包含了 margin
 		//有无工具栏情况下，以左上角为坐标原点的 内容及其背景的坐标。确定工具栏的方位
 		getContentAndBgCoordinate(tempWidgetData,minTempBt);
@@ -397,23 +402,39 @@ public class MyMoveWidget extends View {
 		if (toolsLocationState == WIDGET_DIRECTION_STATE_LEFT_TOP){
 			toolsBgLeft = contentBgLeft - toolsNeedWidth;
 			toolsBgRight = contentBgLeft;
-			toolsBgTop = (contentBgTop + contentBgBottom)/2 - toolsNeedHeight;
-			toolsBgBottom =  (contentBgTop + contentBgBottom)/2;
+			//工具栏 绘制的参考线 为 水平中心线
+//			toolsBgTop = (contentBgTop + contentBgBottom)/2 - toolsNeedHeight;
+//			toolsBgBottom =  (contentBgTop + contentBgBottom)/2;
+			//工具栏 绘制的参考线 为 顶部背景线
+			toolsBgTop = contentBgTop ;
+			toolsBgBottom =  (contentBgTop- toolsNeedHeight);
 		}else if (toolsLocationState == WIDGET_DIRECTION_STATE_LEFT_BOTTOM){
 			toolsBgLeft = contentBgLeft - toolsNeedWidth;
 			toolsBgRight = contentBgLeft;
-			toolsBgTop = (contentBgTop + contentBgBottom)/2 ;
-			toolsBgBottom = (contentBgTop + contentBgBottom)/2 + toolsNeedHeight;
+			//工具栏 绘制的参考线 为 水平中心线
+//			toolsBgTop = (contentBgTop + contentBgBottom)/2 ;
+//			toolsBgBottom = (contentBgTop + contentBgBottom)/2 + toolsNeedHeight;
+			//工具栏 绘制的参考线 为 底部背景线
+			toolsBgTop = contentBgBottom - toolsNeedHeight ;
+			toolsBgBottom = contentBgBottom;
 		}else if (toolsLocationState == WIDGET_DIRECTION_STATE_RIGHT_TOP){
 			toolsBgLeft = contentBgRight ;
 			toolsBgRight = contentBgRight + toolsNeedWidth;
-			toolsBgTop = (contentBgTop + contentBgBottom)/2 - toolsNeedHeight;
-			toolsBgBottom =  (contentBgTop + contentBgBottom)/2;
+			//工具栏 绘制的参考线 为 水平中心线
+//			toolsBgTop = (contentBgTop + contentBgBottom)/2 - toolsNeedHeight;
+//			toolsBgBottom =  (contentBgTop + contentBgBottom)/2;
+			//工具栏 绘制的参考线 为 顶部背景线
+			toolsBgTop = contentBgTop ;
+			toolsBgBottom =  (contentBgTop- toolsNeedHeight);
 		}else if (toolsLocationState == WIDGET_DIRECTION_STATE_RIGHT_BOTTOM){
 			toolsBgLeft = contentBgRight ;
 			toolsBgRight = contentBgRight + toolsNeedWidth;
-			toolsBgTop = (contentBgTop + contentBgBottom)/2 ;
-			toolsBgBottom = (contentBgTop + contentBgBottom)/2 + toolsNeedHeight;
+			//工具栏 绘制的参考线 为 水平中心线
+//			toolsBgTop = (contentBgTop + contentBgBottom)/2 ;
+//			toolsBgBottom = (contentBgTop + contentBgBottom)/2 + toolsNeedHeight;
+			//工具栏 绘制的参考线 为 底部背景线
+			toolsBgTop = contentBgBottom - toolsNeedHeight ;
+			toolsBgBottom = contentBgBottom;
 		}
 //		if (isDebug){
 //			Log.e(TAG, " toolsBgLeft " + toolsBgLeft + " toolsBgRight " + toolsBgRight +
@@ -686,10 +707,10 @@ public class MyMoveWidget extends View {
 			float left , right , top , bottom;
 			if (resPic!= null && data.getToolsNumber() != 0){
 				for (int i = 0 ; i < data.getToolsNumber(); i++){
-					left = toolsBgLeft + DensityUtil.dp2px(mContext,DragTempContainer.perToolsMargin);
-					right =toolsBgRight - DensityUtil.dp2px(mContext,DragTempContainer.perToolsMargin);
-					top = toolsBgTop + DensityUtil.dp2px(mContext,DragTempContainer.perToolsMargin) + (toolsNeedWidth)* i ;
-					bottom = toolsBgTop + toolsNeedWidth*(i+1) - DensityUtil.dp2px(mContext,DragTempContainer.perToolsMargin);
+					left = toolsBgLeft + DensityUtil.dp2px(mContext.get(),DragTempContainer.perToolsMargin);
+					right =toolsBgRight - DensityUtil.dp2px(mContext.get(),DragTempContainer.perToolsMargin);
+					top = toolsBgTop + DensityUtil.dp2px(mContext.get(),DragTempContainer.perToolsMargin) + (toolsNeedWidth)* i ;
+					bottom = toolsBgTop + toolsNeedWidth*(i+1) - DensityUtil.dp2px(mContext.get(),DragTempContainer.perToolsMargin);
 
 					perToolsPic = new RectF(left,top,right,bottom);
 
@@ -961,76 +982,76 @@ public class MyMoveWidget extends View {
 
 		switch (pressDirection){
 			case WIDGET_DIRECTION_STATE_LEFT:
-				if ((sx + xOff) >= padLeft && (ex - (sx + xOff)) >= DensityUtil.dp2px(mContext,70) ){
+				if ((sx + xOff) >= padLeft && (ex - (sx + xOff)) >= DensityUtil.dp2px(mContext.get(),70) ){
 					sx += xOff;
 					data.getOtherTemp().setStartPointX(sx);
 					requestLayout();
 				}
 				break;
 			case WIDGET_DIRECTION_STATE_LEFT_TOP:
-				if ((sx + xOff) >= padLeft && (ex - (sx + xOff)) >= DensityUtil.dp2px(mContext,70) ){
+				if ((sx + xOff) >= padLeft && (ex - (sx + xOff)) >= DensityUtil.dp2px(mContext.get(),70) ){
 					sx += xOff;
 					data.getOtherTemp().setStartPointX(sx);
 					requestLayout();
 				}
-				if ((sy + yOff) >= padTop && (ey - (sy + yOff)) >= DensityUtil.dp2px(mContext,70)){
+				if ((sy + yOff) >= padTop && (ey - (sy + yOff)) >= DensityUtil.dp2px(mContext.get(),70)){
 					sy += yOff;
 					data.getOtherTemp().setStartPointY(sy);
 					requestLayout();
 				}
 				break;
 			case WIDGET_DIRECTION_STATE_LEFT_BOTTOM:
-				if ((sx + xOff) >= padLeft && (ex - (sx + xOff)) >= DensityUtil.dp2px(mContext,70) ){
+				if ((sx + xOff) >= padLeft && (ex - (sx + xOff)) >= DensityUtil.dp2px(mContext.get(),70) ){
 					sx += xOff;
 					data.getOtherTemp().setStartPointX(sx);
 					requestLayout();
 				}
-				if ((ey + yOff) <= (moveMaxHeight - padBottom) && ((ey + yOff) - sy) >= DensityUtil.dp2px(mContext,70)){
+				if ((ey + yOff) <= (moveMaxHeight - padBottom) && ((ey + yOff) - sy) >= DensityUtil.dp2px(mContext.get(),70)){
 					ey += yOff;
 					data.getOtherTemp().setEndPointY(ey);
 					requestLayout();
 				}
 				break;
 			case WIDGET_DIRECTION_STATE_TOP:
-				if ((sy + yOff) >= padTop && (ey - (sy + yOff)) >= DensityUtil.dp2px(mContext,70)){
+				if ((sy + yOff) >= padTop && (ey - (sy + yOff)) >= DensityUtil.dp2px(mContext.get(),70)){
 					sy += yOff;
 					data.getOtherTemp().setStartPointY(sy);
 					requestLayout();
 				}
 				break;
 			case WIDGET_DIRECTION_STATE_BOTTOM:
-				if ((ey + yOff) <= (moveMaxHeight - padBottom) && ((ey + yOff) - sy) >= DensityUtil.dp2px(mContext,70)){
+				if ((ey + yOff) <= (moveMaxHeight - padBottom) && ((ey + yOff) - sy) >= DensityUtil.dp2px(mContext.get(),70)){
 					ey += yOff;
 					data.getOtherTemp().setEndPointY(ey);
 					requestLayout();
 				}
 				break;
 			case WIDGET_DIRECTION_STATE_RIGHT:
-				if ((ex+xOff) - sx >= DensityUtil.dp2px(mContext,70) && (ex + xOff) <= (moveMaxWidth - padRight)){
+				if ((ex+xOff) - sx >= DensityUtil.dp2px(mContext.get(),70) && (ex + xOff) <= (moveMaxWidth - padRight)){
 					ex += xOff;
 					data.getOtherTemp().setEndPointX(ex);
 					requestLayout();
 				}
 				break;
 			case WIDGET_DIRECTION_STATE_RIGHT_TOP:
-				if ((sy + yOff) >= padTop && (ey - (sy + yOff)) >= DensityUtil.dp2px(mContext,70)){
+				if ((sy + yOff) >= padTop && (ey - (sy + yOff)) >= DensityUtil.dp2px(mContext.get(),70)){
 					sy += yOff;
 					data.getOtherTemp().setStartPointY(sy);
 					requestLayout();
 				}
-				if ((ex+xOff) - sx >= DensityUtil.dp2px(mContext,70) && (ex + xOff) <= (moveMaxWidth - padRight)){
+				if ((ex+xOff) - sx >= DensityUtil.dp2px(mContext.get(),70) && (ex + xOff) <= (moveMaxWidth - padRight)){
 					ex += xOff;
 					data.getOtherTemp().setEndPointX(ex);
 					requestLayout();
 				}
 				break;
 			case WIDGET_DIRECTION_STATE_RIGHT_BOTTOM:
-				if ((ex+xOff) - sx >= DensityUtil.dp2px(mContext,70) && (ex + xOff) <= (moveMaxWidth - padRight)){
+				if ((ex+xOff) - sx >= DensityUtil.dp2px(mContext.get(),70) && (ex + xOff) <= (moveMaxWidth - padRight)){
 					ex += xOff;
 					data.getOtherTemp().setEndPointX(ex);
 					requestLayout();
 				}
-				if ((ey + yOff) <= (moveMaxHeight - padBottom) && ((ey + yOff) - sy) >= DensityUtil.dp2px(mContext,70)){
+				if ((ey + yOff) <= (moveMaxHeight - padBottom) && ((ey + yOff) - sy) >= DensityUtil.dp2px(mContext.get(),70)){
 					ey += yOff;
 					data.getOtherTemp().setEndPointY(ey);
 					requestLayout();

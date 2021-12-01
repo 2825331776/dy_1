@@ -55,15 +55,15 @@
 <!--                android:layout_marginEnd="@dimen/dimen_5dp"-->
 <!--                android:scaleType="fitXY"-->
 <!--                android:src="@mipmap/ic_gallery_more" />-->
-            <Button
-                android:id="@+id/bt_gallery_choice_all"
-                android:layout_width="@dimen/dimen_30dp"
-                android:layout_height="@dimen/dimen_30dp"
-                android:layout_marginEnd="@dimen/dimen_5dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/bt_all_gallery_rightRl"
-                android:background="@drawable/selector_main_gallery_bt_all"/>
+<!--            <Button-->
+<!--                android:id="@+id/bt_gallery_choice_all"-->
+<!--                android:layout_width="@dimen/dimen_30dp"-->
+<!--                android:layout_height="@dimen/dimen_30dp"-->
+<!--                android:layout_marginEnd="@dimen/dimen_5dp"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintRight_toLeftOf="@id/bt_all_gallery_rightRl"-->
+<!--                android:background="@drawable/selector_main_gallery_bt_all"/>-->
 
             <Button
                 android:id="@+id/bt_all_gallery_rightRl"

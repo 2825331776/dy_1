@@ -2614,6 +2614,7 @@ mipmap ic_areacheck_tools_delete
 mipmap ic_higlowtemp_draw_widget_center
 mipmap ic_higlowtemp_draw_widget_high
 mipmap ic_higlowtemp_draw_widget_low
+mipmap ic_main_preview_measuretemp_point
 mipmap ic_max
 mipmap ic_min
 mipmap ic_temp_seekbar_realtime_max_arrow
