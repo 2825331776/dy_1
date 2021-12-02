@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 
 import com.dyt.wcc.common.R;
 import com.dyt.wcc.common.utils.DensityUtil;
+import com.dyt.wcc.common.utils.KeyboardsUtils;
 import com.dyt.wcc.common.widget.MyCustomRangeSeekBar;
 
 import java.lang.ref.WeakReference;
@@ -889,9 +890,11 @@ public class DragTempContainer extends RelativeLayout {
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
 		Log.e(TAG, "onTouchEvent: mode ==> " + drawTempMode + " action ==> "+ event.getAction());
+		KeyboardsUtils.hintKeyBoards(this);
 		if (drawTempMode != -1){//添加控件
 			switch (event.getAction()){
 				case MotionEvent.ACTION_DOWN:
+
 //					if (drawTempMode != -1){
 						startPressX = (int) event.getX();
 						startPressY = (int) event.getY();

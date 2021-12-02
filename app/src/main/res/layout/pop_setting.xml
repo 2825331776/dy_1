@@ -29,7 +29,7 @@
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/gl_setting_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_end="@dimen/dimen_100dp"
+                app:layout_constraintGuide_end="@dimen/dimen_80dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -84,6 +84,8 @@
 <!--                android:layout_marginStart="@dimen/dimen_20dp"-->
 <!--                android:layout_width="wrap_content"-->
 <!--                android:layout_height="wrap_content"/>-->
+
+<!--            切换语言按钮-->
             <Button
                 android:id="@+id/bt_main_preview_setting_choice_language"
                 android:layout_width="wrap_content"
@@ -93,15 +95,26 @@
                 app:layout_constraintTop_toTopOf="@id/tv_language"
                 app:layout_constraintBottom_toBottomOf="@id/tv_language"/>
 
-            <Spinner
-                android:id="@+id/spinner_setting_language"
-                app:layout_constraintRight_toLeftOf="@id/gl_setting_content"
+<!--            <Spinner-->
+<!--                android:id="@+id/spinner_setting_language"-->
+<!--                app:layout_constraintRight_toLeftOf="@id/gl_setting_content"-->
+<!--                app:layout_constraintTop_toTopOf="@id/tv_language"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/tv_language"-->
+<!--                android:layout_marginStart="@dimen/dimen_10dp"-->
+<!--                android:spinnerMode="dialog"-->
+<!--                android:layout_width="@dimen/dimen_100dp"-->
+<!--                android:layout_height="@dimen/dimen_25dp"/>-->
+
+            <Button
+                android:id="@+id/bt_show_choice_language"
+                android:text="@string/setting_language_chinese"
                 app:layout_constraintTop_toTopOf="@id/tv_language"
                 app:layout_constraintBottom_toBottomOf="@id/tv_language"
-                android:layout_marginStart="@dimen/dimen_10dp"
-                android:spinnerMode="dialog"
-                android:layout_width="@dimen/dimen_100dp"
-                android:layout_height="@dimen/dimen_25dp"/>
+                app:layout_constraintRight_toLeftOf="@id/gl_setting_content"
+                android:background="@drawable/bg_define_my_toggle_toggle"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"/>
 
 
 
@@ -215,7 +228,7 @@
 
             <TextView
                 android:id="@+id/tv_camera_setting_emittance_range"
-                android:text="(0.01–1.00)"
+                android:text="(0.01–1)"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:gravity="center"
@@ -297,7 +310,7 @@
                 android:textColorHint="@color/white"
                 android:textColor="@color/white"
                 android:textSize="16sp"
-                android:inputType="numberDecimal"
+                android:inputType="number"
                 android:background="@drawable/shape_bg_pop_setting_edit"
                 android:singleLine="true"
                 android:imeOptions="actionDone"
@@ -413,18 +426,18 @@
                 android:imeOptions="actionDone"
                 android:layout_width="@dimen/dimen_55dp"
                 android:layout_height="0dp"/>
-            <!--            校正 单位-->
-            <TextView
-                android:id="@+id/tv_camera_setting_revise_range"
-                android:text="(-3-3)"
-                android:gravity="center"
-                android:textSize="16sp"
-                android:textColor="@color/white"
-                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"
-                app:layout_constraintTop_toTopOf="@id/et_camera_setting_revise"
-                app:layout_constraintBottom_toBottomOf="@id/et_camera_setting_revise"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"/>
+<!--            &lt;!&ndash;            校正 单位&ndash;&gt;-->
+<!--            <TextView-->
+<!--                android:id="@+id/tv_camera_setting_revise_range"-->
+<!--                android:text="(-3-3)"-->
+<!--                android:gravity="center"-->
+<!--                android:textSize="16sp"-->
+<!--                android:textColor="@color/white"-->
+<!--                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"-->
+<!--                app:layout_constraintTop_toTopOf="@id/et_camera_setting_revise"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/et_camera_setting_revise"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="0dp"/>-->
 
             <!--        反射温度-->
             <TextView
@@ -471,16 +484,16 @@
                 android:layout_height="0dp"/>
 
             <!--            反射温度 范围-->
-            <TextView
-                android:id="@+id/tv_camera_setting_reflect_range"
-                android:text="(-10-40)"
-                android:gravity="center"
-                android:textColor="@color/white"
-                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"
-                app:layout_constraintTop_toTopOf="@id/et_camera_setting_reflect"
-                app:layout_constraintBottom_toBottomOf="@id/et_camera_setting_reflect"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+<!--            <TextView-->
+<!--                android:id="@+id/tv_camera_setting_reflect_range"-->
+<!--                android:text="(-20-120)"-->
+<!--                android:gravity="center"-->
+<!--                android:textColor="@color/white"-->
+<!--                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"-->
+<!--                app:layout_constraintTop_toTopOf="@id/et_camera_setting_reflect"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/et_camera_setting_reflect"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"/>-->
 
 <!--        大气温度-->
             <TextView
@@ -527,17 +540,17 @@
                 android:layout_width="@dimen/dimen_55dp"
                 android:layout_height="0dp"/>
             <!--            环境温度 单位-->
-            <TextView
-                android:id="@+id/tv_camera_setting_freeAirTemp_range"
-                android:text="(-10-40)"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"
-                app:layout_constraintTop_toTopOf="@id/et_camera_setting_freeAirTemp"
-                app:layout_constraintBottom_toBottomOf="@id/et_camera_setting_freeAirTemp"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/dimen_0dp"/>
+<!--            <TextView-->
+<!--                android:id="@+id/tv_camera_setting_freeAirTemp_range"-->
+<!--                android:text="(-10-40)"-->
+<!--                android:gravity="center"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:textSize="16sp"-->
+<!--                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"-->
+<!--                app:layout_constraintTop_toTopOf="@id/et_camera_setting_freeAirTemp"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/et_camera_setting_freeAirTemp"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="@dimen/dimen_0dp"/>-->
 <!--            <ImageButton-->
 <!--                android:id="@+id/ib_camera_setting_freeAirTemp"-->
 <!--                app:layout_constraintTop_toTopOf="@id/tv_camera_setting_freeAirTemp"-->

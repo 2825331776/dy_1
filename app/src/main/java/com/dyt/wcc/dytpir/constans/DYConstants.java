@@ -3,9 +3,6 @@ package com.dyt.wcc.dytpir.constans;
 import android.os.Environment;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
 * <p>Copyright (C), 2021.04.01-? , DY Technology    </p>
@@ -22,8 +19,15 @@ public class DYConstants {
 			+ File.separator+"DYTCamera";
 
 
-	public static final List<String> languageArray = new CopyOnWriteArrayList<>(Arrays.asList("中文", "English"));
-
+	public static final String [] languageArray = new String []{"中文", "English"};
+	public static final String [] tempUnit = new String[]{"℃","℉","K"};
+	//设置界面六个设置的值：保存在本地的sp  当中的都是 摄氏度
+	public static final String setting_emittance = "setting_emittance";//发射率
+	public static final String setting_distance = "setting_distance";//距离
+	public static final String setting_humidity = "setting_humidity";//湿度
+	public static final String setting_correction = "setting_correction";//修正
+	public static final String setting_reflect = "setting_reflect";//反射温度
+	public static final String setting_environment = "setting_environment";//环境温度
 
 	public static final int CAMERA_DATA_MODE_8004 = 0x8004;
 	public static final int CAMERA_DATA_MODE_8005 = 0x8005;

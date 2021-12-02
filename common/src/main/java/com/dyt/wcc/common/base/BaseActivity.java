@@ -2,11 +2,16 @@ package com.dyt.wcc.common.base;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
+
+import com.dyt.wcc.common.utils.KeyboardsUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -39,5 +44,23 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 	@Override
 	public void onBackPressed () {
 		super.onBackPressed();
+	}
+
+
+	/**
+	 * 点击非编辑区域收起键盘
+	 * 获取点击事件
+	 * CSDN-深海呐
+	 */
+	@CallSuper
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		if (ev.getAction() ==  MotionEvent.ACTION_DOWN ) {
+			View view = getCurrentFocus();
+			if (KeyboardsUtils.isShouldHideKeyBord(view, ev)) {
+				KeyboardsUtils.hintKeyBoards(view);
+			}
+		}
+		return super.dispatchTouchEvent(ev);
 	}
 }

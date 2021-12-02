@@ -1,6 +1,8 @@
-package com.dyt.wcc.dytpir.ui.preview;
+package com.dyt.wcc.dytpir.utils;
 
 import android.util.Log;
+
+import com.dyt.wcc.dytpir.constans.DYConstants;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,12 +40,12 @@ public class ByteUtilsCC {
 	public static Map<String,Float> byte2Float(byte [] data){
 		Map<String , Float> result = new HashMap<>();
 
-		result.put("Fix",get4Byte2Float(data,0));
-		result.put("Refltmp",get4Byte2Float(data,4));
-		result.put("Airtmp",get4Byte2Float(data,8));
-		result.put("humi",get4Byte2Float(data,12));
-		result.put("emiss",get4Byte2Float(data,16));
-		result.put("distance",get2Byte2Short(data,20));//getShort   共计 拿了byte的 前 0-21
+		result.put(DYConstants.setting_correction,get4Byte2Float(data,0));
+		result.put(DYConstants.setting_reflect,get4Byte2Float(data,4));
+		result.put(DYConstants.setting_environment,get4Byte2Float(data,8));
+		result.put(DYConstants.setting_humidity,get4Byte2Float(data,12));
+		result.put(DYConstants.setting_emittance,get4Byte2Float(data,16));
+		result.put(DYConstants.setting_distance,get2Byte2Short(data,20));//getShort   共计 拿了byte的 前 0-21
 		Log.e("===Map=======",result.toString());
 		return result;
 	}
