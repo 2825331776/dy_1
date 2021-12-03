@@ -18,7 +18,7 @@
 
     <string name="AlarmTempInput">Input</string>
     <string name="cancel">Cancel</string>
-    <string name="confirm">Confirm</string>
+    <string name="confirm">OK</string>
 
     <string name="CheckLatestVersion">Check the latest version</string>
     <string name="VersionName">Version Name：</string>

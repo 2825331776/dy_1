@@ -196,25 +196,35 @@
 
 <!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 <!--视频预览页面布局-->
-        <FrameLayout
-            android:id="@+id/fl_preview"
-            app:layout_constraintLeft_toRightOf="@id/gl_main_left"
-            app:layout_constraintRight_toLeftOf="@id/tv_line2"
+        <RelativeLayout
+            android:id="@+id/rl_preview_container"
             android:layout_width="@dimen/dimen_0dp"
-            android:layout_height="match_parent">
-
-            <com.dyt.wcc.cameracommon.widget.UVCCameraTextureView
-                android:id="@+id/textureView_preview_fragment"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:background="@color/white"
+            app:layout_constraintLeft_toRightOf="@id/gl_main_left"
+            app:layout_constraintRight_toLeftOf="@id/tv_line2">
+            <FrameLayout
+                android:id="@+id/fl_preview"
+                android:background="@color/bg_preview_right"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent">
 
-            <com.dyt.wcc.common.widget.dragView.DragTempContainer
-                android:id="@+id/dragTempContainer_preview_fragment"
-                android:background="#00000000"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                <com.dyt.wcc.cameracommon.widget.UVCCameraTextureView
+                    android:id="@+id/textureView_preview_fragment"
+                    app:layout_constraintDimensionRatio="4:3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <com.dyt.wcc.common.widget.dragView.DragTempContainer
+                    app:layout_constraintDimensionRatio="4:3"
+                    android:id="@+id/dragTempContainer_preview_fragment"
+                    android:background="#00000000"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
 
-        </FrameLayout>
+            </FrameLayout>
+        </RelativeLayout>
+
 
 <!--        计时器-->
         <Chronometer
@@ -241,8 +251,10 @@
             android:id="@+id/ll_container_preview_seekbar"
             android:layout_height="match_parent"
             android:layout_width="wrap_content"
+            android:layout_marginLeft="@dimen/dimen_2dp"
+            android:layout_marginRight="@dimen/dimen_2dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toRightOf="@id/fl_preview"
+            app:layout_constraintLeft_toRightOf="@id/rl_preview_container"
             app:layout_constraintRight_toLeftOf="@id/gl_main_right"
             android:orientation="horizontal"
             android:gravity="center"

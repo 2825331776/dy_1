@@ -1,4 +1,4 @@
-package com.dyt.wcc.dytpir.ui.gallry;
+package com.dyt.wcc.dytpir.ui.gallery;
 
 import android.content.Context;
 import android.view.LayoutInflater;

@@ -5,7 +5,7 @@
     <data>
         <variable
             name="FgGallery"
-            type="com.dyt.wcc.dytpir.ui.gallry.GalleryFragment" />
+            type="com.dyt.wcc.dytpir.ui.gallery.GalleryFragment" />
     </data>
 <!-- android:background="@color/bg_preview_right"-->
     <androidx.constraintlayout.widget.ConstraintLayout

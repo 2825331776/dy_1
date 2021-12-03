@@ -1,4 +1,4 @@
-package com.dyt.wcc.dytpir.ui.gallry;
+package com.dyt.wcc.dytpir.ui.gallery;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
@@ -48,12 +48,33 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 		public boolean handleMessage (@NonNull Message msg) {
 			switch (msg.what){
 				case DYConstants.IMAGE_READY:
+					//在此之前 对数据进行排序
+					toSort();
 					initRecycleView();
 					break;
 			}
 			return false;
 		}
 	});
+
+	private void toSort(){
+		if (imagePathList!=null){
+			//冒泡排序
+			GalleryBean temp= null;
+
+			for(int i = 0;i < imagePathList.size()-1;i++){
+				for(int j = 0;j <imagePathList.size()-1-i;j++){
+					if(imagePathList.get(j).getCreateDate() < imagePathList.get(j+1).getCreateDate()){
+						temp = imagePathList.get(j);
+						imagePathList.set(j,imagePathList.get(j+1));
+						imagePathList.set(j+1, temp);
+					}
+				}
+			}
+			temp = null;
+
+		}
+	}
 
 	private void  initRecycleView(){
 		if (selectCondition == 0){
@@ -95,13 +116,13 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 				Uri uriAll =  MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 				//查询的数据
 				String [] projection = new String[]{
-						MediaStore.Images.Thumbnails._ID ,MediaStore.Images.Thumbnails.DATA};
+						MediaStore.Images.Thumbnails._ID ,MediaStore.Images.Thumbnails.DATA,MediaStore.Images.Media.DATE_MODIFIED};
 				//条件
 				String selection = MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?";
 				//条件参数
 				String [] selectionArgs = new String[] {"image/png", "image/jpeg"};
 				//查询排序方式
-				String sort = MediaStore.Images.Media.DATE_MODIFIED + " desc ";
+				String sort = MediaStore.Images.Media.DATE_MODIFIED + " ASC ";
 
 				Cursor cursor = contentResolver.query(uriAll,projection,
 						selection, selectionArgs, sort);
@@ -110,6 +131,7 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 				int idIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID);
 				// 获取data字段是第几列，该方法最好在循环之前做好
 				int dataIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+				int imageDateModifiedColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_MODIFIED);
 
 				while (cursor.moveToNext()) {
 					long id = cursor.getLong(idIndex);
@@ -118,11 +140,13 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 					//uri转 绝对路径， 如果路径是DYTCamera 结尾，则添加到list
 					// 获取到每张图片的绝对路径
 					String path = cursor.getString(dataIndex);
+					long imageDataModified = cursor.getLong(imageDateModifiedColumnIndex);
 					if (path.contains(DYConstants.PIC_PATH)){
 						GalleryBean imageBean = new GalleryBean();
 						imageBean.setType(0);
 						imageBean.setAbsoluteAddress(path);
 						imageBean.setUriAddress(imageUri);
+						imageBean.setCreateDate(imageDataModified);
 
 						imagePathList.add(imageBean);
 					}
@@ -131,13 +155,15 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 
 				Uri uriVideo =  MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 				//查询的数据
-				String [] videoProjection = new String[]{MediaStore.Video.Media._ID ,MediaStore.Video.Media.DATA ,MediaStore.Video.Media.DURATION};
+				String [] videoProjection = new String[]{MediaStore.Video.Media._ID ,MediaStore.Video.Media.DATA
+						,MediaStore.Video.Media.DURATION,MediaStore.Images.Media.DATE_MODIFIED};
+
 				//条件
 				String videoSelection = MediaStore.Video.Media.MIME_TYPE + "=?";
 				//条件参数
 				String [] videoSelectionArgs = new String[] {"video/mp4"};
 				//查询排序方式
-				String videoSort = MediaStore.Video.Media.DATE_MODIFIED + " desc ";
+				String videoSort = MediaStore.Video.Media.DATE_MODIFIED + " ASC ";
 
 				Cursor videoCursor = contentResolver.query(uriVideo,videoProjection,
 						videoSelection, videoSelectionArgs, videoSort);
@@ -148,6 +174,7 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 				int videoDataIndex = videoCursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
 
 				int duration = videoCursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.DURATION);
+				int videoDateModifiedColumnIndex = videoCursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.DATE_MODIFIED);
 
 				while (videoCursor.moveToNext()) {
 					long id = videoCursor.getLong(videoIdIndex);
@@ -157,6 +184,7 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 					// 获取到每张图片的绝对路径
 					String path = videoCursor.getString(videoDataIndex);
 					int durations = videoCursor.getInt(duration);
+					long dataModified = videoCursor.getLong(videoDateModifiedColumnIndex);
 
 					if (path.contains(DYConstants.PIC_PATH)){
 
@@ -165,14 +193,13 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 						videoBean.setAbsoluteAddress(path);
 						videoBean.setUriAddress(imageUri);
 						videoBean.setVideoDuration(durations);
+						videoBean.setCreateDate(dataModified);
 
 						imagePathList.add(videoBean);
 					}
 				}
 				videoCursor.close();
-
 				mHandler.sendEmptyMessage(DYConstants.IMAGE_READY);
-
 				}
 		}).start();
 	}

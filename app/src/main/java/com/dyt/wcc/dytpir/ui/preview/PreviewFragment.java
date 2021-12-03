@@ -357,9 +357,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		int screenWidth = dm.widthPixels;
 		int screenHeight = dm.heightPixels;
 
-//		ViewGroup.LayoutParams fLayoutParams = new ViewGroup.LayoutParams(screenHeight/3*4,screenHeight);
+//		FrameLayout.LayoutParams fLayoutParams = new FrameLayout.LayoutParams(screenHeight/3*4,screenHeight);
 //		mDataBinding.dragTempContainerPreviewFragment.setLayoutParams(fLayoutParams);
 //		mDataBinding.textureViewPreviewFragment.setw(fLayoutParams);
+		mDataBinding.flPreview.getLayoutParams().width = 600;
+		mDataBinding.flPreview.getLayoutParams().height = 450;
 
 		PermissionX.init(this).permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE).request(new RequestCallback() {
 			@Override

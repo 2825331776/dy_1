@@ -45,7 +45,7 @@
     <fragment
         android:id="@+id/nav_galleryFg"
         android:label="nav_gallery_fragment"
-        android:name="com.dyt.wcc.dytpir.ui.gallry.GalleryFragment"
+        android:name="com.dyt.wcc.dytpir.ui.gallery.GalleryFragment"
         tools:layout="@layout/fragment_gallery_main">
 
 <!--        用回退替换掉此处-->

@@ -1,4 +1,4 @@
-package com.dyt.wcc.dytpir.ui.gallry;
+package com.dyt.wcc.dytpir.ui.gallery;
 
 import android.net.Uri;
 
@@ -7,7 +7,7 @@ import android.net.Uri;
  * <p>Author：stefan cheng        </p>
  * <p>Create Date：2021/10/29  14:06     </p>
  * <p>Description：@todo         </p>
- * <p>PackagePath: com.dyt.wcc.dytpir.ui.gallry     </p>
+ * <p>PackagePath: com.dyt.wcc.dytpir.ui.gallery     </p>
  */
 public class GalleryBean {
 	//Uri地址
@@ -20,7 +20,15 @@ public class GalleryBean {
 	private boolean isSelect ;
 	//视频时长
 	private int videoDuration ;
+	//文件的最后修改日期
+	private long createDate;
 
+	public long getCreateDate () {
+		return createDate;
+	}
+	public void setCreateDate (long createDate) {
+		this.createDate = createDate;
+	}
 	public int getVideoDuration () {
 		return videoDuration;
 	}
