@@ -145,7 +145,7 @@ void FrameImage::showTempRange(float maxPercent,float minPercent,float maxValue 
 //        maxThumbAD = getDichotomySearch(temperatureTable,16384,&maxThumbValue,1000,16384);
 //        minThumbAD = getDichotomySearch(temperatureTable,16384,&minThumbValue,1000,16384);
 //        roThumb = maxThumbAD - minThumbAD;
-//        LOGE(" maxThumbAD =   %d  minThumbAD = %d  roThumb =   %d" , maxThumbAD, minThumbAD ,roThumb);
+        LOGE(" maxThumbAD =   %d  minThumbAD = %d  roThumb =   %d" , maxThumbAD, minThumbAD ,roThumb);
 //    }
     LOGE("temp maxThumbValue = %f , min == %f" ,maxThumbValue,minThumbValue);
 }
@@ -331,6 +331,7 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
         min = minThumbAD;
         ro = roThumb;
     }
+//    LOGE( " maxThumbAD  === %d , minThumbAd === %d   , roThumb === %d",maxThumbAD, minThumbAD , roThumb);
 
     //框内细查 先绘制灰度图,根据原有的ad值
     if (mIsAreachecked){
@@ -402,12 +403,16 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
         }
     } else{
         //非框内细查，则根据 色板的 拖动条设置去渲染
-
+//        LOGE("this max ==============%d========================",max);
         for (int i = 0; i < requestHeight - 4; i++) {
             for (int j = 0; j < requestWidth; j++) {
-//              LOGE("this requestHeight and requestwidth==============%d========================%d",requestHeight,requestWidth);
+
                 //黑白：灰度值0-254单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
 //              LOGE("====================%d======================",tmp_buf[i * requestWidth + j]);
+
+//                if (isFixedTempStrip ){
+//                    if ()
+//                }
                 int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
                 if (gray < 0) {
                     gray = 0;
@@ -614,7 +619,8 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
         maxThumbAD = getDichotomySearch(temperatureTable,16384,maxThumbValue,4000,12000);
         minThumbAD = getDichotomySearch(temperatureTable,16384,minThumbValue,4000,12000);
         isNeedFreshAD = false;
-//        LOGE("maxt == %f    mint ==> %f   maxad %d  minad =%d ",temperatureData[3],temperatureData[6],maxThumbAD,minThumbAD);
+        //3 全幅最高温 ，6 是全幅最低温 AD值
+        LOGE("maxt == %f    mint ==> %f   maxad %d  minad =%d ",temperatureData[3],temperatureData[6],maxThumbAD,minThumbAD);
 //        LOGE("max temp   = %f  , min temp = %f",)
     }
 

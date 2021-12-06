@@ -328,7 +328,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //				if (isDebug)Log.e(TAG, "onMaxMove: 0-100 percent" + maxPercent + " min == > " +  minPercent);
 				if (isDebug)Log.e(TAG, "onMaxMove: value == > " + maxValue + " min == > " +  minValue);
 				// && maxValue != Float.NaN && minValue != Float.NaN
-				if (mUvcCameraHandler!= null&& !Float.isNaN(maxValue) && !Float.isNaN(minValue))mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
+				if (mUvcCameraHandler!= null&& !Float.isNaN(maxValue) && !Float.isNaN(minValue))
+					mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
 			}
 		});
 
@@ -360,8 +361,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //		FrameLayout.LayoutParams fLayoutParams = new FrameLayout.LayoutParams(screenHeight/3*4,screenHeight);
 //		mDataBinding.dragTempContainerPreviewFragment.setLayoutParams(fLayoutParams);
 //		mDataBinding.textureViewPreviewFragment.setw(fLayoutParams);
-		mDataBinding.flPreview.getLayoutParams().width = 600;
-		mDataBinding.flPreview.getLayoutParams().height = 450;
+//		mDataBinding.flPreview.getLayoutParams().width = 600;
+//		mDataBinding.flPreview.getLayoutParams().height = 450;
 
 		PermissionX.init(this).permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE).request(new RequestCallback() {
 			@Override
@@ -884,7 +885,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 							View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_company_info,null);
 							PopCompanyInfoBinding popCompanyInfoBinding = DataBindingUtil.bind(view);
 							assert popCompanyInfoBinding != null;
-							popCompanyInfoBinding.tvCheckVersion.setOnClickListener(chartModeCheckListener);
+//							popCompanyInfoBinding.tvCheckVersion.setOnClickListener(chartModeCheckListener);
 							popCompanyInfoBinding.tvVersionName.setText(""+ LanguageUtils.getVersionName(mContext.get()));
 
 							showPopWindows(view,80,40,20);
@@ -1196,9 +1197,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				case R.id.iv_chart_mode_rectangle:
 //					if (isDebug)Toast.makeText(mContext.get(),"iv_chart_mode_rectangle ", Toast.LENGTH_SHORT).show();
 					break;
-				case R.id.tv_check_version://版本更新
+//				case R.id.tv_check_version://版本更新
 //					if (isDebug)Toast.makeText(mContext.get(),"company check_version ", Toast.LENGTH_SHORT).show();
-					break;
+//					break;
 			}
 		}
 	};

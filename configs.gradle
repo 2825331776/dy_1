@@ -8,7 +8,7 @@ ext{
             targetSdkV      :27,
             //版本号和名字
             VCode           :2,
-            VName           :"0.0.2",
+            VName           :"1.0.0",
 
             supportV        :"27.0.0"
     ]

@@ -7,11 +7,9 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextPaint;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,7 +45,7 @@ public class MyMoveWidget extends View {
 
 	private TextPaint pointTextPaint, maxTempTextPaint, minTempTextPaint , centerTempTextPaint;//画笔：点文字、最高最低文字、 中心点文字
 	private Paint pointPaint ,linePaint;//画笔：画点图片 、绘制线矩形的线条画笔
-	private Paint bgRoundPaint,recZoomBox;//绘制背景画笔，绘制矩形八个方位的画笔
+	private Paint recZoomBox;//绘制背景画笔，绘制矩形八个方位的画笔//bgRoundPaint,
 	private int recZoomBoxPaintStroke;
 
 	private WeakReference<Context> mContext;
@@ -97,14 +95,14 @@ public class MyMoveWidget extends View {
 		this.mChildToolsClickListener = childToolsClickListener;
 	}
 
-	public MyMoveWidget (Context context, AttributeSet attrs) {
-		this(context, attrs,0);
-	}
-	public MyMoveWidget (Context context, AttributeSet attrs, int defStyleAttr) { super(context, attrs, defStyleAttr);
-		mContext = new WeakReference<>(context);
-		initView();
-		initPaint();
-	}
+//	public MyMoveWidget (Context context, AttributeSet attrs) {
+//		this(context, attrs,0);
+//	}
+//	public MyMoveWidget (Context context, AttributeSet attrs, int defStyleAttr) { super(context, attrs, defStyleAttr);
+//		mContext = new WeakReference<>(context);
+//		initView();
+//		initPaint();
+//	}
 	public MyMoveWidget(Context context, TempWidgetObj view , int maxWidth, int maxHeight){
 		super(context);
 		mContext = new WeakReference<>(context);
@@ -123,8 +121,8 @@ public class MyMoveWidget extends View {
 
 	private void initView(){
 		padTop = padBottom= padLeft = padRight = DensityUtil.dp2px(mContext.get(),3);//设置背景间距,动态计算。不同dpi有明显差异  3DP
-		mMinHeight = mMinWidth = 15*padLeft;//矩形的最小宽高等于五倍padding  15dp
-		recZoomBoxPaintStroke = DensityUtil.dp2px(mContext.get(),5) ;
+		mMinHeight = mMinWidth = 15 * padLeft;//矩形的最小宽高等于十五倍padding  45dp
+		recZoomBoxPaintStroke = DensityUtil.dp2px(mContext.get(),3);//矩形测温框 画笔的宽度
 		zoomLineLength = DensityUtil.dp2px(mContext.get(),20);
 	}
 	private Timer mTimer = null;
@@ -166,7 +164,7 @@ public class MyMoveWidget extends View {
 		pointTextPaint.setStrokeWidth(2);
 		pointTextPaint.setTextSize(DensityUtil.dp2px(mContext.get(),tempWidgetData.getTempTextSize()));
 		pointTextPaint.setColor(getResources().getColor(R.color.bg_preview_toggle_select,null));
-//		pointTextPaint.setTypeface(Typeface.FILL_AND_STROKE);
+		pointTextPaint.setStyle(Paint.Style.STROKE);
 
 		if (tempWidgetData.getType()==1){//点模式
 			if (tempWidgetData.getPointTemp().getType()==1){//高温点
@@ -194,18 +192,20 @@ public class MyMoveWidget extends View {
 		maxTempTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 		maxTempTextPaint.setTextSize(DensityUtil.dp2px(mContext.get(),tempWidgetData.getTempTextSize()));
 		maxTempTextPaint.setColor(getResources().getColor(R.color.max_temp_text_color_red));
-		maxTempTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
+		maxTempTextPaint.setStyle(Paint.Style.STROKE);
+//		maxTempTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
 		minTempTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 		minTempTextPaint.setTextSize(DensityUtil.dp2px(mContext.get(),tempWidgetData.getTempTextSize()));
 		minTempTextPaint.setColor(getResources().getColor(R.color.min_temp_text_color_blue));
-		minTempTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
+		minTempTextPaint.setStyle(Paint.Style.STROKE);
+//		minTempTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
-		bgRoundPaint = new Paint();
-		bgRoundPaint.setStyle(Paint.Style.FILL);
-		bgRoundPaint.setColor(getResources().getColor(R.color.bg_move_layout_round_bg));
-		bgRoundPaint.setAlpha(100);//透明度 0透明-255不透明
-		bgRoundPaint.setFlags(Paint.ANTI_ALIAS_FLAG);//抗锯齿
+//		bgRoundPaint = new Paint();
+//		bgRoundPaint.setStyle(Paint.Style.FILL);
+//		bgRoundPaint.setColor(getResources().getColor(R.color.bg_move_layout_round_bg));
+//		bgRoundPaint.setAlpha(100);//透明度 0透明-255不透明
+//		bgRoundPaint.setFlags(Paint.ANTI_ALIAS_FLAG);//抗锯齿
 
 		recZoomBox = new Paint();
 		recZoomBox.setColor(getResources().getColor(R.color.white));
@@ -240,6 +240,8 @@ public class MyMoveWidget extends View {
 		//√计算工具栏的所需宽高
 		toolsNeedWidth = DensityUtil.dp2px(mContext.get(),(DragTempContainer.perToolsWidthHeightSet + DragTempContainer.perToolsMargin*2));
 		toolsNeedHeight = tempWidgetData.getToolsNumber() * toolsNeedWidth;//包含了 margin
+
+		Log.e(TAG, "initData: toolsNeedWidth = " + toolsNeedWidth+"  toolsNeedHeight = " +  toolsNeedHeight);
 		//有无工具栏情况下，以左上角为坐标原点的 内容及其背景的坐标。确定工具栏的方位
 		getContentAndBgCoordinate(tempWidgetData,minTempBt);
 
@@ -269,7 +271,6 @@ public class MyMoveWidget extends View {
 				maxTempStr = tempWidgetData.getOtherTemp().getMaxTemp();
 
 				//todo 校正 最高温和最低温 是否在 线或 矩形的边界临界 延伸点
-
 				doMeasure();
 				updateContentCoordinate();//更新所有的坐标
 				break;
@@ -385,15 +386,16 @@ public class MyMoveWidget extends View {
 	private void getToolsDirection(float toolsWidth , float toolsHeight , int type){
 		//tools Direction
 //		if (type ==1 || type ==2){
-			if ((contentBgRight + toolsWidth <moveMaxWidth) && ((contentBgTop + contentBgBottom)/2.0f - toolsHeight > 0)){               //tools right top
+			if ((contentBgRight + toolsWidth <moveMaxWidth) && ((contentBgTop + toolsHeight) < moveMaxHeight)){               //tools right top
 				toolsLocationState = WIDGET_DIRECTION_STATE_RIGHT_TOP;
-			}else if ((contentBgRight +toolsWidth <moveMaxWidth)&&(contentBgTop + contentBgBottom)/2.0f+toolsHeight < moveMaxHeight){//tools right bottom
+			}else if ((contentBgRight +toolsWidth <moveMaxWidth)&&((contentBgBottom - toolsHeight) > 0)){//tools right bottom
 				toolsLocationState = WIDGET_DIRECTION_STATE_RIGHT_BOTTOM;
-			}else if ((contentBgLeft - toolsWidth > 0)&&((contentBgTop + contentBgBottom)/2.0f - toolsHeight > 0)){                   //tools left top
+			}else if ((contentBgLeft - toolsWidth > 0)&&((contentBgTop + toolsHeight) < moveMaxHeight)){                   //tools left top
 				toolsLocationState = WIDGET_DIRECTION_STATE_LEFT_TOP;
-			}else if ((contentBgLeft - toolsWidth > 0)&&((contentBgTop + contentBgBottom)/2.0f + toolsHeight) < moveMaxHeight){       //tools left bottom
+			}else if ((contentBgLeft - toolsWidth > 0)&&(((contentBgBottom - toolsHeight) > 0))){       //tools left bottom
 				toolsLocationState = WIDGET_DIRECTION_STATE_LEFT_BOTTOM;
 			}
+		Log.e(TAG, "getToolsDirection:  ===  " + toolsLocationState);
 	}
 	/**
 	 *通过工具栏的方位可以得到控件工具栏的相对（相对于本控件的坐标原点）坐标
@@ -407,7 +409,7 @@ public class MyMoveWidget extends View {
 //			toolsBgBottom =  (contentBgTop + contentBgBottom)/2;
 			//工具栏 绘制的参考线 为 顶部背景线
 			toolsBgTop = contentBgTop ;
-			toolsBgBottom =  (contentBgTop- toolsNeedHeight);
+			toolsBgBottom =  (contentBgTop + toolsNeedHeight);
 		}else if (toolsLocationState == WIDGET_DIRECTION_STATE_LEFT_BOTTOM){
 			toolsBgLeft = contentBgLeft - toolsNeedWidth;
 			toolsBgRight = contentBgLeft;
@@ -425,7 +427,7 @@ public class MyMoveWidget extends View {
 //			toolsBgBottom =  (contentBgTop + contentBgBottom)/2;
 			//工具栏 绘制的参考线 为 顶部背景线
 			toolsBgTop = contentBgTop ;
-			toolsBgBottom =  (contentBgTop- toolsNeedHeight);
+			toolsBgBottom =  (contentBgTop + toolsNeedHeight);
 		}else if (toolsLocationState == WIDGET_DIRECTION_STATE_RIGHT_BOTTOM){
 			toolsBgLeft = contentBgRight ;
 			toolsBgRight = contentBgRight + toolsNeedWidth;
@@ -465,11 +467,11 @@ public class MyMoveWidget extends View {
 		strBottom -= yOffset;
 
 
-//		Log.e(TAG, "updateContentCoordinate:xOffset==> " + xOffset + " yOffset==== >   "+ yOffset);
-//		Log.e(TAG, "contentLeft " + contentLeft + " contentRight " + contentRight + " contentTop " + contentTop + " contentBottom " +contentBottom);
-//		Log.e(TAG, "contentBgLeft " + contentBgLeft + " contentBgRight " + contentBgRight + " contentBgTop " + contentBgTop + " contentBgBottom " +contentBgBottom);
-//		Log.e(TAG, "toolsBgLeft " + toolsBgLeft + " toolsBgRight " + toolsBgRight + " toolsBgTop " + toolsBgTop + " toolsBgBottom " +toolsBgBottom);
-//		Log.e(TAG, "strLeft " + strLeft + " strRight " + strRight + " strTop " + strTop + " strBottom " +strBottom);
+		Log.e(TAG, "updateContentCoordinate:xOffset==> " + xOffset + " yOffset==== >   "+ yOffset);
+		Log.e(TAG, "contentLeft " + contentLeft + " contentRight " + contentRight + " contentTop " + contentTop + " contentBottom " +contentBottom);
+		Log.e(TAG, "contentBgLeft " + contentBgLeft + " contentBgRight " + contentBgRight + " contentBgTop " + contentBgTop + " contentBgBottom " +contentBgBottom);
+		Log.e(TAG, "toolsBgLeft " + toolsBgLeft + " toolsBgRight " + toolsBgRight + " toolsBgTop " + toolsBgTop + " toolsBgBottom " +toolsBgBottom);
+		Log.e(TAG, "strLeft " + strLeft + " strRight " + strRight + " strTop " + strTop + " strBottom " +strBottom);
 	}
 
 	//得到所需的总宽高
@@ -581,7 +583,7 @@ public class MyMoveWidget extends View {
 	private void getContentAndBgCoordinate(@NonNull TempWidgetObj tempWidget , Bitmap bp){
 		if (hasBackGroundAndTools){//有工具栏及内容背景
 			if (tempWidget.getType() ==1){
-				if (isDebug)
+//				if (isDebug)
 //					Log.e(TAG, "步骤一: 得到内容及其背景坐标 ");
 				contentLeft = tempWidgetData.getPointTemp().getStartPointX() - bp.getWidth()/2.0f;
 				contentRight = tempWidgetData.getPointTemp().getStartPointX() + bp.getWidth()/2.0f;
@@ -798,7 +800,7 @@ public class MyMoveWidget extends View {
 					,tempWidgetData.getOtherTemp().getEndPointX() - xOffset,tempWidgetData.getOtherTemp().getEndPointY() - yOffset-linePaint.getStrokeWidth()/3,linePaint);
 
 //			Log.e(TAG, "onDraw: 2===> " + tempWidgetData.getOtherTemp().getMaxTemp() + " min " + tempWidgetData.getOtherTemp().getMinTemp());
-
+//			canvas.save();
 			drawMinMaxTemp(canvas,startX,startY,minTempStr,minTempBt,minTempTextPaint,contentLeft,contentRight,contentTop,contentBottom,tempWidgetData.getType());
 			drawMinMaxTemp(canvas,endX,endY,maxTempStr,maxTempBt,maxTempTextPaint,contentLeft,contentRight,contentTop,contentBottom,tempWidgetData.getType());
 		}else if (tempWidgetData.getType() == 3){
@@ -814,6 +816,7 @@ public class MyMoveWidget extends View {
 			float startX  = tempWidgetData.getOtherTemp().getMinTempX() - xOffset, startY = tempWidgetData.getOtherTemp().getMinTempY() -yOffset;
 			float endX = tempWidgetData.getOtherTemp().getMaxTempX() - xOffset, endY = tempWidgetData.getOtherTemp().getMaxTempY() - yOffset;
 
+//			canvas.save();
 			drawMinMaxTemp(canvas,startX,startY,minTempStr,minTempBt,minTempTextPaint,contentLeft,contentRight,contentTop,contentBottom,tempWidgetData.getType());
 			drawMinMaxTemp(canvas,endX,endY,maxTempStr,maxTempBt,maxTempTextPaint,contentLeft,contentRight,contentTop,contentBottom,tempWidgetData.getType());
 		}
@@ -838,6 +841,7 @@ public class MyMoveWidget extends View {
 	private void drawMinMaxTemp(Canvas canvas ,float drawTempX, float drawTempY ,String tempStr,Bitmap bp,TextPaint tempPaint,
 	                            float leftBorder,float rightBorder,float topBorder,float bottomBorder, int drawType){
 		//温度文字 所需要的宽高，通过画笔计算
+
 		float tempNeedW,tempNeedH ;
 		int direction = WIDGET_DIRECTION_STATE_RIGHT_BOTTOM;
 		Rect rect = new Rect();
@@ -867,7 +871,6 @@ public class MyMoveWidget extends View {
 				direction = WIDGET_DIRECTION_STATE_LEFT_BOTTOM;
 			}
 
-//			Log.e(TAG, "drawMinMaxTemp: direction = = > " + direction);
 			if (direction ==WIDGET_DIRECTION_STATE_RIGHT_BOTTOM ){direction = WIDGET_DIRECTION_STATE_RIGHT_TOP;}
 			if (direction ==WIDGET_DIRECTION_STATE_LEFT_BOTTOM ){direction = WIDGET_DIRECTION_STATE_LEFT_TOP;}
 			switch (direction){
@@ -906,7 +909,7 @@ public class MyMoveWidget extends View {
 			}
 		}
 
-		canvas.drawBitmap(bp,null,bpRect ,tempPaint);
+		canvas.drawBitmap(bp,null,bpRect ,pointPaint);
 	}
 	@Override
 	protected void onLayout (boolean changed, int l, int t, int r, int b) {
@@ -1089,10 +1092,11 @@ public class MyMoveWidget extends View {
 
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
-		Log.e(TAG, "Child onTouchEvent:  x " + event.getX() + " y " + event.getY());
+		Log.e(TAG, "Child onTouchEvent:  x " + event.getX() + " y " + event.getY() +"  bg = " + hasBackGroundAndTools);
 		//判定无效区域and 工具栏
 		if (hasBackGroundAndTools && event.getX()> toolsBgLeft && event.getX()< toolsBgRight && event.getY()> toolsBgTop && event.getY() < toolsBgBottom){
 			//点击了工具栏
+			Log.e(TAG, "onTouchEvent:  in tools bg " );
 			if (event.getAction() == MotionEvent.ACTION_DOWN){
 				int clickPosition = (int )((event.getY() - toolsBgTop)/toolsNeedWidth );
 				Log.e(TAG, "onTouchEvent: child click tools position is === >  "+ clickPosition);

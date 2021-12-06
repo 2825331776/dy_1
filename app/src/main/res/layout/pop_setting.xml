@@ -29,14 +29,14 @@
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/gl_setting_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_end="@dimen/dimen_80dp"
+                app:layout_constraintGuide_end="@dimen/dimen_20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
 
             <TextView
                 android:id="@+id/tv_general_info"
-                android:textColor="@color/white"
+                android:textColor="@color/bg_three_choice_one"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toRightOf="@id/gl_setting_title"
                 android:text="@string/SettingGeneral"
@@ -112,7 +112,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_language"
                 app:layout_constraintRight_toLeftOf="@id/gl_setting_content"
                 android:background="@drawable/bg_define_my_toggle_toggle"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"/>
 
@@ -197,7 +197,7 @@
                 android:id="@+id/tv_camera_setting"
                 app:layout_constraintLeft_toLeftOf="@id/tv_general_info"
                 app:layout_constraintTop_toBottomOf="@id/tv4"
-                android:textColor="@color/white"
+                android:textColor="@color/bg_three_choice_one"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:text="@string/SettingCameraParams"
                 android:textSize="16sp"
@@ -232,7 +232,7 @@
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:gravity="center"
-                app:layout_constraintLeft_toRightOf="@id/et_camera_setting_emittance"
+                app:layout_constraintRight_toLeftOf="@id/et_camera_setting_emittance"
                 app:layout_constraintTop_toTopOf="@id/tv_camera_setting_emittance"
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_emittance"
                 android:layout_width="wrap_content"
@@ -294,7 +294,7 @@
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:gravity="center"
-                app:layout_constraintLeft_toRightOf="@id/et_camera_setting_humidity"
+                app:layout_constraintRight_toLeftOf="@id/et_camera_setting_humidity"
                 app:layout_constraintTop_toTopOf="@id/tv_camera_setting_humidity"
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_humidity"
                 android:layout_width="wrap_content"
@@ -351,7 +351,7 @@
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:textSize="16sp"
-                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"
+                app:layout_constraintRight_toLeftOf="@id/et_camera_setting_distance"
                 app:layout_constraintTop_toTopOf="@id/et_camera_setting_distance"
                 app:layout_constraintBottom_toBottomOf="@id/et_camera_setting_distance"
                 android:layout_width="wrap_content"
