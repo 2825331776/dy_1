@@ -70,6 +70,7 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 		initData();
 	}
 
+
 	private void initView(){
 		numberPickerView_hundreds = findViewById(R.id.numberPicker_hundreds_main_preview_overTemp_pop);
 		numberPickerView_decade = findViewById(R.id.numberPicker_decade_main_preview_overTemp_pop);

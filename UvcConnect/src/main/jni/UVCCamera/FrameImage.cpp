@@ -167,11 +167,11 @@ void FrameImage::setArea(int *area, int lenght) {//设置区域检查的区域�
         mCheckArea[i]=*(area + i);
     }
     areasize=lenght;
-    if (areasize > 0){
-        setAreaCheck(true);
-    } else{
-        setAreaCheck(false);
-    }
+//    if (areasize > 0){
+//        setAreaCheck(true);
+//    } else{
+//        setAreaCheck(false);
+//    }
 }
 void FrameImage::setAreaCheck(int isAreaCheck) {//是否设置区域检查
     if(isAreaCheck){
@@ -320,6 +320,12 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
     min = tmp_buf[amountPixels1];
     ro = max - min;
 
+    //定义三个变量去绘制灰度图
+    int grayMin = min;
+    int grayMax = max;
+    int grayRo = grayMax - grayMin;
+//    LOGE("maxAD == %hu    minAD ==> %hu   maxad %d  minad =%d ",max,min,maxThumbAD,minThumbAD);
+
     if (isshowtemprange) {//拉温宽
         //LOGE("非区域检查+拉温宽");
         min = (int) (min + ro * minpercent / 100);
@@ -328,32 +334,83 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
 //    LOGE(" isfixed temp strip  == %d",isFixedTempStrip);
     if (isFixedTempStrip){//固定温度条
         roThumb = maxThumbAD - minThumbAD;
-        min = minThumbAD;
-        ro = roThumb;
+        min = minThumbAD;//刷新渲染的 边界AD值
+        ro = roThumb;//刷新渲染的 范围AD值
     }
-//    LOGE( " maxThumbAD  === %d , minThumbAd === %d   , roThumb === %d",maxThumbAD, minThumbAD , roThumb);
+//    LOGE( " maxThumbAD  === %d , minThumbAd === %d   , roThumb === %d ",
+//          maxThumbAD, minThumbAD , roThumb);
+    int loopnum=areasize/4;
+    //如果是 框内细查 或者 是 固定温度条，优先绘制灰度图
+    if ((mIsAreachecked && loopnum > 0) || isFixedTempStrip){
+        for (int i = 0; i < requestHeight - 4; i++) {
+            for (int j = 0; j < requestWidth; j++) {
+                int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - grayMin * 1.0) / grayRo);
+                if (gray < 0) {
+                    gray = 0;
+                }
+                if (gray > 255) {
+                    gray = 255;
+                }
+                mBuffer[4 * (i * requestWidth + j)] = gray;
+                mBuffer[4 * (i * requestWidth + j) + 1] = gray;
+                mBuffer[4 * (i * requestWidth + j) + 2] = gray;
+                mBuffer[4 * (i * requestWidth + j) + 3] = 1;
+            }
+        }
+    }
+
 
     //框内细查 先绘制灰度图,根据原有的ad值
     if (mIsAreachecked){
-        int loopnum=areasize/4;
+//        //则先绘制灰度图,通过源图幅的 最大最小AD去绘制灰度图
+//        for (int i = 0; i < requestHeight - 4; i++) {
+//            for (int j = 0; j < requestWidth; j++) {
+//                int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - grayMin * 1.0) / grayRo);
+//                if (gray < 0) {
+//                    gray = 0;
+//                }
+//                if (gray > 255) {
+//                    gray = 255;
+//                }
+//                mBuffer[4 * (i * requestWidth + j)] = gray;
+//                mBuffer[4 * (i * requestWidth + j) + 1] = gray;
+//                mBuffer[4 * (i * requestWidth + j) + 2] = gray;
+//                mBuffer[4 * (i * requestWidth + j) + 3] = 1;
+//            }
+//        }
+//        int loopnum=areasize/4;
+        if (loopnum > 0){//框内细查 存在添加的框
+            LOGE(" === heckArea %d   === ", mCheckArea[1]);
 
-        if (loopnum != 0){//有框
-            for (int i = 0; i < requestHeight - 4; i++) {
-                for (int j = 0; j < requestWidth; j++) {
-                    int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
-                    if (gray < 0) {
-                        gray = 0;
+            //根据框 拿色板去渲染
+            for(int m=0;m<loopnum;m++){
+                for (int i = mCheckArea[4 * m + 2]; i < mCheckArea[4 * m + 3]; i++) {
+                    for (int j = mCheckArea[4 * m]; j < mCheckArea[4 * m + 1]; j++) {
+                        if (tmp_buf[i * requestWidth + j] >= min && tmp_buf[i * requestWidth + j] <= (min + ro)){
+
+                            int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
+                            if (gray < 0) {
+                                gray = 0;
+                            }
+                            if (gray > 255) {
+                                gray = 255;
+                            }
+                            int paletteNum = 3 * gray;
+                            mBuffer[4 * (i * requestWidth +
+                                         j)] = (unsigned char) currentpalette[paletteNum];
+                            mBuffer[4 * (i * requestWidth + j) +
+                                    1] = (unsigned char) currentpalette[
+                                    paletteNum + 1];
+                            mBuffer[4 * (i * requestWidth + j) +
+                                    2] = (unsigned char) currentpalette[
+                                    paletteNum + 2];
+                            mBuffer[4 * (i * requestWidth + j) + 3] = 1;
+                        }
                     }
-                    if (gray > 255) {
-                        gray = 255;
-                    }
-                    mBuffer[4 * (i * requestWidth + j)] = gray;
-                    mBuffer[4 * (i * requestWidth + j) + 1] = gray;
-                    mBuffer[4 * (i * requestWidth + j) + 2] = gray;
-                    mBuffer[4 * (i * requestWidth + j) + 3] = 1;
                 }
             }
-        } else{//无框。直接渲染成 彩色
+
+        } else{//框内细查 没有添加框，则根据 色板去渲染 范围内的点
             for (int i = 0; i < requestHeight - 4; i++) {
                 for (int j = 0; j < requestWidth; j++) {
 //              LOGE("this requestHeight and requestwidth==============%d========================%d",requestHeight,requestWidth);
@@ -377,59 +434,60 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
                 }
             }
         }
-
-        for(int m=0;m<loopnum;m++){//渲染区域 为框内
-            for (int i = mCheckArea[4 * m + 2]; i < mCheckArea[4 * m + 3]; i++) {
-                for (int j = mCheckArea[4 * m]; j < mCheckArea[4 * m + 1]; j++) {
-                        int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
-                        if (gray < 0) {
-                            gray = 0;
-                        }
-                        if (gray > 255) {
-                            gray = 255;
-                        }
-                        int paletteNum = 3 * gray;
-                        mBuffer[4 * (i * requestWidth +
-                                     j)] = (unsigned char) currentpalette[paletteNum];
-                        mBuffer[4 * (i * requestWidth + j) +
-                                1] = (unsigned char) currentpalette[
-                                paletteNum + 1];
-                        mBuffer[4 * (i * requestWidth + j) +
-                                2] = (unsigned char) currentpalette[
-                                paletteNum + 2];
-                        mBuffer[4 * (i * requestWidth + j) + 3] = 1;
+    } else{ //非框内细查，则根据 色板的 拖动条设置去渲染
+        if (isFixedTempStrip){
+            LOGE("=====  quanfu Max ==%d , maxThumbAd===  %d =,=minThumbAD == %d ==, maxThumbValue = %f , == minThumbValue == %f ",grayMax, maxThumbAD, minThumbAD,maxThumbValue , minThumbValue );
+            for (int i = 0; i < requestHeight - 4; i++) {
+                for (int j = 0; j < requestWidth; j++) {
+                if (tmp_buf[i * requestWidth + j] >= min && tmp_buf[i * requestWidth + j] <= (min + ro)) {
+                    int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
+                    if (gray < 0) {
+                        gray = 0;
+                    }
+                    if (gray > 255) {
+                        gray = 255;
+                    }
+                    int paletteNum = 3 * gray;
+                    mBuffer[4 * (i * requestWidth +
+                                 j)] = (unsigned char) currentpalette[paletteNum];
+                    mBuffer[4 * (i * requestWidth + j) + 1] = (unsigned char) currentpalette[
+                            paletteNum + 1];
+                    mBuffer[4 * (i * requestWidth + j) + 2] = (unsigned char) currentpalette[
+                            paletteNum + 2];
+                    mBuffer[4 * (i * requestWidth + j) + 3] = 1;
+                }
                 }
             }
-        }
-    } else{
-        //非框内细查，则根据 色板的 拖动条设置去渲染
-//        LOGE("this max ==============%d========================",max);
-        for (int i = 0; i < requestHeight - 4; i++) {
-            for (int j = 0; j < requestWidth; j++) {
+        } else{
+            for (int i = 0; i < requestHeight - 4; i++) {
+                for (int j = 0; j < requestWidth; j++) {
 
-                //黑白：灰度值0-254单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
+                    //黑白：灰度值0-254单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
 //              LOGE("====================%d======================",tmp_buf[i * requestWidth + j]);
+//                if (tmp_buf[i * requestWidth + j] >= min &&
+//                    tmp_buf[i * requestWidth + j] <= (min + ro)) {
 
-//                if (isFixedTempStrip ){
-//                    if ()
-//                }
-                int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
-                if (gray < 0) {
-                    gray = 0;
+                    int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
+                    if (gray < 0) {
+                        gray = 0;
+                    }
+                    if (gray > 255) {
+                        gray = 255;
+                    }
+                    int paletteNum = 3 * gray;
+                    mBuffer[4 * (i * requestWidth +
+                                 j)] = (unsigned char) currentpalette[paletteNum];
+                    mBuffer[4 * (i * requestWidth + j) + 1] = (unsigned char) currentpalette[
+                            paletteNum + 1];
+                    mBuffer[4 * (i * requestWidth + j) + 2] = (unsigned char) currentpalette[
+                            paletteNum + 2];
+                    mBuffer[4 * (i * requestWidth + j) + 3] = 1;
                 }
-                if (gray > 255) {
-                    gray = 255;
-                }
-                int paletteNum = 3 * gray;
-                mBuffer[4 * (i * requestWidth +
-                             j)] = (unsigned char) currentpalette[paletteNum];
-                mBuffer[4 * (i * requestWidth + j) + 1] = (unsigned char) currentpalette[
-                        paletteNum + 1];
-                mBuffer[4 * (i * requestWidth + j) + 2] = (unsigned char) currentpalette[
-                        paletteNum + 2];
-                mBuffer[4 * (i * requestWidth + j) + 3] = 1;
+//            }
             }
         }
+
+
     }
     tmp_buf = NULL;
     return mBuffer;
@@ -569,7 +627,7 @@ int FrameImage::setTemperatureCallback(JNIEnv *env, jobject temperature_callback
 //查询温度对照表，将查询之后的具体数据回调给java层onReceiveTemperature函数
 void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
     unsigned short* orgData=(unsigned short *)frameData;
-    unsigned short* fourLinePara=orgData+requestWidth*(requestHeight-4);//后四行参数
+    unsigned short* fourLinePara = orgData + requestWidth*(requestHeight-4);//后四行参数
     if(UNLIKELY(isNeedWriteTable))
     {
 //        LOGE("===================isNeedWriteTable================update temperatureTable===============");
@@ -591,7 +649,7 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
 //    LOGE("7500  %f",temperatureTable[7500]);
 //    LOGE("9500  %f",temperatureTable[9500]);
 
-    float* temperatureData=mCbTemper;//temperatureData指向mCbTemper的首地址，更改temperatureData也就是更改mCbTemper
+    float* temperatureData = mCbTemper;//temperatureData指向mCbTemper的首地址，更改temperatureData也就是更改mCbTemper
     //根据8004或者8005模式来查表，8005模式下仅输出以上注释的10个参数，8004模式下数据以上参数+全局温度数据
     thermometrySearch(requestWidth,requestHeight,temperatureTable,orgData,temperatureData,rangeMode,OUTPUTMODE);
 //    LOGE("centerTmp:%.2f,maxTmp:%.2f,minTmp:%.2f,avgTmp:%.2f\n",temperatureData[0],temperatureData[3],temperatureData[6],temperatureData[9]);
@@ -610,17 +668,17 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
     }
 //    pthread_mutex_lock(&fixed_mutex);
     if (isNeedFreshAD){
-//        LOGE(" 8000 %f",temperatureTable[8000]);
-//        LOGE(" 4000   %f",temperatureTable[4000]);
+        LOGE(" 5753 %f",temperatureTable[5753]);
+        LOGE(" 5532   %f",temperatureTable[5532]);
 //        LOGE("12000  %f",temperatureTable[12000]);
 //        LOGE("6000  %f",temperatureTable[6000]);
 //        float* a = &temperatureTable[0];
 //        memcpy(tempData,temperatureTable,16384*4);
-        maxThumbAD = getDichotomySearch(temperatureTable,16384,maxThumbValue,4000,12000);
-        minThumbAD = getDichotomySearch(temperatureTable,16384,minThumbValue,4000,12000);
+        LOGE("refresh AD ====  maxThumbValue == %f ,  minThumbValue ==== %f " , maxThumbValue , minThumbValue);
+        maxThumbAD = getDichotomySearch(temperatureTable,16384,maxThumbValue,2000,16384);
+        minThumbAD = getDichotomySearch(temperatureTable,16384,minThumbValue,2000,16384);
         isNeedFreshAD = false;
         //3 全幅最高温 ，6 是全幅最低温 AD值
-        LOGE("maxt == %f    mint ==> %f   maxad %d  minad =%d ",temperatureData[3],temperatureData[6],maxThumbAD,minThumbAD);
 //        LOGE("max temp   = %f  , min temp = %f",)
     }
 

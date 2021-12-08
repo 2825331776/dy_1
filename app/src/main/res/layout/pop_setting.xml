@@ -112,7 +112,8 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_language"
                 app:layout_constraintRight_toLeftOf="@id/gl_setting_content"
                 android:background="@drawable/bg_define_my_toggle_toggle"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"/>
 
@@ -228,7 +229,7 @@
 
             <TextView
                 android:id="@+id/tv_camera_setting_emittance_range"
-                android:text="(0.01–1)"
+                android:text="(0.01–1) "
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:gravity="center"
@@ -290,7 +291,7 @@
 
             <TextView
                 android:id="@+id/tv_camera_setting_humidity_range"
-                android:text="(0–100)"
+                android:text="(0–100) "
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:gravity="center"
@@ -339,6 +340,7 @@
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:gravity="center"
+                android:layout_marginStart="@dimen/dimen_2dp"
                 app:layout_constraintLeft_toRightOf="@id/tv_camera_setting_distance"
                 app:layout_constraintTop_toTopOf="@id/tv_camera_setting_distance"
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_distance"
@@ -347,7 +349,7 @@
             <!--            距离范围-->
             <TextView
                 android:id="@+id/tv_camera_setting_distance_range"
-                android:text="(0–5)"
+                android:text="(0–5) "
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:textSize="16sp"
@@ -403,6 +405,7 @@
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:gravity="center"
+                android:layout_marginStart="@dimen/dimen_2dp"
                 app:layout_constraintLeft_toRightOf="@id/tv_camera_setting_revise"
                 app:layout_constraintTop_toTopOf="@id/tv_camera_setting_revise"
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_revise"
@@ -459,6 +462,7 @@
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:gravity="center"
+                android:layout_marginStart="@dimen/dimen_2dp"
                 app:layout_constraintLeft_toRightOf="@id/tv_camera_setting_reflect"
                 app:layout_constraintTop_toTopOf="@id/tv_camera_setting_reflect"
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_reflect"
@@ -515,6 +519,7 @@
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:gravity="center"
+                android:layout_marginStart="@dimen/dimen_2dp"
                 app:layout_constraintLeft_toRightOf="@id/tv_camera_setting_freeAirTemp"
                 app:layout_constraintTop_toTopOf="@id/tv_camera_setting_freeAirTemp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_freeAirTemp"

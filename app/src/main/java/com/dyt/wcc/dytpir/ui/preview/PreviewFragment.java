@@ -23,6 +23,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
@@ -43,6 +44,7 @@ import com.dyt.wcc.cameracommon.usbcameracommon.UVCCameraHandler;
 import com.dyt.wcc.cameracommon.utils.ByteUtil;
 import com.dyt.wcc.common.base.BaseApplication;
 import com.dyt.wcc.common.base.BaseFragment;
+import com.dyt.wcc.common.utils.DensityUtil;
 import com.dyt.wcc.common.utils.FontUtils;
 import com.dyt.wcc.common.widget.MyCustomRangeSeekBar;
 import com.dyt.wcc.common.widget.SwitchMultiButton;
@@ -111,6 +113,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	//customSeekBar
 	private Bitmap tiehong = null, caihong = null, baire = null, heire = null, hongre = null, lenglan = null;
 	private SendCommand mSendCommand;
+
+	private int screenWidth = 0;
 
 	@Override
 	protected boolean isInterceptBackPress () {
@@ -294,6 +298,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.customSeekbarPreviewFragment.setmThumbListener(new MyCustomRangeSeekBar.ThumbListener() {
 			@Override
 			public void thumbChanged (float maxPercent, float minPercent,float maxValue, float minValue) {
+				maxValue = maxValue - sp.getFloat(DYConstants.setting_correction,0.0f);
+				minValue = minValue - sp.getFloat(DYConstants.setting_correction,0.0f);
 				if (mUvcCameraHandler!= null &&!Float.isNaN(maxValue) && !Float.isNaN(minValue))mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
 			}
 
@@ -303,7 +309,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //				if (isDebug)Log.e(TAG, "onUpMinThumb: value " + maxValue + " min == > " +  minValue);
 
 				if (maxPercent >= 100 && minPercent <= 0) {
-					if (mUvcCameraHandler!= null)mUvcCameraHandler.disWenKuan();
+					if (mUvcCameraHandler!= null &&  mUvcCameraHandler.isOpened())mUvcCameraHandler.disWenKuan();
 				}
 			}
 
@@ -312,13 +318,15 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //				if (isDebug)Log.e(TAG, "onUpMaxThumb: 0-100 percent " + maxPercent + " min == > " +  minPercent);
 //				if (isDebug)Log.e(TAG, "onUpMaxThumb: value " + maxValue + " min == > " +  minValue);
 				if (maxPercent >= 100 && minPercent <= 0) {
-					if (mUvcCameraHandler!= null)mUvcCameraHandler.disWenKuan();
+					if (mUvcCameraHandler!= null &&  mUvcCameraHandler.isOpened())mUvcCameraHandler.disWenKuan();
 				}
 			}
 
 			@Override
 			public void onMinMove (float maxPercent, float minPercent,float maxValue, float minValue) {
 //				if (isDebug)Log.e(TAG, "onMinMove: 0-100 percent " + maxPercent + " min == > " +  minPercent);
+				maxValue = maxValue - sp.getFloat(DYConstants.setting_correction,0.0f);
+				minValue = minValue - sp.getFloat(DYConstants.setting_correction,0.0f);
 				if (isDebug)Log.e(TAG, "onMinMove: value == >" + maxValue + " min == > " +  minValue);
 				if (mUvcCameraHandler!= null && !Float.isNaN(maxValue) && !Float.isNaN(minValue))mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent,maxValue,minValue);
 			}
@@ -326,6 +334,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onMaxMove (float maxPercent, float minPercent,float maxValue, float minValue) {
 //				if (isDebug)Log.e(TAG, "onMaxMove: 0-100 percent" + maxPercent + " min == > " +  minPercent);
+				maxValue = maxValue - sp.getFloat(DYConstants.setting_correction,0.0f);
+				minValue = minValue - sp.getFloat(DYConstants.setting_correction,0.0f);
 				if (isDebug)Log.e(TAG, "onMaxMove: value == > " + maxValue + " min == > " +  minValue);
 				// && maxValue != Float.NaN && minValue != Float.NaN
 				if (mUvcCameraHandler!= null&& !Float.isNaN(maxValue) && !Float.isNaN(minValue))
@@ -355,8 +365,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 
 		DisplayMetrics dm = getResources().getDisplayMetrics();
-		int screenWidth = dm.widthPixels;
+		screenWidth = dm.widthPixels;
 		int screenHeight = dm.heightPixels;
+		Log.e(TAG, "initView: " + screenWidth);
 
 //		FrameLayout.LayoutParams fLayoutParams = new FrameLayout.LayoutParams(screenHeight/3*4,screenHeight);
 //		mDataBinding.dragTempContainerPreviewFragment.setLayoutParams(fLayoutParams);
@@ -441,11 +452,45 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //				builder.setTitle("1123").setMessage("content hsisaskdfhjshdfjkashk").create();
 //				builder.show();
 //				mDataBinding.toggleHighTempAlarm.setChecked(false);
-				Log.e(TAG, "onCheckedChanged: " + "isChecked  ==  == " + isChecked  );
+//				Log.e(TAG, "onCheckedChanged: " + "isChecked  ==  == " + isChecked  );
 				if (isChecked){
+
+//					View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_overtemp_alarm,null);
+//					PopOvertempAlarmBinding popOvertempAlarmBinding = DataBindingUtil.bind(view);
+//					assert popOvertempAlarmBinding != null;
+//					popOvertempAlarmBinding.btSubmit.setOnClickListener(paletteChoiceListener);
+//					popOvertempAlarmBinding.btCancel.setOnClickListener(paletteChoiceListener);
+//					popOvertempAlarmBinding.numberPickerHundredsMainPreviewOverTempPop.setOnValueChangedListener(onValueChangeListener);
+//					popOvertempAlarmBinding.numberPickerDecimalMainPreviewOverTempPop.setOnValueChangedListener(onValueChangeListener);
+//					popOvertempAlarmBinding.numberPickerUnitMainPreviewOverTempPop.setOnValueChangedListener(onValueChangeListener);
+//					popOvertempAlarmBinding.numberPickerDecadeMainPreviewOverTempPop.setOnValueChangedListener(onValueChangeListener);
+//
+//					//				showPopWindows(view,20,10,20);
+//					allPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//					allPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
+//					allPopupWindows.setHeight(mDataBinding.llContainerPreviewSeekbar.getHeight());
+//					allPopupWindows.setWidth(mDataBinding.llContainerPreviewSeekbar.getWidth());
+//
+//					allPopupWindows.setFocusable(false);
+//					allPopupWindows.setOutsideTouchable(true);
+//					allPopupWindows.setTouchable(true);
+//
+//					allPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,0,-mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 //					mDataBinding.toggleHighTempAlarm.setChecked(false);
 					OverTempDialog dialog = new OverTempDialog(mContext.get(),sp.getFloat("overTemp",0.0f),
 							mDataBinding.dragTempContainerPreviewFragment.getTempSuffixMode());
+
+					dialog.getWindow().setGravity(Gravity.LEFT);
+					WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+					params.x =  mDataBinding.rlPreviewContainer.getMeasuredWidth()/2 - DensityUtil.dp2px(mContext.get(), 100);
+//					Log.e(TAG, "onCheckedChanged: " + mDataBinding.rlPreviewContainer.getWidth());
+
+//					WindowManager windowManager = mContext.get().getWindowManager();
+//					Display display = windowManager.getDefaultDisplay();
+//					WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+//					lp.width = (int)(display.getWidth()); //设置宽度
+//					dialog.getWindow().setAttributes(lp);
+
 					dialog.setListener(new OverTempDialog.SetCompleteListener() {
 						@Override
 						public void onSetComplete (float setValue) {
@@ -655,7 +700,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(cameraParams.get(DYConstants.setting_emittance)));//发射率 0-1
 					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(cameraParams.get(DYConstants.setting_distance)));//距离 0-5
 					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int)(cameraParams.get(DYConstants.setting_humidity)*100)));//湿度 0-100
-					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(cameraParams.get(DYConstants.setting_correction)));//修正 -3 -3
+					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(cameraParams.get(DYConstants.setting_correction)));//校正  -20 - 20
 					popSettingBinding.etCameraSettingReflect.setText(String.valueOf((cameraParams.get(DYConstants.setting_reflect))));//反射温度 -10-40
 					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf(cameraParams.get(DYConstants.setting_environment)));//环境温度 -10 -40
 					//把值同步到 sp中
@@ -962,7 +1007,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	}
 
 	/**
-	 * 计算各个边界的值
+	 * 通过单位 去 计算各个边界的实际值
 	 * @param value
 	 * @return 边界的 真实值（带有温度单位的值）
 	 */

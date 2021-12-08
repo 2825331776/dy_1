@@ -1,8 +1,6 @@
 package com.dyt.wcc.common.widget.dragView;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -53,7 +51,7 @@ public class DragTempContainer extends RelativeLayout {
 
 	private CopyOnWriteArrayList<MyMoveWidget>                 highLowTempLists;
 	private CopyOnWriteArrayList<MyMoveWidget> userAdd;
-	private Bitmap                             pointBt, maxTempBt, minTempBt;//三张图片 ：单点温度、线和矩阵的 最高、最低温的图片
+//	private Bitmap                             pointBt, maxTempBt, minTempBt;//三张图片 ：单点温度、线和矩阵的 最高、最低温的图片
 
 	private float WRatio, HRatio;//相机数据大小  与 显示屏幕大小的比值。
 
@@ -111,10 +109,10 @@ public class DragTempContainer extends RelativeLayout {
 	private long lastAboveTime = 0;
 
 
-	protected void setBitMap(Bitmap point,Bitmap max , Bitmap min){
-		pointBt = point;maxTempBt = max;minTempBt = min;
-		invalidate();
-	}
+//	protected void setBitMap(Bitmap point,Bitmap max , Bitmap min){
+//		pointBt = point;maxTempBt = max;minTempBt = min;
+//		invalidate();
+//	}
 	//实时刷新本地的温度数据
 	public void upDateTemp (float[] date){
 		Message message = Message.obtain();
@@ -205,6 +203,8 @@ public class DragTempContainer extends RelativeLayout {
 		}
 		if (audioPlayer == null){
 			audioPlayer = MediaPlayer.create(mContext.get(),R.raw.a2_ding);
+		}
+		if (audioPlayer != null){
 			audioPlayer.setLooping(true);
 		}
 	}
@@ -245,9 +245,14 @@ public class DragTempContainer extends RelativeLayout {
 		tempSource = new float[256*196+10];
 		minAddWidgetWidth = minAddWidgetHeight = DensityUtil.dp2px(mContext.get(),70);//最小为50个dp
 
-		pointBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorgreen);
-		minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorblue);
-		maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorred);
+//		pointBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorgreen);
+//		minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorblue);
+//		maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorred);
+		//init MediaPlayer
+//		if (audioPlayer == null){
+//			audioPlayer = MediaPlayer.create(mContext.get(),R.raw.a2_ding);
+//			audioPlayer.setLooping(true);
+//		}
 	}
 
 	//对象方法 去增加一个 点 线 矩阵视图 , int type

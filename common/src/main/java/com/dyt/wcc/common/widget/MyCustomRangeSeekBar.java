@@ -534,17 +534,17 @@ public class MyCustomRangeSeekBar extends View {
 		//绘制滑块最高温、最低温
 		//计算滑块文字的X轴位置：(mthumbwidth- mpaint.measuretext("maxtempStr"))/2
 //		Math.abs((mThumbWidth-20) - mPaint.measureText(Float2Str(mThumbMaxTemp)))/2
-		canvas.drawText(Float2Str(percent2Temp(mPercentSelectedMaxValue)),getWidth()- maxTempTextLength,
+		canvas.drawText(Float2Str(percent2Temp(mPercentSelectedMaxValue)),getWidth()- mPaint.measureText(Float2Str(percent2Temp(mPercentSelectedMaxValue))),
 				percent2Height(mPercentSelectedMaxValue) - mThumbHeight/2.0f + mPaint.descent(),mPaint);
 
-		canvas.drawText(Float2Str(percent2Temp(mPercentSelectedMinValue)),getWidth()- maxTempTextLength,
+		canvas.drawText(Float2Str(percent2Temp(mPercentSelectedMinValue)),getWidth()- mPaint.measureText(Float2Str(percent2Temp(mPercentSelectedMinValue))),
 				percent2Height(mPercentSelectedMinValue) + mThumbHeight/2.0f + mPaint.descent(),mPaint);
 
 		//绘制实时最高最低温文字
 		if (widgetMode ==1 ){
-			canvas.drawText(Float2Str(rangeMaxTemp),0,
+			canvas.drawText(Float2Str(rangeMaxTemp),maxTempTextLength - mPaint.measureText(Float2Str(rangeMaxTemp)),
 					topBottomPadding+ Temp2Height(rangeMaxTemp)+mPaint.descent(),mPaint);
-			canvas.drawText(Float2Str(rangeMinTemp),0,
+			canvas.drawText(Float2Str(rangeMinTemp),maxTempTextLength - mPaint.measureText(Float2Str(rangeMinTemp)),
 					topBottomPadding+ Temp2Height(rangeMinTemp)+mPaint.descent(),mPaint);
 		}
 //		//右侧实时高低温的左边界线
