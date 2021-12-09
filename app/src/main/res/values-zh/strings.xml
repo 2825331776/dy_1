@@ -22,7 +22,12 @@
     <string name="confirm">确定</string>
 
     <string name="CheckLatestVersion">检查最新版本</string>
-    <string name="VersionName">版本号：</string>
+    <string name="VersionName">版本号:</string>
+    <string name="contactUs">联系我们:</string>
+    <string name="ContactEmail">service@dianytech.com</string>
+    <string name="contactus_email_head">mailto:</string>
+    <string name="contactus_choice_email">可用邮件应用列表：</string>
+
     <!--录制-->
     <string name="StartRecorderService">启动录制服务</string>
 

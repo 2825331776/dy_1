@@ -22,7 +22,11 @@
     <string name="confirm">OK</string>
 
     <string name="CheckLatestVersion">Check the latest version</string>
-    <string name="VersionName">Version：</string>
+    <string name="VersionName">Version : </string>
+    <string name="contactUs">Contact us : </string>
+    <string name="ContactEmail">service@dianytech.com</string>
+    <string name="contactus_email_head">mailto:</string>
+    <string name="contactus_choice_email">usable email App lists：</string>
 
     <!--录制-->
     <string name="StartRecorderService">StartRecorderService</string>

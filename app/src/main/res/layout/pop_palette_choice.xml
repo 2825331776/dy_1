@@ -49,7 +49,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/palette_layout_Heire"
-                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginTop="@dimen/dimen_20dp"
                 android:layout_width="@dimen/dimen_30dp"
                 android:layout_height="@dimen/dimen_30dp"
                 android:background="@mipmap/ic_palette_choice_caihong" />
@@ -59,7 +59,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/palette_layout_Caihong"
-                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginTop="@dimen/dimen_20dp"
                 android:layout_width="@dimen/dimen_30dp"
                 android:layout_height="@dimen/dimen_30dp"
                 android:background="@mipmap/ic_palette_choice_hongre" />
@@ -69,7 +69,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/palette_layout_Baire"
-                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginTop="@dimen/dimen_20dp"
                 android:layout_width="@dimen/dimen_30dp"
                 android:layout_height="@dimen/dimen_30dp"
                 android:background="@mipmap/ic_palette_choice_heire" />
@@ -79,7 +79,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/palette_layout_Tiehong"
-                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginTop="@dimen/dimen_20dp"
                 android:layout_width="@dimen/dimen_30dp"
                 android:layout_height="@dimen/dimen_30dp"
                 android:background="@mipmap/ic_palette_choice_baire" />
@@ -89,7 +89,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/palette_layout_Hongre"
-                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginTop="@dimen/dimen_20dp"
                 android:layout_width="@dimen/dimen_30dp"
                 android:layout_height="@dimen/dimen_30dp"
                 android:background="@mipmap/ic_palette_choice_lenglan" />
@@ -98,7 +98,7 @@
 <!--                app:layout_constraintLeft_toLeftOf="parent"-->
 <!--                app:layout_constraintRight_toRightOf="parent"-->
 <!--                app:layout_constraintTop_toBottomOf="@id/palette_layout_Lenglan"-->
-<!--                android:layout_marginTop="@dimen/dimen_10dp"-->
+<!--                android:layout_marginTop="@dimen/dimen_20dp"-->
 <!--                android:layout_width="@dimen/dimen_40dp"-->
 <!--                android:layout_height="@dimen/dimen_40dp"-->
 <!--                android:background="@mipmap/ic_palette_choice_lenglan" />-->
@@ -107,7 +107,7 @@
 <!--                app:layout_constraintLeft_toLeftOf="parent"-->
 <!--                app:layout_constraintRight_toRightOf="parent"-->
 <!--                app:layout_constraintTop_toBottomOf="@id/palette_layout_Lenglan2"-->
-<!--                android:layout_marginTop="@dimen/dimen_10dp"-->
+<!--                android:layout_marginTop="@dimen/dimen_20dp"-->
 <!--                android:layout_width="@dimen/dimen_40dp"-->
 <!--                android:layout_height="@dimen/dimen_40dp"-->
 <!--                android:background="@mipmap/ic_palette_choice_lenglan" />-->

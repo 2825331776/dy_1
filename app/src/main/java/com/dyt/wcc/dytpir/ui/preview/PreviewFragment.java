@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Paint;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
 import android.os.Bundle;
@@ -363,7 +364,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
 		mSendCommand = new SendCommand();
 
-
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		screenWidth = dm.widthPixels;
 		int screenHeight = dm.heightPixels;
@@ -379,7 +379,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 				if (allGranted){
-					Log.e(TAG, "initView: file is exits ? === " + AssetCopyer.checkPaletteFile(mContext.get(),DYConstants.paletteArrays));
+//					Log.e(TAG, "initView: file is exits ? === " + AssetCopyer.checkPaletteFile(mContext.get(),DYConstants.paletteArrays));
 
 					mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);//
 					Log.e(TAG, "initView:  ==444444= " + System.currentTimeMillis());
@@ -932,8 +932,22 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 							assert popCompanyInfoBinding != null;
 //							popCompanyInfoBinding.tvCheckVersion.setOnClickListener(chartModeCheckListener);
 							popCompanyInfoBinding.tvVersionName.setText(""+ LanguageUtils.getVersionName(mContext.get()));
+							popCompanyInfoBinding.tvContactusEmail.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+							popCompanyInfoBinding.tvContactusEmail.setOnClickListener(new View.OnClickListener() {
+								@Override
+								public void onClick (View v) {
+									Intent emailIntent= new Intent(Intent.ACTION_SENDTO);
+									emailIntent.setData(Uri.parse( getResources().getString(R.string.contactus_email_head)+getResources().getString(R.string.ContactEmail)));
+									emailIntent.putExtra(Intent.EXTRA_SUBJECT,  "反馈标题" );
+									emailIntent.putExtra(Intent.EXTRA_TEXT,  "反馈内容" );
+									//没有默认的发送邮件应用
+									startActivity(Intent.createChooser(emailIntent,
+											getResources().getString(R.string.contactus_choice_email)));
+								}
+							});
 
-							showPopWindows(view,80,40,20);
+							//popupWindow.showAsDropDown(mDataBinding.flPreview,15,-popupWindow.getHeight()-20, Gravity.CENTER);
+							showPopWindows(view,30,15,20);
 						}
 					}
 				});

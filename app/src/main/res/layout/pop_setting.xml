@@ -21,7 +21,7 @@
             <!--标题导航线-->
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/gl_setting_title"
-                android:layout_width="@dimen/dimen_5dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 app:layout_constraintGuide_begin="@dimen/dimen_20dp" />
