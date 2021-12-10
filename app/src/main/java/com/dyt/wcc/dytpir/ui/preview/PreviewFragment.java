@@ -136,6 +136,21 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private void getCameraParams(){//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
 		byte [] tempParams = mUvcCameraHandler.getTemperaturePara(128);
 		cameraParams = ByteUtilsCC.byte2Float(tempParams);
+
+		if (cameraParams != null){
+			sp.edit().putFloat(DYConstants.setting_correction,
+					cameraParams.get(DYConstants.setting_correction)!=null?cameraParams.get(DYConstants.setting_correction):0.0f).apply();
+			sp.edit().putFloat(DYConstants.setting_emittance,
+					cameraParams.get(DYConstants.setting_emittance)).apply();
+			sp.edit().putFloat(DYConstants.setting_distance,
+					cameraParams.get(DYConstants.setting_distance)).apply();
+			sp.edit().putFloat(DYConstants.setting_reflect,
+					cameraParams.get(DYConstants.setting_reflect)!=null?cameraParams.get(DYConstants.setting_reflect):0.0f).apply();
+			sp.edit().putFloat(DYConstants.setting_environment,
+					cameraParams.get(DYConstants.setting_environment)!=null?cameraParams.get(DYConstants.setting_environment):0.0f).apply();
+			sp.edit().putFloat(DYConstants.setting_humidity,
+					cameraParams.get(DYConstants.setting_humidity)).apply();
+		}
 	}
 
 	@Override
@@ -356,6 +371,17 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mUvcCameraHandler.startPreview(stt);
 		mUvcCameraHandler.startTemperaturing();//温度回调
 
+
+		new Handler().postDelayed(new Runnable() {
+			@Override
+			public void run () {
+				if (mUvcCameraHandler!=null && mUvcCameraHandler.isOpened()){
+					getCameraParams();
+				}
+				//清除所有的控件
+				mDataBinding.dragTempContainerPreviewFragment.clearAll();
+			}
+		},3000);
 	}
 
 	@Override

@@ -403,6 +403,7 @@ public class MyCustomRangeSeekBar extends View {
 
 		mTextSize = a.getDimension(R.styleable.MyCustomRangeSeekBar_SeekBarAllTextSize, DensityUtil.dp2px(context, 14));
 		mPaint.setColor(ContextCompat.getColor(context,R.color.white));
+
 		initPaint();//必须放这里
 
 		initView();
@@ -491,13 +492,13 @@ public class MyCustomRangeSeekBar extends View {
 		if (widgetMode ==1 ){
 //			RectF recRange = new RectF(maxTempTextLength ,
 //					0,maxTempTextLength + realTimeHighLowPicWidth,0);
-			//绘制实时最高最低温图片
-			realTimeTempPicRect.top = topBottomPadding+ Temp2Height(rangeMaxTemp) - btRangeMaxTemp.getHeight()/2.0f;
-			realTimeTempPicRect.bottom =topBottomPadding+ Temp2Height(rangeMaxTemp) + btRangeMaxTemp.getHeight()/2.0f;
+			//绘制实时最高最低温图片 =
+			realTimeTempPicRect.top = topBottomPadding+ Temp2Height(rangeMaxTemp) - btRangeMaxTemp.getHeight()/5*4;
+			realTimeTempPicRect.bottom =topBottomPadding+ Temp2Height(rangeMaxTemp);
 			canvas.drawBitmap(btRangeMaxTemp,null,realTimeTempPicRect,mPaint);
 
-			realTimeTempPicRect.top = topBottomPadding+Temp2Height(rangeMinTemp) - btRangeMaxTemp.getHeight()/2.0f;
-			realTimeTempPicRect.bottom = topBottomPadding+Temp2Height(rangeMinTemp) + btRangeMaxTemp.getHeight()/2.0f;
+			realTimeTempPicRect.top = topBottomPadding+Temp2Height(rangeMinTemp);
+			realTimeTempPicRect.bottom = topBottomPadding+Temp2Height(rangeMinTemp) + btRangeMaxTemp.getHeight()/5*4;
 			canvas.drawBitmap(btRangeMinTemp,null,realTimeTempPicRect,mPaint);
 		}
 		//绘制两个滑块之间的 渲染矩形范围
@@ -543,24 +544,24 @@ public class MyCustomRangeSeekBar extends View {
 		//绘制实时最高最低温文字
 		if (widgetMode ==1 ){
 			canvas.drawText(Float2Str(rangeMaxTemp),maxTempTextLength - mPaint.measureText(Float2Str(rangeMaxTemp)),
-					topBottomPadding+ Temp2Height(rangeMaxTemp)+mPaint.descent(),mPaint);
+					topBottomPadding+ Temp2Height(rangeMaxTemp),mPaint);
 			canvas.drawText(Float2Str(rangeMinTemp),maxTempTextLength - mPaint.measureText(Float2Str(rangeMinTemp)),
-					topBottomPadding+ Temp2Height(rangeMinTemp)+mPaint.descent(),mPaint);
+					topBottomPadding+ Temp2Height(rangeMinTemp)-mPaint.ascent()- mPaint.descent(),mPaint);
 		}
 //		//右侧实时高低温的左边界线
 //		canvas.drawLine(mThumbMaxImage.getWidth() + seekbarWidth ,
 //				0,mThumbMaxImage.getWidth() + seekbarWidth ,
 //				topBottomPadding,mPaint);
-//		//起始刻度
-//		canvas.drawLine(mThumbMaxImage.getWidth(),topBottomPadding,mThumbMaxImage.getWidth()+seekbarWidth,topBottomPadding,mPaint);
+		//起始刻度
+//		canvas.drawLine(mThumbWidth,topBottomPadding,mThumbWidth+seekbarWidth,topBottomPadding,mPaint);
 //		//四分之一刻度
-//		canvas.drawLine(mThumbMaxImage.getWidth(),(getHeight()-2.0f*topBottomPadding)/4+topBottomPadding,
-//				mThumbMaxImage.getWidth()+seekbarWidth,(getHeight()-2.0f*topBottomPadding)/4+topBottomPadding,mPaint);
+//		canvas.drawLine(mThumbWidth,(getHeight()-2.0f*topBottomPadding)/4+topBottomPadding,
+//				mThumbWidth+seekbarWidth,(getHeight()-2.0f*topBottomPadding)/4+topBottomPadding,mPaint);
 //		//四分之二刻度
-//		canvas.drawLine(mThumbMaxImage.getWidth(),getHeight()/2.0f,mThumbMaxImage.getWidth()+seekbarWidth,getHeight()/2.0f,mPaint);
+//		canvas.drawLine(mThumbWidth,getHeight()/2.0f,mThumbWidth+seekbarWidth,getHeight()/2.0f,mPaint);
 //		//四分之三刻度
-//		canvas.drawLine(mThumbMaxImage.getWidth(),(getHeight()-2.0f*topBottomPadding)/4*3+topBottomPadding,
-//				mThumbMaxImage.getWidth()+seekbarWidth,(getHeight()-2.0f*topBottomPadding)/4*3+topBottomPadding,mPaint);
+//		canvas.drawLine(mThumbWidth,(getHeight()-2.0f*topBottomPadding)/4*3+topBottomPadding,
+//				mThumbWidth+seekbarWidth,(getHeight()-2.0f*topBottomPadding)/4*3+topBottomPadding,mPaint);
 	}
 
 	/**

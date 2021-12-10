@@ -111,8 +111,8 @@
                 app:layout_constraintTop_toTopOf="@id/tv_language"
                 app:layout_constraintBottom_toBottomOf="@id/tv_language"
                 app:layout_constraintRight_toLeftOf="@id/gl_setting_content"
-                android:background="@drawable/bg_define_my_toggle_toggle"
-                android:textColor="@color/white"
+                android:background="@drawable/bg_setting_language_toggle"
+                android:textColor="@color/black"
                 android:textAllCaps="false"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"/>

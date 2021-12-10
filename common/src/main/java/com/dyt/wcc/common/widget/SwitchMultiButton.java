@@ -29,7 +29,7 @@ public class SwitchMultiButton extends View {
 
     private static final String TAG = "SwitchMultiButton";
     //默认值
-    private String[] mTabTexts = {"开", "关"};
+    private String[] mTabTexts = {getResources().getString(R.string.turn_on), getResources().getString(R.string.turn_off)};
     private int mTabNum = mTabTexts.length;//tab的个数
     private static final float STROKE_RADIUS = 0;
     private static final float STROKE_WIDTH = 2;

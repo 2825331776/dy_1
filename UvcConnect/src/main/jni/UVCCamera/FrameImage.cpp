@@ -359,6 +359,8 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
         }
     }
 
+//    LOGE(" === areasize == %d  ", areasize);
+
 
     //框内细查 先绘制灰度图,根据原有的ad值
     if (mIsAreachecked){
@@ -380,7 +382,7 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
 //        }
 //        int loopnum=areasize/4;
         if (loopnum > 0){//框内细查 存在添加的框
-            LOGE(" === heckArea %d   === ", mCheckArea[1]);
+//            LOGE(" === heckArea %d   === ", mCheckArea[1]);
 
             //根据框 拿色板去渲染
             for(int m=0;m<loopnum;m++){
@@ -436,7 +438,7 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
         }
     } else{ //非框内细查，则根据 色板的 拖动条设置去渲染
         if (isFixedTempStrip){
-            LOGE("=====  quanfu Max ==%d , maxThumbAd===  %d =,=minThumbAD == %d ==, maxThumbValue = %f , == minThumbValue == %f ",grayMax, maxThumbAD, minThumbAD,maxThumbValue , minThumbValue );
+//            LOGE("=====  quanfu Max ==%d , maxThumbAd===  %d =,=minThumbAD == %d ==, maxThumbValue = %f , == minThumbValue == %f ",grayMax, maxThumbAD, minThumbAD,maxThumbValue , minThumbValue );
             for (int i = 0; i < requestHeight - 4; i++) {
                 for (int j = 0; j < requestWidth; j++) {
                 if (tmp_buf[i * requestWidth + j] >= min && tmp_buf[i * requestWidth + j] <= (min + ro)) {

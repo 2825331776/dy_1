@@ -2772,6 +2772,8 @@ string scale_type_none
 string search_menu_title
 string select
 string status_bar_notification_info_overflow
+string turn_off
+string turn_on
 style AlertDialog_AppCompat
 style AlertDialog_AppCompat_Light
 style AndroidThemeColorAccentYellow
