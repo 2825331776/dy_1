@@ -3,6 +3,7 @@ package com.dyt.wcc.dytpir.ui.gallery;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -207,37 +208,55 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 	@Override
 	public void onResume () {
 		super.onResume();
-		Log.e(TAG, "onResume: ");
+		if (isDebug)Log.e(TAG, "onResume: ");
 	}
 
 	@Override
 	public void onStop () {
 		super.onStop();
-		Log.e(TAG, "onStop: ");
+		if (isDebug)Log.e(TAG, "onStop: ");
 	}
 
 	@Override
 	public void onDestroyView () {
 		super.onDestroyView();
-		Log.e(TAG, "onDestroyView: ");
+		if (isDebug)Log.e(TAG, "onDestroyView: ");
 	}
 
 	@Override
 	public void onDestroy () {
 		super.onDestroy();
-		Log.e(TAG, "onDestroy: ");
+		if (isDebug)Log.e(TAG, "onDestroy: ");
 	}
 
 	@Override
 	public void onDetach () {
 		super.onDetach();
-		Log.e(TAG, "onDetach: ");
+		if (isDebug)Log.e(TAG, "onDetach: ");
 	}
 
 	@Override
 	public void onCreate (@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.e(TAG, "onCreate: ");
+		if (isDebug)Log.e(TAG, "onCreate: ");
+	}
+
+	@Override
+	public void onAttach (@NonNull Context context) {
+		super.onAttach(context);
+		if (isDebug)Log.e(TAG, "onAttach: ");
+	}
+
+	@Override
+	public void onActivityCreated (@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		if (isDebug)Log.e(TAG, "onActivityCreated: ");
+	}
+
+	@Override
+	public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		if (isDebug)Log.e(TAG, "onViewCreated: ");
 	}
 
 	/**

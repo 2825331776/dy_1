@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.hardware.usb.UsbDevice;
@@ -115,7 +116,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private Bitmap tiehong = null, caihong = null, baire = null, heire = null, hongre = null, lenglan = null;
 	private SendCommand mSendCommand;
 
-	private int screenWidth = 0;
+	private int screenWidth ,screenHeight;
+
+	private DisplayMetrics metrics;
+	private Configuration  configuration;
 
 	@Override
 	protected boolean isInterceptBackPress () {
@@ -131,6 +135,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	public void onPause () {
 		super.onPause();
 		if (isDebug)Log.e(TAG, "onPause: ");
+	}
+
+	@Override
+	public void onStop () {
+		super.onStop();
+		if (isDebug)Log.e(TAG, "onStop: ");
 	}
 
 	private void getCameraParams(){//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
@@ -191,10 +201,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
 		}
 
-		if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened()){
+		if (mUvcCameraHandler != null){
 //			Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
-			mUvcCameraHandler.stopTemperaturing();
-			mUvcCameraHandler.stopPreview();
+//			mUvcCameraHandler.stopTemperaturing();
+//			mUvcCameraHandler.stopPreview();
 			mUvcCameraHandler.release();
 		}
 		if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
@@ -202,6 +212,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		}
 
 	}
+
+
 
 	private USBMonitor.OnDeviceConnectListener onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
 		@Override
@@ -257,8 +269,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			if (mUvcCameraHandler != null){
 				//					Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
 				//					SurfaceTexture stt = mDataBinding.textureViewPreviewFragment.getSurfaceTexture();
-				mUvcCameraHandler.stopTemperaturing();
-				mUvcCameraHandler.stopPreview();
+//				mUvcCameraHandler.stopTemperaturing();
+//				mUvcCameraHandler.stopPreview();
 				mUvcCameraHandler.release();//拔出之时没释放掉这个资源。关闭窗口之时必须释放
 			}
 		}
@@ -278,8 +290,26 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	@Override
 	public void onResume () {
 		super.onResume();
-		if (isDebug)Log.e(TAG, "onResume: ");
+		//初始化语言，解决onStop 但没有OnDestroy 时 设置了英语锁屏又 返回 系统默认中文 的BUG
+		if (sp.getInt(DYConstants.LANGUAGE_SETTING,0) == 0){
+			configuration.locale = Locale.SIMPLIFIED_CHINESE;
+			configuration.setLayoutDirection(Locale.SIMPLIFIED_CHINESE);
+		}else {
+			configuration.locale = Locale.ENGLISH;
+			configuration.setLayoutDirection(Locale.ENGLISH);
+		}
+		getResources().updateConfiguration(configuration,metrics);
 
+//		if (isDebug)Log.e(TAG, "onResume: ");
+
+		if (isDebug)Log.e(TAG, "onResume: preview widget == width == " + mDataBinding.flPreview.getMeasuredWidth()
+				+ " height == " + mDataBinding.flPreview.getMeasuredHeight());
+
+//				FrameLayout.LayoutParams fLayoutParams = new FrameLayout.LayoutParams(screenHeight/3*4,screenHeight);
+		//		mDataBinding.dragTempContainerPreviewFragment.setLayoutParams(fLayoutParams);
+		//		mDataBinding.textureViewPreviewFragment.setLayoutParams(fLayoutParams);
+//				mDataBinding.flPreview.getLayoutParams().width = screenHeight /3*4;
+//				mDataBinding.flPreview.getLayoutParams().height = screenHeight;
 
 		//		Spinner
 		List<UsbDevice> mUsbDeviceList = mViewModel.getMUsbMonitor().getValue().getDeviceList();
@@ -302,7 +332,14 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		return mUvcCameraHandler != null ? mUvcCameraHandler.setValue(flag, value) : 0;
 	}
 
-	private void startPreview () {//打开连接 调用预览图像的设置
+	/**
+	 * 打开连接 调用预览图像的设置
+	 */
+	private void startPreview () {
+				if (isDebug)Log.e(TAG, "startPreview: preview widget == width == " + mDataBinding.rlPreviewContainer.getWidth()
+						+ " height == " + mDataBinding.rlPreviewContainer.getHeight());
+
+
 		stt = new Surface(mDataBinding.textureViewPreviewFragment.getSurfaceTexture());
 
 		mTextureViewWidth = mDataBinding.textureViewPreviewFragment.getWidth();
@@ -379,27 +416,71 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					getCameraParams();
 				}
 				//清除所有的控件
-				mDataBinding.dragTempContainerPreviewFragment.clearAll();
+//				mDataBinding.dragTempContainerPreviewFragment.clearAll();
 			}
 		},3000);
 	}
 
+
+
 	@Override
 	protected void initView () {
-
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
+		configuration = getResources().getConfiguration();
+		metrics = getResources().getDisplayMetrics();
+
+
 		mSendCommand = new SendCommand();
+
+		mDataBinding.btStopTemp.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick (View v) {
+				if (mUvcCameraHandler!= null && mUvcCameraHandler.isTemperaturing()){
+					mUvcCameraHandler.stopTemperaturing();
+				}else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isTemperaturing()){
+					mUvcCameraHandler.startTemperaturing();
+				}
+			}
+		});
+		mDataBinding.btFresh.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick (View v) {
+				if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing()){
+//					startPreview();
+					Log.e(TAG, "onClick: btFresh");
+					setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
+					mUvcCameraHandler.whenShutRefresh();
+				}
+//				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isPreviewing()){
+//					mUvcCameraHandler.stopTemperaturing();
+//					mUvcCameraHandler.stopPreview();
+//					mUvcCameraHandler.release();
+//				}
+			}
+		});
 
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		screenWidth = dm.widthPixels;
-		int screenHeight = dm.heightPixels;
-		Log.e(TAG, "initView: " + screenWidth);
+		screenHeight = dm.heightPixels;
+//		Log.e(TAG, "initView: screenWidth ===  " + screenWidth + "   == screenHeight == " + screenHeight);
+
+//		if (isDebug)Log.e(TAG, "onResume: preview widget == width == " + mDataBinding.rlPreviewContainer.getWidth()
+				//				+ " height == " + mDataBinding.rlPreviewContainer.getHeight());
 
 //		FrameLayout.LayoutParams fLayoutParams = new FrameLayout.LayoutParams(screenHeight/3*4,screenHeight);
 //		mDataBinding.dragTempContainerPreviewFragment.setLayoutParams(fLayoutParams);
-//		mDataBinding.textureViewPreviewFragment.setw(fLayoutParams);
-//		mDataBinding.flPreview.getLayoutParams().width = 600;
-//		mDataBinding.flPreview.getLayoutParams().height = 450;
+//		mDataBinding.textureViewPreviewFragment.setLayoutParams(fLayoutParams);
+//		mDataBinding.flPreview.getLayoutParams().width = screenHeight /3*4;
+//		mDataBinding.flPreview.getLayoutParams().height = screenHeight;
+
+//		mDataBinding.rlPreviewContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//			@Override
+//			public void onGlobalLayout () {
+//				ViewGroup.LayoutParams params = mDataBinding.rlPreviewContainer.getLayoutParams();
+////				Log.e(TAG, "onGlobalLayout: ================  " + params.width + " height === " + params.height);
+//			}
+//		});
+
 
 		PermissionX.init(this).permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE).request(new RequestCallback() {
 			@Override
@@ -918,20 +999,19 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					public void onClick (View v) {
 						AlertDialog.Builder builder = new AlertDialog.Builder(mContext.get());
 //						AlertDialog dialog =
-								builder
-//										.setTitle(R.string.confirm)
-								.setSingleChoiceItems(DYConstants.languageArray, sp.getInt(DYConstants.LANGUAGE_SETTING, 0), new DialogInterface.OnClickListener() {
-									@Override
-									public void onClick (DialogInterface dialog, int which) {
-										if (which != sp.getInt(DYConstants.LANGUAGE_SETTING,0)){
-											sp.edit().putInt(DYConstants.LANGUAGE_SETTING,which).apply();
-											//							Log.e(TAG, "onItemSelected:  changed position == " + position);
-											popupWindow.dismiss();
-											toSetLanguage(which);
-										}
-									}
-								})
-								.create();
+//						AlertDialog alertDialog =
+						builder.setSingleChoiceItems(DYConstants.languageArray, sp.getInt(DYConstants.LANGUAGE_SETTING, 0), new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick (DialogInterface dialog, int which) {
+								if (which != sp.getInt(DYConstants.LANGUAGE_SETTING,0)){
+									sp.edit().putInt(DYConstants.LANGUAGE_SETTING,which).apply();
+									popupWindow.dismiss();
+									//							Log.e(TAG, "onItemSelected:  changed position == " + position);
+									toSetLanguage(which);
+								}
+								dialog.dismiss();
+							}
+						}).create();
 //						WindowManager manager = mContext.get().getWindowManager();
 //						Display display = manager.getDefaultDisplay();
 //						WindowManager.LayoutParams layoutParams = dialog.getWindow().getAttributes();

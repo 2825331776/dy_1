@@ -246,6 +246,22 @@
             android:layout_height="match_parent"
             android:background="@color/bg_preview_left_cutoff_rule"/>
 
+<!--        测试按钮-->
+        <Button
+            android:id="@+id/bt_stopTemp"
+            android:text="StopTemp"
+            app:layout_constraintTop_toTopOf="@id/ll_container_preview_seekbar"
+            app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/bt_fresh"
+            android:text="fresh"
+            app:layout_constraintTop_toBottomOf="@id/bt_stopTemp"
+            app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
 <!--        拖动条布局-->
         <LinearLayout
             android:id="@+id/ll_container_preview_seekbar"
