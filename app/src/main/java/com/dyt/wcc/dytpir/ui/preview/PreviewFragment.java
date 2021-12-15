@@ -141,6 +141,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	public void onStop () {
 		super.onStop();
 		if (isDebug)Log.e(TAG, "onStop: ");
+
+
 	}
 
 	private void getCameraParams(){//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
@@ -431,33 +433,34 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 
 		mSendCommand = new SendCommand();
-
-		mDataBinding.btStopTemp.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick (View v) {
-				if (mUvcCameraHandler!= null && mUvcCameraHandler.isTemperaturing()){
-					mUvcCameraHandler.stopTemperaturing();
-				}else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isTemperaturing()){
-					mUvcCameraHandler.startTemperaturing();
-				}
-			}
-		});
-		mDataBinding.btFresh.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick (View v) {
-				if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing()){
-//					startPreview();
-					Log.e(TAG, "onClick: btFresh");
-					setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
-					mUvcCameraHandler.whenShutRefresh();
-				}
-//				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isPreviewing()){
+//关闭 温度回调
+//		mDataBinding.btStopTemp.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick (View v) {
+//				if (mUvcCameraHandler!= null && mUvcCameraHandler.isTemperaturing()){
 //					mUvcCameraHandler.stopTemperaturing();
-//					mUvcCameraHandler.stopPreview();
-//					mUvcCameraHandler.release();
+//				}else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isTemperaturing()){
+//					mUvcCameraHandler.startTemperaturing();
 //				}
-			}
-		});
+//			}
+//		});
+		// 打挡
+//		mDataBinding.btFresh.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick (View v) {
+//				if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing()){
+////					startPreview();
+//					Log.e(TAG, "onClick: btFresh");
+//					setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
+//					mUvcCameraHandler.whenShutRefresh();
+//				}
+////				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isPreviewing()){
+////					mUvcCameraHandler.stopTemperaturing();
+////					mUvcCameraHandler.stopPreview();
+////					mUvcCameraHandler.release();
+////				}
+//			}
+//		});
 
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		screenWidth = dm.widthPixels;
