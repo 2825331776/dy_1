@@ -47,5 +47,9 @@
     <string name="setting_language_chinese">Chinese</string>
     <string name="setting_language_english">English</string>
 
+    <string name="toast_save_path">Save path:</string>
+    <string name="toast_need_connect_camera">Please connect camera</string>
+    <string name="toast_dont_have_permission">not have permission</string>
+
     <string name="value_zero">0.0</string>
 </resources>

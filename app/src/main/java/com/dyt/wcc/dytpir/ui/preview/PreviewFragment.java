@@ -1430,18 +1430,25 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	}
 	//拍照 按钮
 	public void toImage(View view){
+		if (hasPermissions(Manifest.permission.READ_EXTERNAL_STORAGE
+				,Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+
+		}else {
+			requestPermissions(Manifest.permission.READ_EXTERNAL_STORAGE
+					,Manifest.permission.WRITE_EXTERNAL_STORAGE);
+		}
 
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
 				,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO)
 				.onExplainRequestReason(new ExplainReasonCallback() {
 					@Override
 					public void onExplainReason (@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
-						scope.showRequestReasonDialog(deniedList,"没有存储权限，无法实现截图，录制等功能。是否重新授权？","确认","取消");
+						scope.showRequestReasonDialog(deniedList,"没有存储权限，无法实现拍照，录制等功能。是否重新授权？","确认","取消");
 					}
 				}).onForwardToSettings(new ForwardToSettingsCallback() {
 			@Override
 			public void onForwardToSettings (@NonNull ForwardScope scope, @NonNull List<String> deniedList) {
-				scope.showForwardToSettingsDialog(deniedList,"没有存储权限，无法实现截图，录制等功能。是否去设置打开？","确认","取消");
+				scope.showForwardToSettingsDialog(deniedList,"没有存储权限，无法实现拍照，录制等功能。是否去设置打开？","确认","取消");
 			}
 		}).request(new RequestCallback() {
 			@Override
@@ -1450,20 +1457,27 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					//生成一个当前的图片地址：  然后设置一个标识位，标识正截屏 或者 录像中
 					if (mUvcCameraHandler.isOpened()){
 						String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
-//						mUvcCameraHandler.captureStill(picPath);
-						if (mUvcCameraHandler.captureStill(picPath))showToast("保存路径为："+picPath );
+						if (mUvcCameraHandler.captureStill(picPath))showToast(getResources().getString(R.string.toast_save_path)+picPath );
 //						if (isDebug)Log.e(TAG, "onResult: java path === "+ picPath);
 					}else {
-						showToast("请先连接相机");
+						showToast(getResources().getString(R.string.toast_need_connect_camera));
 					}
 				}else {
-					showToast("请授予需要的权限.");
+					showToast(getResources().getString(R.string.toast_dont_have_permission));
 				}
 
 			}
 		});
 
 
+	}
+
+	private boolean hasPermissions(String ... permissions){
+		if (checkPermission(permissions)) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 	//录制
 	public void toRecord(View view){

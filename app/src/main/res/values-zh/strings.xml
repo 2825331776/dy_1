@@ -47,5 +47,9 @@
     <string name="setting_language_chinese">中文</string>
     <string name="setting_language_english">英语</string>
 
+    <string name="toast_save_path">保存路径为:</string>
+    <string name="toast_need_connect_camera">请连接相机</string>
+    <string name="toast_dont_have_permission">没授予对应权限</string>
+
     <string name="value_zero">0.0</string>
 </resources>

@@ -44,9 +44,9 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
 		View view = mDataBinding.getRoot();
 		mContext = new WeakReference<>(getActivity());
 		mContext.get().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		initView();
 		mToast = Toast.makeText(mContext.get(),"",Toast.LENGTH_SHORT);
 
+		initView();
 		return view;
 	}
 
@@ -83,7 +83,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
 		return result;
 	}
 
-	protected void getPermissions(String ... permissions){
+	protected void requestPermissions(String ... permissions){
 		PermissionX.init(this).permissions(permissions).request(new RequestCallback() {
 			@Override
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
