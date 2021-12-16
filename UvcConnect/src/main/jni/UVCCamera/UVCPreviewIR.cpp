@@ -617,11 +617,11 @@ void UVCPreviewIR::do_savePicture() {
     if(isRunning()){
         pthread_mutex_lock(&screenShot_mutex);
         {
-//          LOGE("=============pthread_cond_wait====",getpid());
+          LOGE("=======do_savePicture======pthread_cond_wait====");
             pthread_cond_wait(&screenShot_sync,&screenShot_mutex);
 //            LOGE("=============print====run ====savePicPath============= %s", savePicPath);
             //此时拿到关键的帧数据后，线程被唤醒，执行，包装插入数据：自定义结构体数据、  插入ad值数据。
-//            LOGE("=============pthread_cond_wait================ ");
+//            LOGE("=======do_savePicture======pthread_cond_wait================ ");
             savePicDefineData();
         }
         pthread_mutex_unlock(&screenShot_mutex);

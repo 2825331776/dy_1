@@ -290,6 +290,13 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	};
 
 	@Override
+	public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+//		Log.e(TAG, "onViewCreated:  width  == > " + mDataBinding.flPreview.getLayoutParams().width);
+
+	}
+
+	@Override
 	public void onResume () {
 		super.onResume();
 		//初始化语言，解决onStop 但没有OnDestroy 时 设置了英语锁屏又 返回 系统默认中文 的BUG
@@ -304,8 +311,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 //		if (isDebug)Log.e(TAG, "onResume: ");
 
-		if (isDebug)Log.e(TAG, "onResume: preview widget == width == " + mDataBinding.flPreview.getMeasuredWidth()
-				+ " height == " + mDataBinding.flPreview.getMeasuredHeight());
+//		if (isDebug)Log.e(TAG, "onResume: preview widget == width == " + mDataBinding.flPreview.getMeasuredWidth()
+//				+ " height == " + mDataBinding.flPreview.getMeasuredHeight());
+//		if (isDebug)
+//			Log.e(TAG, "onResume:seekbar ===  " + mDataBinding.customSeekbarPreviewFragment.getMeasuredWidth());
 
 //				FrameLayout.LayoutParams fLayoutParams = new FrameLayout.LayoutParams(screenHeight/3*4,screenHeight);
 		//		mDataBinding.dragTempContainerPreviewFragment.setLayoutParams(fLayoutParams);
@@ -328,7 +337,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		if (!mViewModel.getMUsbMonitor().getValue().isRegistered()){
 			mViewModel.getMUsbMonitor().getValue().register();
 		}
-		Log.e(TAG, "onResume: before  ===  " +System.currentTimeMillis());
+//		if(isDebug)Log.e(TAG, "onResume: before  ===  " +System.currentTimeMillis());
 	}
 	private int setValue(final int flag, final int value) {//设置机芯参数,调用JNI层
 		return mUvcCameraHandler != null ? mUvcCameraHandler.setValue(flag, value) : 0;
@@ -338,9 +347,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	 * 打开连接 调用预览图像的设置
 	 */
 	private void startPreview () {
-				if (isDebug)Log.e(TAG, "startPreview: preview widget == width == " + mDataBinding.rlPreviewContainer.getWidth()
-						+ " height == " + mDataBinding.rlPreviewContainer.getHeight());
-
+//				if (isDebug)Log.e(TAG, "startPreview: flPreview  width == " + mDataBinding.flPreview.getMeasuredWidth()
+//						+ " height == " + mDataBinding.flPreview.getMeasuredHeight());
+//		mDataBinding.toggleAreaCheck.setChecked(false);
 
 		stt = new Surface(mDataBinding.textureViewPreviewFragment.getSurfaceTexture());
 
@@ -444,6 +453,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //				}
 //			}
 //		});
+
 		// 打挡
 //		mDataBinding.btFresh.setOnClickListener(new View.OnClickListener() {
 //			@Override
@@ -465,16 +475,46 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		screenWidth = dm.widthPixels;
 		screenHeight = dm.heightPixels;
-//		Log.e(TAG, "initView: screenWidth ===  " + screenWidth + "   == screenHeight == " + screenHeight);
+//		Log.e(TAG, "initView: screenWidth ===  " + screenWidth + "   == screenHeight == " + screenHeight +"  " + mDataBinding.customSeekbarPreviewFragment.getMeasuredWidth());
+//		Log.e(TAG, "initView: density === > " + dm.density);
+//		int shengyu = screenWidth - DensityUtil.dp2px(mContext.get(), 220);
+//		Log.e(TAG, "initView: pingmu kuandu  === > " + shengyu);
+
 
 //		if (isDebug)Log.e(TAG, "onResume: preview widget == width == " + mDataBinding.rlPreviewContainer.getWidth()
 				//				+ " height == " + mDataBinding.rlPreviewContainer.getHeight());
 
+//		mDataBinding.rlPreviewContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//			@Override
+//			public void onGlobalLayout () {
+//				int w = mDataBinding.rlPreviewContainer.getMeasuredWidth();
+//				int h = mDataBinding.rlPreviewContainer.getMeasuredHeight();
+//				Log.e(TAG, "onGlobalLayout: w =====>  " + w + " h ====> " + h);
+//
+//				//		float width = mDataBinding.rlPreviewContainer.getMeasuredWidth();
+//				//		float height =  mDataBinding.rlPreviewContainer.getMeasuredHeight();
+//				if (w/4.0f > (h/3.0f)){
+//					Log.e(TAG, "onGlobalLayout: =====0===");
+//					mDataBinding.flPreview.getLayoutParams().width = (int) (h/3.0f*4.0f);
+//					mDataBinding.flPreview.getLayoutParams().height = h;
+//				}else {
+//					Log.e(TAG, "onGlobalLayout: =====1===");
+//					mDataBinding.flPreview.getLayoutParams().width =  701;
+//					mDataBinding.flPreview.getLayoutParams().height = 525;
+////					mDataBinding.flPreview.measure(w,(int) (w/4.0f*3.0f));
+//				}
+//			}
+//		}) ;
+
+
+
+//				mDataBinding.flPreview.getLayoutParams().width = screenHeight /3*4;
+//				mDataBinding.flPreview.getLayoutParams().height = screenHeight;
+
 //		FrameLayout.LayoutParams fLayoutParams = new FrameLayout.LayoutParams(screenHeight/3*4,screenHeight);
 //		mDataBinding.dragTempContainerPreviewFragment.setLayoutParams(fLayoutParams);
 //		mDataBinding.textureViewPreviewFragment.setLayoutParams(fLayoutParams);
-//		mDataBinding.flPreview.getLayoutParams().width = screenHeight /3*4;
-//		mDataBinding.flPreview.getLayoutParams().height = screenHeight;
+
 
 //		mDataBinding.rlPreviewContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 //			@Override
@@ -592,7 +632,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 					dialog.getWindow().setGravity(Gravity.LEFT);
 					WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
-					params.x =  mDataBinding.rlPreviewContainer.getMeasuredWidth()/2 - DensityUtil.dp2px(mContext.get(), 100);
+					params.x =  mDataBinding.flPreview.getMeasuredWidth()/2 - DensityUtil.dp2px(mContext.get(), 100);
 //					Log.e(TAG, "onCheckedChanged: " + mDataBinding.rlPreviewContainer.getWidth());
 
 //					WindowManager windowManager = mContext.get().getWindowManager();

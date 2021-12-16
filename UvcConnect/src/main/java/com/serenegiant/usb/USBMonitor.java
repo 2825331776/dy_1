@@ -23,6 +23,8 @@
 
 package com.serenegiant.usb;
 
+import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
+
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -51,8 +53,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 
 public final class USBMonitor {
 
@@ -180,10 +180,10 @@ public final class USBMonitor {
 				context.registerReceiver(mUsbReceiver, filter);
 			}
 			// start connection check
-			if (DEBUG)Log.e(TAG,"=====register============before==========mDeviceCheckRunnable=======");
+//			if (DEBUG)Log.e(TAG,"=====register============before==========mDeviceCheckRunnable=======");
 			mDeviceCounts = 0;
 			mAsyncHandler.postDelayed(mDeviceCheckRunnable, 1000);
-			if (DEBUG)Log.e(TAG,"=====register============behind==========mDeviceCheckRunnable=======");
+//			if (DEBUG)Log.e(TAG,"=====register============behind==========mDeviceCheckRunnable=======");
 		}
 	}
 
@@ -543,7 +543,7 @@ public final class USBMonitor {
 				if (mOnDeviceConnectListener != null) {
 					for (int i = 0; i < n; i++) {
 						final UsbDevice device = devices.get(i);
-						if (DEBUG)Log.e(TAG,"==========usbmonitor contains devices getProductName =====>"+device.getProductName());
+//						if (DEBUG)Log.e(TAG,"==========usbmonitor contains devices getProductName =====>"+device.getProductName());
 						if(device.getVendorId() == 5396 && device.getProductId() ==1 ) {
 							mAsyncHandler.post(new Runnable() {
 								@Override
@@ -566,8 +566,8 @@ public final class USBMonitor {
 	private final void processConnect(final UsbDevice device) {
 		if (destroyed) return;
 		updatePermission(device, true);
-		if (DEBUG) Log.e(TAG, "processConnect:device=" + device);
-		if (DEBUG)Log.e(TAG,"=================processConnect===========================");
+//		if (DEBUG) Log.e(TAG, "processConnect:device=" + device);
+//		if (DEBUG)Log.e(TAG,"=================processConnect===========================");
 		UsbControlBlock ctrlBlock;
 		final boolean createNew;
 		ctrlBlock = mCtrlBlocks.get(device);

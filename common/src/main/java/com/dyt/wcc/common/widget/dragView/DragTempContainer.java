@@ -45,7 +45,7 @@ public class DragTempContainer extends RelativeLayout {
 
 	private static final int UPDATE_TEMP_DATA = 1;
 
-	private static final boolean isDebug = true;
+	private static final boolean isDebug = false;
 	private static final String TAG = "MyDragContainer";
 	private boolean isControlItem = false;//是否是操作子View
 
@@ -894,7 +894,7 @@ public class DragTempContainer extends RelativeLayout {
 
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
-		Log.e(TAG, "onTouchEvent: mode ==> " + drawTempMode + " action ==> "+ event.getAction());
+		if (isDebug)Log.e(TAG, "onTouchEvent: mode ==> " + drawTempMode + " action ==> "+ event.getAction());
 		KeyboardsUtils.hintKeyBoards(this);
 		if (drawTempMode != -1){//添加控件
 			switch (event.getAction()){
@@ -938,7 +938,7 @@ public class DragTempContainer extends RelativeLayout {
 
 	 //设置所有的子控件都未选中
 	public void setAllChildUnSelect(){
-		Log.e(TAG, "Parent setAllChildUnSelect: ");
+		if (isDebug)Log.e(TAG, "Parent setAllChildUnSelect: ");
 		if (userAdd.size() > 0){
 			for (MyMoveWidget child : userAdd){
 				child.setSelectedState(false);
