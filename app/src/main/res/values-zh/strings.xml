@@ -50,6 +50,8 @@
     <string name="toast_save_path">保存路径为:</string>
     <string name="toast_need_connect_camera">请连接相机</string>
     <string name="toast_dont_have_permission">没授予对应权限</string>
+    <string name="toast_base_permission_explain">没有读写存储权限，将无法预览页面,拍照，录制等功能。是否授权权限？</string>
+    <string name="toast_base_permission_tosetting">没有权限，将无法预览页面,拍照，录制等功能。是否去设置打开？</string>
 
     <string name="value_zero">0.0</string>
 </resources>

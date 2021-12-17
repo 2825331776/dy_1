@@ -50,6 +50,10 @@
     <string name="toast_save_path">Save path:</string>
     <string name="toast_need_connect_camera">Please connect camera</string>
     <string name="toast_dont_have_permission">not have permission</string>
-
+    <string name="toast_base_permission_explain">Without read-write storage permission, you will not be able to preview the page,
+        take pictures, record and other functions. Whether to authorize？</string>
+    <string name="toast_base_permission_tosetting">Without permission, you will not be able to preview the page,
+        take pictures, record and other functions.
+        Do you want to set it on?</string>
     <string name="value_zero">0.0</string>
 </resources>

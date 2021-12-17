@@ -92,17 +92,20 @@
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_gallery_bt_video.xml" value="0.3697916666666667" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_gallery_item_checkbox.xml" value="0.3697916666666667" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_gallery_iv_back.xml" value="0.2921875" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_areacheck.xml" value="0.24270833333333333" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_fixtempstrip.xml" value="0.24270833333333333" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_highlowtrace.xml" value="0.3697916666666667" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_highlowtrace_center.xml" value="0.3697916666666667" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_highlowtrace_high.xml" value="0.3697916666666667" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_highlowtrace_low.xml" value="0.3697916666666667" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_measuretemp_line.xml" value="0.365625" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_measuretemp_point.xml" value="0.3697916666666667" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_overtempalarm.xml" value="0.24270833333333333" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_palette.xml" value="0.3697916666666667" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/shape_bg_pop_setting_edit.xml" value="0.3697916666666667" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/activity_test.xml" value="0.25" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/fragment_gallery_main.xml" value="0.33" />
-        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/fragment_preview_main.xml" value="1.1" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/fragment_preview_main.xml" value="0.33" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/gallery_actionbar.xml" value="0.3536458333333333" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/item_photo_gallery.xml" value="0.5" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/item_select.xml" value="0.3536458333333333" />

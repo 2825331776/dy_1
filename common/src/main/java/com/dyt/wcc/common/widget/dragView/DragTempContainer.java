@@ -7,14 +7,12 @@ import android.graphics.RectF;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.dyt.wcc.common.R;
 import com.dyt.wcc.common.utils.DensityUtil;
@@ -45,7 +43,7 @@ public class DragTempContainer extends RelativeLayout {
 
 	private static final int UPDATE_TEMP_DATA = 1;
 
-	private static final boolean isDebug = false;
+	private static final boolean isDebug = true;
 	private static final String TAG = "MyDragContainer";
 	private boolean isControlItem = false;//是否是操作子View
 
@@ -132,6 +130,7 @@ public class DragTempContainer extends RelativeLayout {
 	}
 	public DragTempContainer (Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 		super(context, attrs, defStyleAttr, defStyleRes);
+		if (isDebug)Log.e(TAG, "DragTempContainer: ");
 		mContext = new WeakReference<>(context) ;
 		initAttrs();
 		initView();
@@ -142,6 +141,14 @@ public class DragTempContainer extends RelativeLayout {
 	}
 	public void setmSeekBar (MyCustomRangeSeekBar mSeekBar) {
 		this.mSeekBar = mSeekBar;
+	}
+
+	public CopyOnWriteArrayList<MyMoveWidget> getUserAdd () {
+		return userAdd;
+	}
+
+	public void setUserAdd (CopyOnWriteArrayList<MyMoveWidget> userAdd) {
+		this.userAdd = userAdd;
 	}
 
 	/**
@@ -158,8 +165,12 @@ public class DragTempContainer extends RelativeLayout {
 			}
 		}
 		//创建一个int数据保存 数据源列表中的矩阵坐标。一个矩形 四个坐标。
-		int [] areaData = new int[4*areaNumber];
-
+		int [] areaData = null;
+		if (areaNumber > 0){
+			areaData = new int[4*areaNumber];
+		}else {
+			return null;
+		}
 		int areaIndex =0 ;
 		for (MyMoveWidget child : userAdd){
 			if (child.getView().getType() ==3){
@@ -298,16 +309,23 @@ public class DragTempContainer extends RelativeLayout {
 	}
 
 
-	@Nullable
-	@Override
-	protected Parcelable onSaveInstanceState () {
-		return super.onSaveInstanceState();
-	}
+//	@Nullable
+//	@Override
+//	protected Parcelable onSaveInstanceState () {
+////		removeAllItemView();
+////		userAdd.clear();
+////		Log.e(TAG, "onSaveInstanceState: ");
+//
+//		return super.onSaveInstanceState();
+//	}
 
-	@Override
-	protected void onRestoreInstanceState (Parcelable state) {
-		super.onRestoreInstanceState(state);
-	}
+//	@Override
+//	protected void onRestoreInstanceState (Parcelable state) {
+////		removeAllItemView();
+////		userAdd.clear();
+////		Log.e(TAG, "onRestoreInstanceState: ");
+//		super.onRestoreInstanceState(state);
+//	}
 
 	@Override
 	protected void onDraw (Canvas canvas) {
@@ -560,7 +578,12 @@ public class DragTempContainer extends RelativeLayout {
 
 	private float getFormatFloat(float value){
 		DecimalFormat df = new DecimalFormat("0.0");
-		return Float.parseFloat(df.format(value));
+		if (value <Float.MAX_VALUE && value > Float.MIN_VALUE){
+			return Float.parseFloat(df.format(value));
+		}else {
+			return Float.NaN;
+		}
+
 	}
 
 

@@ -390,7 +390,7 @@
 <!--                app:showTextContent="@string/AreaCheck"-->
 <!--                app:showTextSize="12sp" />-->
                         <!--框内细查-->
-            <CheckBox
+            <Button
                 android:id="@+id/toggle_area_check"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
@@ -417,7 +417,7 @@
 <!--                app:showTextContent="@string/HighTempAlarm"-->
 <!--                app:showTextSize="12sp" />-->
 <!--            超温报警-->
-            <CheckBox
+            <Button
                 android:id="@+id/toggle_high_temp_alarm"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
@@ -476,7 +476,7 @@
 <!--                app:showTextContent="@string/FixeTempBar"-->
 <!--                app:showTextSize="12sp" />-->
 <!--            固定温度条-->
-            <CheckBox
+            <Button
                 android:id="@+id/toggle_fixed_tempBar"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="@dimen/dimen_40dp"
