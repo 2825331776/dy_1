@@ -184,6 +184,8 @@ public class DragTempContainer extends RelativeLayout {
 		return areaData;
 	}
 
+
+
 	public boolean isHighTempAlarmToggle () {
 		return highTempAlarmToggle;
 	}

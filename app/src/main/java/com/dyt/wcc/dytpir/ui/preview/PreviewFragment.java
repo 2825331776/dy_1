@@ -1317,6 +1317,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				if (allGranted){//拿到权限 去C++ 绘制 传入文件路径path， 点线矩阵
 					//生成一个当前的图片地址：  然后设置一个标识位，标识正截屏 或者 录像中
 					if (mUvcCameraHandler.isOpened()){
+
 						String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
 						if (mUvcCameraHandler.captureStill(picPath))showToast(getResources().getString(R.string.toast_save_path)+picPath );
 //						if (isDebug)Log.e(TAG, "onResult: java path === "+ picPath);
