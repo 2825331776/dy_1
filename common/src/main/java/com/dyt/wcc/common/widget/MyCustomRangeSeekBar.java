@@ -536,7 +536,7 @@ public class MyCustomRangeSeekBar extends View {
 		//计算滑块文字的X轴位置：(mthumbwidth- mpaint.measuretext("maxtempStr"))/2
 //		Math.abs((mThumbWidth-20) - mPaint.measureText(Float2Str(mThumbMaxTemp)))/2
 		canvas.drawText(Float2Str(percent2Temp(mPercentSelectedMaxValue)),getWidth()- mPaint.measureText(Float2Str(percent2Temp(mPercentSelectedMaxValue))),
-				percent2Height(mPercentSelectedMaxValue) - mThumbHeight/2.0f + mPaint.descent(),mPaint);
+				percent2Height(mPercentSelectedMaxValue)+ mThumbHeight/2.0f + mPaint.ascent() + mPaint.descent()/2.0f,mPaint);
 
 		canvas.drawText(Float2Str(percent2Temp(mPercentSelectedMinValue)),getWidth()- mPaint.measureText(Float2Str(percent2Temp(mPercentSelectedMinValue))),
 				percent2Height(mPercentSelectedMinValue) + mThumbHeight/2.0f + mPaint.descent(),mPaint);
@@ -546,7 +546,7 @@ public class MyCustomRangeSeekBar extends View {
 			canvas.drawText(Float2Str(rangeMaxTemp),maxTempTextLength - mPaint.measureText(Float2Str(rangeMaxTemp)),
 					topBottomPadding+ Temp2Height(rangeMaxTemp),mPaint);
 			canvas.drawText(Float2Str(rangeMinTemp),maxTempTextLength - mPaint.measureText(Float2Str(rangeMinTemp)),
-					topBottomPadding+ Temp2Height(rangeMinTemp)-mPaint.ascent()- mPaint.descent(),mPaint);
+					topBottomPadding+ Temp2Height(rangeMinTemp)-mPaint.ascent()- mPaint.descent()/2.0f,mPaint);
 		}
 //		//右侧实时高低温的左边界线
 //		canvas.drawLine(mThumbMaxImage.getWidth() + seekbarWidth ,

@@ -488,7 +488,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					dialog.setListener(new OverTempDialog.SetCompleteListener() {
 						@Override
 						public void onSetComplete (float setValue) {
-							//							Log.e(TAG, "onSetComplete: " + "confirm "  );
+							if (isDebug)Log.e(TAG, "onSetComplete: " + "confirm "  + "value = == > " + setValue  );
 							mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(setValue);
 							sp.edit().putFloat("overTemp",setValue).apply();
 						}

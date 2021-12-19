@@ -204,7 +204,7 @@ public class DragTempContainer extends RelativeLayout {
 	 */
 	public void openHighTempAlarm(float thresholdTemp){
 		highTempAlarmToggle = true;
-
+		Log.e(TAG, "openHighTempAlarm:  {$valueHighTempAlarm  }  " + valueHighTempAlarm );
 		if (tempSuffixMode == 0){//0摄氏度， 1华氏度， 2开氏度
 			valueHighTempAlarm = getFormatFloat(thresholdTemp);
 		}
@@ -220,6 +220,8 @@ public class DragTempContainer extends RelativeLayout {
 		if (audioPlayer != null){
 			audioPlayer.setLooping(true);
 		}
+
+		Log.e(TAG, "openHighTempAlarm:  {$valueHighTempAlarm  }  " + valueHighTempAlarm );
 	}
 	public void closeHighTempAlarm(){
 		highTempAlarmToggle = false;
@@ -580,7 +582,7 @@ public class DragTempContainer extends RelativeLayout {
 
 	private float getFormatFloat(float value){
 		DecimalFormat df = new DecimalFormat("0.0");
-		if (value <Float.MAX_VALUE && value > Float.MIN_VALUE){
+		if (value <Float.MAX_VALUE || value > Float.MIN_VALUE){
 			return Float.parseFloat(df.format(value));
 		}else {
 			return Float.NaN;
