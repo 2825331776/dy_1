@@ -440,7 +440,7 @@ void UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_arg
     //LOGE("uvc_preview_frame_callback00");
     UVCPreviewIR *preview = reinterpret_cast<UVCPreviewIR *>(vptr_args);
     //unsigned short* tmp_buf=(unsigned short*)frameData;
-    ////LOGE("uvc_preview_frame_callback00  tmp_buf:%d,%d,%d,%d",tmp_buf[384*144*4],tmp_buf[384*144*4+1],tmp_buf[384*144*4+2],tmp_buf[384*144*4+3]);
+    //LOGE("uvc_preview_frame_callback00  tmp_buf:%d,%d,%d,%d",tmp_buf[384*144*4],tmp_buf[384*144*4+1],tmp_buf[384*144*4+2],tmp_buf[384*144*4+3]);
     //LOGE("uvc_preview_frame_callback hold_bytes:%d,preview->frameBytes:%d",hold_bytes,preview->frameBytes);
     if(UNLIKELY(hold_bytes < preview->frameBytes))//判断hold_bytes 不小于preview.frameBytes则跳转到 后面正常运行     UNLIKELY期待值大几率为false时,等价于if(value)
     {

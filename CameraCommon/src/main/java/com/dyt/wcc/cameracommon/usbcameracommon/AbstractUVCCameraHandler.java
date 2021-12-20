@@ -53,7 +53,6 @@ import com.serenegiant.usb.IFrameCallback;
 import com.serenegiant.usb.ITemperatureCallback;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
-import com.serenegiant.utils.LogUtils;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
@@ -1125,7 +1124,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
             @Override
             public void onFrame(final ByteBuffer frameData) {
                 //Log.e(TAG, "mIFrameCallback ");
-                Log.e(TAG, "the frame frameData.length===="+frameData.capacity());//196608= 256*192*4 RGBA格式返回;
+                Log.e(TAG, "the frame frameData.capacity ==== "+frameData.capacity());//196608= 256*192*4 RGBA格式返回;
 				final MediaVideoBufferEncoder videoEncoder;
 				synchronized (mSync) {
 					videoEncoder = mVideoEncoder;
@@ -1575,7 +1574,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
                 if ((mUVCCamera == null) || (mMuxer != null)) return;
                 final MediaMuxerWrapper muxer = new MediaMuxerWrapper(".mp4");    // if you record audio only, ".m4a" is also OK.
                 MediaVideoBufferEncoder videoEncoder = null;
-                LogUtils.e(" =================mEncoderType=========================    "+ mEncoderType);
+                Log.e(TAG_THREAD," =================mEncoderType=========================    "+ mEncoderType);
                 switch (mEncoderType) {
                     case 1:    // for video capturing using MediaVideoEncoder
                         //new MediaVideoEncoder(muxer, getWidth(), getHeight(), mMediaEncoderListener);
@@ -1824,7 +1823,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
         private final MediaEncoder.MediaEncoderListener mMediaEncoderListener = new MediaEncoder.MediaEncoderListener() {
             @Override
             public void onPrepared(final MediaEncoder encoder) {
-                if (DEBUG) Log.v(TAG, "onPrepared:encoder=" + encoder);
+                if (DEBUG) Log.e(TAG, "onPrepared:encoder=" + encoder);
                 Log.e(TAG, "onPrepared: mIsRecording:" + mIsRecording);
                 mIsRecording = true;
                 if (encoder instanceof MediaVideoEncoder)
@@ -1844,7 +1843,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
 
             @Override
             public void onStopped(final MediaEncoder encoder) {
-                if (DEBUG) Log.v(TAG_THREAD, "onStopped:encoder=" + encoder);
+                if (DEBUG) Log.e(TAG_THREAD, "onStopped:encoder=" + encoder);
                 if ((encoder instanceof MediaVideoEncoder)
                         || (encoder instanceof MediaSurfaceEncoder))
                     try {

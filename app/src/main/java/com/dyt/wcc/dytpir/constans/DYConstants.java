@@ -43,6 +43,8 @@ public class DYConstants {
 	public static final String SPTAG = "Main";
 
 	public static final String SP_NAME = "DYT_IR_SP";
+	public static final String RECORD_AUDIO_SETTING = "record_audio_setting";
+	public static final String FIRST_RUN = "first_run";//是否第一次打开应用， 第一打开时，int 值为 0.以后为1
 
 	public static final String [] paletteArrays = new String[]{"1.dat","2.dat","3.dat","4.dat","5.dat","6.dat"};
 

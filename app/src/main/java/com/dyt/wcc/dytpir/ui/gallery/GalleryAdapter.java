@@ -81,7 +81,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 			holder.tvItemVideoLength.setText(stringForTime(photoList.get(position).getVideoDuration()));
 		}
 		holder.ivItemCheck.setSelected(photoList.get(position).isSelect());
-		Glide.with(mContext).load(photoList.get(position).getUriAddress()).into(holder.ivItemPhoto);
+		Glide.with(mContext).load(photoList.get(position).getUriAddress()).centerCrop().into(holder.ivItemPhoto);
 		holder.ll_main_gallery_item.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {

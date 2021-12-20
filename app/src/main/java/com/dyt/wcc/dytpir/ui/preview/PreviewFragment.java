@@ -3,7 +3,6 @@ package com.dyt.wcc.dytpir.ui.preview;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
-import android.app.Notification;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -63,9 +62,6 @@ import com.dyt.wcc.dytpir.databinding.PopTempModeChoiceBinding;
 import com.dyt.wcc.dytpir.ui.DYTApplication;
 import com.dyt.wcc.dytpir.ui.MainActivity;
 import com.dyt.wcc.dytpir.ui.preview.record.MediaProjectionHelper;
-import com.dyt.wcc.dytpir.ui.preview.record.MediaProjectionNotificationEngine;
-import com.dyt.wcc.dytpir.ui.preview.record.MediaRecorderCallback;
-import com.dyt.wcc.dytpir.ui.preview.record.NotificationHelper;
 import com.dyt.wcc.dytpir.utils.AssetCopyer;
 import com.dyt.wcc.dytpir.utils.ByteUtilsCC;
 import com.dyt.wcc.dytpir.utils.CreateBitmap;
@@ -79,7 +75,6 @@ import com.permissionx.guolindev.request.ForwardScope;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -120,6 +115,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 	private DisplayMetrics metrics;
 	private Configuration  configuration;
+	private boolean isFirstRun = false;
 
 	@Override
 	protected boolean isInterceptBackPress () {
@@ -135,6 +131,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	public void onPause () {
 		super.onPause();
 		if (isDebug)Log.e(TAG, "onPause: ");
+
+//		if (mUvcCameraHandler !=null  && mUvcCameraHandler.isRecording()){
+//			mUvcCameraHandler.stopRecording();
+//			mDataBinding.btPreviewLeftRecord.setSelected(false);
+//			stopTimer();
+//		}
 	}
 
 	@Override
@@ -142,6 +144,15 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		super.onStop();
 		if (isDebug)Log.e(TAG, "onStop: ");
 
+//		//停止录像
+//		if (mUvcCameraHandler !=null  && mUvcCameraHandler.isRecording()){
+//			mUvcCameraHandler.stopRecording();
+//			stopTimer();
+//		}
+//		if (mUvcCameraHandler != null){
+//			mUvcCameraHandler.release();
+//			mUvcCameraHandler = null;
+//		}
 
 	}
 
@@ -831,6 +842,16 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				//第四步：显示控件
 				popupWindow.showAsDropDown(mDataBinding.flPreview,15,-popupWindow.getHeight()-20, Gravity.CENTER);
 
+				popSettingBinding.switchChoiceRecordAudio.setSelectedTab(sp.getInt(DYConstants.RECORD_AUDIO_SETTING,1));
+				popSettingBinding.switchChoiceRecordAudio.setOnSwitchListener(new SwitchMultiButton.OnSwitchListener() {
+					@Override
+					public void onSwitch (int position, String tabText) {
+						sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING,position).apply();
+						Log.e(TAG, "onSwitch: " + "=============================");
+					}
+				});
+
+
 				// 切换语言 spinner
 				popSettingBinding.btShowChoiceLanguage.setText(DYConstants.languageArray[sp.getInt(DYConstants.LANGUAGE_SETTING,0)]);
 				popSettingBinding.btShowChoiceLanguage.setOnClickListener(new View.OnClickListener() {
@@ -929,6 +950,15 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
 		configuration = getResources().getConfiguration();
 		metrics = getResources().getDisplayMetrics();
+
+		if (sp.getInt(DYConstants.FIRST_RUN,1) == 0){
+			isFirstRun = true;
+			sp.edit().putInt(DYConstants.FIRST_RUN,1).apply();
+		}
+		if (isFirstRun){//第一次打开应用
+			//默认不打开音频录制
+			sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING,1).apply();
+		}
 
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		screenWidth = dm.widthPixels;
@@ -1143,81 +1173,80 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			}
 		}
 	};
-	//初始化录制的相关方法
+	/**
+	 * 初始化录制的相关方法
+	 */
 	private void initRecord(){
-		if (isDebug)Log.e(TAG, "initRecord: ");
-		MediaProjectionHelper.getInstance().setNotificationEngine(new MediaProjectionNotificationEngine() {
-			@Override
-			public Notification getNotification () {
-				String title = getString(R.string.StartRecorderService);
-				return NotificationHelper.getInstance().createSystem()
-						.setOngoing(true)// 常驻通知栏
-						.setTicker(title)
-						.setContentText(title)
-						.setDefaults(Notification.DEFAULT_ALL)
-						.build();
-			}
-		});
-		//录制倒计时方法
-		MediaProjectionHelper.getInstance().setMediaRecorderCallback(new MediaRecorderCallback() {
-			@Override
-			public void onSuccess (File file) {
-				super.onSuccess(file);
-				mContext.get().runOnUiThread(new Runnable() {
-					@Override
-					public void run () {
-						Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-						intent.setData(Uri.fromFile(file));
-						mContext.get().sendBroadcast(intent);
-						showToast(getResources().getString(R.string.toast_save_path) + file.getName());
-					}
-				});
-
-			}
-
-			@Override
-			public void onFail () {
-				super.onFail();
-				mContext.get().runOnUiThread(new Runnable() {
-					@Override
-					public void run () {
-						showToast("录制失败");
-					}
-				});
-
-			}
-
-			@Override
-			public void onStartCounting () {
-				super.onStartCounting();
-				//				Log.e(TAG, "onClick: "+mDataBinding.chronometerShowRecordTimeMainInfo.getBase());
-				mContext.get().runOnUiThread(new Runnable() {
-					@Override
-					public void run () {
-						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.VISIBLE);
-//						mDataBinding.ivPreviewLeftRecord.setChecked(true);
-						mDataBinding.chronometerRecordTimeInfo.setBase(SystemClock.elapsedRealtime());
-						mDataBinding.chronometerRecordTimeInfo.setFormat("%s");
-						mDataBinding.chronometerRecordTimeInfo.start();
-					}
-				});
-
-			}
-
-			@Override
-			public void onStopCounting () {
-				super.onStopCounting();
-				mContext.get().runOnUiThread(new Runnable() {
-					@Override
-					public void run () {
-						mDataBinding.chronometerRecordTimeInfo.stop();
-//						mDataBinding.ivPreviewLeftRecord.setChecked(false);
-						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.INVISIBLE);
-					}
-				});
-
-			}
-		});
+//		if (isDebug)Log.e(TAG, "initRecord: ");
+//		MediaProjectionHelper.getInstance().setNotificationEngine(new MediaProjectionNotificationEngine() {
+//			@Override
+//			public Notification getNotification () {
+//				String title = getString(R.string.StartRecorderService);
+//				return NotificationHelper.getInstance().createSystem()
+//						.setOngoing(true)// 常驻通知栏
+//						.setTicker(title)
+//						.setContentText(title)
+//						.setDefaults(Notification.DEFAULT_ALL)
+//						.build();
+//			}
+//		});
+//		//录制倒计时方法
+//		MediaProjectionHelper.getInstance().setMediaRecorderCallback(new MediaRecorderCallback() {
+//			@Override
+//			public void onSuccess (File file) {
+//				super.onSuccess(file);
+//				mContext.get().runOnUiThread(new Runnable() {
+//					@Override
+//					public void run () {
+//						Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//						intent.setData(Uri.fromFile(file));
+//						mContext.get().sendBroadcast(intent);
+//						showToast(getResources().getString(R.string.toast_save_path) + file.getName());
+//					}
+//				});
+//
+//			}
+//			@Override
+//			public void onFail () {
+//				super.onFail();
+//				mContext.get().runOnUiThread(new Runnable() {
+//					@Override
+//					public void run () {
+//						showToast("录制失败");
+//					}
+//				});
+//			}
+//			@Override
+//			public void onStartCounting () {
+//				super.onStartCounting();
+//				//				Log.e(TAG, "onClick: "+mDataBinding.chronometerShowRecordTimeMainInfo.getBase());
+//				mContext.get().runOnUiThread(new Runnable() {
+//					@Override
+//					public void run () {
+//						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.VISIBLE);
+////						mDataBinding.ivPreviewLeftRecord.setChecked(true);
+//						mDataBinding.chronometerRecordTimeInfo.setBase(SystemClock.elapsedRealtime());
+//						mDataBinding.chronometerRecordTimeInfo.setFormat("%s");
+//						mDataBinding.chronometerRecordTimeInfo.start();
+//					}
+//				});
+//
+//			}
+//
+//			@Override
+//			public void onStopCounting () {
+//				super.onStopCounting();
+//				mContext.get().runOnUiThread(new Runnable() {
+//					@Override
+//					public void run () {
+//						mDataBinding.chronometerRecordTimeInfo.stop();
+////						mDataBinding.ivPreviewLeftRecord.setChecked(false);
+//						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.INVISIBLE);
+//					}
+//				});
+//
+//			}
+//		});
 	}
 	//设置画板
 	private void setPalette(int id){
@@ -1338,9 +1367,24 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			return false;
 		}
 	}
+
+	public static class Check {
+		// 两次点击按钮之间的点击间隔不能少于1000毫秒
+		private static final int MIN_CLICK_DELAY_TIME = 1000;
+		private static long lastClickTime;
+
+		public static boolean isFastClick() {
+			boolean flag = false;
+			long curClickTime = System.currentTimeMillis();
+			if ((curClickTime - lastClickTime) >= MIN_CLICK_DELAY_TIME) {
+				flag = true;
+			}
+			lastClickTime = curClickTime;
+			return flag;
+		}
+	}
 	//录制
 	public void toRecord(View view){
-
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
 				,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO)
 				.onExplainRequestReason(new ExplainReasonCallback() {
@@ -1364,11 +1408,32 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					 * 录制业务逻辑：点击开始录制，判断 是否在录制？ no-> 开始录制，更改录制按钮"结束录制" & 开始计时器
 					 * yes->结束录制。更改录制按钮"录制" （刷新媒体库）& 重置计时器
 					 */
-					if (MediaProjectionHelper.getInstance().getRecord_State() !=0 ){//停止录制
-						MediaProjectionHelper.getInstance().stopMediaRecorder();
-						MediaProjectionHelper.getInstance().stopService(mContext.get());
-					}else {//开始录制
-						MediaProjectionHelper.getInstance().startService(mContext.get());
+					if ( !Check.isFastClick() && mDataBinding.btPreviewLeftRecord.isSelected()){
+						showToast("录制时长应大于1S");
+						return;
+					}
+
+
+					if (mUvcCameraHandler.isOpened()){//mUvcCameraHandler.isOpened()
+						if (mDataBinding.btPreviewLeftRecord.isSelected() && mUvcCameraHandler.isRecording()){//停止录制
+							stopTimer();
+							mUvcCameraHandler.stopRecording();
+						}else if (!mDataBinding.btPreviewLeftRecord.isSelected() && !mUvcCameraHandler.isRecording()){//开始录制
+							startTimer();
+							mUvcCameraHandler.startRecording();
+						}else {
+							Log.e(TAG, "Record Error: error record state !");
+						}
+						mDataBinding.btPreviewLeftRecord.setSelected(!mDataBinding.btPreviewLeftRecord.isSelected());
+//						showToast("is opened");
+//						if (!Check.isFastClick()) {
+//							showToast("录制时长应大于1S");
+//						}else {
+//
+//						}
+
+					}else {
+						showToast("not opened");
 					}
 				}else {
 					showToast(getResources().getString(R.string.toast_dont_have_permission));
@@ -1378,6 +1443,27 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		Log.e(TAG, "toRecord: ");
 //				Log.e(TAG, "toRecord: " + MediaProjectionHelper.getInstance().getRecord_State());
 	}
+
+	/**
+	 * 开始计时
+	 */
+	private void startTimer(){
+		Log.e(TAG, "startTimer: ");
+		mDataBinding.chronometerRecordTimeInfo.setVisibility(View.VISIBLE);
+		mDataBinding.chronometerRecordTimeInfo.setBase(SystemClock.elapsedRealtime());
+		mDataBinding.chronometerRecordTimeInfo.setFormat("%s");
+		mDataBinding.chronometerRecordTimeInfo.start();
+	}
+	/**
+	 * 停止计时
+	 */
+	private void stopTimer(){
+		Log.e(TAG, "stopTimer: ");
+		mDataBinding.chronometerRecordTimeInfo.stop();
+		mDataBinding.chronometerRecordTimeInfo.setVisibility(View.INVISIBLE);
+	}
+
+
 
 	/**
 	 * 设置语言

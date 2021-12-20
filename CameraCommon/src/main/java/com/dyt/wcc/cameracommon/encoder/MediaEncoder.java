@@ -31,6 +31,9 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 
+/**
+ *
+ */
 public abstract class MediaEncoder implements Runnable {
 	private static final boolean DEBUG = true;	// TODO set false on release
 	private static final String TAG = "MediaEncoder";

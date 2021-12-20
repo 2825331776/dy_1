@@ -144,7 +144,6 @@
 <!--                android:layout_marginBottom="@dimen/dimen_5dp"-->
 <!--                android:layout_height="0dp">-->
                 <CheckBox
-
                     android:id="@+id/iv_preview_left_takePhoto"
                     android:layout_width="@dimen/dimen_40dp"
                     android:layout_height="@dimen/dimen_40dp"
@@ -157,8 +156,8 @@
                     android:button="@null"
                     android:background="@drawable/selector_main_preview_takephoto"/>
 
-                <CheckBox
-                    android:id="@+id/iv_preview_left_record"
+                <Button
+                    android:id="@+id/bt_preview_left_record"
                     app:layout_constraintTop_toTopOf="@id/gl_percent5"
                     app:layout_constraintBottom_toBottomOf="@id/gl_percent5"
                     app:layout_constraintRight_toLeftOf="@id/gl_main_left"
@@ -237,25 +236,23 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"/>
 
-
+                <!--        计时器-->
+                <Chronometer
+                    app:layout_constraintLeft_toLeftOf="@id/textureView_preview_fragment"
+                    app:layout_constraintBottom_toBottomOf="@id/textureView_preview_fragment"
+                    android:id="@+id/chronometer_RecordTime_Info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:visibility="invisible"
+                    android:textColor="@color/red"
+                    android:textSize="20sp" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </FrameLayout>
 
 <!--        </RelativeLayout>-->
 
-
-<!--        计时器-->
-        <Chronometer
-            app:layout_constraintLeft_toRightOf="@id/gl_main_left"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:id="@+id/chronometer_RecordTime_Info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:visibility="invisible"
-            android:textColor="@color/red"
-            android:textSize="20sp" />
 <!--        分割线-->
         <TextView
             android:id="@+id/tv_line2"

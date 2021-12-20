@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import com.dyt.wcc.common.base.BaseActivity;
 import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.databinding.ActivityMainBinding;
-import com.dyt.wcc.dytpir.ui.preview.record.MediaProjectionHelper;
 
 
 /**
@@ -33,7 +32,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 	protected void onActivityResult (int requestCode, int resultCode, @Nullable Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		Log.e(TAG, "======= MainActivity Result: ====" + resultCode + "  " + requestCode   );
-		MediaProjectionHelper.getInstance().createVirtualDisplay(requestCode,resultCode,data,true,true);
+//		MediaProjectionHelper.getInstance().createVirtualDisplay(requestCode,resultCode,data,true,true);
 	}
 
 //	@Override
