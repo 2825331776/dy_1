@@ -1,5 +1,7 @@
 package com.dyt.wcc.dytpir.ui.preview.record;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -12,8 +14,6 @@ import androidx.core.app.NotificationCompat;
 
 import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.ui.DYTApplication;
-
-import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
  * 通知栏 帮助类
