@@ -433,11 +433,16 @@ public class DragTempContainer extends RelativeLayout {
 		int index =  (10 + (int)(y*HRatio) * 256 + (int)(x*WRatio));
 		return tempSource[index];
 	}
-	//更新线L，矩形Rec 上的最高最低温度
+	/**
+	 * 更新线L，矩形Rec 上的最高最低温度
+	 * @param tempWidget 绘制的内容 对象
+	 * @param type 类型 2 线， 3 矩形
+	 */
 	private void updateLRTemp(OtherTempWidget tempWidget , int type){
 //		Log.e(TAG, "updateLRTemp: ");
 		//更新线，矩形的温度 及其坐标
 		int startX ,startY ,endX ,endY, minIndex, maxIndex;//数据源上的边界点
+		//将屏幕上的点 转换成数据源上的点
 		startX =  (int)(tempWidget.getStartPointX()*WRatio);startY = (int)(HRatio*tempWidget.getStartPointY());
 		endX =  (int)(tempWidget.getEndPointX()*WRatio); endY = (int)(HRatio*tempWidget.getEndPointY());
 //		Log.e(TAG, "updateLRTemp: startX = " + startX + " startY " + startY + " endx " + endX  + " endy" + endY);
@@ -461,8 +466,13 @@ public class DragTempContainer extends RelativeLayout {
 			}
 		}
 		if (type ==2) {
+			//斜率
+			float k = ((float) endY - startY)/(endX - startX);
+			Log.e(TAG, "updateLRTemp: kkk =====>  " + k  + " === " + Math.round(k) );
 			for (int j = startX; j < endX ; j++){//宽度遍历
-				if (tempSource[(int) (LRMinTempX+(LRMinTempY*256)+10)] >= tempSource[(int) (j+(LRMinTempY*256)+10)]){
+
+				int y =  Math.round(k*j);
+				if (tempSource[(int) (j+(y*256)+10)] >= tempSource[(int) (j+(LRMinTempY*256)+10)]){
 					LRMinTempX = j;
 				}
 				if (tempSource[(int) (LRMaxTempX+(LRMinTempY*256)+10)] <= tempSource[(int) (j+(LRMinTempY*256)+10)]){
@@ -496,40 +506,60 @@ public class DragTempContainer extends RelativeLayout {
 	 * 校正 线、矩形模式的起始点坐标。
 	 * 线模式 传入的点 Y轴设置为起始点的Y轴坐标。
 	 * 矩形模式：将
+	 * 校正线模式、矩形模式 绘制的点。
+	 * 线模式。左右分割，左边的点为起始点，右边点为结束点。结束点旁边绘制工具栏
+	 * 矩形模式：左上为起始点，右下为结束点。工具栏的方位根据整体的 边距去 绘制
 	 * @param type
 	 * @return 传入的坐标是否可用。 默认为可用。矩形长宽 低于最小值不可用
 	 */
 	private boolean reviseCoordinate(int type){
-
 		int min ,max ;
-		min = Math.min(startPressX,endPressX);
-		max = Math.max(startPressX,endPressX);
-		startPressX = min;
-		endPressX = max;
-		min = Math.min(startPressY,endPressY);
-		max = Math.max(startPressY,endPressY);
-		startPressY = min;
-		endPressY = max;
+		//调整 起始点的坐标
+		if (type ==2){
+			if (startPressX > endPressX){//起点在右边，则交换两者的 位置
+				min = endPressX;
+				max = endPressY;
+				endPressX = startPressX;
+				endPressY = startPressY;
+				startPressX = min;
+				startPressY = max;
+			}
+
+		}else if (type ==3){
+			min = Math.min(screenWidth,Math.min(startPressX,endPressX));
+			max = Math.min(screenWidth,Math.max(startPressX,endPressX));
+			startPressX = min;
+			endPressX = max;
+			min = Math.min(screenHeight,Math.min(startPressY,endPressY));
+			max = Math.min(screenHeight,Math.max(startPressY,endPressY));
+			startPressY = min;
+			endPressY = max;
+		}else {
+			return false;
+		}
+		//明确 起始点的边界值
+		startPressX = Math.max(0,Math.min(startPressX ,screenWidth));
+		startPressY = Math.max(0,Math.min(startPressY ,screenHeight));
+		endPressX = Math.max(0,Math.min(endPressX ,screenWidth));
+		endPressY = Math.max(0,Math.min(endPressY ,screenHeight));
+
+		//调整长度，使之符合标准
 		//type 2/3 校正X坐标
-		if (endPressX - startPressX < minAddWidgetWidth){
-			if(startPressX > screenWidth - minAddWidgetWidth){
+		if (endPressX - startPressX < minAddWidgetWidth){//X 轴 长度不够
+			if(startPressX > screenWidth - minAddWidgetWidth){//起点X坐标 距离右边界 不足 最小宽度
 				endPressX = screenWidth ;
 				startPressX  = screenWidth - minAddWidgetWidth;
-			} else {
+			} else {//起点X坐标 距离右边界 比 最小宽度 多
 				endPressX = startPressX + minAddWidgetWidth;
 			}
 		}
-		if (type ==2){
-			endPressY = startPressY;
-		}else {//type =3; 校正Y坐标
-			if (endPressY - startPressY < minAddWidgetHeight){
-				if(startPressY > screenHeight - minAddWidgetHeight){
-					//
-					endPressY = screenHeight ;
-					startPressY  = screenHeight - minAddWidgetHeight;
-				} else {
-					endPressY = startPressY + minAddWidgetHeight;
-				}
+		//type 2/3 校正X坐标
+		if (endPressY - startPressY < minAddWidgetHeight){
+			if(startPressY > screenHeight - minAddWidgetHeight){
+				endPressY = screenHeight ;
+				startPressY  = screenHeight - minAddWidgetHeight;
+			} else {
+				endPressY = startPressY + minAddWidgetHeight;
 			}
 		}
 		return true;
@@ -694,7 +724,8 @@ public class DragTempContainer extends RelativeLayout {
 	//添加 线或者矩形 测温模式
 	private void createLineOrRecView(){
 //		Log.e(TAG, "reviseCoordinate: " + reviseCoordinate(drawTempMode));
-		if (reviseCoordinate(drawTempMode)){
+//		if (drawTempMode ==3)reviseCoordinate(drawTempMode)
+		if (reviseCoordinate(drawTempMode)){//线  和 矩形 都要通过 校正
 			TempWidgetObj tempWidget = new TempWidgetObj();
 			//校正起始点坐标
 			OtherTempWidget otherTempWidget = new OtherTempWidget();
@@ -943,6 +974,8 @@ public class DragTempContainer extends RelativeLayout {
 						endPressX = (int) event.getX();
 						endPressY = (int) event.getY();
 //					}
+
+					Log.e(TAG, "onTouchEvent: startX == > " +startPressX + " startY = "+ startPressY + " , endX == > " + endPressX + " endY == > "+ endPressY );
 
 					if (drawTempMode == 2){
 						createLineOrRecView();
