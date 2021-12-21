@@ -1,7 +1,5 @@
 package com.dyt.wcc.dytpir.utils;
 
-import android.util.Log;
-
 import com.dyt.wcc.dytpir.constans.DYConstants;
 
 import java.util.HashMap;
@@ -46,7 +44,7 @@ public class ByteUtilsCC {
 		result.put(DYConstants.setting_humidity,get4Byte2Float(data,12));
 		result.put(DYConstants.setting_emittance,get4Byte2Float(data,16));
 		result.put(DYConstants.setting_distance,get2Byte2Short(data,20));//getShort   共计 拿了byte的 前 0-21
-		Log.e("===Map=======",result.toString());
+//		Log.e("===Map=======",result.toString());
 		return result;
 	}
 

@@ -197,11 +197,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	@Override
 	public void onDestroy () {
 		super.onDestroy();
-		if (MediaProjectionHelper.getInstance().getRecord_State() != 0){
-			MediaProjectionHelper.getInstance().stopMediaRecorder();
-			MediaProjectionHelper.getInstance().stopService(mContext.get());
-		}
-
 		if (isDebug)Log.e(TAG, "onDestroy: ");
 	}
 
@@ -214,15 +209,30 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
 		}
 
-		if (mUvcCameraHandler != null){
-//			Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
-//			mUvcCameraHandler.stopTemperaturing();
-//			mUvcCameraHandler.stopPreview();
+		if (MediaProjectionHelper.getInstance().getRecord_State() != 0){
+			MediaProjectionHelper.getInstance().stopMediaRecorder();
+			MediaProjectionHelper.getInstance().stopService(mContext.get());
+		}
+
+		if (mUvcCameraHandler != null) {
 			mUvcCameraHandler.release();
+			mUvcCameraHandler = null;
 		}
 		if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
 			mViewModel.getMUsbMonitor().getValue().unregister();
 		}
+
+//		mDataBinding.textureViewPreviewFragment.onPause();
+//		stt = null;
+
+//		if (mUvcCameraHandler != null){
+////			Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
+////			mUvcCameraHandler.stopTemperaturing();
+////			mUvcCameraHandler.stopPreview();
+//			mUvcCameraHandler.release();
+//			mUvcCameraHandler = null;
+//		}
+
 
 	}
 
@@ -278,20 +288,27 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		public void onDettach (UsbDevice device) {
 			//				mUvcCameraHandler.close();
 			if (isDebug)Log.e(TAG, "DD  onDetach: ");
-
-			if (mUvcCameraHandler != null){
-				//					Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
-				//					SurfaceTexture stt = mDataBinding.textureViewPreviewFragment.getSurfaceTexture();
-//				mUvcCameraHandler.stopTemperaturing();
-//				mUvcCameraHandler.stopPreview();
-				mUvcCameraHandler.release();//拔出之时没释放掉这个资源。关闭窗口之时必须释放
+			if (mUvcCameraHandler!=null && mUvcCameraHandler.isOpened()){
+				mUvcCameraHandler.release();
+				mUvcCameraHandler = null;
 			}
 		}
 		@Override
 		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
 			if (isDebug)Log.e(TAG, " DD  onDisconnect: ");
 
-
+			if (mUvcCameraHandler != null){
+				if (mUvcCameraHandler.isRecording()){
+					stopTimer();
+					mDataBinding.ivPreviewLeftGallery.setVisibility(View.VISIBLE);
+					mUvcCameraHandler.stopRecording();
+					mDataBinding.btPreviewLeftRecord.setSelected(false);
+				}
+				//				mUvcCameraHandler.stopTemperaturing();
+				//				mUvcCameraHandler.stopPreview();
+				mUvcCameraHandler.close();
+				//				mUvcCameraHandler.release();//拔出之时没释放掉这个资源。关闭窗口之时必须释放
+			}
 
 		}
 		@Override
@@ -1412,26 +1429,19 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 						showToast("录制时长应大于1S");
 						return;
 					}
-
-
 					if (mUvcCameraHandler.isOpened()){//mUvcCameraHandler.isOpened()
 						if (mDataBinding.btPreviewLeftRecord.isSelected() && mUvcCameraHandler.isRecording()){//停止录制
 							stopTimer();
 							mUvcCameraHandler.stopRecording();
-						}else if (!mDataBinding.btPreviewLeftRecord.isSelected() && !mUvcCameraHandler.isRecording()){//开始录制
+							mDataBinding.ivPreviewLeftGallery.setVisibility(View.VISIBLE);
+						}else if (!mDataBinding.btPreviewLeftRecord.isSelected() && !mUvcCameraHandler.isRecording()&& mUvcCameraHandler.isPreviewing()){//开始录制
 							startTimer();
-							mUvcCameraHandler.startRecording();
+							mUvcCameraHandler.startRecording(sp.getInt(DYConstants.RECORD_AUDIO_SETTING,1));
+							mDataBinding.ivPreviewLeftGallery.setVisibility(View.INVISIBLE);
 						}else {
 							Log.e(TAG, "Record Error: error record state !");
 						}
 						mDataBinding.btPreviewLeftRecord.setSelected(!mDataBinding.btPreviewLeftRecord.isSelected());
-//						showToast("is opened");
-//						if (!Check.isFastClick()) {
-//							showToast("录制时长应大于1S");
-//						}else {
-//
-//						}
-
 					}else {
 						showToast("not opened");
 					}

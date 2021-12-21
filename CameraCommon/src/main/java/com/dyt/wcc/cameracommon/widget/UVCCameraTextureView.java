@@ -246,6 +246,9 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
     public void setVideoEncoder(final IVideoEncoder encoder) {
         if (mRenderHandler != null)
             mRenderHandler.setVideoEncoder(encoder);
+
+
+//        Log.e(TAG, "setVideoEncoder: ");
     }
 
     public int mSupportWidth;

@@ -1180,13 +1180,10 @@ int UVCPreviewIR::stopTemp(){
         }
     }
     pthread_mutex_unlock(&temperature_mutex);
-    if (pthread_join(temperature_thread, NULL) != EXIT_SUCCESS)
-    {
-        //LOGE("UVCPreviewIR::stopTemp temperature_thread: pthread_join failed");
-    }
-    else
-    {
-        //LOGE("UVCPreviewIR::stopTemp temperature_thread: pthread_join success");
+    if (pthread_join(temperature_thread, NULL) != EXIT_SUCCESS){
+        LOGE("UVCPreviewIR::stopTemp temperature_thread: pthread_join failed");
+    }else{
+        LOGE("UVCPreviewIR::stopTemp temperature_thread: pthread_join success");
     }
     RETURN(0, int);
 }

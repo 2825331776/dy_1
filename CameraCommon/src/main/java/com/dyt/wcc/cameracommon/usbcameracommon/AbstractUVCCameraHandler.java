@@ -41,6 +41,7 @@ import android.view.SurfaceHolder;
 
 import androidx.annotation.RequiresApi;
 
+import com.dyt.wcc.cameracommon.encoder.MediaAudioEncoder;
 import com.dyt.wcc.cameracommon.encoder.MediaEncoder;
 import com.dyt.wcc.cameracommon.encoder.MediaMuxerWrapper;
 import com.dyt.wcc.cameracommon.encoder.MediaSurfaceEncoder;
@@ -139,6 +140,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
     private static final int MSG_FIXED_TEMP_STRIP = 36;
     private static final int MSG_SAVEDATA_FIVESECONDS = 40;//保存五帧数据
     private static final int MSG_SAVE_PICTURE = 50;//截屏
+//    private static final int MSG_ISRECORDAUDIO = 37;//本来在这里新增一个 是否录制音频的开关。后面直接加到了 打开录制开关的参数里面
 
 
     private final WeakReference<CameraThread> mWeakThread;
@@ -295,7 +297,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
     public void close() {
         if (DEBUG) Log.v(TAG, "close:");
         if (isOpened()) {
-            //stopPreview();
+//            stopPreview();
             sendEmptyMessage(MSG_CLOSE);
         }
         if (DEBUG) Log.v(TAG, "close:finished");
@@ -391,9 +393,12 @@ abstract class AbstractUVCCameraHandler extends Handler {
 
 
 
-    public void startRecording() {
+    public void startRecording(int isRecordAudio) {//0 代表打开音频录制，1代表关闭音频录制
         checkReleased();
-        sendEmptyMessage(MSG_CAPTURE_START);
+        Message msg = Message.obtain();
+        msg.what = MSG_CAPTURE_START;
+        msg.obj = isRecordAudio;
+        sendMessage(msg);
     }
 
 
@@ -563,7 +568,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
 
     public void release() {
         mReleased = true;
-//        close();
+        close();
         sendEmptyMessage(MSG_RELEASE);
     }
 
@@ -713,7 +718,9 @@ abstract class AbstractUVCCameraHandler extends Handler {
                 thread.handlePreparePalette((String) msg.obj, msg.arg1);
                 break;
             case MSG_CAPTURE_START:
-                thread.handleStartRecording();
+                int value = (int) msg.obj;
+                boolean s = (value == 0);//等于0则 打开音频录制，否则 关闭音频录制
+                thread.handleStartRecording(s);
                 break;
             case MSG_CAPTURE_STOP:
                 thread.handleStopRecording();
@@ -833,6 +840,11 @@ abstract class AbstractUVCCameraHandler extends Handler {
                 String picPath = msg.obj.toString();
                 thread.handleSavePicture(picPath);
                 break;
+//            case MSG_ISRECORDAUDIO://关闭录制音频
+//                boolean isRecordAudio = (boolean) msg.obj;
+//                thread.handleIsRecordAudio(isRecordAudio);
+//                break;
+
             default:
                 throw new RuntimeException("unsupported message:what=" + msg.what);
         }
@@ -853,6 +865,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
         private boolean mIsTemperaturing;    // 是否启动温度回调
 //        private boolean mIsCapturing;    // 是否启动拍照回调
         private boolean              mIsRecording;    // 是否启动记录
+//        private boolean mIsRecordAudio = false;//是否录制音频
         public  ITemperatureCallback CameraThreadTemperatureCallback;
         /**
          * shutter sound
@@ -1080,6 +1093,11 @@ abstract class AbstractUVCCameraHandler extends Handler {
                     mIsRecording = false;
                     handleStopRecording();
                 }
+
+//                if(mIsTemperaturing){
+//                    mIsTemperaturing=false;
+//                    handleStopTemperaturing();
+//                }
                 //mIsTemperaturing disable by wupei
 
 //                if(mIsTemperaturing){
@@ -1363,7 +1381,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
 //                        }
                         os.flush();
                         //吴长城 add
-                        mHandler.setSavePicture(outputFile.getPath());
+//                        mHandler.setSavePicture(outputFile.getPath());
                         mHandler.sendMessage(mHandler.obtainMessage(MSG_MEDIA_UPDATE, outputFile.getPath()));
 
 
@@ -1568,7 +1586,9 @@ abstract class AbstractUVCCameraHandler extends Handler {
         }
 
 
-        public void handleStartRecording() {
+
+
+        public void handleStartRecording(boolean isRecordAudio) {
             Log.e(TAG_THREAD, "handleStartRecording:");
             try {
                 if ((mUVCCamera == null) || (mMuxer != null)) return;
@@ -1590,11 +1610,11 @@ abstract class AbstractUVCCameraHandler extends Handler {
                         new MediaSurfaceEncoder(muxer, getWidth(), getHeight(), mMediaEncoderListener);
                         break;
                 }
-//                if (true) {
-//                    //for audio capturing
-//                    Log.e(TAG, "=============new MediaAudioEncoder=========== ");
-//                    new MediaAudioEncoder(muxer, mMediaEncoderListener);
-//                }
+                if (isRecordAudio) {
+                    //for audio capturing
+                    Log.e(TAG, "=============new MediaAudioEncoder=========== ");
+                    new MediaAudioEncoder(muxer, mMediaEncoderListener);
+                }
                 muxer.prepare();
                 muxer.startRecording();
                 if (videoEncoder != null) {
@@ -1850,15 +1870,15 @@ abstract class AbstractUVCCameraHandler extends Handler {
                         mIsRecording = false;
                         final Activity parent = mWeakParent.get();
                         mWeakCameraView.get().setVideoEncoder(null);
-                        synchronized (mSync) {
-                            if (mUVCCamera != null) {
-                                Log.e(TAG, "onStopped:stopCapture ");
-                                mUVCCamera.stopCapture();
-                            }
-                        }
+//                        synchronized (mSync) {
+//                            if (mUVCCamera != null) {
+//                                Log.e(TAG, "onStopped:stopCapture ");
+//                                mUVCCamera.stopCapture();
+//                            }
+//                        }
                         final String path = encoder.getOutputPath();
                         if (!TextUtils.isEmpty(path)) {
-                            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_MEDIA_UPDATE, path), 1000);
+                            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_MEDIA_UPDATE, path), 200);
                         } else {
                             final boolean released = (mHandler == null) || mHandler.mReleased;
                             if (released || parent == null || parent.isDestroyed()) {
@@ -2036,7 +2056,6 @@ abstract class AbstractUVCCameraHandler extends Handler {
             }
             mUVCCamera.savePicture(path);
         }
-
 
         public void handleDisWenKuan() {
             if ((mUVCCamera == null)) {

@@ -1170,6 +1170,7 @@ public class UVCCamera {
 			Log.e(TAG, "stopTemp");
 			nativeStartStopTemp(mNativePtr, 0);
 		}
+//		Log.e(TAG, "stopTemp: " + "mCtrlBlock is null bug ");
 	}
 	public void startTemp() {
 		if (mCtrlBlock != null) {
