@@ -1015,10 +1015,10 @@ public class MyMoveWidget extends View {
 
 	/**
 	 * 规定了 矩形测温模式  边界。 并重新设置矩形数据源 坐标，去重绘制图像
-	 * @param data
-	 * @param xOff
-	 * @param yOff
-	 * @param pressDirection
+	 * @param data 数据源 ，要去修改坐标的 对象
+	 * @param xOff 移动的 X轴偏移量。 根据判断偏移量是否越界 是否重新设置 数据源坐标
+	 * @param yOff 移动的 Y轴偏移量。 根据判断偏移量是否越界 是否重新设置 数据源坐标
+	 * @param pressDirection 按下的点 是否在 矩形的 八个 顶点边界上。是的话则是 缩放矩形。否则只是 简单的平移
 	 */
 	private void reviseRectangleLocation(TempWidgetObj data , float xOff, float yOff ,int pressDirection){
 		float sx = data.getOtherTemp().getStartPointX(), sy= data.getOtherTemp().getStartPointY() ;

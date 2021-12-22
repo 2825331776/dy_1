@@ -473,11 +473,11 @@ public class DragTempContainer extends RelativeLayout {
 			int pointy = startY;//临时存储 最高温 最低温的Y值
 			for (int j = startX; j <= endX ; j++){//宽度遍历
 				pointy = Math.round(k * j + b);
-				if (tempSource[ (j+(pointy*256)+10)] >= tempSource[ (LRMinTempX+(LRMinTempY*256)+10)]){
+				if (tempSource[ (j+(pointy*256)+10)] <= tempSource[ (LRMinTempX+(LRMinTempY*256)+10)]){
 					LRMinTempX = j;
 					LRMinTempY = pointy;
 				}
-				if (tempSource[(j+(pointy*256)+10)] <= tempSource[ (LRMaxTempX+(LRMaxTempY*256)+10)]){
+				if (tempSource[(j+(pointy*256)+10)] >= tempSource[ (LRMaxTempX+(LRMaxTempY*256)+10)]){
 					LRMaxTempX = j;
 					LRMaxTempY = pointy;
 				}

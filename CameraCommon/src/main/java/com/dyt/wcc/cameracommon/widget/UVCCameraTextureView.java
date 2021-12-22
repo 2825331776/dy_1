@@ -31,6 +31,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
@@ -647,6 +648,9 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //            private CustomRangeSeekBar mBindSeekBar;
             private DragTempContainer mDragTempContainer;
 
+            //add by wcc  2021年12月22日15:49:55
+            private Paint photoPaint;
+
             /**
              * 高温报警相关变量
              */
@@ -696,7 +700,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //                this.mTouchPointLists = new CopyOnWriteArrayList<>();
 //                this.mTouchLineLists = new CopyOnWriteArrayList<>();
 //                this.mTouchAreaLists = new CopyOnWriteArrayList<>();
-//                this.photoPaint = new Paint();
+                this.photoPaint = new Paint();
+                this.photoPaint.setTextSize(50);
 //                this.alarmPaint = new Paint();
 
 
@@ -1148,7 +1153,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //                        x = (float) icon.getWidth() / 2.0f;
 //                        y = icon.getHeight() / 2.0f;
 //
-//                        bitcanvas.drawText(centerTemp, x + (float) mCursorYellow.getWidth() / 2.0f, y + mCursorYellow.getHeight() / 2.0f, photoPaint);
+//                        bitcanvas.drawText("123456", 200, 200, photoPaint);
 //
 //
 //                        photoPaint.getTextBounds(maxTemp, 0, maxTemp.length(), dstHighTemp);//绘制最高温
