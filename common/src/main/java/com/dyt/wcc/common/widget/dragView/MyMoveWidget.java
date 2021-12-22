@@ -112,6 +112,14 @@ public class MyMoveWidget extends View {
 		moveMaxHeight = maxHeight;
 		setClickable(true);
 
+		Log.e(TAG, "MyMoveWidget:  type => " + view.getType() );
+		if (view.getOtherTemp() !=null){
+			OtherTempWidget otherView = view.getOtherTemp();
+			Log.e(TAG, "MyMoveWidget: OtherTemp startX = > " +  otherView.getStartPointX()  + " startY = > " + otherView.getStartPointY());
+			Log.e(TAG, "MyMoveWidget: OtherTemp endX = > " +  otherView.getEndPointX()  + " endY = > " + otherView.getEndPointY());
+			Log.e(TAG, "MyMoveWidget: otherTemp  min " + otherView.getMinTemp() +" maxTemp = " + otherView.getMaxTemp());
+		}
+
 //		Log.e(TAG, "MyMoveWidget: w=====================> " + moveMaxWidth +" h == " +moveMaxHeight);
 
 		initView();
@@ -141,7 +149,7 @@ public class MyMoveWidget extends View {
 					}
 					break;
 			}
-			return false;
+			return true;
 		}
 	});
 
@@ -237,7 +245,7 @@ public class MyMoveWidget extends View {
 	 * todo 触碰 判断
 	 */
 	private void initData(){
-//		Log.e(TAG, "initData: =============");
+		Log.e(TAG, "initData: =============");
 		//工具栏是否为空，为空时默认添加一个删除按钮。
 		if (tempWidgetData.getToolsPicRes() ==null){
 			tempWidgetData.setToolsPicRes(new int[]{R.mipmap.ic_areacheck_tools_delete});
@@ -447,10 +455,10 @@ public class MyMoveWidget extends View {
 			toolsBgTop = contentBgBottom - toolsNeedHeight ;
 			toolsBgBottom = contentBgBottom;
 		}
-//		if (isDebug){
-//			Log.e(TAG, " toolsBgLeft " + toolsBgLeft + " toolsBgRight " + toolsBgRight +
-//					" toolsBgTop " + toolsBgTop+ " toolsBgBottom " + toolsBgBottom);
-//		}
+		if (isDebug){
+			Log.e(TAG, " toolsBgLeft " + toolsBgLeft + " toolsBgRight " + toolsBgRight +
+					" toolsBgTop " + toolsBgTop+ " toolsBgBottom " + toolsBgBottom);
+		}
 	}
 	//更新内容中心的偏移量
 	private void updateContentCoordinate(){
@@ -608,10 +616,10 @@ public class MyMoveWidget extends View {
 //				if (isDebug)
 //					Log.e(TAG, "步骤二: 得到内容及其工具栏方位及其坐标 ");
 			}else if (tempWidget.getType() ==2){
-				contentLeft = tempWidgetData.getOtherTemp().getStartPointX() - bp.getWidth()/2.0f;
-				contentRight = tempWidgetData.getOtherTemp().getEndPointX() + bp.getWidth()/2.0f;
-				contentTop = tempWidgetData.getOtherTemp().getStartPointY() - bp.getHeight()/2.0f;
-				contentBottom = tempWidgetData.getOtherTemp().getEndPointY() + bp.getHeight()/2.0f;
+				contentLeft = Math.min(tempWidgetData.getOtherTemp().getStartPointX(),tempWidgetData.getOtherTemp().getEndPointX()) - bp.getWidth()/2.0f;
+				contentRight = Math.max(tempWidgetData.getOtherTemp().getStartPointX(),tempWidgetData.getOtherTemp().getEndPointX()) + bp.getWidth()/2.0f;
+				contentTop = Math.min(tempWidgetData.getOtherTemp().getStartPointY(),tempWidgetData.getOtherTemp().getEndPointY()) - bp.getHeight()/2.0f;
+				contentBottom = Math.max(tempWidgetData.getOtherTemp().getStartPointY(),tempWidgetData.getOtherTemp().getEndPointY()) + bp.getHeight()/2.0f;
 			}else if (tempWidget.getType() ==3){
 				contentLeft = tempWidgetData.getOtherTemp().getStartPointX() - bp.getWidth()/2.0f;
 				contentRight = tempWidgetData.getOtherTemp().getEndPointX() + bp.getWidth()/2.0f;
@@ -631,12 +639,22 @@ public class MyMoveWidget extends View {
 				contentRight = contentBgRight = tempWidgetData.getPointTemp().getStartPointX() + bp.getWidth()/2.0f;
 				contentTop = contentBgTop = tempWidgetData.getPointTemp().getStartPointY() - bp.getHeight()/2.0f;
 				contentBottom = contentBgBottom = tempWidgetData.getPointTemp().getStartPointY() + bp.getHeight()/2.0f;
-			} else if (tempWidget.getType() ==2 ||tempWidget.getType() ==3) {
+			} else if (tempWidget.getType() ==3) {
 				contentLeft = contentBgLeft = tempWidgetData.getOtherTemp().getStartPointX() - bp.getWidth()/2.0f;
 				contentRight = contentBgRight = tempWidgetData.getOtherTemp().getEndPointX() + bp.getWidth()/2.0f;
 				contentTop = contentBgTop = tempWidgetData.getOtherTemp().getStartPointY() - bp.getHeight()/2.0f;
 				contentBottom = contentBgBottom = tempWidgetData.getOtherTemp().getEndPointY() + bp.getHeight()/2.0f;
+			}else if (tempWidget.getType() ==2 ){
+				contentLeft = Math.min(tempWidgetData.getOtherTemp().getStartPointX(),tempWidgetData.getOtherTemp().getEndPointX()) - bp.getWidth()/2.0f;
+				contentRight = Math.max(tempWidgetData.getOtherTemp().getStartPointX(),tempWidgetData.getOtherTemp().getEndPointX()) + bp.getWidth()/2.0f;
+				contentTop = Math.min(tempWidgetData.getOtherTemp().getStartPointY(),tempWidgetData.getOtherTemp().getEndPointY()) - bp.getHeight()/2.0f;
+				contentBottom = Math.max(tempWidgetData.getOtherTemp().getStartPointY(),tempWidgetData.getOtherTemp().getEndPointY()) + bp.getHeight()/2.0f;
 			}
+			contentBgLeft = contentLeft - padLeft;
+			contentBgRight = contentRight + padRight;
+			contentBgTop = contentTop - padTop;
+			contentBgBottom = contentBottom + padBottom;
+
 			toolsBgLeft = 0;
 			toolsBgRight = 0;
 			toolsBgTop = 0;
@@ -799,7 +817,7 @@ public class MyMoveWidget extends View {
 			canvas.drawText(minTempStr,textX,textY,pointTextPaint);
 
 		}else if (tempWidgetData.getType() == 2){
-//			Log.e(TAG, "onDraw: type ===2============================");
+			Log.e(TAG, "onDraw: type ===2============================");
 
 			//todo 绘制两个点温度 (计算两个点放置的方位)
 			float startX  = tempWidgetData.getOtherTemp().getMinTempX() - xOffset, startY = tempWidgetData.getOtherTemp().getMinTempY() - yOffset;
@@ -807,8 +825,11 @@ public class MyMoveWidget extends View {
 
 //			Log.e(TAG, "onDraw: type ===2===minx " + startX + " miny = " + startY + "maxx " + endX + " maxY" + endY );
 
-			canvas.drawLine(tempWidgetData.getOtherTemp().getStartPointX() - xOffset,tempWidgetData.getOtherTemp().getStartPointY() - yOffset -linePaint.getStrokeWidth()/3
-					,tempWidgetData.getOtherTemp().getEndPointX() - xOffset,tempWidgetData.getOtherTemp().getEndPointY() - yOffset-linePaint.getStrokeWidth()/3,linePaint);
+//			Log.e(TAG, "onDraw: " +" xOffset === > "+ xOffset + " , yOffset ==== >"+ yOffset);
+			Log.e(TAG, "onDraw: " + " startX = " + tempWidgetData.getOtherTemp().getStartPointX() + " startY = " +tempWidgetData.getOtherTemp().getStartPointY());
+			Log.e(TAG, "onDraw: " + " endX = " + tempWidgetData.getOtherTemp().getEndPointX() + " endY  = " +tempWidgetData.getOtherTemp().getEndPointY());
+			canvas.drawLine(tempWidgetData.getOtherTemp().getStartPointX() - xOffset,tempWidgetData.getOtherTemp().getStartPointY() - yOffset
+					,tempWidgetData.getOtherTemp().getEndPointX() - xOffset,tempWidgetData.getOtherTemp().getEndPointY() - yOffset,linePaint);
 
 //			Log.e(TAG, "onDraw: 2===> " + tempWidgetData.getOtherTemp().getMaxTemp() + " min " + tempWidgetData.getOtherTemp().getMinTemp());
 //			canvas.save();
@@ -928,9 +949,6 @@ public class MyMoveWidget extends View {
 
 		canvas.drawBitmap(bp,null,bpRect ,pointPaint);
 	}
-	@Override
-	protected void onLayout (boolean changed, int l, int t, int r, int b) {
-	}
 
 	@Override
 	protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
@@ -994,6 +1012,14 @@ public class MyMoveWidget extends View {
 		}
 		return state;
 	}
+
+	/**
+	 * 规定了 矩形测温模式  边界。 并重新设置矩形数据源 坐标，去重绘制图像
+	 * @param data
+	 * @param xOff
+	 * @param yOff
+	 * @param pressDirection
+	 */
 	private void reviseRectangleLocation(TempWidgetObj data , float xOff, float yOff ,int pressDirection){
 		float sx = data.getOtherTemp().getStartPointX(), sy= data.getOtherTemp().getStartPointY() ;
 		float ex = data.getOtherTemp().getEndPointX() ,ey = data.getOtherTemp().getEndPointY();
@@ -1152,7 +1178,7 @@ public class MyMoveWidget extends View {
 						mTimer.schedule(mTimeTask, 500);
 					}
 					break;
-				case MotionEvent.ACTION_MOVE://每帧都会刷新
+				case MotionEvent.ACTION_MOVE://每帧都会刷新  // 移动边界值问题
 					if (hasBackGroundAndTools){
 						if (tempWidgetData.getType()==1){
 							float x = Math.max(0,tempWidgetData.getPointTemp().getStartPointX()+ (event.getRawX()- pressDownX));
@@ -1171,9 +1197,10 @@ public class MyMoveWidget extends View {
 							//(event.getRawX()- pressDownX) 偏移量   (event.getRawY()- pressDownY)
 							//X 起点的取值范围为[ 0 , moveMaxWidth-(endX-startX)]   终点 [ (endX-startX) , moveMaxWidth]
 							//Y 起点取值范围[0,moveMaxHeight]   终点 [0,moveMaxHeight]
+							//偏移值， 按下时候记录一次，每次移动完成之后 刷新pressDownX/Y .通过父控件的 坐标去计算距离
 							float xoff = (event.getRawX()- pressDownX),yoff = (event.getRawY()- pressDownY);
 							float sx = tempWidgetData.getOtherTemp().getStartPointX(), sy= tempWidgetData.getOtherTemp().getStartPointY() ;
-							float ex= tempWidgetData.getOtherTemp().getEndPointX() ,ey = sy;
+							float ex= tempWidgetData.getOtherTemp().getEndPointX() ,ey = tempWidgetData.getOtherTemp().getEndPointY();
 							float length = ex - sx;
 							if ((sx + xoff) >= padLeft && (sx + xoff) <= (moveMaxWidth - length)
 									&& (ex + xoff) >= length && (ex + xoff) <= moveMaxWidth - padRight){
@@ -1185,9 +1212,9 @@ public class MyMoveWidget extends View {
 								requestLayout();
 
 							}
-							if ((sy + yoff) >= padTop && (sy + yoff) <= (moveMaxHeight - padBottom)){
+							if ( (ey + yoff) >= padTop && (sy + yoff) >= padTop && (sy + yoff) <= (moveMaxHeight - padBottom)){
 								sy += yoff;
-								ey = sy;
+								ey += yoff;
 								tempWidgetData.getOtherTemp().setStartPointY(sy);
 								tempWidgetData.getOtherTemp().setEndPointY(ey);
 								requestLayout();
@@ -1196,7 +1223,7 @@ public class MyMoveWidget extends View {
 							pressDownX = event.getRawX();
 							pressDownY = event.getRawY();
 
-							Log.e(TAG, "onTouchEvent: offset x = " + xoff + " yoffset = "  + yoff);
+//							Log.e(TAG, "onTouchEvent: offset x = " + xoff + " yoffset = "  + yoff);
 						}
 						if (tempWidgetData.getType()==3){
 							//计算触碰的方位

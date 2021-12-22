@@ -447,46 +447,50 @@ public class DragTempContainer extends RelativeLayout {
 		endX =  (int)(tempWidget.getEndPointX()*WRatio); endY = (int)(HRatio*tempWidget.getEndPointY());
 //		Log.e(TAG, "updateLRTemp: startX = " + startX + " startY " + startY + " endx " + endX  + " endy" + endY);
 		//最低最高温度。及其坐标
-//		float minTemp , maxTemp;//默认值指向第一个点的数据
-//		minTemp = tempSource[(10+(startX+startY*256))];
-//		maxTemp = tempSource[(10+(startX+startY*256))];
 		//用什么去记录 最高点 最低点时候的xy值。切记要加上前置的10
 		int LRMinTempX,LRMinTempY, LRMaxTempX,LRMaxTempY;
 		LRMinTempX = startX;LRMinTempY = startY;LRMaxTempX = startX;LRMaxTempY = startY;//默认值
-		for (int i = startY; i < endY ; i++){//高度遍历
-			for (int j = startX; j < endX ; j++){//宽度遍历
-				if (tempSource[(LRMinTempX+(LRMinTempY*256)+10)] > tempSource[j+(i*256)+10]){
-					LRMinTempX = j;
-					LRMinTempY = i;
-				}
-				if (tempSource[(int) (LRMaxTempX+(LRMaxTempY*256)+10)] < tempSource[j+(i*256)+10]){
-					LRMaxTempX = j;
-					LRMaxTempY = i;
+		if (type == 3){
+			for (int i = startY; i < endY ; i++){//高度遍历
+				for (int j = startX; j < endX ; j++){//宽度遍历
+					if (tempSource[(LRMinTempX+(LRMinTempY*256)+10)] > tempSource[j+(i*256)+10]){
+						LRMinTempX = j;
+						LRMinTempY = i;
+					}
+					if (tempSource[(int) (LRMaxTempX+(LRMaxTempY*256)+10)] < tempSource[j+(i*256)+10]){
+						LRMaxTempX = j;
+						LRMaxTempY = i;
+					}
 				}
 			}
 		}
-		if (type ==2) {
+		if (type == 2) {
 			//斜率
 			float k = ((float) endY - startY)/(endX - startX);
+			float b = startY - k*startX;
+			Log.e(TAG, "updateLRTemp:  bbbbb ===== > " + b + " startX  == > " + startX + " startY ==>  " + startY);
 			Log.e(TAG, "updateLRTemp: kkk =====>  " + k  + " === " + Math.round(k) );
-			for (int j = startX; j < endX ; j++){//宽度遍历
-
-				int y =  Math.round(k*j);
-				if (tempSource[(int) (j+(y*256)+10)] >= tempSource[(int) (j+(LRMinTempY*256)+10)]){
+			int pointy = startY;//临时存储 最高温 最低温的Y值
+			for (int j = startX; j <= endX ; j++){//宽度遍历
+				pointy = Math.round(k * j + b);
+				if (tempSource[ (j+(pointy*256)+10)] >= tempSource[ (LRMinTempX+(LRMinTempY*256)+10)]){
 					LRMinTempX = j;
+					LRMinTempY = pointy;
 				}
-				if (tempSource[(int) (LRMaxTempX+(LRMinTempY*256)+10)] <= tempSource[(int) (j+(LRMinTempY*256)+10)]){
+				if (tempSource[(j+(pointy*256)+10)] <= tempSource[ (LRMaxTempX+(LRMaxTempY*256)+10)]){
 					LRMaxTempX = j;
+					LRMaxTempY = pointy;
 				}
 			}
 		}
 		tempWidget.setMinTempX((LRMinTempX/WRatio));
 		tempWidget.setMinTempY((LRMinTempY/HRatio));
+		//线  和 矩形的  最高最低温  都是带单位及 单位符号的 String 类型
 		tempWidget.setMinTemp(getTempStrByMode(tempSource[(LRMinTempX + (LRMinTempY*256) + 10)]));
 		tempWidget.setMaxTempX((LRMaxTempX/WRatio));
 		tempWidget.setMaxTempY((LRMaxTempY/HRatio));
+		//线  和 矩形的  最高最低温  都是带单位及 单位符号的 String 类型
 		tempWidget.setMaxTemp(getTempStrByMode(tempSource[(LRMaxTempX + (LRMaxTempY*256) + 10)]));
-
 	}
 	//返回绘制的模式drawTempMode
 	public int getDrawTempMode () {
@@ -524,6 +528,10 @@ public class DragTempContainer extends RelativeLayout {
 				startPressX = min;
 				startPressY = max;
 			}
+			if (Math.sqrt((endPressY - startPressY)*(endPressY - startPressY) +
+					(endPressX - startPressX)*(endPressX - startPressX)) < minAddWidgetWidth){
+				return false;
+			}
 
 		}else if (type ==3){
 			min = Math.min(screenWidth,Math.min(startPressX,endPressX));
@@ -534,6 +542,26 @@ public class DragTempContainer extends RelativeLayout {
 			max = Math.min(screenHeight,Math.max(startPressY,endPressY));
 			startPressY = min;
 			endPressY = max;
+
+			//调整长度，使之符合标准
+			//type 2/3 校正X坐标
+			if (Math.abs(endPressX - startPressX) < minAddWidgetWidth){//X 轴 长度不够
+				if(startPressX > screenWidth - minAddWidgetWidth){//起点X坐标 距离右边界 不足 最小宽度
+					endPressX = screenWidth ;
+					startPressX  = screenWidth - minAddWidgetWidth;
+				} else {//起点X坐标 距离右边界 比 最小宽度 多
+					endPressX = startPressX + minAddWidgetWidth;
+				}
+			}
+			//type 2/3 校正X坐标
+			if (Math.abs(endPressY - startPressY) < minAddWidgetHeight){
+				if(startPressY > screenHeight - minAddWidgetHeight){
+					endPressY = screenHeight ;
+					startPressY  = screenHeight - minAddWidgetHeight;
+				} else {
+					endPressY = startPressY + minAddWidgetHeight;
+				}
+			}
 		}else {
 			return false;
 		}
@@ -543,25 +571,10 @@ public class DragTempContainer extends RelativeLayout {
 		endPressX = Math.max(0,Math.min(endPressX ,screenWidth));
 		endPressY = Math.max(0,Math.min(endPressY ,screenHeight));
 
-		//调整长度，使之符合标准
-		//type 2/3 校正X坐标
-		if (endPressX - startPressX < minAddWidgetWidth){//X 轴 长度不够
-			if(startPressX > screenWidth - minAddWidgetWidth){//起点X坐标 距离右边界 不足 最小宽度
-				endPressX = screenWidth ;
-				startPressX  = screenWidth - minAddWidgetWidth;
-			} else {//起点X坐标 距离右边界 比 最小宽度 多
-				endPressX = startPressX + minAddWidgetWidth;
-			}
-		}
-		//type 2/3 校正X坐标
-		if (endPressY - startPressY < minAddWidgetHeight){
-			if(startPressY > screenHeight - minAddWidgetHeight){
-				endPressY = screenHeight ;
-				startPressY  = screenHeight - minAddWidgetHeight;
-			} else {
-				endPressY = startPressY + minAddWidgetHeight;
-			}
-		}
+
+		Log.e(TAG, "reviseCoordinate:  Math" + " SX = > "+ startPressX + " SY => " + startPressY + " , EX = > " + endPressX + " EY = > " + endPressY);
+		Log.e(TAG, "reviseCoordinate: minAddWidgetWidth " + minAddWidgetWidth  + " minAddWidgetHeight " + minAddWidgetHeight);
+
 		return true;
 	}
 
@@ -729,7 +742,7 @@ public class DragTempContainer extends RelativeLayout {
 			TempWidgetObj tempWidget = new TempWidgetObj();
 			//校正起始点坐标
 			OtherTempWidget otherTempWidget = new OtherTempWidget();
-
+			Log.e(TAG, "createLineOrRecView: " + " SX = > "+ startPressX + " SY => " + startPressY + " , EX = > " + endPressX + " EY = > " + endPressY);
 			otherTempWidget.setStartPointX(startPressX);
 			otherTempWidget.setStartPointY(startPressY);
 			otherTempWidget.setEndPointX(endPressX);
@@ -757,9 +770,9 @@ public class DragTempContainer extends RelativeLayout {
 	 */
 	private void resetUserAddView(TempWidgetObj childData){
 		int type = childData.getType();
-		MyMoveWidget firstTypeChild  = null;
+		MyMoveWidget firstTypeChild  = null;//添加数据类型的 第一个对象
 		int typeCount = 0;
-		//记录第一个同类型的View,并累计有都少个同类型
+		//记录第一个同类型的View,并累计有多少个
 		for (MyMoveWidget child : userAdd){
 			if (type == child.getView().getType() && firstTypeChild ==null){
 				firstTypeChild = child;
@@ -795,6 +808,7 @@ public class DragTempContainer extends RelativeLayout {
 
 	private void addChild(TempWidgetObj childData){
 		MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),childData,screenWidth,screenHeight);
+//		moveWidget.setBackgroundColor(getResources().getColor(R.color.max_temp_text_color_red));
 		moveWidget.setChildToolsClickListener(mChildToolsClickListener);
 		//todo 重置userAddView的集合
 		addView(moveWidget);
