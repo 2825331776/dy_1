@@ -1,5 +1,7 @@
 package com.dyt.wcc.common.widget.dragView;
 
+import java.util.Arrays;
+
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
  * <p>Author：stefan cheng        </p>
@@ -37,6 +39,14 @@ public class TempWidgetObj {
 //	public void setTextSuffix (String textSuffix) {
 //		this.textSuffix = textSuffix;
 //	}
+
+
+	@Override
+	public String toString () {
+		return "TempWidgetObj{" + "id=" + id + ", type=" + type + ", isSelect=" + isSelect +
+				", isCanMove=" + isCanMove + ", tempTextSize=" + tempTextSize + ", toolsPicRes=" + Arrays.toString(toolsPicRes) +
+				", toolsNumber=" + toolsNumber + ", pointTemp=" + pointTemp.toString() + ", otherTemp=" + otherTemp.toString() + '}';
+	}
 
 	public int[] getToolsPicRes () {
 		return toolsPicRes;

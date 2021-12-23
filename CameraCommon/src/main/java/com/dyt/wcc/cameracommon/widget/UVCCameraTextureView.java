@@ -702,6 +702,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //                this.mTouchAreaLists = new CopyOnWriteArrayList<>();
                 this.photoPaint = new Paint();
                 this.photoPaint.setTextSize(50);
+                this.photoPaint.setStrokeWidth(5);
+                this.photoPaint.setColor(Color.WHITE);
 //                this.alarmPaint = new Paint();
 
 
@@ -1037,13 +1039,11 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                 {
                     highTempChangedCallback.highTempChanged(isAlarmRing);
                 }
-//                if ((highTempChangedCallback!= null && isHighTempAlarm)){
-//                    highTempChangedCallback.highTempChanged(false);
-//                }
 
 //                mBindSeekBar.Update(maxtemperature,mintemperature);//更新seekbar
-                mDragTempContainer.upDateTemp(temperature1);
-
+                if (mDragTempContainer!= null && temperature1 !=null){
+                    mDragTempContainer.upDateTemp(temperature1);
+                }
             }
 
             /**
@@ -1051,8 +1051,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
              */
             public final void onDrawFrame() {
 //                Log.e(TAG,"thread id ==============",time);
-                String extern;
-                float x, y;
+//                String extern;
+//                float x, y;
                 if (isT3 && isFirstCome == 0) {
                     rotate = 180;
                 }
@@ -1106,8 +1106,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //                            bp = rotateBitmap(mCamera2Bitmap, 270);
 //                            bitcanvas.drawBitmap(bp, 1, 1, photoPaint);
 //                        }
-//                        //                        Log.e(TAG, "onDrawFrame: mCamera2Bitmap!=null width:" + mCamera2Bitmap.getWidth() + " height:" + mCamera2Bitmap.getHeight());
-//                        //                        bitcanvas.drawBitmap(bp, 1, 1, photoPaint);
+//                        // Log.e(TAG, "onDrawFrame: mCamera2Bitmap!=null width:" + mCamera2Bitmap.getWidth() + " height:" + mCamera2Bitmap.getHeight());
+//                        //   bitcanvas.drawBitmap(bp, 1, 1, photoPaint);
 //                        mCamera2Bitmap = null;
 //                    }
 //                }
@@ -1116,6 +1116,18 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                     //                    bitcanvas.save(Canvas.ALL_SAVE_FLAG);//吴长城修改到下面函数
                     bitcanvas.save();
                 } else {
+                    bitcanvas.drawText("123456", 200, 200, photoPaint);
+//                    mDragTempContainer.
+//                    if (mDragTempContainer!=null){
+//                        TempWidgetObj tempWidgetObj = null;
+//                       for (MyMoveWidget widget : mDragTempContainer.getUserAdd()){
+//                           tempWidgetObj = widget.gettempWidgetData();
+//                           if (tempWidgetObj.getType() ==2 ){
+//                               bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
+//                                       tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),photoPaint);
+//                           }
+//                       }
+//                    }
 //                    DecimalFormat decimalFormat = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
 //                    String centerTemp = decimalFormat.format(temperature1[0]) + extern;//format 返回的是字符串
 //                    String maxTemp = decimalFormat.format(temperature1[3]) + extern;
@@ -1153,7 +1165,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //                        x = (float) icon.getWidth() / 2.0f;
 //                        y = icon.getHeight() / 2.0f;
 //
-//                        bitcanvas.drawText("123456", 200, 200, photoPaint);
+//
 //
 //
 //                        photoPaint.getTextBounds(maxTemp, 0, maxTemp.length(), dstHighTemp);//绘制最高温

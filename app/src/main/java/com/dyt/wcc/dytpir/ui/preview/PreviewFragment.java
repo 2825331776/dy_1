@@ -156,6 +156,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 	}
 
+	/**
+	 * 获取相机参数，本地sp保存
+	 */
 	private void getCameraParams(){//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
 		byte [] tempParams = mUvcCameraHandler.getTemperaturePara(128);
 		cameraParams = ByteUtilsCC.byte2Float(tempParams);

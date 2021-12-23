@@ -235,6 +235,16 @@ public class DragTempContainer extends RelativeLayout {
 
 	}
 
+	/**
+	 * 用户添加的 子View 添加，删除，查找，移动，监听器
+	 */
+	public interface OnUserAddWidgetChangedListener{
+		boolean onAddChildView();
+		boolean onDeleteChildView();
+		void onGetAllChildView();
+		void onChildViewChanged();
+	}
+
 	public interface OnChildToolsClickListener{
 		void onChildToolsClick(TempWidgetObj childObj, int position);
 

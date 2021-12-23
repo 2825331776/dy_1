@@ -54,4 +54,9 @@ public class PointTempWidget {
 		this.temp = temp;
 	}
 
+	@Override
+	public String toString () {
+		return "PointTempWidget{" + "type=" + type + ", startPointX=" + startPointX + ", startPointY=" +
+				startPointY + ", temp='" + temp + '\'' + ", tempDirection=" + tempDirection + '}';
+	}
 }

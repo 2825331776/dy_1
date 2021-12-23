@@ -24,6 +24,14 @@ public class OtherTempWidget {
 	private float maxTempY;
 	private int maxTempDirection;//绘制前通过计算坐标初始化  方位
 
+	@Override
+	public String toString () {
+		return "OtherTempWidget{" + "startPointX=" + startPointX + ", startPointY=" + startPointY + ", endPointX=" + endPointX +
+				", endPointY=" + endPointY + ", minTemp='" + minTemp + '\'' +
+				", minTempX=" + minTempX + ", minTempY=" + minTempY + ", minTempDirection=" + minTempDirection + ", maxTemp='" + maxTemp + '\'' +
+				", maxTempX=" + maxTempX + ", maxTempY=" + maxTempY + ", maxTempDirection=" + maxTempDirection + '}';
+	}
+
 	public int getMinTempDirection () { return minTempDirection; }
 	public void setMinTempDirection (int minTempDirection) { this.minTempDirection = minTempDirection; }
 	public int getMaxTempDirection () {return maxTempDirection; }
