@@ -182,12 +182,12 @@ public class MyMoveWidget extends View {
 			}else if (tempWidgetData.getPointTemp().getType()==2){//低温点
 				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_low);
 				pointTextPaint.setColor(getResources().getColor(R.color.min_temp_text_color_blue,null));
-			}else if (tempWidgetData.getPointTemp().getType()==3){
+			}else if (tempWidgetData.getPointTemp().getType()==3){//中心点
 				Log.e(TAG, "initPaint:  obj type = " + tempWidgetData.getType() + " point type = " + tempWidgetData.getPointTemp().getType()) ;
 				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center);
 				maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center);
 				pointTextPaint.setColor(getResources().getColor(R.color.black,null));
-			}else {
+			}else { //没有设置， 为0 。手动添加的点测温模式
 				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_main_preview_measuretemp_point);
 				maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_main_preview_measuretemp_point);
 				pointTextPaint.setColor(getResources().getColor(R.color.black,null));

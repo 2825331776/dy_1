@@ -50,6 +50,8 @@ import com.dyt.wcc.cameracommon.encoder.MediaEncoder;
 import com.dyt.wcc.cameracommon.encoder.MediaVideoEncoder;
 import com.dyt.wcc.common.base.BaseApplication;
 import com.dyt.wcc.common.widget.dragView.DragTempContainer;
+import com.dyt.wcc.common.widget.dragView.MyMoveWidget;
+import com.dyt.wcc.common.widget.dragView.TempWidgetObj;
 import com.serenegiant.glutils.EGLBase;
 import com.serenegiant.usb.ITemperatureCallback;
 import com.serenegiant.utils.FpsCounter;
@@ -688,7 +690,12 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                 // this.highTempRect,lowTempRect,bounds ;//创建一个指定的新矩形的坐标
 
                 setName("RenderThread");
+//                initFrameBitmap();
             }
+
+//            private void initFrameBitmap(){
+//                highTempBt = BitmapFactory.decodeResource(this, R.mipmap.ic_higlowtemp_draw_widget_high);
+//            }
 
 //            public void iniTempFontsize(float fontsize) {
 //                this.photoPaint.setTextSize(fontsize);
@@ -814,6 +821,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 
 //            private Bitmap mCursorBlue, mCursorRed, mCursorYellow, mCursorGreen, mWatermakLogo;
             private float[] temperature1 = new float[640 * 512 + 10];
+            private Bitmap highTempBt, lowTempBt , centerTempBt , normalPointBt;
 
             //added by wupei
             private float maxtemperature;
@@ -1118,16 +1126,29 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                 } else {
                     bitcanvas.drawText("123456", 200, 200, photoPaint);
 //                    mDragTempContainer.
-//                    if (mDragTempContainer!=null){
-//                        TempWidgetObj tempWidgetObj = null;
-//                       for (MyMoveWidget widget : mDragTempContainer.getUserAdd()){
-//                           tempWidgetObj = widget.gettempWidgetData();
-//                           if (tempWidgetObj.getType() ==2 ){
-//                               bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
-//                                       tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),photoPaint);
-//                           }
-//                       }
-//                    }
+                    if (mDragTempContainer!=null){
+                        TempWidgetObj tempWidgetObj = null;
+                       for (MyMoveWidget widget : mDragTempContainer.getUserAdd()){
+                           tempWidgetObj = widget.gettempWidgetData();
+                           if (tempWidgetObj.getType() ==2 ){
+                               bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
+                                       tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),photoPaint);
+                           }
+
+                           if (tempWidgetObj.getType() == 3 ){
+                               bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
+                                       tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),photoPaint);
+                               bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
+                                       tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),photoPaint);
+                               bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),
+                                       tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),photoPaint);
+                               bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),
+                                       tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),photoPaint);
+
+
+                           }
+                       }
+                    }
 //                    DecimalFormat decimalFormat = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
 //                    String centerTemp = decimalFormat.format(temperature1[0]) + extern;//format 返回的是字符串
 //                    String maxTemp = decimalFormat.format(temperature1[3]) + extern;

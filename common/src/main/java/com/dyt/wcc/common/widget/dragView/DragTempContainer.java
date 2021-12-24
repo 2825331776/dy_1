@@ -235,13 +235,40 @@ public class DragTempContainer extends RelativeLayout {
 
 	}
 
+	private OnUserCRUDListener onUserCRUDListener;
+
+	public OnUserCRUDListener getUserCRUDListener () {
+		return onUserCRUDListener;
+	}
+
+	public void setUserCRUDListener (OnUserCRUDListener userCRUDListener) {
+		this.onUserCRUDListener = userCRUDListener;
+	}
+
 	/**
 	 * 用户添加的 子View 添加，删除，查找，移动，监听器
 	 */
-	public interface OnUserAddWidgetChangedListener{
+	public interface OnUserCRUDListener{
+		/**
+		 * 添加 子测温数据
+		 * @return
+		 */
 		boolean onAddChildView();
+
+		/**
+		 * 删除 子测温数据
+		 * @return
+		 */
 		boolean onDeleteChildView();
+		/**
+		 * 获取所有的 子测温数据
+		 * @return
+		 */
 		void onGetAllChildView();
+		/**
+		 * 子测温数据 更改
+		 * @return
+		 */
 		void onChildViewChanged();
 	}
 
@@ -680,18 +707,19 @@ public class DragTempContainer extends RelativeLayout {
 	}
 
 	/**
-	 * 打开高低温追踪，暴露给外部调用
+	 * 高、低、中心点、温度追踪，暴露外部调用
+	 * type：1高温，2 ，低温， 3 中心点温度
 	 */
 	public void openHighLowTemp(int type){
 		switch (type){
 			case 1:
-				addHighLowTempWidget(tempSource[1],tempSource[2],tempSource[3],1,1);
+				addHighLowTempWidget(tempSource[1],tempSource[2],tempSource[3],type,1);
 				break;
 			case 2:
-				addHighLowTempWidget(tempSource[4],tempSource[5],tempSource[6],2,2);
+				addHighLowTempWidget(tempSource[4],tempSource[5],tempSource[6],type,2);
 				break;
 			case 3:
-				addHighLowTempWidget(getMeasuredWidth()/2.0f,getMeasuredHeight()/2.0f,tempSource[0],3,3);
+				addHighLowTempWidget(getMeasuredWidth()/2.0f,getMeasuredHeight()/2.0f,tempSource[0],type,3);
 //				if (isDebug)Log.e(TAG, "openHighLowTemp: center point == > " + getMeasuredWidth()/2.0f + "  getMeasuredHeight " + getMeasuredHeight() /2.0f);
 //				if (isDebug)Log.e(TAG, "openHighLowTemp:  size  " + highLowTempLists.size() );
 				break;
@@ -741,9 +769,22 @@ public class DragTempContainer extends RelativeLayout {
 		widget.setToolsPicRes(new int[]{R.mipmap.ic_areacheck_tools_delete});
 		widget.setPointTemp(pointTempWidget);
 
+//
 		resetUserAddView(widget);
 		drawTempMode = -1;
 	}
+
+	/**
+	 * 前半部分，去创建数据对象。
+	 * 	后半部分通过数据对象 去选择创建View视图
+	 * 	创建完毕之后 重置
+	 */
+	private void createChildDataView(){
+		//前半部分，去创建数据对象。
+		// 后半部分通过数据对象 去选择创建View视图
+		//创建完毕之后 重置
+	}
+
 	//添加 线或者矩形 测温模式
 	private void createLineOrRecView(){
 //		Log.e(TAG, "reviseCoordinate: " + reviseCoordinate(drawTempMode));
@@ -821,8 +862,12 @@ public class DragTempContainer extends RelativeLayout {
 //		moveWidget.setBackgroundColor(getResources().getColor(R.color.max_temp_text_color_red));
 		moveWidget.setChildToolsClickListener(mChildToolsClickListener);
 		//todo 重置userAddView的集合
-		addView(moveWidget);
+//		addView(moveWidget);
 		userAdd.add(moveWidget);
+		if (onUserCRUDListener!=null){
+			onUserCRUDListener.onAddChildView();
+		}
+
 	}
 
 	/**
@@ -901,8 +946,9 @@ public class DragTempContainer extends RelativeLayout {
 		if (isDebug)Log.e(TAG, "Parent onIntercept: x " + ev.getX() + " Y = " + ev.getY() + " action= " + ev.getAction() );
 
 		if (drawTempMode == -1){
-			if (ev.getAction() == MotionEvent.ACTION_DOWN){//看点的位置是否有选中的View，有则一直调用他的分发。否则设置为所有view并发响应
+			if (ev.getAction() == MotionEvent.ACTION_DOWN){
 				Log.e(TAG, "onInterceptTouchEvent: " + eventInSelectChild(ev));
+				//看点的位置是否有选中的View，有则一直调用他的分发。否则设置为所有view并发响应
 				if (!eventInSelectChild(ev)){
 					setAllChildUnSelect();
 //					operateChild = null;//重置
