@@ -39,6 +39,7 @@ import android.opengl.GLES20;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Surface;
@@ -301,11 +302,11 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
         }
     }
 
-//    public void iniTempFontsize(float fontsize) {
-//        if (mRenderHandler != null) {
-//            mRenderHandler.iniTempFontsize(fontsize);
-//        }
-//    }
+    public void setFrameBitmap(Bitmap highTemp, Bitmap lowTemp, Bitmap centerTemp, Bitmap normalPointTemp) {
+        if (mRenderHandler != null) {
+            mRenderHandler.setFrameBitmap(highTemp, lowTemp, centerTemp, normalPointTemp);
+        }
+    }
 
     public void iniTempBitmap(int w, int h) {
         if (mRenderHandler != null) {
@@ -460,9 +461,9 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 
 //        public void setOnHighTempChangedCallback(onHighTempChangedCallback callback){ mThread.highTempChangedCallback = callback; }
 
-//        public void watermarkOnOff(boolean isWatermaker) {
-//            mThread.watermarkOnOff(isWatermaker);
-//        }
+        public void setFrameBitmap(Bitmap highTemp, Bitmap lowTemp, Bitmap centerTemp, Bitmap normalPointTemp) {
+            mThread.setFrameBitmap(highTemp, lowTemp, centerTemp, normalPointTemp);
+        }
 
         public void tempshowOnOff(boolean isTempShow) {
             mThread.tempshowOnOff(isTempShow);
@@ -648,10 +649,6 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
             private final FpsCounter mFpsCounter;
             private Camera2Helper mCamera2Helper;
 //            private CustomRangeSeekBar mBindSeekBar;
-            private DragTempContainer mDragTempContainer;
-
-            //add by wcc  2021年12月22日15:49:55
-            private Paint photoPaint;
 
             /**
              * 高温报警相关变量
@@ -701,6 +698,13 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //                this.photoPaint.setTextSize(fontsize);
 //            }
 
+            /**
+             * 初始化 OpenGL ES 的画布的宽高 ，并初始化所需要的画笔。
+             * OpenGL ES
+             * 初始化文字，图片
+             * @param w
+             * @param h
+             */
             public void iniTempBitmap(int w, int h) {
                 this.icon = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888); //建立一个空的图画板
                 this.bitcanvas = new Canvas(icon);//初始化画布绘制的图像到icon上
@@ -822,6 +826,11 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //            private Bitmap mCursorBlue, mCursorRed, mCursorYellow, mCursorGreen, mWatermakLogo;
             private float[] temperature1 = new float[640 * 512 + 10];
             private Bitmap highTempBt, lowTempBt , centerTempBt , normalPointBt;
+            private DragTempContainer mDragTempContainer;
+            //add by wcc  2021年12月22日15:49:55 ，绘制线条的画笔，图片画笔
+            private Paint linePaint , photoPaint;
+            //绘制文字画笔，绘制文字背景颜色的画笔
+            private TextPaint tempTextPaint,tempTextBgTextPaint;
 
             //added by wupei
             private float maxtemperature;
@@ -843,13 +852,12 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //            private boolean isWatermaker = false;
             private boolean isTempShow = true;
 
-//            public void setBitmap(Bitmap mRed, Bitmap mGreen, Bitmap mBlue, Bitmap mYellow, Bitmap mLogo) {
-//                mCursorBlue = mBlue;
-//                mCursorRed = mRed;
-//                mCursorYellow = mYellow;
-//                mCursorGreen = mGreen;
-//                mWatermakLogo = mLogo;
-//            }
+            public void setFrameBitmap(Bitmap highTemp, Bitmap lowTemp, Bitmap centerTemp, Bitmap normalPointTemp) {
+                highTempBt = highTemp;
+                lowTempBt = lowTemp;
+                centerTempBt = centerTemp;
+                normalPointBt = normalPointTemp;
+            }
 
 
             public void relayout(int rotate) {
@@ -1130,11 +1138,44 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                         TempWidgetObj tempWidgetObj = null;
                        for (MyMoveWidget widget : mDragTempContainer.getUserAdd()){
                            tempWidgetObj = widget.gettempWidgetData();
+                           //点温度 绘制：全局高温。全局低温、全局中心温、点测试模式（正常温度）
+                           if (tempWidgetObj.getType() == 1){
+                               if (tempWidgetObj.getPointTemp().getType()==1){//高温
+                                   bitcanvas.drawBitmap(highTempBt,tempWidgetObj.getPointTemp().getStartPointX(),
+                                           tempWidgetObj.getPointTemp().getStartPointY(),photoPaint);
+                                   bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
+                                           tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),photoPaint);
+                               }else if (tempWidgetObj.getPointTemp().getType()==2) {//低温
+                                   bitcanvas.drawBitmap(lowTempBt,tempWidgetObj.getPointTemp().getStartPointX(),
+                                           tempWidgetObj.getPointTemp().getStartPointY(),photoPaint);
+                                   bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
+                                           tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),photoPaint);
+                               }else if (tempWidgetObj.getPointTemp().getType()==3){//中心温
+                                   bitcanvas.drawBitmap(centerTempBt,tempWidgetObj.getPointTemp().getStartPointX(),
+                                           tempWidgetObj.getPointTemp().getStartPointY(),photoPaint);
+                                   bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
+                                           tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),photoPaint);
+                               }else {//正常温度
+                                   bitcanvas.drawBitmap(normalPointBt,tempWidgetObj.getPointTemp().getStartPointX(),
+                                           tempWidgetObj.getPointTemp().getStartPointY(),photoPaint);
+                                   bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
+                                           tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),photoPaint);
+                               }
+                           }
+                            //线测温模式绘制
                            if (tempWidgetObj.getType() ==2 ){
                                bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
                                        tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),photoPaint);
-                           }
 
+                               bitcanvas.drawText(tempWidgetObj.getOtherTemp().getMaxTemp(),
+                                       tempWidgetObj.getOtherTemp().getMaxTempX(),tempWidgetObj.getOtherTemp().getMaxTempY(),photoPaint);
+                               bitcanvas.drawText(tempWidgetObj.getOtherTemp().getMinTemp(),
+                                       tempWidgetObj.getOtherTemp().getMinTempX(),tempWidgetObj.getOtherTemp().getMinTempY(),photoPaint);
+
+                               bitcanvas.drawBitmap(highTempBt,tempWidgetObj.getOtherTemp().getMaxTempX(),tempWidgetObj.getOtherTemp().getMaxTempY(),photoPaint);
+                               bitcanvas.drawBitmap(lowTempBt,tempWidgetObj.getOtherTemp().getMinTempX(),tempWidgetObj.getOtherTemp().getMinTempY(),photoPaint);
+                           }
+                            //矩形测温模式绘制
                            if (tempWidgetObj.getType() == 3 ){
                                bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
                                        tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),photoPaint);
@@ -1145,7 +1186,13 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                                bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),
                                        tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),photoPaint);
 
+                               bitcanvas.drawText(tempWidgetObj.getOtherTemp().getMaxTemp(),
+                                       tempWidgetObj.getOtherTemp().getMaxTempX(),tempWidgetObj.getOtherTemp().getMaxTempY(),photoPaint);
+                               bitcanvas.drawText(tempWidgetObj.getOtherTemp().getMinTemp(),
+                                       tempWidgetObj.getOtherTemp().getMinTempX(),tempWidgetObj.getOtherTemp().getMinTempY(),photoPaint);
 
+                               bitcanvas.drawBitmap(highTempBt,tempWidgetObj.getOtherTemp().getMaxTempX(),tempWidgetObj.getOtherTemp().getMaxTempY(),photoPaint);
+                               bitcanvas.drawBitmap(lowTempBt,tempWidgetObj.getOtherTemp().getMinTempX(),tempWidgetObj.getOtherTemp().getMinTempY(),photoPaint);
                            }
                        }
                     }

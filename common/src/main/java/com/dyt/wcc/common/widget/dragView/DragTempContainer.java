@@ -228,6 +228,7 @@ public class DragTempContainer extends RelativeLayout {
 		invalidate();
 
 		if (audioPlayer != null){
+//			audioPlayer.set
 			audioPlayer.stop();
 			audioPlayer.release();
 			audioPlayer = null;
@@ -372,17 +373,17 @@ public class DragTempContainer extends RelativeLayout {
 	protected void onDraw (Canvas canvas) {
 		super.onDraw(canvas);
 //		Log.e(TAG, "onDraw: " + highTempAlarmToggle +" "+ isAboveHighTemp);
-		if (highTempAlarmToggle && isAboveHighTemp){//每隔 0.5S 绘制一次
-			if (frameCount < 10){//绘制超温
-				rectFHighTempAlarm = new RectF(6,6,screenWidth-6,screenHeight- 6);
-				canvas.drawRect(rectFHighTempAlarm,testPaint);
-				frameCount++;
-			}else if (frameCount < 25){//间隔帧数
-				frameCount++;
-			}else {//释放
-				frameCount = 0;
-			}
-		}
+//		if (highTempAlarmToggle && isAboveHighTemp){//每间隔15帧 绘制 10帧
+//			if (frameCount < 10){//绘制超温
+//				rectFHighTempAlarm = new RectF(6,6,screenWidth-6,screenHeight- 6);
+//				canvas.drawRect(rectFHighTempAlarm,testPaint);
+//				frameCount++;
+//			}else if (frameCount < 25){//间隔帧数
+//				frameCount++;
+//			}else {//释放
+//				frameCount = 0;
+//			}
+//		}
 	}
 
 
@@ -441,9 +442,9 @@ public class DragTempContainer extends RelativeLayout {
 			tempWidget.setOtherTemp(otherTempWidget);
 
 			MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),tempWidget,screenWidth,screenHeight);
-			moveWidget.setChildToolsClickListener(mChildToolsClickListener);
-			//todo 重置userAddView的集合
-			addView(moveWidget);
+//			moveWidget.setChildToolsClickListener(mChildToolsClickListener);
+//			//todo 重置userAddView的集合
+//			addView(moveWidget);
 			userAdd.add(moveWidget);
 		}
 		return recList;
@@ -751,6 +752,18 @@ public class DragTempContainer extends RelativeLayout {
 		userAdd.clear();
 		pointNum = 0;
 	}
+
+	/**
+	 * 前半部分，去创建数据对象。
+	 * 	后半部分通过数据对象 去选择创建View视图
+	 * 	创建完毕之后 重置
+	 */
+	private void createChildDataView(){
+		//前半部分，去创建数据对象。
+		// 后半部分通过数据对象 去选择创建View视图
+		//创建完毕之后 重置
+	}
+
 	//添加点测温模式
 	private void createPointView(){
 		TempWidgetObj widget = new TempWidgetObj();
@@ -772,17 +785,6 @@ public class DragTempContainer extends RelativeLayout {
 //
 		resetUserAddView(widget);
 		drawTempMode = -1;
-	}
-
-	/**
-	 * 前半部分，去创建数据对象。
-	 * 	后半部分通过数据对象 去选择创建View视图
-	 * 	创建完毕之后 重置
-	 */
-	private void createChildDataView(){
-		//前半部分，去创建数据对象。
-		// 后半部分通过数据对象 去选择创建View视图
-		//创建完毕之后 重置
 	}
 
 	//添加 线或者矩形 测温模式
@@ -1059,7 +1061,7 @@ public class DragTempContainer extends RelativeLayout {
 					}
 					break;
 			}
-		}else {//移动控件
+		}else {//移动控件  // 判定点是否在已有控件测温模式的中
 
 		}
 		return true;
@@ -1088,20 +1090,21 @@ public class DragTempContainer extends RelativeLayout {
 				}else {
 					isAboveHighTemp = false;
 				}
-				if (isAboveHighTemp && highTempAlarmToggle){//打开了开关，并且超温了。
-					lastAboveTime = System.currentTimeMillis();
-					if (audioPlayer != null && !audioPlayer.isPlaying()){
-						audioPlayer.start();
-					}
-					Log.e(TAG, "handleMessage: " + audioPlayer.isPlaying());
-				}else {//一段时间（X）后停止音乐的播放，如果音乐是在播放，则停止。
-					long seconds = ((System.currentTimeMillis() - lastAboveTime)/1000);
-
-					if (seconds > 3 && audioPlayer != null && audioPlayer.isPlaying()){//时间可以更改
-						audioPlayer.pause();
-					}
-				}
-				invalidate();//重新绘制
+				//超温警告 打开了开关，并且超温了。没帧刷新数据
+//				if (isAboveHighTemp && highTempAlarmToggle){
+//					lastAboveTime = System.currentTimeMillis();
+//					if (audioPlayer != null && !audioPlayer.isPlaying()){
+//						audioPlayer.start();
+//					}
+//					Log.e(TAG, "handleMessage: " + audioPlayer.isPlaying());
+//				}else {//一段时间（X）后停止音乐的播放，如果音乐是在播放，则停止。
+//					long seconds = ((System.currentTimeMillis() - lastAboveTime)/1000);
+//
+//					if (seconds > 3 && audioPlayer != null && audioPlayer.isPlaying()){//时间可以更改
+//						audioPlayer.pause();
+//					}
+//				}
+//				invalidate();//重新绘制
 
 				if (mSeekBar!=null){//更新滑动温度条
 					mSeekBar.Update(tempSource[3],tempSource[6]);

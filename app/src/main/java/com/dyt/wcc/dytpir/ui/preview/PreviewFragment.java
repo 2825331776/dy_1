@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
@@ -112,6 +113,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private SendCommand mSendCommand;
 
 	private int screenWidth ,screenHeight;
+	private Bitmap highTempBt, lowTempBt , centerTempBt , normalPointBt;
 
 	private DisplayMetrics metrics;
 	private Configuration  configuration;
@@ -388,6 +390,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mTextureViewWidth = mDataBinding.textureViewPreviewFragment.getWidth();
 		mTextureViewHeight = mDataBinding.textureViewPreviewFragment.getHeight();
 //		if (isDebug)Log.e(TAG,"height =="+ mTextureViewHeight + " width==" + mTextureViewWidth);
+		mDataBinding.textureViewPreviewFragment.setFrameBitmap(highTempBt,lowTempBt,centerTempBt,normalPointBt);
 
 		mDataBinding.textureViewPreviewFragment.iniTempBitmap(mTextureViewWidth, mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
 		mDataBinding.textureViewPreviewFragment.setDragTempContainer(mDataBinding.dragTempContainerPreviewFragment);
@@ -520,7 +523,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 						@Override
 						public void onSetComplete (float setValue) {
 							if (isDebug)Log.e(TAG, "onSetComplete: " + "confirm "  + "value = == > " + setValue  );
-							mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(setValue);
+//							mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(setValue);
 							sp.edit().putFloat("overTemp",setValue).apply();
 						}
 						@Override
@@ -532,7 +535,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					dialog.setCancelable(false);
 					dialog.show();
 				}else {
-					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
+//					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
 				}
 			}
 		});
@@ -627,7 +630,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onClick (View v) {
 				if (!mDataBinding.toggleAreaCheck.isSelected()){
-					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
+					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),
+							mDataBinding.textureViewPreviewFragment.getHeight());
 					int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
 
 					//					Log.e(TAG, "onCheckedChanged: checked  ==== >  " + isChecked + " ==================" + Arrays.toString(areaData));
@@ -979,6 +983,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			//默认不打开音频录制
 			sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING,1).apply();
 		}
+
+		highTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_high);
+		lowTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_low);
+		centerTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_center);
+		normalPointBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_main_preview_measuretemp_point);
 
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		screenWidth = dm.widthPixels;
