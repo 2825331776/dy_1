@@ -210,9 +210,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		super.onDestroyView();
 		if (isDebug)Log.e(TAG, "onDestroyView: ");
 
-		if (mDataBinding.dragTempContainerPreviewFragment.isHighTempAlarmToggle()){
-			mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
-		}
+//		if (mDataBinding.dragTempContainerPreviewFragment.isHighTempAlarmToggle()){
+//			mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
+//		}
 
 		if (MediaProjectionHelper.getInstance().getRecord_State() != 0){
 			MediaProjectionHelper.getInstance().stopMediaRecorder();
@@ -390,7 +390,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mTextureViewWidth = mDataBinding.textureViewPreviewFragment.getWidth();
 		mTextureViewHeight = mDataBinding.textureViewPreviewFragment.getHeight();
 //		if (isDebug)Log.e(TAG,"height =="+ mTextureViewHeight + " width==" + mTextureViewWidth);
-		mDataBinding.textureViewPreviewFragment.setFrameBitmap(highTempBt,lowTempBt,centerTempBt,normalPointBt);
+		mDataBinding.textureViewPreviewFragment.setFrameBitmap(highTempBt,lowTempBt,centerTempBt,normalPointBt,DensityUtil.dp2px(mContext.get(),25));
 
 		mDataBinding.textureViewPreviewFragment.iniTempBitmap(mTextureViewWidth, mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
 		mDataBinding.textureViewPreviewFragment.setDragTempContainer(mDataBinding.dragTempContainerPreviewFragment);
@@ -506,7 +506,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		//			}
 		//		});
 
-		//超温警告
+		/**
+		 * 超温警告 ， 预览层去绘制框， DragTempContainer 控件去播放声音
+		 */
 		mDataBinding.toggleHighTempAlarm.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
@@ -522,8 +524,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					dialog.setListener(new OverTempDialog.SetCompleteListener() {
 						@Override
 						public void onSetComplete (float setValue) {
-							if (isDebug)Log.e(TAG, "onSetComplete: " + "confirm "  + "value = == > " + setValue  );
-//							mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(setValue);
+//							if (isDebug)Log.e(TAG, "onSetComplete: " + "confirm value = == > " + setValue  );
+							mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(setValue);
+
+							mDataBinding.textureViewPreviewFragment.startTempAlarm(setValue);
 							sp.edit().putFloat("overTemp",setValue).apply();
 						}
 						@Override
@@ -535,7 +539,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					dialog.setCancelable(false);
 					dialog.show();
 				}else {
-//					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
+					mDataBinding.textureViewPreviewFragment.stopTempAlarm();
+					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
 				}
 			}
 		});
@@ -606,9 +611,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceLow.setOnCheckedChangeListener(highLowCenterCheckListener);
 					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceCenter.setOnCheckedChangeListener(highLowCenterCheckListener);
 
-					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceHigh.setChecked(mDataBinding.dragTempContainerPreviewFragment.hasOpenToggleByType(1));
-					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceLow.setChecked(mDataBinding.dragTempContainerPreviewFragment.hasOpenToggleByType(2));
-					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceCenter.setChecked(mDataBinding.dragTempContainerPreviewFragment.hasOpenToggleByType(3));
+//					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceHigh.setChecked(mDataBinding.dragTempContainerPreviewFragment.hasOpenToggleByType(1));
+//					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceLow.setChecked(mDataBinding.dragTempContainerPreviewFragment.hasOpenToggleByType(2));
+//					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceCenter.setChecked(mDataBinding.dragTempContainerPreviewFragment.hasOpenToggleByType(3));
 
 					PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 					PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
@@ -1157,23 +1162,23 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		switch (buttonView.getId()){
 			case R.id.cb_main_preview_highlowcenter_trace_high:
 				if (isChecked){
-					mDataBinding.dragTempContainerPreviewFragment.openHighLowTemp(1);
+					mDataBinding.textureViewPreviewFragment.openFeaturePoints(0);
 				}else {
-					mDataBinding.dragTempContainerPreviewFragment.closeHighLowTemp(1);
+					mDataBinding.textureViewPreviewFragment.closeFeaturePoints(0);
 				}
 				break;
 			case R.id.cb_main_preview_highlowcenter_trace_low:
 				if (isChecked){
-					mDataBinding.dragTempContainerPreviewFragment.openHighLowTemp(2);
+					mDataBinding.textureViewPreviewFragment.openFeaturePoints(1);
 				}else {
-					mDataBinding.dragTempContainerPreviewFragment.closeHighLowTemp(2);
+					mDataBinding.textureViewPreviewFragment.closeFeaturePoints(1);
 				}
 				break;
 			case R.id.cb_main_preview_highlowcenter_trace_center:
 				if (isChecked){
-					mDataBinding.dragTempContainerPreviewFragment.openHighLowTemp(3);
+					mDataBinding.textureViewPreviewFragment.openFeaturePoints(2);
 				}else {
-					mDataBinding.dragTempContainerPreviewFragment.closeHighLowTemp(3);
+					mDataBinding.textureViewPreviewFragment.closeFeaturePoints(2);
 				}
 				break;
 		}

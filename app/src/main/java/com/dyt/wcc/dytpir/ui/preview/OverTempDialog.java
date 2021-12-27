@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import com.dyt.wcc.common.widget.NumberPickerView;
 import com.dyt.wcc.common.widget.dragView.DragTempContainer;
 import com.dyt.wcc.dytpir.R;
+import com.dyt.wcc.dytpir.utils.TempConvertUtils;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -31,7 +32,7 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 	private float mValue;//数值
 	private Button bt_confirm;//确认按钮
 	private Button bt_cancel;
-	private int mType = 0 ;
+	private int mType = 0 ; // 温度的类型 ： 0 摄氏度， 1 华氏度， 2 开氏度
 	private SetCompleteListener  mListener;
 	private TextView tv_unit;
 
@@ -43,7 +44,8 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 		if (type < DragTempContainer.tempSuffixList.length){
 			this.mType = type;
 		}else {mType = 0;}
-		mValue = oldValue;
+		mValue = TempConvertUtils.centigrade2Temp(oldValue,mType);
+		if (mValue < 0 ){mValue = 0.0f;}
 		Log.e(TAG, "OverTempDialog: " + oldValue);
 	}
 
@@ -56,6 +58,10 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 	}
 
 	interface SetCompleteListener{
+		/**
+		 * 设置超温警告的温度， 数值的单位为： 摄氏度。
+		 * @param setValue float 类型的 摄氏度
+		 */
 		void onSetComplete(float setValue);
 		void onCancelListener();
 	}
@@ -101,7 +107,8 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 		bt_confirm.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-				if (mListener!= null)mListener.onSetComplete(mValue);
+//				Log.e(TAG, "onClick:   value  = > " + mValue  + "  mode =  > " + mType );
+				if (mListener!= null)mListener.onSetComplete(TempConvertUtils.temp2Centigrade(mValue,mType));
 				dismiss();
 			}
 		});
