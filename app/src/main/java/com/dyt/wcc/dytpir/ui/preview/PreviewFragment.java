@@ -611,9 +611,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceLow.setOnCheckedChangeListener(highLowCenterCheckListener);
 					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceCenter.setOnCheckedChangeListener(highLowCenterCheckListener);
 
-//					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceHigh.setChecked(mDataBinding.dragTempContainerPreviewFragment.hasOpenToggleByType(1));
-//					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceLow.setChecked(mDataBinding.dragTempContainerPreviewFragment.hasOpenToggleByType(2));
-//					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceCenter.setChecked(mDataBinding.dragTempContainerPreviewFragment.hasOpenToggleByType(3));
+					int toggleState = mDataBinding.textureViewPreviewFragment.getFeaturePointsControl();
+					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceHigh.setChecked((toggleState & 0x0f00)>0);
+					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceLow.setChecked((toggleState & 0x00f0)>0);
+					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceCenter.setChecked((toggleState & 0x000f)>0);
 
 					PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 					PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
@@ -721,7 +722,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
 							if (actionId == EditorInfo.IME_ACTION_DONE){
 								if (TextUtils.isEmpty(v.getText().toString()))return true;
-								int value = Integer.parseInt(v.getText().toString());
+								int value = Math.round(Float.parseFloat(v.getText().toString()));
 								if (value > 5 || value < 0){
 									showToast("取值范围(0-5)");
 									return true;
@@ -941,13 +942,14 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			}
 		});
 
-		//测温模式的 工具栏 点击监听器
+		//测温模式中 工具栏 点击监听器（删除，等工具栏）
 		mDataBinding.dragTempContainerPreviewFragment.setChildToolsClickListener(new DragTempContainer.OnChildToolsClickListener() {
 			@Override
 			public void onChildToolsClick (TempWidgetObj child, int position) {
 
 				if (position==0){
-					mDataBinding.dragTempContainerPreviewFragment.removeChildByDataObj(child);
+					mDataBinding.dragTempContainerPreviewFragment.deleteChildView(child);
+					//底层重新设置 矩形框的 数据
 					if (child.getType()==3){
 						//						mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
 						int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
@@ -969,8 +971,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				}
 			}
 		});
-
-
 	}
 
 

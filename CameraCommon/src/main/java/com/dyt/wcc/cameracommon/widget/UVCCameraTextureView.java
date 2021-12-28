@@ -30,6 +30,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -57,6 +58,7 @@ import com.serenegiant.glutils.EGLBase;
 import com.serenegiant.usb.ITemperatureCallback;
 import com.serenegiant.utils.FpsCounter;
 
+import java.text.DecimalFormat;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
@@ -274,6 +276,9 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
     @Override
     public ITemperatureCallback getTemperatureCallback() {
         return mRenderHandler != null ? mRenderHandler.getTemperatureCallback() : null;
+    }
+    public int getFeaturePointsControl () {
+        return mRenderHandler != null ? mRenderHandler.getFeaturePointsControl() : 0;
     }
 
 //    @Override
@@ -551,6 +556,9 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
         public ITemperatureCallback getTemperatureCallback() {
             return mThread != null ? mThread.getTemperatureCallback() : null;
         }
+        public int getFeaturePointsControl () {
+            return mThread != null ? mThread.getFeaturePointsControl() : 0;
+        }
 //        public TcpITemperatureCallback getTcpTemperatureCallback() {
 //
 //            return mThread != null ? mThread.getTcpTemperatureCallback() : null;
@@ -728,15 +736,20 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //                this.alarmPaint = new Paint();
                 this.tempTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
                 this.tempTextPaint.setTextSize(50);
-                this.tempTextPaint.setStrokeWidth(3);
+                this.tempTextPaint.setStrokeWidth(5);
                 this.tempTextPaint.setStyle(Paint.Style.FILL);
 
                 this.linePaint = new Paint();
                 this.linePaint.setStrokeWidth(5);
+                this.linePaint.setColor(Color.WHITE);
+                this.dottedLinePaint  = new Paint();
+                this.dottedLinePaint.setStrokeWidth(5);
+                this.dottedLinePaint.setPathEffect ( new DashPathEffect( new float [ ] { 40, 40 }, 0 ) );
+                this.dottedLinePaint.setColor(Color.BLACK);
 
-                this.tempTextBgTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                this.tempTextBgTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
                 this.tempTextBgTextPaint.setTextSize(50);
-                this.tempTextBgTextPaint.setStrokeWidth(3);
+                this.tempTextBgTextPaint.setStrokeWidth(5);
                 this.tempTextBgTextPaint.setColor(Color.WHITE);
                 this.tempTextBgTextPaint.setStyle(Paint.Style.STROKE);
 
@@ -865,9 +878,9 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
             private int mBitmapRectSize;
             private DragTempContainer mDragTempContainer;
             //绘制线条的画笔，图片画笔
-            private Paint linePaint , photoPaint,tempTextBgTextPaint;
+            private Paint linePaint , dottedLinePaint, photoPaint;
             //绘制文字画笔，绘制文字背景颜色的画笔
-            private TextPaint tempTextPaint;
+            private TextPaint tempTextPaint,tempTextBgTextPaint;
 
             private float maxtemperature;
             private float mintemperature;
@@ -958,6 +971,10 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                     default:
                         break;
                 }
+            }
+
+            public int getFeaturePointsControl () {
+                return featurePointsControl;
             }
 
             public void openSysCamera() {
@@ -1119,6 +1136,20 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                 return newBM;
             }
 
+            private void xy2DrawText(float x , float y , String tempText , TextPaint tpBg,TextPaint tp,int textDirection){
+                if (textDirection != 0){
+
+                }else { //textDirection == 0
+                    if (x + tp.measureText(tempText) > icon.getWidth()){
+                        bitcanvas.drawText(tempText,x - mBitmapRectSize/2.0f - tp.measureText(tempText), y + mBitmapRectSize/2.0f,tpBg);
+                        bitcanvas.drawText(tempText,x - mBitmapRectSize/2.0f - tp.measureText(tempText), y + mBitmapRectSize/2.0f,tp);
+                    }else {
+                        bitcanvas.drawText(tempText,x + mBitmapRectSize/2.0f, y + mBitmapRectSize/2.0f,tpBg);
+                        bitcanvas.drawText(tempText,x + mBitmapRectSize/2.0f, y + mBitmapRectSize/2.0f,tp);
+                    }
+                }
+            }
+
             private Boolean isT3 = BaseApplication.deviceName.contentEquals("T3") || BaseApplication.deviceName.contentEquals("DL13") || BaseApplication.deviceName.contentEquals("DV");
 
             public void DrawControl()
@@ -1160,8 +1191,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                     //                    bitcanvas.save(Canvas.ALL_SAVE_FLAG);//吴长城修改到下面函数
                     bitcanvas.save();
                 } else {
-                    bitcanvas.drawText("123456", 200, 200, photoPaint);
-
+//                    bitcanvas.drawText("123456", 200, 200,tempTextPaint );
+	                DecimalFormat decimalFormat = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
                     //绘制四边形
                     if (isAlarm && (alarmCount > 15 && alarmCount < 30)){
                         linePaint.setColor(Color.RED);
@@ -1181,108 +1212,108 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //                    mDragTempContainer.
                     if (mDragTempContainer!=null){
                         TempWidgetObj tempWidgetObj = null;
-                       for (MyMoveWidget widget : mDragTempContainer.getUserAdd()){
-                           tempWidgetObj = widget.gettempWidgetData();
-                           //点温度 绘制：全局高温。全局低温、全局中心温、点测试模式（正常温度）
-                           if (tempWidgetObj.getType() == 1){
-                               bpRectF.left = tempWidgetObj.getPointTemp().getStartPointX() - mBitmapRectSize / 2.0f;
-                               bpRectF.right = tempWidgetObj.getPointTemp().getStartPointX() + mBitmapRectSize / 2.0f;
-                               bpRectF.top = tempWidgetObj.getPointTemp().getStartPointY() - mBitmapRectSize / 2.0f;
-                               bpRectF.bottom = tempWidgetObj.getPointTemp().getStartPointY() + mBitmapRectSize / 2.0f;
-                               if (tempWidgetObj.getPointTemp().getType()==1){//高温
-                                   tempTextPaint.setColor(Color.RED);
-                                   bitcanvas.drawBitmap(highTempBt,null,bpRectF,photoPaint);
-                                   bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
-                                           tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextBgTextPaint);
-                                   bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
-                                           tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextPaint);
-                               }else if (tempWidgetObj.getPointTemp().getType()==2) {//低温
-                                   tempTextPaint.setColor(Color.BLUE);
-                                   bitcanvas.drawBitmap(lowTempBt,null,bpRectF,photoPaint);
-                                   bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
-                                           tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextBgTextPaint);
-                                   bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
-                                           tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextPaint);
-                               }else if (tempWidgetObj.getPointTemp().getType()==3){//中心温
-                                   tempTextPaint.setColor(Color.YELLOW);
-                                   bitcanvas.drawBitmap(centerTempBt,null,bpRectF,photoPaint);
-                                   bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
-                                           tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextBgTextPaint);
-                                   bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
-                                           tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextPaint);
-                               }else {//正常温度
-                                   tempTextPaint.setColor(Color.BLACK);
-                                   bitcanvas.drawBitmap(normalPointBt,null,bpRectF,photoPaint);
-                                   bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
-                                           tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextBgTextPaint);
-                                   bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
-                                           tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextPaint);
+                       for (TempWidgetObj widget : mDragTempContainer.getUserAddData()){
+                           tempWidgetObj = widget;
+                           if (!tempWidgetObj.isSelect()){//未选中
+                               //点温度 绘制：全局高温。全局低温、全局中心温、点测试模式（正常温度）
+                               if (tempWidgetObj.getType() == 1){
+                                   bpRectF.left = tempWidgetObj.getPointTemp().getStartPointX() - mBitmapRectSize / 2.0f;
+                                   bpRectF.right = tempWidgetObj.getPointTemp().getStartPointX() + mBitmapRectSize / 2.0f;
+                                   bpRectF.top = tempWidgetObj.getPointTemp().getStartPointY() - mBitmapRectSize / 2.0f;
+                                   bpRectF.bottom = tempWidgetObj.getPointTemp().getStartPointY() + mBitmapRectSize / 2.0f;
+//                                   if (tempWidgetObj.getPointTemp().getType()==1){//高温
+//                                       tempTextPaint.setColor(Color.RED);
+//                                       bitcanvas.drawBitmap(highTempBt,null,bpRectF,photoPaint);
+//                                       xy2DrawText(tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),
+//                                               tempWidgetObj.getPointTemp().getTemp(),tempTextBgTextPaint,tempTextPaint,0);
+//                                   }else if (tempWidgetObj.getPointTemp().getType()==2) {//低温
+//                                       tempTextPaint.setColor(Color.BLUE);
+//                                       bitcanvas.drawBitmap(lowTempBt,null,bpRectF,photoPaint);
+//                                       bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
+//                                               tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextBgTextPaint);
+//                                       bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
+//                                               tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextPaint);
+//                                   }else if (tempWidgetObj.getPointTemp().getType()==3){//中心温
+//                                       tempTextPaint.setColor(Color.YELLOW);
+//                                       bitcanvas.drawBitmap(centerTempBt,null,bpRectF,photoPaint);
+//                                       bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
+//                                               tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextBgTextPaint);
+//                                       bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
+//                                               tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextPaint);
+//                                   }else {
+                                   // 正常温度
+                                       tempTextPaint.setColor(Color.BLACK);
+                                       bitcanvas.drawBitmap(normalPointBt,null,bpRectF,photoPaint);
+                                       xy2DrawText(tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),
+                                               tempWidgetObj.getPointTemp().getTemp(),tempTextBgTextPaint,tempTextPaint,0);
+//                                   }
                                }
-                           }
-                            //线测温模式绘制
-                           if (tempWidgetObj.getType() ==2 ){
-                               bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
-                                       tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),photoPaint);
-                               tempTextPaint.setColor(Color.RED);
+                               //线测温模式绘制
+                               if (tempWidgetObj.getType() ==2 ){
+                                   bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
+                                           tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),linePaint);
+                                   bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
+                                           tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),dottedLinePaint);
 
-                               bitcanvas.drawText(tempWidgetObj.getOtherTemp().getMaxTemp(),
-                                       tempWidgetObj.getOtherTemp().getMaxTempX(),tempWidgetObj.getOtherTemp().getMaxTempY(),tempTextBgTextPaint);
-                               bitcanvas.drawText(tempWidgetObj.getOtherTemp().getMaxTemp(),
-                                       tempWidgetObj.getOtherTemp().getMaxTempX(),tempWidgetObj.getOtherTemp().getMaxTempY(),tempTextPaint);
-                               tempTextPaint.setColor(Color.BLUE);
-                               bitcanvas.drawText(tempWidgetObj.getOtherTemp().getMinTemp(),
-                                       tempWidgetObj.getOtherTemp().getMinTempX(),tempWidgetObj.getOtherTemp().getMinTempY(),tempTextBgTextPaint);
-                               bitcanvas.drawText(tempWidgetObj.getOtherTemp().getMinTemp(),
-                                       tempWidgetObj.getOtherTemp().getMinTempX(),tempWidgetObj.getOtherTemp().getMinTempY(),tempTextPaint);
-//                               Log.e(TAG, "onDrawFrame: highTempBt" + highTempBt.getHeight() +" ,highTempBt width = > "+ highTempBt.getWidth());
-//                               Log.e(TAG, "onDrawFrame: lowTempBt " + lowTempBt.getHeight() +"  , lowTempBt width = > "+ lowTempBt.getWidth());
+                                   tempTextPaint.setColor(Color.RED);
+                                   xy2DrawText(tempWidgetObj.getOtherTemp().getMaxTempX(),tempWidgetObj.getOtherTemp().getMaxTempY(),
+                                           tempWidgetObj.getOtherTemp().getMaxTemp(),tempTextBgTextPaint,tempTextPaint,0);
 
-                               bpRectF.left = tempWidgetObj.getOtherTemp().getMaxTempX() - mBitmapRectSize / 2.0f;
-                               bpRectF.right = tempWidgetObj.getOtherTemp().getMaxTempX() + mBitmapRectSize / 2.0f;
-                               bpRectF.top = tempWidgetObj.getOtherTemp().getMaxTempY() - mBitmapRectSize / 2.0f;
-                               bpRectF.bottom = tempWidgetObj.getOtherTemp().getMaxTempY() + mBitmapRectSize / 2.0f;
-                               bitcanvas.drawBitmap(highTempBt,null,bpRectF,photoPaint);
-                               bpRectF.left = tempWidgetObj.getOtherTemp().getMinTempX() - mBitmapRectSize / 2.0f;
-                               bpRectF.right = tempWidgetObj.getOtherTemp().getMinTempX() + mBitmapRectSize / 2.0f;
-                               bpRectF.top = tempWidgetObj.getOtherTemp().getMinTempY() - mBitmapRectSize / 2.0f;
-                               bpRectF.bottom = tempWidgetObj.getOtherTemp().getMinTempY() + mBitmapRectSize / 2.0f;
-                               bitcanvas.drawBitmap(lowTempBt,null,bpRectF,photoPaint);
-                           }
-                            //矩形测温模式绘制
-                           if (tempWidgetObj.getType() == 3 ){
-                               linePaint.setColor(Color.YELLOW);
-                               bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
-                                       tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),linePaint);
-                               bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
-                                       tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),linePaint);
-                               bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),
-                                       tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),linePaint);
-                               bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),
-                                       tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),linePaint);
+                                   tempTextPaint.setColor(Color.BLUE);
+                                   xy2DrawText(tempWidgetObj.getOtherTemp().getMinTempX(),tempWidgetObj.getOtherTemp().getMinTempY(),
+                                           tempWidgetObj.getOtherTemp().getMinTemp(),tempTextBgTextPaint,tempTextPaint,0);
 
-                               tempTextPaint.setColor(Color.RED);
-                               bitcanvas.drawText(tempWidgetObj.getOtherTemp().getMaxTemp(),
-                                       tempWidgetObj.getOtherTemp().getMaxTempX(),tempWidgetObj.getOtherTemp().getMaxTempY(),tempTextBgTextPaint);
-                               bitcanvas.drawText(tempWidgetObj.getOtherTemp().getMaxTemp(),
-                                       tempWidgetObj.getOtherTemp().getMaxTempX(),tempWidgetObj.getOtherTemp().getMaxTempY(),tempTextPaint);
-                               tempTextPaint.setColor(Color.BLUE);
-                               bitcanvas.drawText(tempWidgetObj.getOtherTemp().getMinTemp(),
-                                       tempWidgetObj.getOtherTemp().getMinTempX(),tempWidgetObj.getOtherTemp().getMinTempY(),tempTextBgTextPaint);
-                               bitcanvas.drawText(tempWidgetObj.getOtherTemp().getMinTemp(),
-                                       tempWidgetObj.getOtherTemp().getMinTempX(),tempWidgetObj.getOtherTemp().getMinTempY(),tempTextPaint);
+                                   bpRectF.left = tempWidgetObj.getOtherTemp().getMaxTempX() - mBitmapRectSize / 2.0f;
+                                   bpRectF.right = tempWidgetObj.getOtherTemp().getMaxTempX() + mBitmapRectSize / 2.0f;
+                                   bpRectF.top = tempWidgetObj.getOtherTemp().getMaxTempY() - mBitmapRectSize / 2.0f;
+                                   bpRectF.bottom = tempWidgetObj.getOtherTemp().getMaxTempY() + mBitmapRectSize / 2.0f;
+                                   bitcanvas.drawBitmap(highTempBt,null,bpRectF,photoPaint);
+                                   bpRectF.left = tempWidgetObj.getOtherTemp().getMinTempX() - mBitmapRectSize / 2.0f;
+                                   bpRectF.right = tempWidgetObj.getOtherTemp().getMinTempX() + mBitmapRectSize / 2.0f;
+                                   bpRectF.top = tempWidgetObj.getOtherTemp().getMinTempY() - mBitmapRectSize / 2.0f;
+                                   bpRectF.bottom = tempWidgetObj.getOtherTemp().getMinTempY() + mBitmapRectSize / 2.0f;
+                                   bitcanvas.drawBitmap(lowTempBt,null,bpRectF,photoPaint);
+                               }
+                               //矩形测温模式绘制
+                               if (tempWidgetObj.getType() == 3 ){
+                                   linePaint.setColor(Color.WHITE);
+                                   bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
+                                           tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),linePaint);
+                                   bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
+                                           tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),linePaint);
+                                   bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),
+                                           tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),linePaint);
+                                   bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),
+                                           tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),linePaint);
+                                   bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
+                                           tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),dottedLinePaint);
+                                   bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
+                                           tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),dottedLinePaint);
+                                   bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),
+                                           tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),dottedLinePaint);
+                                   bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),
+                                           tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),dottedLinePaint);
 
-//                               bitcanvas.drawBitmap(highTempBt,tempWidgetObj.getOtherTemp().getMaxTempX()-19,tempWidgetObj.getOtherTemp().getMaxTempY()-19,photoPaint);
-//                               bitcanvas.drawBitmap(lowTempBt,tempWidgetObj.getOtherTemp().getMinTempX()-19,tempWidgetObj.getOtherTemp().getMinTempY()-19,photoPaint);
-                               bpRectF.left = tempWidgetObj.getOtherTemp().getMaxTempX() - mBitmapRectSize / 2.0f;
-                               bpRectF.right = tempWidgetObj.getOtherTemp().getMaxTempX() + mBitmapRectSize / 2.0f;
-                               bpRectF.top = tempWidgetObj.getOtherTemp().getMaxTempY() - mBitmapRectSize / 2.0f;
-                               bpRectF.bottom = tempWidgetObj.getOtherTemp().getMaxTempY() + mBitmapRectSize / 2.0f;
-                               bitcanvas.drawBitmap(highTempBt,null,bpRectF,photoPaint);
-                               bpRectF.left = tempWidgetObj.getOtherTemp().getMinTempX() - mBitmapRectSize / 2.0f;
-                               bpRectF.right = tempWidgetObj.getOtherTemp().getMinTempX() + mBitmapRectSize / 2.0f;
-                               bpRectF.top = tempWidgetObj.getOtherTemp().getMinTempY() - mBitmapRectSize / 2.0f;
-                               bpRectF.bottom = tempWidgetObj.getOtherTemp().getMinTempY() + mBitmapRectSize / 2.0f;
-                               bitcanvas.drawBitmap(lowTempBt,null,bpRectF,photoPaint);
+                                   tempTextPaint.setColor(Color.RED);
+                                   xy2DrawText(tempWidgetObj.getOtherTemp().getMaxTempX(),tempWidgetObj.getOtherTemp().getMaxTempY(),
+                                           tempWidgetObj.getOtherTemp().getMaxTemp(),tempTextBgTextPaint,tempTextPaint,0);
+                                   tempTextPaint.setColor(Color.BLUE);
+                                   xy2DrawText(tempWidgetObj.getOtherTemp().getMinTempX(),tempWidgetObj.getOtherTemp().getMinTempY(),
+                                           tempWidgetObj.getOtherTemp().getMinTemp(),tempTextBgTextPaint,tempTextPaint,0);
+
+                                   //                               bitcanvas.drawBitmap(highTempBt,tempWidgetObj.getOtherTemp().getMaxTempX()-19,tempWidgetObj.getOtherTemp().getMaxTempY()-19,photoPaint);
+                                   //                               bitcanvas.drawBitmap(lowTempBt,tempWidgetObj.getOtherTemp().getMinTempX()-19,tempWidgetObj.getOtherTemp().getMinTempY()-19,photoPaint);
+                                   bpRectF.left = tempWidgetObj.getOtherTemp().getMaxTempX() - mBitmapRectSize / 2.0f;
+                                   bpRectF.right = tempWidgetObj.getOtherTemp().getMaxTempX() + mBitmapRectSize / 2.0f;
+                                   bpRectF.top = tempWidgetObj.getOtherTemp().getMaxTempY() - mBitmapRectSize / 2.0f;
+                                   bpRectF.bottom = tempWidgetObj.getOtherTemp().getMaxTempY() + mBitmapRectSize / 2.0f;
+                                   bitcanvas.drawBitmap(highTempBt,null,bpRectF,photoPaint);
+                                   bpRectF.left = tempWidgetObj.getOtherTemp().getMinTempX() - mBitmapRectSize / 2.0f;
+                                   bpRectF.right = tempWidgetObj.getOtherTemp().getMinTempX() + mBitmapRectSize / 2.0f;
+                                   bpRectF.top = tempWidgetObj.getOtherTemp().getMinTempY() - mBitmapRectSize / 2.0f;
+                                   bpRectF.bottom = tempWidgetObj.getOtherTemp().getMinTempY() + mBitmapRectSize / 2.0f;
+                                   bitcanvas.drawBitmap(lowTempBt,null,bpRectF,photoPaint);
+                               }
                            }
                        }
                     }
@@ -1306,12 +1337,9 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                         bpRectF.bottom = temperature1[2] * (icon.getHeight() / (float) (mSuportHeight - 4)) + mBitmapRectSize / 2.0f;
                         bitcanvas.drawBitmap(highTempBt,null,bpRectF,photoPaint);
                         tempTextPaint.setColor(Color.RED);
-                        bitcanvas.drawText(""+temperature1[3],
-                                temperature1[1] * (icon.getWidth() / (float) mSuportWidth),
-                                temperature1[2] * (icon.getHeight() / (float) (mSuportHeight - 4)),tempTextBgTextPaint);
-                        bitcanvas.drawText(""+temperature1[3],
-                                temperature1[1] * (icon.getWidth() / (float) mSuportWidth),
-                                temperature1[2] * (icon.getHeight() / (float) (mSuportHeight - 4)),tempTextPaint);
+	                    xy2DrawText(temperature1[1] * (icon.getWidth() / (float) mSuportWidth),
+			                    temperature1[2] * (icon.getHeight() / (float) (mSuportHeight - 4)),
+			                    ""+decimalFormat.format(temperature1[3]),tempTextBgTextPaint,tempTextPaint,0);
                     }
                     if ((featurePointsControl & 0x00f0) > 0){//最低点温度
                         bpRectF.left = temperature1[4] * (icon.getWidth() / (float) mSuportWidth) - mBitmapRectSize / 2.0f;
@@ -1321,12 +1349,9 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                         bitcanvas.drawBitmap(lowTempBt,null,bpRectF,photoPaint);
                         tempTextPaint.setColor(Color.BLUE);
 
-                        bitcanvas.drawText(""+temperature1[6],
-                                temperature1[4] * (icon.getWidth() / (float) mSuportWidth),
-                                temperature1[5] * (icon.getHeight() / (float) (mSuportHeight - 4)),tempTextBgTextPaint);
-                        bitcanvas.drawText(""+temperature1[6],
-                                temperature1[4] * (icon.getWidth() / (float) mSuportWidth),
-                                temperature1[5] * (icon.getHeight() / (float) (mSuportHeight - 4)),tempTextPaint);
+	                    xy2DrawText(temperature1[4] * (icon.getWidth() / (float) mSuportWidth),
+			                    temperature1[5] * (icon.getHeight() / (float) (mSuportHeight - 4)),
+			                    ""+ decimalFormat.format(temperature1[6]),tempTextBgTextPaint,tempTextPaint,0);
                     }
                     if ((featurePointsControl & 0x000f) > 0){//中心点温度
                         bpRectF.left =  (icon.getWidth() / 2.0f) - mBitmapRectSize / 2.0f;
@@ -1335,13 +1360,10 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                         bpRectF.bottom = (icon.getHeight() / 2.0f) + mBitmapRectSize / 2.0f;
                         bitcanvas.drawBitmap(centerTempBt,null,bpRectF,photoPaint);
                         tempTextPaint.setColor(Color.YELLOW);
-                        bitcanvas.drawText(""+temperature1[0],
-                                (icon.getWidth() / 2.0f),(icon.getHeight() / 2.0f),tempTextBgTextPaint);
-                        bitcanvas.drawText(""+temperature1[0],
-                                (icon.getWidth() / 2.0f),(icon.getHeight() / 2.0f),tempTextPaint);
+	                    xy2DrawText((icon.getWidth() / 2.0f),(icon.getHeight() / 2.0f),
+			                    ""+ decimalFormat.format(temperature1[0]),tempTextBgTextPaint,tempTextPaint,0);
                     }
 
-//                    DecimalFormat decimalFormat = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
 //                    String centerTemp = decimalFormat.format(temperature1[0]) + extern;//format 返回的是字符串
 //                    String maxTemp = decimalFormat.format(temperature1[3]) + extern;
 //                    String minTemp = decimalFormat.format(temperature1[6]) + extern;
