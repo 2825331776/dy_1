@@ -306,6 +306,14 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
         }
     }
 
+    /**
+     * 设置 最高温  最低温 中心点温度 正常点温度 图片 ，及其 每个图片占用的像素大小
+     * @param highTemp
+     * @param lowTemp
+     * @param centerTemp
+     * @param normalPointTemp
+     * @param halfBitmap
+     */
     public void setFrameBitmap(Bitmap highTemp, Bitmap lowTemp, Bitmap centerTemp, Bitmap normalPointTemp,int halfBitmap) {
         if (mRenderHandler != null) {
             mRenderHandler.setFrameBitmap(highTemp, lowTemp, centerTemp, normalPointTemp,halfBitmap);

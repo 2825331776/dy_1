@@ -60,6 +60,7 @@ public class DragTempContainer extends RelativeLayout {
 
 	private int           drawTempMode = -1;
 	private WeakReference<Context> mContext;
+	private float mDataNearByUnit = 0;// 距离数据源 的 单位，有多少个单位，以 矩形 为的感应区为一个单位
 
 	/**
 	 * temperatureData[0]=centerTmp;
@@ -308,6 +309,7 @@ public class DragTempContainer extends RelativeLayout {
 //			audioPlayer = MediaPlayer.create(mContext.get(),R.raw.a2_ding);
 //			audioPlayer.setLooping(true);
 //		}
+		mDataNearByUnit = DensityUtil.dp2px(mContext.get(),10);
 	}
 
 //	//对象方法 去增加一个 点 线 矩阵视图 , int type
@@ -956,8 +958,8 @@ public class DragTempContainer extends RelativeLayout {
 		for (TempWidgetObj childData : userAddData){
 			switch (childData.getType()){
 				case 1://点
-					if ((event.getX() < childData.getPointTemp().getStartPointX() + 30) && (event.getX() > childData.getPointTemp().getStartPointX() - 30)
-							&& (event.getY() < childData.getPointTemp().getStartPointY() + 30) && (event.getY() > childData.getPointTemp().getStartPointY() - 30)){
+					if ((event.getX() < childData.getPointTemp().getStartPointX() + mDataNearByUnit*3.0f) && (event.getX() > childData.getPointTemp().getStartPointX() - mDataNearByUnit*3.0f)
+							&& (event.getY() < childData.getPointTemp().getStartPointY() + mDataNearByUnit*3.0f) && (event.getY() > childData.getPointTemp().getStartPointY() - mDataNearByUnit*3.0f)){
 						result = childData;
 					}
 					break;
@@ -966,13 +968,15 @@ public class DragTempContainer extends RelativeLayout {
 							/(childData.getOtherTemp().getEndPointX() - childData.getOtherTemp().getStartPointX());
 					float kb = childData.getOtherTemp().getStartPointY() - k * childData.getOtherTemp().getStartPointX() ;
 					//点击的点 在绘制的线 周围 20个像素范围内
-					if (Math.abs(kb - (event.getY() - k* event.getX())) < 20){
+					if (Math.abs(kb - (event.getY() - k* event.getX())) < mDataNearByUnit*2.0f){
 						result = childData;
 					}
 					break;
 				case 3://矩形
-					if ((event.getX() > childData.getOtherTemp().getStartPointX() - 10) && (event.getX() < childData.getOtherTemp().getEndPointX() + 10)
-							&& (event.getY() > childData.getOtherTemp().getStartPointY() - 10) && (event.getY() < childData.getOtherTemp().getEndPointY() + 10)){
+					if ((event.getX() > childData.getOtherTemp().getStartPointX() - mDataNearByUnit)
+							&& (event.getX() < childData.getOtherTemp().getEndPointX() + mDataNearByUnit)
+							&& (event.getY() > childData.getOtherTemp().getStartPointY() - mDataNearByUnit)
+							&& (event.getY() < childData.getOtherTemp().getEndPointY() + mDataNearByUnit)){
 						result = childData;
 					}
 					break;
@@ -1028,14 +1032,13 @@ public class DragTempContainer extends RelativeLayout {
 
 	@Override
 	public boolean onInterceptTouchEvent (MotionEvent ev) {
-		if (isDebug)Log.e(TAG, "Parent onIntercept: x " + ev.getX() + " Y = " + ev.getY() + " action= " + ev.getAction() );
-
+//		if (isDebug)Log.e(TAG, "Parent onIntercept: x " + ev.getX() + " Y = " + ev.getY() + " action= " + ev.getAction() );
 		//不添加测温模式的情况下。
 		if (drawTempMode == -1){
-			//判定事件 是否在已选中子View
+			//判定事件 是否在  已选中子View ，则分发给子View
 			if (pressInSelectView(ev)){
 				if (ev.getAction() == MotionEvent.ACTION_DOWN && mUnSelect_TimeTask != null){
-					Log.e(TAG, "onInterceptTouchEvent: ==========mSelect_TimeTask.cancel");
+					Log.e(TAG, "onInterceptTouchEvent: ==========mUnSelect_TimeTask.cancel");
 					mUnSelect_TimeTask.cancel();
 				}
 
@@ -1052,84 +1055,23 @@ public class DragTempContainer extends RelativeLayout {
 					mTimer.schedule(mUnSelect_TimeTask, 3000);
 				}
 				return super.onInterceptTouchEvent(ev);
-			}else {
+			}else {// 事件 不在 已选中的View 中，交给当前的 onTouchEvent处理
 				setAllChildUnSelect();
 				return true;
 			}
-//			if (ev.getAction() == MotionEvent.ACTION_DOWN){
-////				//看点的位置是否有选中的View，有则一直调用他的分发。否则设置为所有view并发响应
-//
-//			}
-//			if (ev.getAction() == MotionEvent.ACTION_UP){
-//				if (operateChild != null && operateChild.getView().getType()!=3){//移动子View
-//
-//				}
-////				return super.onInterceptTouchEvent(ev);
-//			}
-//			if (ev.getAction() == MotionEvent.ACTION_MOVE){
-//				return super.onInterceptTouchEvent(ev);
-//			}
-
-		}else {
+		}else {//含有绘制模式 。交给当前 onTouchEvent 处理
 			//true 拦截给自己的onTouchEvent处理 。
 			return true;
 		}
-
-
-//		if (getEventInChild(ev) && drawTempMode == -1){//按下的位置在子view 并且不是绘制模式。分发事件
-//			//判断是否有选中状态；有控件为选中状态，则是修改的选中状态的控件；无选中状态，则是要触发第一个子View的分发事件。其余的不响应
-//			if (ev.getAction() == MotionEvent.ACTION_DOWN){
-//				setAllChildUnSelect();
-//			}
-//			if (isDebug)Log.e(TAG, "Parent onInterceptTouchEvent:操作子View ，不拦截事件");
-//			return super.onInterceptTouchEvent(ev);
-//		}else if (drawTempMode !=-1){//绘制模式
-//			if (isDebug)Log.e(TAG, "Parent onInterceptTouchEvent:绘制控件，拦截事件  drawTempMode!= -1 ");
-//			return true;
-//		}else {//点击了空白区域
-//			if (ev.getAction() == MotionEvent.ACTION_DOWN){
-//				setAllChildUnSelect();
-//			}
-//			if (isDebug)Log.e(TAG, "Parent onInterceptTouchEvent: 错误进入 " + ev.getAction());
-//			return true;
-//		}
-		//逻辑一：触碰的点在子View中，并且有子View是选中状态。则选中的子View自己处理这个触碰时间，其余的未选中的不做处理
-//		if (getEventInChild(ev)){
-//			if (!hasSelectChild(ev)){
-//				return super.onInterceptTouchEvent(ev);
-//			}
-//		}else {//触碰的点不在子View
-//			//按下的时候将所有的子View遍历为未选中状态
-//			if (ev.getAction() == MotionEvent.ACTION_DOWN){
-//				setAllChildUnSelect();
-//			}
-//			return true;
-//		}
-
-//		switch (ev.getAction()){
-//			case MotionEvent.ACTION_DOWN:
-//
-//				break;
-//			case MotionEvent.ACTION_MOVE:
-//
-//				break;
-//			case MotionEvent.ACTION_UP:
-//
-//				break;
-//		}
-
-
-
-
 	}
 
 	private  MotionEvent thisEV = null;
 
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
-		if (isDebug)Log.e(TAG, "onTouchEvent: mode ==> " + drawTempMode + " action ==> "+ event.getAction());
+		if (isDebug)Log.e(TAG, "DragTempContainer onTouchEvent: mode ==> " + drawTempMode + " action ==> "+ event.getAction());
 		KeyboardsUtils.hintKeyBoards(this);
-		if (drawTempMode != -1){//添加控件
+		if (drawTempMode != -1){//添加控件 ,含有测温模式
 			switch (event.getAction()){
 				case MotionEvent.ACTION_DOWN:
 
@@ -1164,48 +1106,52 @@ public class DragTempContainer extends RelativeLayout {
 					}
 					break;
 			}
-		}else {//移动控件  // 判定点是否在已有控件测温模式的中
-			// 事件是否在数据源 事件中
+		}else {//不含测温模式 添加。drawTempMode = -1， 触发的事件 不在已选中的子View
+			// 事件 是否在 数据源 感应区中
 			if (pressInUserAddData(event) == null){
 				//删除选中View
 				setAllChildUnSelect();
 
-			}else {// 按下的点 在 数据源 的感应区中
+			}else {// 事件 在 数据源 的感应区中
 				//倒计时：
-				if (event.getAction() == MotionEvent.ACTION_DOWN){
-					if (selectChild == null){
-						selectChildData = pressInUserAddData(event);
-						if (mTimer == null)
-							mTimer = new Timer();
-						mSelect_TimeTask = new TimerTask() {
-							@Override
-							public void run() {
-								Log.e(TAG, "====DragTempContainer==TO_SELECT==TimerTask进来了");
-								Message message = Message.obtain();
-								message.what = TO_SELECT;
-								mHandler.sendMessage(message);
-							}
-						};
-						mTimer.schedule(mSelect_TimeTask, 500);
-					}
-				}else if (event.getAction() == MotionEvent.ACTION_UP){
-					Log.e(TAG, "onTouchEvent:  action _ up press");
-					if (mSelect_TimeTask != null){
-						Log.e(TAG, "onInterceptTouchEvent: ==========mSelect_TimeTask.cancel");
-						mSelect_TimeTask.cancel();
-					}
+				switch (event.getAction()){
+					case MotionEvent.ACTION_DOWN:
+						if (selectChild == null){
+							selectChildData = pressInUserAddData(event);
+							if (mTimer == null)
+								mTimer = new Timer();
+							mSelect_TimeTask = new TimerTask() {
+								@Override
+								public void run() {
+									Log.e(TAG, "====DragTempContainer==TO_SELECT==TimerTask进来了");
+									Message message = Message.obtain();
+									message.what = TO_SELECT;
+									mHandler.sendMessage(message);
+								}
+							};
+							mTimer.schedule(mSelect_TimeTask, 500);
+						}
+						break;
+					case MotionEvent.ACTION_UP:
+						Log.e(TAG, "onTouchEvent:  action _ up press");
+						if (mSelect_TimeTask != null){
+							Log.e(TAG, "onInterceptTouchEvent: ==========mSelect_TimeTask.cancel");mSelect_TimeTask.cancel();
+						}
+						break;
+					case MotionEvent.ACTION_MOVE:
+
+						break;
 				}
-//				else if (event.getAction() == MotionEvent.ACTION_MOVE){
+//				if (event.getAction() == MotionEvent.ACTION_MOVE){
 //					if (selectChild!=null){
 //						thisEV = MotionEvent.obtain(0,0,event.getAction(),event.getX(),event.getY(),0);
 //						selectChild.onTouchEvent(thisEV);
 //						thisEV.recycle();
 //					}
 //				}
-				//super.onInterceptTouchEvent(ev)/ false 不拦截，分发给子View 。
-				return true;
 			}
 		}
+		//消费事件
 		return true;
 	}
 

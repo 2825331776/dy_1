@@ -22,8 +22,6 @@ import com.dyt.wcc.common.R;
 import com.dyt.wcc.common.utils.DensityUtil;
 
 import java.lang.ref.WeakReference;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -136,8 +134,8 @@ public class MyMoveWidget extends View {
 		recZoomBoxPaintStroke = DensityUtil.dp2px(mContext.get(),3);//矩形测温框 画笔的宽度
 		zoomLineLength = DensityUtil.dp2px(mContext.get(),20);
 	}
-	private Timer mTimer = null;
-	private TimerTask mTimeTask;
+//	private Timer mTimer = null;
+//	private TimerTask mTimeTask;
 	private boolean changeSelectState = false;
 	private static final int TO_CHANGE_SELECT = 11;
 	private Handler mHandler = new Handler(new Handler.Callback() {
@@ -1252,9 +1250,9 @@ public class MyMoveWidget extends View {
 					//				Log.e(TAG, "onTouchEvent:child action move");
 					break;
 				case MotionEvent.ACTION_UP:
-					if (mTimeTask != null){
-						mTimeTask.cancel();
-					}
+//					if (mTimeTask != null){
+//						mTimeTask.cancel();
+//					}
 
 					if (hasBackGroundAndTools && tempWidgetData.getType() ==3){
 						//todo 发送一个指令给C层刷新 矩阵数据
@@ -1268,7 +1266,6 @@ public class MyMoveWidget extends View {
 			}
 
 //			return true;
-		}else {//不能移动的
 		}
 		return true;
 	}

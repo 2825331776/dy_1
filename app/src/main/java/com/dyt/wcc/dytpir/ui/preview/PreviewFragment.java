@@ -390,7 +390,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mTextureViewWidth = mDataBinding.textureViewPreviewFragment.getWidth();
 		mTextureViewHeight = mDataBinding.textureViewPreviewFragment.getHeight();
 //		if (isDebug)Log.e(TAG,"height =="+ mTextureViewHeight + " width==" + mTextureViewWidth);
-		mDataBinding.textureViewPreviewFragment.setFrameBitmap(highTempBt,lowTempBt,centerTempBt,normalPointBt,DensityUtil.dp2px(mContext.get(),25));
+		mDataBinding.textureViewPreviewFragment.setFrameBitmap(highTempBt,lowTempBt,centerTempBt,normalPointBt,DensityUtil.dp2px(mContext.get(),30));
 
 		mDataBinding.textureViewPreviewFragment.iniTempBitmap(mTextureViewWidth, mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
 		mDataBinding.textureViewPreviewFragment.setDragTempContainer(mDataBinding.dragTempContainerPreviewFragment);
