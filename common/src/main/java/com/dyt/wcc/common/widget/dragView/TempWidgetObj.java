@@ -1,6 +1,9 @@
 package com.dyt.wcc.common.widget.dragView;
 
-import java.util.Arrays;
+import android.graphics.Bitmap;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -16,17 +19,20 @@ public class TempWidgetObj {
 	private boolean isCanMove;//是否响应用户控制    /是否有工具栏 ==== 必须
 	private boolean isMoving = false;//是否在移动中
 
-
-
 	private int tempTextSize ;//温度字体大小      非必须
 
 //	private String textSuffix;//温度后缀 ℃  ℉  K 必须 从本地读
 
-	private int [] toolsPicRes;//工具栏图片集合
-	private int toolsNumber;
+	private List<Bitmap> toolsPicsBp;//工具栏图片集合
+	private int          toolsNumber;
 
 	private PointTempWidget pointTemp;
 	private OtherTempWidget otherTemp;
+	public TempWidgetObj (){
+		if (toolsPicsBp == null) {
+			toolsPicsBp = new ArrayList<>();
+		}
+	}
 
 	public int getTempTextSize () {
 		return tempTextSize;
@@ -49,21 +55,24 @@ public class TempWidgetObj {
 	@Override
 	public String toString () {
 		return "TempWidgetObj{" + "id=" + id + ", type=" + type + ", isSelect=" + isSelect +
-				", isCanMove=" + isCanMove + ", tempTextSize=" + tempTextSize + ", toolsPicRes=" + Arrays.toString(toolsPicRes) +
+				", isCanMove=" + isCanMove + ", tempTextSize=" + tempTextSize + ", toolsPicRes size =" + toolsPicsBp.size() +
 				", toolsNumber=" + toolsNumber + ", pointTemp=" + pointTemp.toString() + ", otherTemp=" + otherTemp.toString() + '}';
 	}
 
-	public int[] getToolsPicRes () {
-		return toolsPicRes;
+	public List<Bitmap> getToolsPicRes () {
+		return toolsPicsBp;
 	}
 
-	public void setToolsPicRes (int[] toolsPicRes) {
-		this.toolsPicRes = toolsPicRes;
-		this.toolsNumber = toolsPicRes.length;
+	public void addToolsBp (Bitmap bp) {
+		if (toolsPicsBp ==null){
+			toolsPicsBp = new ArrayList<>();
+		}
+		this.toolsPicsBp.add(bp);
+		this.toolsNumber = toolsPicsBp.size();
 	}
 
 	public int getToolsNumber () {
-		return toolsNumber;
+		return toolsPicsBp.size();
 	}
 
 	public int getId () {

@@ -78,6 +78,7 @@ import com.serenegiant.usb.UVCCamera;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -946,14 +947,19 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.dragTempContainerPreviewFragment.setChildToolsClickListener(new DragTempContainer.OnChildToolsClickListener() {
 			@Override
 			public void onChildToolsClick (TempWidgetObj child, int position) {
-
+				Log.e(TAG, "onChildToolsClick: ======preview tools position == > " + position);
 				if (position==0){
 					mDataBinding.dragTempContainerPreviewFragment.deleteChildView(child);
 					//底层重新设置 矩形框的 数据
 					if (child.getType()==3){
 						//						mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
 						int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
-						if (areaData != null)mUvcCameraHandler.setArea(areaData);
+						Log.e(TAG, "onChildToolsClick: ======setArea data  == >" + Arrays.toString(areaData));
+						if (areaData != null){
+						} else {
+							areaData = new int[0];
+						}
+						mUvcCameraHandler.setArea(areaData);
 					}
 				}else {
 					if (isDebug)Log.e(TAG, "onChildToolsClick: " + position);
@@ -964,10 +970,22 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 			@Override
 			public void onRectChangedListener () {//移动框框之后刷新C层控件的设置
+				Log.e(TAG, "onRectChangedListener:  ===== ");
 				if (mUvcCameraHandler != null){
-					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
+//					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
 					int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
+					if (areaData != null){
+					} else {
+						areaData = new int[0];
+					}
 					mUvcCameraHandler.setArea(areaData);
+				}
+			}
+
+			@Override
+			public void onClearAllListener () {
+				if (mUvcCameraHandler != null){
+					mUvcCameraHandler.setArea(new int[0]);
 				}
 			}
 		});
@@ -1192,6 +1210,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				case R.id.iv_temp_mode_point:
 					PLRPopupWindows.dismiss();
 					mDataBinding.dragTempContainerPreviewFragment.setDrawTempMode(1);
+//					mDataBinding.dragTempContainerPreviewFragment.getDrawTempMode();
 //					if (isDebug)showToast("point ");
 					break;
 				case R.id.iv_temp_mode_line:
@@ -1207,6 +1226,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			}
 		}
 	};
+
 	/**
 	 * 初始化录制的相关方法
 	 */

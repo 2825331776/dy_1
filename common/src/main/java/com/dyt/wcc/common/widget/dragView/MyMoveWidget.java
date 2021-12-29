@@ -252,7 +252,8 @@ public class MyMoveWidget extends View {
 //		Log.e(TAG, "initData: =============");
 		//工具栏是否为空，为空时默认添加一个删除按钮。
 		if (tempWidgetData.getToolsPicRes() ==null){
-			tempWidgetData.setToolsPicRes(new int[]{R.mipmap.ic_areacheck_tools_delete});
+//			int[]{R.mipmap.ic_areacheck_tools_delete}
+			tempWidgetData.addToolsBp(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_areacheck_tools_delete));
 		}
 		if (!tempWidgetData.isCanMove()){//不管什么类型，不能移动绝对不能选中
 			tempWidgetData.setSelect(false);
@@ -735,10 +736,10 @@ public class MyMoveWidget extends View {
 	 *             以工具栏背景的坐标为基准
 	 */
 	private void drawTool(@NonNull TempWidgetObj data, @NonNull Canvas canvas){
-			int [] resPic = data.getToolsPicRes();
+//			int [] resPic = data.getToolsPicRes();
 			RectF perToolsPic ;
 			float left , right , top , bottom;
-			if (resPic!= null && data.getToolsNumber() != 0){
+			if ( data.getToolsNumber() > 0){
 				for (int i = 0 ; i < data.getToolsNumber(); i++){
 					left = toolsBgLeft + DensityUtil.dp2px(mContext.get(),DragTempContainer.perToolsMargin);
 					right =toolsBgRight - DensityUtil.dp2px(mContext.get(),DragTempContainer.perToolsMargin);
@@ -746,8 +747,8 @@ public class MyMoveWidget extends View {
 					bottom = toolsBgTop + toolsNeedWidth*(i+1) - DensityUtil.dp2px(mContext.get(),DragTempContainer.perToolsMargin);
 
 					perToolsPic = new RectF(left,top,right,bottom);
-
-					canvas.drawBitmap(BitmapFactory.decodeResource(getResources(),resPic[i]),null,perToolsPic,pointPaint);
+					//此处有问题
+					canvas.drawBitmap(data.getToolsPicRes().get(i), null,perToolsPic,pointPaint);
 				}
 			}
 	}
@@ -1192,6 +1193,10 @@ public class MyMoveWidget extends View {
 				case MotionEvent.ACTION_MOVE://每帧都会刷新  // 移动边界值问题
 					Log.e(TAG, " child onTouchEvent:  =      ========== ");
 					if (hasBackGroundAndTools){
+
+//						pressDownX = event.getRawX();
+//						pressDownY = event.getRawY();
+
 						if (tempWidgetData.getType()==1){
 							float x = Math.max(0,tempWidgetData.getPointTemp().getStartPointX()+ (event.getRawX()- pressDownX));
 							float y = Math.max(0,tempWidgetData.getPointTemp().getStartPointY()+ (event.getRawY()- pressDownY));
@@ -1259,7 +1264,7 @@ public class MyMoveWidget extends View {
 						mChildToolsClickListener.onRectChangedListener();
 					}
 //					Log.e(TAG, "onTouchEvent:child action up" + event.getX() +"  Y = >"+ event.getY());
-					Log.e(TAG, "onTouchEvent:child action up" + event.getRawX() +"  Y = >"+ event.getRawY());
+					Log.e(TAG, "onTouchEvent:child action up ======  == " + event.getRawX() +"  Y = >"+ event.getRawY());
 
 
 					break;
