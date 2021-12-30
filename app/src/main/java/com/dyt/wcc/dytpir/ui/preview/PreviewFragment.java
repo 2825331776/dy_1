@@ -51,6 +51,7 @@ import com.dyt.wcc.common.utils.FontUtils;
 import com.dyt.wcc.common.widget.MyCustomRangeSeekBar;
 import com.dyt.wcc.common.widget.SwitchMultiButton;
 import com.dyt.wcc.common.widget.dragView.DragTempContainer;
+import com.dyt.wcc.common.widget.dragView.DrawLineRecHint;
 import com.dyt.wcc.common.widget.dragView.TempWidgetObj;
 import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.constans.DYConstants;
@@ -940,6 +941,18 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 						}
 					}
 				});
+			}
+		});
+		mDataBinding.dragTempContainerPreviewFragment.setAddChildDataListener(new DragTempContainer.onAddChildDataListener() {
+			@Override
+			public void onIsEventActionMove (DrawLineRecHint hint) {
+				mDataBinding.textureViewPreviewFragment.setDrawHint(hint);
+			}
+
+			@Override
+			public void onIsEventActionUp (DrawLineRecHint hint) {
+				hint.setNeedDraw(false);
+				mDataBinding.textureViewPreviewFragment.setDrawHint(hint);
 			}
 		});
 

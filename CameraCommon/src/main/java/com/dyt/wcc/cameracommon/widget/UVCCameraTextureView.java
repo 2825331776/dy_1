@@ -51,15 +51,15 @@ import com.dyt.wcc.cameracommon.encoder.IVideoEncoder;
 import com.dyt.wcc.cameracommon.encoder.MediaEncoder;
 import com.dyt.wcc.cameracommon.encoder.MediaVideoEncoder;
 import com.dyt.wcc.common.base.BaseApplication;
+import com.dyt.wcc.common.utils.TempConvertUtils;
 import com.dyt.wcc.common.widget.dragView.DragTempContainer;
-import com.dyt.wcc.common.widget.dragView.MyMoveWidget;
+import com.dyt.wcc.common.widget.dragView.DrawLineRecHint;
 import com.dyt.wcc.common.widget.dragView.TempWidgetObj;
 import com.serenegiant.glutils.EGLBase;
 import com.serenegiant.usb.ITemperatureCallback;
 import com.serenegiant.utils.FpsCounter;
 
 import java.text.DecimalFormat;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
@@ -377,6 +377,9 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
     public void tempShowOnOff(boolean isTempShow) {
         mRenderHandler.tempshowOnOff(isTempShow);
     }
+    public void setDrawHint(DrawLineRecHint hint){
+        mRenderHandler.setDrawHint(hint);
+    }
     /**
      * 打开 最高温0  最低温1  中心点温度1 特诊点绘制
      * @param pointType 最高温0  最低温1  中心点温度1
@@ -489,6 +492,9 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 
         public void setFrameBitmap(Bitmap highTemp, Bitmap lowTemp, Bitmap centerTemp, Bitmap normalPointTemp,int halfBitmap) {
             mThread.setFrameBitmap(highTemp, lowTemp, centerTemp, normalPointTemp,halfBitmap);
+        }
+        public void setDrawHint(DrawLineRecHint hint){
+           mThread.setDrawHint(hint);
         }
 
         public void tempshowOnOff(boolean isTempShow) {
@@ -903,14 +909,16 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //            private CopyOnWriteArrayList<TouchPoint> mTouchPointLists;
 //            private CopyOnWriteArrayList<TouchLine> mTouchLineLists;
 //            private CopyOnWriteArrayList<TouchArea> mTouchAreaLists;
-            private CopyOnWriteArrayList<MyMoveWidget> mMoveWidgets;
+//            private CopyOnWriteArrayList<MyMoveWidget> mMoveWidgets;
             private int temperatureAnalysisMode=-1;//, UnitTemperature
             private int rotate = 0;
             private float widthRatio, heightRatio;
 
             //added by wupei, we may not need mWatermakLogo and fix it ！！！
 //            private boolean isWatermaker = false;
-            private boolean isTempShow = true;
+            private boolean         isTempShow    = true;
+            private DrawLineRecHint myDrawHint    = null;
+            private DecimalFormat   decimalFormat = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
 
             public void setFrameBitmap(Bitmap highTemp, Bitmap lowTemp, Bitmap centerTemp, Bitmap normalPointTemp, int bpSize) {
                 highTempBt = highTemp;
@@ -921,6 +929,10 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                 bpRectF = new RectF(0,0,mBitmapRectSize,mBitmapRectSize);
 
 //                mMediaPlayer = MediaPlayer.create(mContext.get(), R.raw.a2_ding);
+            }
+
+            public void setDrawHint(DrawLineRecHint hint){
+                myDrawHint = hint;
             }
 
 
@@ -1144,16 +1156,30 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                 return newBM;
             }
 
+            private Rect textRect = new Rect();
             private void xy2DrawText(float x , float y , String tempText , TextPaint tpBg,TextPaint tp,int textDirection){
                 if (textDirection != 0){
 
                 }else { //textDirection == 0
+                    tp.getTextBounds(tempText,0,tempText.length(),textRect);
                     if (x + tp.measureText(tempText) > icon.getWidth()){
-                        bitcanvas.drawText(tempText,x - mBitmapRectSize/2.0f - tp.measureText(tempText), y + mBitmapRectSize/2.0f,tpBg);
-                        bitcanvas.drawText(tempText,x - mBitmapRectSize/2.0f - tp.measureText(tempText), y + mBitmapRectSize/2.0f,tp);
+                        if (textRect.height() + y > icon.getHeight()){
+                            bitcanvas.drawText(tempText,x - mBitmapRectSize/2.0f - tp.measureText(tempText), y - tpBg.descent(),tpBg);
+                            bitcanvas.drawText(tempText,x - mBitmapRectSize/2.0f - tp.measureText(tempText), y - tp.descent(),tp);
+                        }else {
+                            bitcanvas.drawText(tempText,x - mBitmapRectSize/2.0f - tp.measureText(tempText), y + mBitmapRectSize/2.0f,tpBg);
+                            bitcanvas.drawText(tempText,x - mBitmapRectSize/2.0f - tp.measureText(tempText), y + mBitmapRectSize/2.0f,tp);
+                        }
+
                     }else {
-                        bitcanvas.drawText(tempText,x + mBitmapRectSize/2.0f, y + mBitmapRectSize/2.0f,tpBg);
-                        bitcanvas.drawText(tempText,x + mBitmapRectSize/2.0f, y + mBitmapRectSize/2.0f,tp);
+                        if (textRect.height() + y > icon.getHeight()){//文字高度 出界。
+                            bitcanvas.drawText(tempText,x + mBitmapRectSize/2.0f, y - tpBg.descent(),tpBg);
+                            bitcanvas.drawText(tempText,x + mBitmapRectSize/2.0f, y - tp.descent(),tp);
+                        }else {
+                            bitcanvas.drawText(tempText,x + mBitmapRectSize/2.0f, y + mBitmapRectSize/2.0f,tpBg);
+                            bitcanvas.drawText(tempText,x + mBitmapRectSize/2.0f, y + mBitmapRectSize/2.0f,tp);
+                        }
+
                     }
                 }
             }
@@ -1200,8 +1226,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                     bitcanvas.save();
                 } else {
 //                    bitcanvas.drawText("123456", 200, 200,tempTextPaint );
-	                DecimalFormat decimalFormat = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
-                    //绘制四边形
+
+                    //绘制超温警告的  四边形
                     if (isAlarm && (alarmCount > 15 && alarmCount < 30)){
                         linePaint.setColor(Color.RED);
                         bitcanvas.drawLine(20,20,20 ,mViewHeight -20,linePaint);
@@ -1209,11 +1235,39 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                         bitcanvas.drawLine(mViewWidth - 20,mViewHeight -20,mViewWidth - 20 ,20,linePaint);
                         bitcanvas.drawLine(mViewWidth - 20,mViewHeight -20,20,mViewHeight -20,linePaint);
                     }
+                    //重置警告弹窗 的 帧数计数器
                     if (isAlarm){
                         if (alarmCount >= 30){
                             alarmCount = 0;
                         }else {
                             alarmCount++;
+                        }
+                    }
+                    //是否绘制提示线
+                    if (myDrawHint !=null && myDrawHint.isNeedDraw()){
+                        if (myDrawHint.getDrawTempMode() ==2){
+                            bitcanvas.drawLine(myDrawHint.getStartXCoordinate(),myDrawHint.getStartYCoordinate(),
+                                    myDrawHint.getEndXCoordinate(),myDrawHint.getEndYCoordinate(),linePaint);
+                            bitcanvas.drawLine(myDrawHint.getStartXCoordinate(),myDrawHint.getStartYCoordinate(),
+                                    myDrawHint.getEndXCoordinate(),myDrawHint.getEndYCoordinate(),dottedLinePaint);
+                        }else if (myDrawHint.getDrawTempMode() ==3){
+                            bitcanvas.drawLine(myDrawHint.getStartXCoordinate(),myDrawHint.getStartYCoordinate(),
+                                    myDrawHint.getStartXCoordinate(),myDrawHint.getEndYCoordinate(),linePaint);
+                            bitcanvas.drawLine(myDrawHint.getStartXCoordinate(),myDrawHint.getStartYCoordinate(),
+                                    myDrawHint.getEndXCoordinate(),myDrawHint.getStartYCoordinate(),linePaint);
+                            bitcanvas.drawLine(myDrawHint.getEndXCoordinate(),myDrawHint.getStartYCoordinate(),
+                                    myDrawHint.getEndXCoordinate(),myDrawHint.getEndYCoordinate(),linePaint);
+                            bitcanvas.drawLine(myDrawHint.getStartXCoordinate(),myDrawHint.getEndYCoordinate(),
+                                    myDrawHint.getEndXCoordinate(),myDrawHint.getEndYCoordinate(),linePaint);
+
+                            bitcanvas.drawLine(myDrawHint.getStartXCoordinate(),myDrawHint.getStartYCoordinate(),
+                                    myDrawHint.getStartXCoordinate(),myDrawHint.getEndYCoordinate(),dottedLinePaint);
+                            bitcanvas.drawLine(myDrawHint.getStartXCoordinate(),myDrawHint.getStartYCoordinate(),
+                                    myDrawHint.getEndXCoordinate(),myDrawHint.getStartYCoordinate(),dottedLinePaint);
+                            bitcanvas.drawLine(myDrawHint.getEndXCoordinate(),myDrawHint.getStartYCoordinate(),
+                                    myDrawHint.getEndXCoordinate(),myDrawHint.getEndYCoordinate(),dottedLinePaint);
+                            bitcanvas.drawLine(myDrawHint.getStartXCoordinate(),myDrawHint.getEndYCoordinate(),
+                                    myDrawHint.getEndXCoordinate(),myDrawHint.getEndYCoordinate(),dottedLinePaint);
                         }
                     }
 
@@ -1347,7 +1401,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                         tempTextPaint.setColor(Color.RED);
 	                    xy2DrawText(temperature1[1] * (icon.getWidth() / (float) mSuportWidth),
 			                    temperature1[2] * (icon.getHeight() / (float) (mSuportHeight - 4)),
-			                    ""+decimalFormat.format(temperature1[3]),tempTextBgTextPaint,tempTextPaint,0);
+                                decimalFormat.format(TempConvertUtils.centigrade2Temp(temperature1[3],mDragTempContainer.getTempSuffixMode()))
+                                        + DragTempContainer.tempSuffixList[mDragTempContainer.getTempSuffixMode()],tempTextBgTextPaint,tempTextPaint,0);
                     }
                     if ((featurePointsControl & 0x00f0) > 0){//最低点温度
                         bpRectF.left = temperature1[4] * (icon.getWidth() / (float) mSuportWidth) - mBitmapRectSize / 2.0f;
@@ -1359,7 +1414,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 
 	                    xy2DrawText(temperature1[4] * (icon.getWidth() / (float) mSuportWidth),
 			                    temperature1[5] * (icon.getHeight() / (float) (mSuportHeight - 4)),
-			                    ""+ decimalFormat.format(temperature1[6]),tempTextBgTextPaint,tempTextPaint,0);
+			                      decimalFormat.format(TempConvertUtils.centigrade2Temp(temperature1[6],mDragTempContainer.getTempSuffixMode()))
+                                          + DragTempContainer.tempSuffixList[mDragTempContainer.getTempSuffixMode()],tempTextBgTextPaint,tempTextPaint,0);
                     }
                     if ((featurePointsControl & 0x000f) > 0){//中心点温度
                         bpRectF.left =  (icon.getWidth() / 2.0f) - mBitmapRectSize / 2.0f;
@@ -1369,7 +1425,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                         bitcanvas.drawBitmap(centerTempBt,null,bpRectF,photoPaint);
                         tempTextPaint.setColor(Color.YELLOW);
 	                    xy2DrawText((icon.getWidth() / 2.0f),(icon.getHeight() / 2.0f),
-			                    ""+ decimalFormat.format(temperature1[0]),tempTextBgTextPaint,tempTextPaint,0);
+                                decimalFormat.format(TempConvertUtils.centigrade2Temp(temperature1[0],mDragTempContainer.getTempSuffixMode()))
+                                        + DragTempContainer.tempSuffixList[mDragTempContainer.getTempSuffixMode()],tempTextBgTextPaint,tempTextPaint,0);
                     }
 
 //                    String centerTemp = decimalFormat.format(temperature1[0]) + extern;//format 返回的是字符串

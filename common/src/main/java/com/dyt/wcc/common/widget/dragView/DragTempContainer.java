@@ -920,7 +920,34 @@ public class DragTempContainer extends RelativeLayout {
 	}
 
 	private boolean pressSelectNotUp = false ; // 按下选中，没有弹起
-	private float pressSelectNotUpX , pressSelectNotUpY;
+
+	/**
+	 * 选择绘制模式后，去绘制提示线的 监听器。
+	 */
+	public interface onAddChildDataListener{
+		/**
+		 * 移动事件回调
+		 */
+		void onIsEventActionMove(DrawLineRecHint hint);
+
+		/**
+		 * 弹起时间回调。取消绘制提示线
+		 */
+		void onIsEventActionUp(DrawLineRecHint hint);
+	}
+
+	public onAddChildDataListener getAddChildDataListener () {
+		return addChildDataListener;
+	}
+	public void setAddChildDataListener (onAddChildDataListener addChildDataListener) {
+		this.addChildDataListener = addChildDataListener;
+		drawHint = new DrawLineRecHint();
+	}
+
+	private onAddChildDataListener addChildDataListener;
+	private DrawLineRecHint        drawHint ;
+
+
 
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
@@ -933,16 +960,34 @@ public class DragTempContainer extends RelativeLayout {
 //					if (drawTempMode != -1){
 						startPressX = (int) event.getX();
 						startPressY = (int) event.getY();
+
 //					}
+					if (drawTempMode!= 1){
+						drawHint.setStartXCoordinate(startPressX);
+						drawHint.setStartYCoordinate(startPressY);
+						drawHint.setDrawTempMode( drawTempMode);
+
+					}
 					break;
 				case MotionEvent.ACTION_MOVE:
 //					if (drawTempMode != -1) {
 						endPressX = (int) event.getX();
 						endPressY = (int) event.getY();
+					if (drawTempMode != 1){
+						drawHint.setEndXCoordinate(endPressX);
+						drawHint.setEndYCoordinate(endPressY);
+						drawHint.setNeedDraw(true);
+						addChildDataListener.onIsEventActionMove(drawHint);
+					}
 //					}
 					break;
 				case MotionEvent.ACTION_UP:
 //					if (drawTempMode != -1) {
+					if (addChildDataListener !=null){
+						drawHint.setNeedDraw(false);
+						addChildDataListener.onIsEventActionUp(drawHint);
+					}
+
 						endPressX = (int) event.getX();
 						endPressY = (int) event.getY();
 //					}
