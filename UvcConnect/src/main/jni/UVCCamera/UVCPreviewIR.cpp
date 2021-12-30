@@ -402,7 +402,9 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 //初始时outbuffer里面没有数据了，数据给holdbuffer，自己指向原来holdbuffer分配的内存首地址
                 //char强转成short类型 长度由requestWidth*requestHeight*2 变成requestWidth*requestHeight
 //                unsigned short* orgData=(unsigned short*)HoldBuffer;// char a数组[1,2] 经过强转short可能变成513(256*2+1)，或258(256*1+2)。
+
                 draw_preview_one(HoldBuffer, &mPreviewWindow, NULL, 4);
+
                 tmp_buf=NULL;
 
                 mIsComputed=true;

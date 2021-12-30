@@ -16,12 +16,11 @@ public class TempWidgetObj {
 	private int id;//必须
 	private int type; // 必须  1为点  2为线  3矩形  4 高低温
 	private boolean isSelect;//是否显示工具栏和背景色
-	private boolean isCanMove;//是否响应用户控制    /是否有工具栏 ==== 必须
+//	private boolean isCanMove;//是否响应用户控制    /是否有工具栏 ==== 必须
 	private boolean isMoving = false;//是否在移动中
 
 	private int tempTextSize ;//温度字体大小      非必须
 
-//	private String textSuffix;//温度后缀 ℃  ℉  K 必须 从本地读
 
 	private List<Bitmap> toolsPicsBp;//工具栏图片集合
 	private int          toolsNumber;
@@ -42,20 +41,15 @@ public class TempWidgetObj {
 		this.tempTextSize = tempTextSize;
 	}
 
-//	public String getTextSuffix () {
-//		return textSuffix;
-//	}
-//	public void setTextSuffix (String textSuffix) {
-//		this.textSuffix = textSuffix;
-//	}
 	public boolean isMoving () { return isMoving;
 	}
 	public void setMoving (boolean moving) { isMoving = moving; }
 
 	@Override
 	public String toString () {
+		//", isCanMove=" + isCanMove +
 		return "TempWidgetObj{" + "id=" + id + ", type=" + type + ", isSelect=" + isSelect +
-				", isCanMove=" + isCanMove + ", tempTextSize=" + tempTextSize + ", toolsPicRes size =" + toolsPicsBp.size() +
+				 ", tempTextSize=" + tempTextSize + ", toolsPicRes size =" + toolsPicsBp.size() +
 				", toolsNumber=" + toolsNumber + ", pointTemp=" + pointTemp.toString() + ", otherTemp=" + otherTemp.toString() + '}';
 	}
 
@@ -97,14 +91,6 @@ public class TempWidgetObj {
 
 	public void setSelect (boolean select) {
 		isSelect = select;
-	}
-
-	public boolean isCanMove () {
-		return isCanMove;
-	}
-
-	public void setCanMove (boolean canMove) {
-		isCanMove = canMove;
 	}
 
 	public PointTempWidget getPointTemp () {

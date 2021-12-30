@@ -3,6 +3,7 @@ package com.dyt.wcc.common.widget.dragView;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.media.MediaPlayer;
@@ -24,8 +25,6 @@ import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -51,9 +50,10 @@ public class DragTempContainer extends RelativeLayout {
 	private boolean isControlItem = false;//是否是操作子View
 
 //	private CopyOnWriteArrayList<MyMoveWidget>                 highLowTempLists;//高温 最低温，中心点温度 集合
-	private MyMoveWidget selectChild;
-	private TempWidgetObj selectChildData;
+//	private MyMoveWidget selectChild;
+//	private TempWidgetObj selectChildData;
 	private CopyOnWriteArrayList<TempWidgetObj> userAddData;
+	private CopyOnWriteArrayList<MyMoveWidget> userAddView ;
 //	private Bitmap                             pointBt, maxTempBt, minTempBt;//三张图片 ：单点温度、线和矩阵的 最高、最低温的图片
 
 	private float WRatio, HRatio;//相机数据大小  与 显示屏幕大小的比值。
@@ -234,42 +234,42 @@ public class DragTempContainer extends RelativeLayout {
 
 	}
 
-	private OnUserCRUDListener onUserCRUDListener;
+//	private OnUserCRUDListener onUserCRUDListener;
+//
+//	public OnUserCRUDListener getUserCRUDListener () {
+//		return onUserCRUDListener;
+//	}
+//
+//	public void setUserCRUDListener (OnUserCRUDListener userCRUDListener) {
+//		this.onUserCRUDListener = userCRUDListener;
+//	}
 
-	public OnUserCRUDListener getUserCRUDListener () {
-		return onUserCRUDListener;
-	}
-
-	public void setUserCRUDListener (OnUserCRUDListener userCRUDListener) {
-		this.onUserCRUDListener = userCRUDListener;
-	}
-
-	/**
-	 * 用户添加的 子View 添加，删除，查找，移动，监听器
-	 */
-	public interface OnUserCRUDListener{
-		/**
-		 * 添加 子测温数据
-		 * @return
-		 */
-		boolean onAddChildView();
-
-		/**
-		 * 删除 子测温数据
-		 * @return
-		 */
-		boolean onDeleteChildView();
-		/**
-		 * 获取所有的 子测温数据
-		 * @return
-		 */
-		void onGetAllChildView();
-		/**
-		 * 子测温数据 更改
-		 * @return
-		 */
-		void onChildViewChanged();
-	}
+//	/**
+//	 * 用户添加的 子View 添加，删除，查找，移动，监听器
+//	 */
+//	public interface OnUserCRUDListener{
+//		/**
+//		 * 添加 子测温数据
+//		 * @return
+//		 */
+//		boolean onAddChildView();
+//
+//		/**
+//		 * 删除 子测温数据
+//		 * @return
+//		 */
+//		boolean onDeleteChildView();
+//		/**
+//		 * 获取所有的 子测温数据
+//		 * @return
+//		 */
+//		void onGetAllChildView();
+//		/**
+//		 * 子测温数据 更改
+//		 * @return
+//		 */
+//		void onChildViewChanged();
+//	}
 
 	public interface OnChildToolsClickListener{
 		/**
@@ -306,7 +306,7 @@ public class DragTempContainer extends RelativeLayout {
 		drawTempMode = -1;
 //		userAdd = new CopyOnWriteArrayList<>();
 		userAddData = new CopyOnWriteArrayList<>();
-//		highLowTempLists = new CopyOnWriteArrayList<>();//初始化高低中心点 温度 追踪集合
+		userAddView = new CopyOnWriteArrayList<>();//初始化 子view 集合
 		tempSource = new float[256*196+10];
 		minAddWidgetWidth = minAddWidgetHeight = DensityUtil.dp2px(mContext.get(),70);//最小为50个dp
 
@@ -318,7 +318,7 @@ public class DragTempContainer extends RelativeLayout {
 //			audioPlayer = MediaPlayer.create(mContext.get(),R.raw.a2_ding);
 //			audioPlayer.setLooping(true);
 //		}
-		mDataNearByUnit = DensityUtil.dp2px(mContext.get(),10);
+		mDataNearByUnit = DensityUtil.dp2px(mContext.get(),5);
 	}
 
 
@@ -372,17 +372,20 @@ public class DragTempContainer extends RelativeLayout {
 			updateLRTemp(otherTempWidget,3);
 
 			tempWidget.setType(3);
-			tempWidget.setCanMove(true);
 			tempWidget.setSelect(false);
 			tempWidget.setTempTextSize(20);
 			tempWidget.addToolsBp(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_areacheck_tools_delete));
 			tempWidget.setOtherTemp(otherTempWidget);
 
-//			MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),tempWidget,screenWidth,screenHeight);
-//			moveWidget.setChildToolsClickListener(mChildToolsClickListener);
-//			//todo 重置userAddView的集合
-//			addView(moveWidget);
+			MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),tempWidget,screenWidth,screenHeight);
+			moveWidget.setChildToolsClickListener(mChildToolsClickListener);
+			moveWidget.setBackgroundColor(Color.RED);
+			moveWidget.setAlpha(0.5f);
+
 			userAddData.add(tempWidget);
+
+			addView(moveWidget);
+			userAddView.add(moveWidget);
 		}
 		return recList;
 	}
@@ -422,7 +425,7 @@ public class DragTempContainer extends RelativeLayout {
 		endX =  (int)(tempWidget.getEndPointX()*WRatio); endY = (int)(HRatio*tempWidget.getEndPointY());
 //		Log.e(TAG, "updateLRTemp: startX = " + startX + " startY " + startY + " endX " + endX  + " endY" + endY);
 		//最低最高温度。及其坐标
-		//用什么去记录 最高点 最低点时候的xy值。切记要加上前置的10
+		//用什么去记录 最高点 最低点温度的xy坐标。切记要加上前置的10
 		int LRMinTempX,LRMinTempY, LRMaxTempX,LRMaxTempY;
 		LRMinTempX = startX;LRMinTempY = startY;LRMaxTempX = startX;LRMaxTempY = startY;//默认值
 		if (type == 3){
@@ -432,7 +435,7 @@ public class DragTempContainer extends RelativeLayout {
 						LRMinTempX = j;
 						LRMinTempY = i;
 					}
-					if (tempSource[(int) (LRMaxTempX+(LRMaxTempY*256)+10)] < tempSource[j+(i*256)+10]){
+					if (tempSource[(LRMaxTempX+(LRMaxTempY*256)+10)] < tempSource[j+(i*256)+10]){
 						LRMaxTempX = j;
 						LRMaxTempY = i;
 					}
@@ -493,9 +496,9 @@ public class DragTempContainer extends RelativeLayout {
 	 */
 	private boolean reviseCoordinate(int type){
 		int min ,max ;
-		//调整 起始点的坐标
-		if (type ==2){
-			if (startPressX > endPressX){//起点在右边，则交换两者的 位置
+		if (type ==2){//添加线
+			//调整 起始点位置，保证起点一直在左侧，终点 在右侧
+			if (startPressX > endPressX){
 				min = endPressX;
 				max = endPressY;
 				endPressX = startPressX;
@@ -503,12 +506,12 @@ public class DragTempContainer extends RelativeLayout {
 				startPressX = min;
 				startPressY = max;
 			}
+			//判断起点与终点 距离是否大于最短长度
 			if (Math.sqrt((endPressY - startPressY)*(endPressY - startPressY) +
 					(endPressX - startPressX)*(endPressX - startPressX)) < minAddWidgetWidth){
 				return false;
 			}
-
-		}else if (type ==3){
+		}else if (type ==3){//添加矩形
 			min = Math.min(screenWidth,Math.min(startPressX,endPressX));
 			max = Math.min(screenWidth,Math.max(startPressX,endPressX));
 			startPressX = min;
@@ -617,7 +620,7 @@ public class DragTempContainer extends RelativeLayout {
 		userAddData.clear();
 		pointNum = 0;
 		removeAllViews();
-		selectChild = null;
+//		selectChild = null;
 
 		if (mChildToolsClickListener!=null){
 			mChildToolsClickListener.onClearAllListener();
@@ -637,7 +640,6 @@ public class DragTempContainer extends RelativeLayout {
 
 		widget.setId(pointNum);
 		widget.setType(drawTempMode);
-		widget.setCanMove(true);
 		widget.setSelect(false);
 		widget.setTempTextSize(20);
 		widget.addToolsBp(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_areacheck_tools_delete));
@@ -665,7 +667,6 @@ public class DragTempContainer extends RelativeLayout {
 			updateLRTemp(otherTempWidget,drawTempMode);
 
 			tempWidget.setType(drawTempMode);
-			tempWidget.setCanMove(true);
 			tempWidget.setSelect(false);
 			tempWidget.setTempTextSize(20);
 			tempWidget.addToolsBp(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_areacheck_tools_delete));
@@ -684,36 +685,39 @@ public class DragTempContainer extends RelativeLayout {
 	 */
 	private void resetUserAddView(TempWidgetObj childData){
 		int type = childData.getType();
-		TempWidgetObj firstTypeChild  = null;//添加数据类型的 第一个对象
-		int typeCount = 0;
-		//记录第一个同类型的View,并累计有多少个
-		for (TempWidgetObj child : userAddData){
-			if (type == child.getType() && firstTypeChild ==null){
-				firstTypeChild = child;
+		MyMoveWidget firstTypeChildView  = null;//记录当前 数据源 类型的 第一个 子View，比如子View的 第一个点  第一个 线  第一个 矩形
+		int typeCount = 0;//记录共有多少 数据源类型
+		//遍历 子View 引用集合
+		for (MyMoveWidget childView : userAddView){
+			if (type == childView.getViewData().getType() && firstTypeChildView ==null){
+				firstTypeChildView = childView;
 			}
-			if (type == child.getType()){
+			if (type == childView.getViewData().getType()){
 				typeCount++;
 			}
 		}
 		switch (type){
 			case 1:
 				if (typeCount == POINT_MAX_NUMBER){
-//					removeView(firstTypeChild);
-					userAddData.remove(firstTypeChild);
+					removeView(firstTypeChildView);
+					userAddData.remove(childData);
+					userAddView.remove(firstTypeChildView);
 				}
 				addChild(childData);
 				break;
 			case 2:
 				if (typeCount == LINE_MAX_NUMBER){
-//					removeView(firstTypeChild);
-					userAddData.remove(firstTypeChild);
+					removeView(firstTypeChildView);
+					userAddData.remove(childData);
+					userAddView.remove(firstTypeChildView);
 				}
 				addChild(childData);
 				break;
 			case 3:
 				if (typeCount == RECTANGLE_MAX_NUMBER){
-//					removeView(firstTypeChild);
-					userAddData.remove(firstTypeChild);
+					removeView(firstTypeChildView);
+					userAddData.remove(childData);
+					userAddView.remove(firstTypeChildView);
 				}
 				addChild(childData);
 				break;
@@ -721,15 +725,17 @@ public class DragTempContainer extends RelativeLayout {
 	}
 
 	private void addChild(TempWidgetObj childData){
-//		MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),childData,screenWidth,screenHeight);
-////		moveWidget.setBackgroundColor(getResources().getColor(R.color.max_temp_text_color_red));
-//		moveWidget.setChildToolsClickListener(mChildToolsClickListener);
+		MyMoveWidget moveWidget = new MyMoveWidget(mContext.get(),childData,screenWidth,screenHeight);
+		moveWidget.setBackgroundColor(Color.BLUE);
+		moveWidget.setAlpha(0.5f);
+		moveWidget.setChildToolsClickListener(mChildToolsClickListener);
 		//todo 重置userAddView的集合
-//		addView(moveWidget);
+		addView(moveWidget);
+		userAddView.add(moveWidget);
 		userAddData.add(childData);
-		if (onUserCRUDListener!=null){
-			onUserCRUDListener.onAddChildView();
-		}
+//		if (onUserCRUDListener!=null){
+//			onUserCRUDListener.onAddChildView();
+//		}
 
 	}
 
@@ -792,14 +798,21 @@ public class DragTempContainer extends RelativeLayout {
 	 * 事件在 已选的框内，则越过所有事件 直接给子View消费事件。
 	 */
 	private boolean pressInSelectView(MotionEvent event){
+		// 事件 是否在子View集合 中的标识
 		boolean flag = false;
 //			Log.e(TAG, "getSelectChildByMotionEvent: chile left " + child.getLeft() + " right " + child.getRight() +
 		//			" top " + child.getTop()+ " bottom " + child.getBottom());
-		if (selectChild != null){
-			flag = ((event.getX() >= selectChild.getLeft() && event.getX() <= selectChild.getRight()
-					&& event.getY() >= selectChild.getTop() && event.getY() <= selectChild.getBottom()));
+//		if (selectChild != null){
+//			flag = ((event.getX() >= selectChild.getLeft() && event.getX() <= selectChild.getRight()
+//					&& event.getY() >= selectChild.getTop() && event.getY() <= selectChild.getBottom()));
+//		}
+//		Log.e(TAG, "pressInSelectView:  =====> " + flag);
+		//		Log.e(TAG, "eventInSelectChild: userAdd size = " + userAdd.size() );
+		for (MyMoveWidget child : userAddView){
+			//
+			flag = flag |(child.isSelectedState() && (event.getX() >= child.getLeft() && event.getX() <= child.getRight()
+					&& event.getY() >= child.getTop() && event.getY() <= child.getBottom()));
 		}
-		Log.e(TAG, "pressInSelectView:  =====> " + flag);
 		return flag;
 	}
 
@@ -813,8 +826,10 @@ public class DragTempContainer extends RelativeLayout {
 		for (TempWidgetObj childData : userAddData){
 			switch (childData.getType()){
 				case 1://点
-					if ((event.getX() < childData.getPointTemp().getStartPointX() + mDataNearByUnit*3.0f) && (event.getX() > childData.getPointTemp().getStartPointX() - mDataNearByUnit*3.0f)
-							&& (event.getY() < childData.getPointTemp().getStartPointY() + mDataNearByUnit*3.0f) && (event.getY() > childData.getPointTemp().getStartPointY() - mDataNearByUnit*3.0f)){
+					if ((event.getX() < childData.getPointTemp().getStartPointX() + mDataNearByUnit*3.0f)
+							&& (event.getX() > childData.getPointTemp().getStartPointX() - mDataNearByUnit*3.0f)
+							&& (event.getY() < childData.getPointTemp().getStartPointY() + mDataNearByUnit*3.0f)
+							&& (event.getY() > childData.getPointTemp().getStartPointY() - mDataNearByUnit*3.0f)){
 						result = childData;
 					}
 					break;
@@ -848,69 +863,95 @@ public class DragTempContainer extends RelativeLayout {
 		return super.dispatchTouchEvent(ev);
 	}
 
-	private Timer     mTimer = null;
-	private TimerTask mSelect_TimeTask  ;
-	private TimerTask mUnSelect_TimeTask ;
-	private static final int TO_SELECT = 2;
-	private static final int TO_UNSELECT = 3;
-	private Handler mHandler = new Handler(new Handler.Callback() {
-		@Override
-		public boolean handleMessage (@NonNull Message msg) {
-			switch (msg.what){
-				case TO_SELECT:
-					selectChild = new MyMoveWidget(mContext.get(),selectChildData ,screenWidth,screenHeight);
-					selectChild.setSelectedState(true);
-					selectChild.setChildToolsClickListener(mChildToolsClickListener);
-					addView(selectChild);
-					pressSelectNotUp = true;
-					break;
-				case TO_UNSELECT:
-					setAllChildUnSelect();
-					mChildToolsClickListener.onRectChangedListener();
-					break;
-			}
-			return true;
-		}
-	});
+//	private Timer     mTimer = null;
+//	private TimerTask mSelect_TimeTask  ;
+//	private TimerTask mUnSelect_TimeTask ;
+//	private static final int TO_SELECT = 2;
+//	private static final int TO_UNSELECT = 3;
+//	private Handler mHandler = new Handler(new Handler.Callback() {
+//		@Override
+//		public boolean handleMessage (@NonNull Message msg) {
+//			switch (msg.what){
+//				case TO_SELECT:
+////					selectChild = new MyMoveWidget(mContext.get(),selectChildData ,screenWidth,screenHeight);
+////					selectChild.setSelectedState(true);
+////					selectChild.setChildToolsClickListener(mChildToolsClickListener);
+////					addView(selectChild);
+////					pressSelectNotUp = true;
+//					break;
+//				case TO_UNSELECT:
+////					setAllChildUnSelect();
+////					mChildToolsClickListener.onRectChangedListener();
+//					break;
+//			}
+//			return true;
+//		}
+//	});
 
+	/**
+	 * 分发的条件：当前的事件是否在子View集合的： 已选中子View中，或者：数据源 的感应区（触发给子View去 设置选中状态）。则交给子View 的 dispatchTouchEvent 处理
+	 *  否则 本地 onTouchEvent 处理，在此之前给所有控件设置为未选中状态 。
+	 * @param ev 事件
+	 * @return ViewGroup 事件拦截：返回true 则交给当前的 onTouchEvent 方法 ；
+	 * 返回 false/super.onInterceptTouchEvent(ev) 都交给 子View的 dispatchTouchEvent方法分发或者 子ViewGroup 的 dispatchTouchEvent 分发
+	 */
 	@Override
 	public boolean onInterceptTouchEvent (MotionEvent ev) {
 //		if (isDebug)Log.e(TAG, "Parent onIntercept: x " + ev.getX() + " Y = " + ev.getY() + " action= " + ev.getAction() );
 		//不添加测温模式的情况下。
-		if (ev.getAction() == MotionEvent.ACTION_UP ){
-			pressSelectNotUp = false;
-		}
+//		if (ev.getAction() == MotionEvent.ACTION_UP ){
+//			pressSelectNotUp = false;
+//		}
 		if (drawTempMode == -1){
-			//判定事件 是否在  已选中子View ，则分发给子View
+			//判定事件 是否在  已选中子View
 			if (pressInSelectView(ev)){
-				if (ev.getAction() == MotionEvent.ACTION_DOWN ){
-//					Log.e(TAG, "onInterceptTouchEvent: ==========mUnSelect_Task.cancel");
-					if (selectChild !=null && mUnSelect_TimeTask != null){
-//						mHandler.removeMessages(TO_UNSELECT);
-						mUnSelect_TimeTask.cancel();
-//						mTimer.purge();
-					}
-				}
+				Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and pressInSelectView ============: ");
+				/**
+				 * 可能存在响应级高于 自身的 未选中view 在事件处。
+				 */
 
-				if (ev.getAction() == MotionEvent.ACTION_UP){
-					if (selectChild !=null) {
-						mUnSelect_TimeTask = new TimerTask() {
-							@Override
-							public void run () {
-//								Log.e(TAG, "====DragTempContainer==TO_UNSELECT==TimerTask进来了");
-								Message message = Message.obtain();
-								message.what = TO_UNSELECT;
-								mHandler.sendMessage(message);
-							}
-						};
-						mTimer.schedule(mUnSelect_TimeTask, 2000);
-					}
-				}
+//				if (ev.getAction() == MotionEvent.ACTION_DOWN ){
+////					Log.e(TAG, "onInterceptTouchEvent: ==========mUnSelect_Task.cancel");
+////					if (selectChild !=null && mUnSelect_TimeTask != null){
+//////						mHandler.removeMessages(TO_UNSELECT);
+////						mUnSelect_TimeTask.cancel();
+//////						mTimer.purge();
+////					}
+//				}
+				//
+//				for (MyMoveWidget widget : userAddView){
+//					if (widget.isSelectedState())widget.dispatchTouchEvent(ev);
+//				}
+//
+//				if (ev.getAction() == MotionEvent.ACTION_UP){
+////					if (selectChild !=null) {
+////						mUnSelect_TimeTask = new TimerTask() {
+////							@Override
+////							public void run () {
+//////								Log.e(TAG, "====DragTempContainer==TO_UNSELECT==TimerTask进来了");
+////								Message message = Message.obtain();
+////								message.what = TO_UNSELECT;
+////								mHandler.sendMessage(message);
+////							}
+////						};
+////						mTimer.schedule(mUnSelect_TimeTask, 2000);
+////					}
+//				}
 				return super.onInterceptTouchEvent(ev);
 			}else {// 事件 不在 已选中的View 中，交给当前的 onTouchEvent处理
+				Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and pressInSelectView ====NO========: ");
 //				if (mTimer!=null) mTimer.cancel();
+
+//				mChildToolsClickListener.onRectChangedListener();
+				//存在 按下事件在 数据源感应区，但 弹起事件不在 感应区，此时 子view变成了 选中状态。
+				// 如何保证 500ms之内 事件都在同一个子View 内 则触发 选中事件。
+				if (pressInUserAddData(ev)!=null){
+					Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and press DONT InSelectView ===But in Data !!!========: ");
+
+					Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and press DONT InSelectView ===But in Data !!!======getX==: "+ ev.getX());
+					return super.onInterceptTouchEvent(ev);
+				}
 				setAllChildUnSelect();
-				mChildToolsClickListener.onRectChangedListener();
 				return true;
 			}
 		}else {//含有绘制模式 。交给当前 onTouchEvent 处理
@@ -919,7 +960,7 @@ public class DragTempContainer extends RelativeLayout {
 		}
 	}
 
-	private boolean pressSelectNotUp = false ; // 按下选中，没有弹起
+//	private boolean pressSelectNotUp = false ; // 按下选中，没有弹起
 
 	/**
 	 * 选择绘制模式后，去绘制提示线的 监听器。
@@ -944,10 +985,12 @@ public class DragTempContainer extends RelativeLayout {
 		drawHint = new DrawLineRecHint();
 	}
 
+	/**
+	 * 新增测温模式时：绘制 测温线 或 矩形 时，在UVCCameraTextureView里 绘制提示线
+	 */
 	private onAddChildDataListener addChildDataListener;
+	//提示线 对象
 	private DrawLineRecHint        drawHint ;
-
-
 
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
@@ -956,49 +999,44 @@ public class DragTempContainer extends RelativeLayout {
 		if (drawTempMode != -1){//添加控件 ,含有测温模式
 			switch (event.getAction()){
 				case MotionEvent.ACTION_DOWN:
-
-//					if (drawTempMode != -1){
 						startPressX = (int) event.getX();
 						startPressY = (int) event.getY();
 
-//					}
 					if (drawTempMode!= 1){
 						drawHint.setStartXCoordinate(startPressX);
 						drawHint.setStartYCoordinate(startPressY);
 						drawHint.setDrawTempMode( drawTempMode);
-
 					}
 					break;
 				case MotionEvent.ACTION_MOVE:
-//					if (drawTempMode != -1) {
-						endPressX = (int) event.getX();
-						endPressY = (int) event.getY();
+					//记录移动时 结束点 坐标
+					endPressX = (int) event.getX();
+					endPressY = (int) event.getY();
+					//发送结束点坐标 的对象 到 预览层绘制 提示线
 					if (drawTempMode != 1){
 						drawHint.setEndXCoordinate(endPressX);
 						drawHint.setEndYCoordinate(endPressY);
 						drawHint.setNeedDraw(true);
 						addChildDataListener.onIsEventActionMove(drawHint);
 					}
-//					}
 					break;
 				case MotionEvent.ACTION_UP:
-//					if (drawTempMode != -1) {
+					//发送结束点坐标 的对象 到 预览层结束 绘制 提示线或 矩形
 					if (addChildDataListener !=null){
 						drawHint.setNeedDraw(false);
 						addChildDataListener.onIsEventActionUp(drawHint);
 					}
-
-						endPressX = (int) event.getX();
-						endPressY = (int) event.getY();
-//					}
-					if (drawTempMode == 2){
+					//更新结束点的坐标 去绘制线 或矩形
+					endPressX = (int) event.getX();
+					endPressY = (int) event.getY();
+					if (drawTempMode == 2){//添加了线
 						createLineOrRecView();
-					}else if (drawTempMode ==3){
+					}else if (drawTempMode ==3){//添加 矩形
 						createLineOrRecView();
 						if (mChildToolsClickListener!=null){
 							mChildToolsClickListener.onRectChangedListener();
 						}
-					}else if (drawTempMode ==1) {
+					}else if (drawTempMode ==1) {//添加了点
 							createPointView();
 					}
 					break;
@@ -1009,51 +1047,6 @@ public class DragTempContainer extends RelativeLayout {
 				//删除选中View
 				setAllChildUnSelect();
 
-			}else {// 事件 在 数据源 的感应区中
-				//倒计时：
-				switch (event.getAction()){
-					case MotionEvent.ACTION_DOWN:
-						if (selectChild == null){
-							selectChildData = pressInUserAddData(event);
-							if (mTimer == null)
-								mTimer = new Timer();
-							//去设置选中的  任务
-							mSelect_TimeTask = new TimerTask() {
-								@Override
-								public void run() {
-//									Log.e(TAG, "====DragTempContainer==TO_SELECT==Task进来了");
-									Message message = Message.obtain();
-									message.what = TO_SELECT;
-									mHandler.sendMessage(message);
-								}
-							};
-							mTimer.schedule(mSelect_TimeTask, 800);
-						}
-						break;
-					case MotionEvent.ACTION_UP:
-						if (selectChild == null){
-//							Log.e(TAG, "onInterceptTouchEvent: =ACTION_UP=========TO_SELECT Task.cancel");
-//							mHandler.removeMessages(TO_SELECT);
-							mSelect_TimeTask.cancel();
-						}else {
-							mUnSelect_TimeTask = new TimerTask() {
-								@Override
-								public void run() {
-//									Log.e(TAG, "====DragTempContainer==TO_UNSELECT==TimerTask进来了");
-									Message message = Message.obtain();
-									message.what = TO_UNSELECT;
-									mHandler.sendMessage(message);
-								}
-							};
-							mTimer.schedule(mUnSelect_TimeTask, 2000);
-						}
-						break;
-					case MotionEvent.ACTION_MOVE:
-						if (pressSelectNotUp && selectChild != null){
-//							selectChild.
-						}
-						break;
-				}
 			}
 		}
 		//消费事件
@@ -1071,18 +1064,26 @@ public class DragTempContainer extends RelativeLayout {
 ////				child.setSelectedState(false);
 //			}
 //		}
-
-		if (selectChild != null){
-			selectChild.setSelectedState(false);
-//			removeView(selectChild);
-			removeAllViews();
-			selectChild = null;
+		for(TempWidgetObj obj : userAddData){
+			obj.setSelect(false);
 		}
+		for(MyMoveWidget widget : userAddView){
+			widget.setSelectedState(false);
+			widget.requestLayout();
+		}
+
+
+//		if (selectChild != null){
+//			selectChild.setSelectedState(false);
+////			removeView(selectChild);
+//			removeAllViews();
+//			selectChild = null;
+//		}
 	}
 
 	public void deleteChildView(TempWidgetObj childData){
 		userAddData.remove(childData);
-		removeView(selectChild);
+//		removeView(selectChild);
 	}
 
 
@@ -1145,19 +1146,21 @@ public class DragTempContainer extends RelativeLayout {
 						}else {//线及其矩形
 							updateLRTemp(userAddData.get(i).getOtherTemp(),userAddData.get(i).getType());
 						}
-//						userAdd.get(i).requestLayout();
+						if (userAddData.size() == userAddView.size()){
+							userAddView.get(i).requestLayout();
+						}
 					}
 				}
 				//刷新已选 子View的数据
-					if (selectChild != null){
-						if (selectChildData.getType() ==1){
-							float temp = updatePointTemp(selectChildData.getPointTemp().getStartPointX(),selectChildData.getPointTemp().getStartPointY());
-							selectChildData.getPointTemp().setTemp(getTempStrByMode(temp));
-						}else {
-							updateLRTemp(selectChildData.getOtherTemp(),selectChildData.getType());
-						}
-						selectChild.requestLayout();
-					}
+//					if (selectChild != null){
+//						if (selectChildData.getType() ==1){
+//							float temp = updatePointTemp(selectChildData.getPointTemp().getStartPointX(),selectChildData.getPointTemp().getStartPointY());
+//							selectChildData.getPointTemp().setTemp(getTempStrByMode(temp));
+//						}else {
+//							updateLRTemp(selectChildData.getOtherTemp(),selectChildData.getType());
+//						}
+//						selectChild.requestLayout();
+//					}
 
 
 

@@ -157,6 +157,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //			mUvcCameraHandler.release();
 //			mUvcCameraHandler = null;
 //		}
+		if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
+			mViewModel.getMUsbMonitor().getValue().unregister();
+		}
 
 	}
 
@@ -225,9 +228,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			mUvcCameraHandler.release();
 			mUvcCameraHandler = null;
 		}
-		if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
-			mViewModel.getMUsbMonitor().getValue().unregister();
+		if (mViewModel.getMUsbMonitor().getValue() != null){
+			mViewModel.getMUsbMonitor().getValue().destroy();
 		}
+
 
 //		mDataBinding.textureViewPreviewFragment.onPause();
 //		stt = null;
@@ -984,7 +988,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onRectChangedListener () {//移动框框之后刷新C层控件的设置
 				Log.e(TAG, "onRectChangedListener:  ===== ");
-				if (mUvcCameraHandler != null){
+				if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened()){
 //					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
 					int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
 					if (areaData != null){
@@ -1381,6 +1385,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 				if (allGranted){
 //					mDataBinding.dragTempContainerPreviewFragment.clearAll();
+//					if (mUvcCameraHandler != null)mUvcCameraHandler.close();
 					Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
 				}
 			}
@@ -1438,15 +1443,18 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	public static class Check {
 		// 两次点击按钮之间的点击间隔不能少于1000毫秒
 		private static final int MIN_CLICK_DELAY_TIME = 1000;
+		private static long firstClick;
 		private static long lastClickTime;
 
 		public static boolean isFastClick() {
 			boolean flag = false;
 			long curClickTime = System.currentTimeMillis();
-			if ((curClickTime - lastClickTime) >= MIN_CLICK_DELAY_TIME) {
+			if (firstClick==0)firstClick = curClickTime;
+			lastClickTime = curClickTime;
+			//最后一次点击 减去 刚开始点击的 大于间隔
+			if ((lastClickTime - firstClick) >= MIN_CLICK_DELAY_TIME) {
 				flag = true;
 			}
-			lastClickTime = curClickTime;
 			return flag;
 		}
 	}
@@ -1483,11 +1491,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 						if (mDataBinding.btPreviewLeftRecord.isSelected() && mUvcCameraHandler.isRecording()){//停止录制
 							stopTimer();
 							mUvcCameraHandler.stopRecording();
-							mDataBinding.ivPreviewLeftGallery.setVisibility(View.VISIBLE);
+							mDataBinding.ivPreviewLeftGallery.setEnabled(true);
+							Check.firstClick = 0;
 						}else if (!mDataBinding.btPreviewLeftRecord.isSelected() && !mUvcCameraHandler.isRecording()&& mUvcCameraHandler.isPreviewing()){//开始录制
 							startTimer();
 							mUvcCameraHandler.startRecording(sp.getInt(DYConstants.RECORD_AUDIO_SETTING,1));
-							mDataBinding.ivPreviewLeftGallery.setVisibility(View.INVISIBLE);
+							mDataBinding.ivPreviewLeftGallery.setEnabled(false);
 						}else {
 							Log.e(TAG, "Record Error: error record state !");
 						}
@@ -1551,9 +1560,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		Intent intent = new Intent(context, MainActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		context.startActivity(intent);
-//
-//		android.os.Process.killProcess(android.os.Process.myPid());
-//		System.exit(0);
+		android.os.Process.killProcess(android.os.Process.myPid());
+		System.exit(0);
 	}
 	//修改机芯参数
 	public class SendCommand {

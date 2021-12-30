@@ -677,8 +677,8 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
 //        float* a = &temperatureTable[0];
 //        memcpy(tempData,temperatureTable,16384*4);
         LOGE("refresh AD ====  maxThumbValue == %f ,  minThumbValue ==== %f " , maxThumbValue , minThumbValue);
-        maxThumbAD = getDichotomySearch(temperatureTable,16384,maxThumbValue,2000,16384);
-        minThumbAD = getDichotomySearch(temperatureTable,16384,minThumbValue,2000,16384);
+        maxThumbAD = getDichotomySearch(temperatureTable,16384,maxThumbValue,0,16384);
+        minThumbAD = getDichotomySearch(temperatureTable,16384,minThumbValue,0,16384);
         isNeedFreshAD = false;
         //3 全幅最高温 ，6 是全幅最低温 AD值
 //        LOGE("max temp   = %f  , min temp = %f",)

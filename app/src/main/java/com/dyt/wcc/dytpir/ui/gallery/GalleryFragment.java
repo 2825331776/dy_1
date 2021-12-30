@@ -117,13 +117,13 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 				Uri uriAll =  MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 				//查询的数据
 				String [] projection = new String[]{
-						MediaStore.Images.Thumbnails._ID ,MediaStore.Images.Thumbnails.DATA,MediaStore.Images.Media.DATE_MODIFIED};
+						MediaStore.Images.Thumbnails._ID ,MediaStore.Images.Thumbnails.DATA,MediaStore.Images.Media.DATE_ADDED};
 				//条件
 				String selection = MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?";
 				//条件参数
 				String [] selectionArgs = new String[] {"image/png", "image/jpeg"};
 				//查询排序方式
-				String sort = MediaStore.Images.Media.DATE_MODIFIED + " ASC ";
+				String sort = MediaStore.Images.Media.DATE_ADDED + " ASC ";
 
 				Cursor cursor = contentResolver.query(uriAll,projection,
 						selection, selectionArgs, sort);
@@ -132,7 +132,7 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 				int idIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID);
 				// 获取data字段是第几列，该方法最好在循环之前做好
 				int dataIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-				int imageDateModifiedColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_MODIFIED);
+				int imageDateModifiedColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED);
 
 				while (cursor.moveToNext()) {
 					long id = cursor.getLong(idIndex);
@@ -157,14 +157,14 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 				Uri uriVideo =  MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 				//查询的数据
 				String [] videoProjection = new String[]{MediaStore.Video.Media._ID ,MediaStore.Video.Media.DATA
-						,MediaStore.Video.Media.DURATION,MediaStore.Images.Media.DATE_MODIFIED};
+						,MediaStore.Video.Media.DURATION,MediaStore.Images.Media.DATE_ADDED};
 
 				//条件
 				String videoSelection = MediaStore.Video.Media.MIME_TYPE + "=?";
 				//条件参数
 				String [] videoSelectionArgs = new String[] {"video/mp4"};
 				//查询排序方式
-				String videoSort = MediaStore.Video.Media.DATE_MODIFIED + " ASC ";
+				String videoSort = MediaStore.Video.Media.DATE_ADDED + " ASC ";
 
 				Cursor videoCursor = contentResolver.query(uriVideo,videoProjection,
 						videoSelection, videoSelectionArgs, videoSort);
@@ -175,7 +175,7 @@ public class GalleryFragment extends BaseFragment <FragmentGalleryMainBinding> i
 				int videoDataIndex = videoCursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
 
 				int duration = videoCursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.DURATION);
-				int videoDateModifiedColumnIndex = videoCursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.DATE_MODIFIED);
+				int videoDateModifiedColumnIndex = videoCursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.DATE_ADDED);
 
 				while (videoCursor.moveToNext()) {
 					long id = videoCursor.getLong(videoIdIndex);

@@ -1170,7 +1170,6 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                             bitcanvas.drawText(tempText,x - mBitmapRectSize/2.0f - tp.measureText(tempText), y + mBitmapRectSize/2.0f,tpBg);
                             bitcanvas.drawText(tempText,x - mBitmapRectSize/2.0f - tp.measureText(tempText), y + mBitmapRectSize/2.0f,tp);
                         }
-
                     }else {
                         if (textRect.height() + y > icon.getHeight()){//文字高度 出界。
                             bitcanvas.drawText(tempText,x + mBitmapRectSize/2.0f, y - tpBg.descent(),tpBg);
@@ -1270,12 +1269,9 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                                     myDrawHint.getEndXCoordinate(),myDrawHint.getEndYCoordinate(),dottedLinePaint);
                         }
                     }
-
-//                    mDragTempContainer.
+                    //绘制用户添加的测温模式
                     if (mDragTempContainer!=null){
-                        TempWidgetObj tempWidgetObj = null;
-                       for (TempWidgetObj widget : mDragTempContainer.getUserAddData()){
-                           tempWidgetObj = widget;
+                       for (TempWidgetObj tempWidgetObj : mDragTempContainer.getUserAddData()){
                            if (!tempWidgetObj.isSelect()){//未选中
                                //点温度 绘制：全局高温。全局低温、全局中心温、点测试模式（正常温度）
                                if (tempWidgetObj.getType() == 1){
@@ -1283,32 +1279,11 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                                    bpRectF.right = tempWidgetObj.getPointTemp().getStartPointX() + mBitmapRectSize / 2.0f;
                                    bpRectF.top = tempWidgetObj.getPointTemp().getStartPointY() - mBitmapRectSize / 2.0f;
                                    bpRectF.bottom = tempWidgetObj.getPointTemp().getStartPointY() + mBitmapRectSize / 2.0f;
-//                                   if (tempWidgetObj.getPointTemp().getType()==1){//高温
-//                                       tempTextPaint.setColor(Color.RED);
-//                                       bitcanvas.drawBitmap(highTempBt,null,bpRectF,photoPaint);
-//                                       xy2DrawText(tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),
-//                                               tempWidgetObj.getPointTemp().getTemp(),tempTextBgTextPaint,tempTextPaint,0);
-//                                   }else if (tempWidgetObj.getPointTemp().getType()==2) {//低温
-//                                       tempTextPaint.setColor(Color.BLUE);
-//                                       bitcanvas.drawBitmap(lowTempBt,null,bpRectF,photoPaint);
-//                                       bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
-//                                               tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextBgTextPaint);
-//                                       bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
-//                                               tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextPaint);
-//                                   }else if (tempWidgetObj.getPointTemp().getType()==3){//中心温
-//                                       tempTextPaint.setColor(Color.YELLOW);
-//                                       bitcanvas.drawBitmap(centerTempBt,null,bpRectF,photoPaint);
-//                                       bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
-//                                               tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextBgTextPaint);
-//                                       bitcanvas.drawText(tempWidgetObj.getPointTemp().getTemp(),
-//                                               tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),tempTextPaint);
-//                                   }else {
-                                   // 正常温度
-                                       tempTextPaint.setColor(Color.BLACK);
-                                       bitcanvas.drawBitmap(normalPointBt,null,bpRectF,photoPaint);
-                                       xy2DrawText(tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),
-                                               tempWidgetObj.getPointTemp().getTemp(),tempTextBgTextPaint,tempTextPaint,0);
-//                                   }
+                                   // 点测温
+                                   tempTextPaint.setColor(Color.BLACK);
+                                   bitcanvas.drawBitmap(normalPointBt,null,bpRectF,photoPaint);
+                                   xy2DrawText(tempWidgetObj.getPointTemp().getStartPointX(), tempWidgetObj.getPointTemp().getStartPointY(),
+                                           tempWidgetObj.getPointTemp().getTemp(),tempTextBgTextPaint,tempTextPaint,0);
                                }
                                //线测温模式绘制
                                if (tempWidgetObj.getType() ==2 ){
@@ -1391,8 +1366,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                      * 	temperatureData[8]=point2Tmp;
                      * 	temperatureData[9]=point3Tmp;
                      */
-                    //绘制 全幅 最高温 最低温  中心点温度
-                    if ((featurePointsControl & 0x0f00) > 0){//最高点温度
+                    //绘制 全幅 最高温 最低温  中心点温度 ,并且查找点是否 不在线 和矩形之中
+                    if ((featurePointsControl & 0x0f00) > 0 && (true)){//最高点温度
                         bpRectF.left = temperature1[1] * (icon.getWidth() / (float) mSuportWidth) - mBitmapRectSize / 2.0f;
                         bpRectF.right = temperature1[1] * (icon.getWidth() / (float) mSuportWidth) + mBitmapRectSize / 2.0f;
                         bpRectF.top = temperature1[2] * (icon.getHeight() / (float) (mSuportHeight - 4)) - mBitmapRectSize / 2.0f;
@@ -1404,7 +1379,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                                 decimalFormat.format(TempConvertUtils.centigrade2Temp(temperature1[3],mDragTempContainer.getTempSuffixMode()))
                                         + DragTempContainer.tempSuffixList[mDragTempContainer.getTempSuffixMode()],tempTextBgTextPaint,tempTextPaint,0);
                     }
-                    if ((featurePointsControl & 0x00f0) > 0){//最低点温度
+                    if ((featurePointsControl & 0x00f0) > 0 && (true)){//最低点温度
                         bpRectF.left = temperature1[4] * (icon.getWidth() / (float) mSuportWidth) - mBitmapRectSize / 2.0f;
                         bpRectF.right = temperature1[4] * (icon.getWidth() / (float) mSuportWidth) + mBitmapRectSize / 2.0f;
                         bpRectF.top = temperature1[5] * (icon.getHeight() / (float) (mSuportHeight - 4)) - mBitmapRectSize / 2.0f;
