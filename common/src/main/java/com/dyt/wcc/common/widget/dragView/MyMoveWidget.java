@@ -22,8 +22,6 @@ import com.dyt.wcc.common.R;
 import com.dyt.wcc.common.utils.DensityUtil;
 
 import java.lang.ref.WeakReference;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -48,7 +46,7 @@ public class MyMoveWidget extends View {
 	private TextPaint pointTextPaint, maxTempTextPaint, minTempTextPaint , centerTempTextPaint;//画笔：点文字、最高最低文字、 中心点文字
 	private Paint pointPaint ,linePaint , linePaintBg;//画笔：画点图片 、绘制线矩形的线条画笔
 	private Paint recZoomBox;//绘制背景画笔，绘制矩形八个方位的画笔//bgRoundPaint,
-	private int recZoomBoxPaintStroke;
+	private int recZoomBoxPaintStroke;// 缩放框画笔 宽度
 	private Paint textStokerPaint;
 
 	private WeakReference<Context> mContext;
@@ -90,7 +88,7 @@ public class MyMoveWidget extends View {
 	private float xOffset, yOffset;
 
 	private float pressDownX,pressDownY;
-	private float zoomLineLength ;
+	private float zoomLineLength ;//缩放的线条长度
 	private int rectangleState ;
 
 	private DragTempContainer.OnChildToolsClickListener mChildToolsClickListener;
@@ -133,12 +131,11 @@ public class MyMoveWidget extends View {
 	private void initView(){
 		padTop = padBottom= padLeft = padRight = DensityUtil.dp2px(mContext.get(),3);//设置背景间距,动态计算。不同dpi有明显差异  3DP
 		mMinHeight = mMinWidth = 15 * padLeft;//矩形的最小宽高等于十五倍padding  45dp
-		recZoomBoxPaintStroke = DensityUtil.dp2px(mContext.get(),3);//矩形测温框 画笔的宽度
+		recZoomBoxPaintStroke = DensityUtil.dp2px(mContext.get(),3);//矩形缩放框 画笔的宽度
 		zoomLineLength = DensityUtil.dp2px(mContext.get(),20);
 	}
-	private Timer mTimer = null;
-	private TimerTask mTimeTask;
-	private boolean changeSelectState = false;
+//	private Timer mTimer = null;
+//	private TimerTask mTimeTask;
 	private static final int TO_CHANGE_SELECT = 11;
 	private Handler mHandler = new Handler(new Handler.Callback() {
 		@Override
@@ -167,6 +164,7 @@ public class MyMoveWidget extends View {
 //		if (isDebug)Log.e(TAG, "initPaint: ");
 		pointPaint = new Paint();
 		pointPaint.setColor(getResources().getColor(R.color.bg_preview_toggle_select));
+
 		linePaint = new Paint();
 		linePaint.setStrokeWidth(5);
 		linePaint.setColor(Color.WHITE);
@@ -177,27 +175,27 @@ public class MyMoveWidget extends View {
 
 		pointTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 		pointTextPaint.setStrokeWidth(5);
-		pointTextPaint.setTextSize(50);
+		pointTextPaint.setTextSize(DensityUtil.dp2px(mContext.get(),tempWidgetData.getTempTextSize()));
 		pointTextPaint.setColor(getResources().getColor(R.color.bg_preview_toggle_select,null));
 		pointTextPaint.setStyle(Paint.Style.FILL);
 
 		if (tempWidgetData.getType()==1){//点模式
-			if (tempWidgetData.getPointTemp().getType()==1){//高温点
-				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_high);
-				pointTextPaint.setColor(getResources().getColor(R.color.max_temp_text_color_red,null));
-			}else if (tempWidgetData.getPointTemp().getType()==2){//低温点
-				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_low);
-				pointTextPaint.setColor(getResources().getColor(R.color.min_temp_text_color_blue,null));
-			}else if (tempWidgetData.getPointTemp().getType()==3){//中心点
-				Log.e(TAG, "initPaint:  obj type = " + tempWidgetData.getType() + " point type = " + tempWidgetData.getPointTemp().getType()) ;
-				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center);
-				maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center);
-				pointTextPaint.setColor(getResources().getColor(R.color.black,null));
-			}else { //没有设置， 为0 。手动添加的点测温模式
+//			if (tempWidgetData.getPointTemp().getType()==1){//高温点
+//				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_high);
+//				pointTextPaint.setColor(getResources().getColor(R.color.max_temp_text_color_red,null));
+//			}else if (tempWidgetData.getPointTemp().getType()==2){//低温点
+//				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_low);
+//				pointTextPaint.setColor(getResources().getColor(R.color.min_temp_text_color_blue,null));
+//			}else if (tempWidgetData.getPointTemp().getType()==3){//中心点
+//				Log.e(TAG, "initPaint:  obj type = " + tempWidgetData.getType() + " point type = " + tempWidgetData.getPointTemp().getType()) ;
+//				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center);
+//				maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_center);
+//				pointTextPaint.setColor(getResources().getColor(R.color.black,null));
+//			}else { //没有设置， 为0 。手动添加的点测温模式
 				minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_main_preview_measuretemp_point);
 				maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_main_preview_measuretemp_point);
 				pointTextPaint.setColor(getResources().getColor(R.color.black,null));
-			}
+//			}
 		}else {
 //			tempWidgetData.setCanMove(true);
 			minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_higlowtemp_draw_widget_low);
@@ -420,6 +418,14 @@ public class MyMoveWidget extends View {
 			}else if ((contentBgLeft - toolsWidth > 0)&&(((contentBgBottom - toolsHeight) > 0))){       //tools left bottom
 				toolsLocationState = WIDGET_DIRECTION_STATE_LEFT_BOTTOM;
 			}
+		//线 特有的 移位
+		if (tempWidgetData.getType() == 2){
+			if (tempWidgetData.getOtherTemp().getStartPointY() >= tempWidgetData.getOtherTemp().getEndPointY()){//左低  右高
+
+			}else {
+
+			}
+		}
 //		Log.e(TAG, "getToolsDirection:  ===  " + toolsLocationState);
 	}
 	/**
@@ -463,6 +469,7 @@ public class MyMoveWidget extends View {
 			toolsBgTop = contentBgBottom - toolsNeedHeight ;
 			toolsBgBottom = contentBgBottom;
 		}
+
 //		if (isDebug){
 //			Log.e(TAG, " toolsBgLeft " + toolsBgLeft + " toolsBgRight " + toolsBgRight +
 //					" toolsBgTop " + toolsBgTop+ " toolsBgBottom " + toolsBgBottom);
@@ -638,7 +645,7 @@ public class MyMoveWidget extends View {
 			contentBgRight = contentRight + padRight;
 			contentBgTop = contentTop - padTop;
 			contentBgBottom = contentBottom + padBottom;
-			getToolsDirection(toolsNeedWidth,toolsNeedHeight,1);
+			getToolsDirection(toolsNeedWidth,toolsNeedHeight,tempWidget.getType());
 			//初始化工具栏坐标
 			getToolsCoordinate();
 		}else {//无工具栏及内容背景
@@ -701,7 +708,7 @@ public class MyMoveWidget extends View {
 	 * @param needHeight 需要的高度
 	 * @return 计算的Y坐标
 	 */
-	private int getPointTempTextCoordinateY(float pointY,Bitmap pointBp , int pointDirection, float needHeight,TextPaint tp){
+	private int getPointTempTextCoordinateY(float pointY ,Bitmap pointBp , int pointDirection, float needHeight,TextPaint tp){
 		//计算温度文字的矩形坐标  从图片边界计算
 		Paint.FontMetrics metrics = tp.getFontMetrics();
 		int calculateY = 0;
@@ -722,7 +729,9 @@ public class MyMoveWidget extends View {
 		return tempWidgetData.isSelect();
 	}
 	public void setSelectedState (boolean selectedState) {
-			tempWidgetData.setSelect(selectedState);
+//		mChildToolsClickListener.onSetParentUnselect();
+		tempWidgetData.setSelect(selectedState);
+
 	}
 
 	public TempWidgetObj getViewData () {
@@ -734,7 +743,7 @@ public class MyMoveWidget extends View {
 	 * @param canvas 需要绘制的画布
 	 *             以工具栏背景的坐标为基准
 	 */
-	private void drawTool(@NonNull TempWidgetObj data, @NonNull Canvas canvas){
+	private void drawTool(TempWidgetObj data, @NonNull Canvas canvas){
 //			int [] resPic = data.getToolsPicRes();
 			RectF perToolsPic ;
 			float left , right , top , bottom;
@@ -763,7 +772,7 @@ public class MyMoveWidget extends View {
 		//是否绘制背景
 		if (tempWidgetData.isSelect()){//可选 | 不可选
 			if(tempWidgetData.getType()==3){
-//				canvas.drawRoundRect(rectContent,0,0,bgRoundPaint);
+				//缩放框 四个顶点 位置 , 中心线条开始的X坐标  左右两侧中心点线条开始Y轴坐标
 				float zoomBoxLeft,zoomBoxRight , zoomBoxTop , zoomBoxBottom , centerBeginX,leftRightBeginY;
 				zoomBoxLeft = tempWidgetData.getOtherTemp().getStartPointX() - xOffset - recZoomBoxPaintStroke;
 				zoomBoxRight = tempWidgetData.getOtherTemp().getEndPointX() - xOffset + recZoomBoxPaintStroke;
@@ -773,7 +782,7 @@ public class MyMoveWidget extends View {
 				leftRightBeginY = (int) ((contentTop+contentBottom - zoomLineLength)/2);
 
 				//todo 矩形特定的背景
-				//左上
+				//左上 中间顶部  右上 三个方位
 				canvas.drawLine(zoomBoxLeft-recZoomBoxPaintStroke/2.0f,zoomBoxTop,zoomBoxLeft + zoomLineLength,zoomBoxTop,recZoomBox);
 				canvas.drawLine(zoomBoxLeft,zoomBoxTop,zoomBoxLeft,zoomBoxTop + zoomLineLength,recZoomBox);
 
@@ -784,10 +793,10 @@ public class MyMoveWidget extends View {
 						zoomBoxRight - zoomLineLength,zoomBoxTop,recZoomBox);
 				canvas.drawLine(zoomBoxRight,zoomBoxTop,
 						zoomBoxRight,zoomBoxTop + zoomLineLength,recZoomBox);
-				//绘制左右两条
+				//绘制 左右中心 个方位
 				canvas.drawLine(zoomBoxLeft,leftRightBeginY,zoomBoxLeft,leftRightBeginY+zoomLineLength,recZoomBox);
 				canvas.drawLine(zoomBoxRight,leftRightBeginY,zoomBoxRight,leftRightBeginY+zoomLineLength,recZoomBox);
-				//底部三条
+				//底部  三个方位
 
 				canvas.drawLine(zoomBoxLeft-recZoomBoxPaintStroke/2.0f,zoomBoxBottom,zoomBoxLeft + zoomLineLength,zoomBoxBottom,recZoomBox);
 				canvas.drawLine(zoomBoxLeft,zoomBoxBottom,zoomBoxLeft,zoomBoxBottom - zoomLineLength,recZoomBox);
@@ -801,22 +810,18 @@ public class MyMoveWidget extends View {
 						zoomBoxRight,zoomBoxBottom - zoomLineLength,recZoomBox);
 
 			}
-			drawTool(tempWidgetData,canvas); //绘制工具栏 背景及其颜色
+			//todo 绘制工具栏 背景及其颜色
+			drawTool(tempWidgetData,canvas);
 
-
-			//绘制内容
+			//todo  绘制选中 测温模式的内容
+			//正常的 点测温
 			if (tempWidgetData.getType() ==1){
-				//绘制标识圆
-				//			if (isDebug)Log.e(TAG, "onDraw: 11111111");
-				//			canvas.drawCircle((contentBgLeft+contentBgRight)/2.0f,(contentBgTop+contentBgBottom)/2.0f,5,maxTempTextPaint);
-
 				canvas.drawBitmap(minTempBt, null,rectContent,pointTextPaint);
-				//绘制点测温文字
-				//
-
+				//绘制 点测温文字
 				float textX= strLeft;
-				int textY = getPointTempTextCoordinateY((contentTop + contentBottom)/2,minTempBt,tempWidgetData.getPointTemp().getTempDirection(),textNeedHeight,pointTextPaint);
-
+				int textY = getPointTempTextCoordinateY((contentTop + contentBottom)/2,minTempBt,
+						tempWidgetData.getPointTemp().getTempDirection(),textNeedHeight,pointTextPaint);
+				//绘制文字 再给文字绘制背景
 				canvas.drawText(minTempStr,textX,textY,textStokerPaint);
 				canvas.drawText(minTempStr,textX,textY,pointTextPaint);
 
@@ -983,7 +988,7 @@ public class MyMoveWidget extends View {
 	private float mDataNearByUnit = 0;// 距离数据源 的 单位，有多少个单位，以 矩形 为的感应区为一个单位
 	@Override
 	public boolean dispatchTouchEvent (MotionEvent ev) {
-		Log.e(TAG, "Child View  === dispatchTouchEvent ==  ev.getRawX " + ev.getRawX() + " , ev.getRawY = > " + ev.getRawY());
+		Log.e(TAG, "Child View  === dispatchTouchEvent ==  ev.getAction ==== " + ev.getAction());
 		Log.e(TAG, "Child View  === dispatchTouchEvent ==  get Event , do judge event is in select or in data ?");
 		if (!tempWidgetData.isSelect()){
 			Log.e(TAG, "Child View  === dispatchTouchEvent ==  get Event , do judge event === Don't select or in data!");
@@ -999,8 +1004,8 @@ public class MyMoveWidget extends View {
 					float k = (tempWidgetData.getOtherTemp().getEndPointY() - tempWidgetData.getOtherTemp().getStartPointY())
 							/(tempWidgetData.getOtherTemp().getEndPointX() - tempWidgetData.getOtherTemp().getStartPointX());
 					//当前子View的 Y轴偏移量
-					float k_b = tempWidgetData.getOtherTemp().getStartPointY()-yOffset - k * (tempWidgetData.getOtherTemp().getStartPointX() - xOffset);
-					//点击的点 在绘制的线 周围 20个像素范围内
+					float k_b = tempWidgetData.getOtherTemp().getStartPointY() - yOffset - k * (tempWidgetData.getOtherTemp().getStartPointX() - xOffset);
+					//点击的点 在绘制的线 周围 20个dp范围内
 					result = Math.abs(k_b - (ev.getY() - k * ev.getX())) < mDataNearByUnit*2.0f;
 					break;
 				case 3://矩形
@@ -1192,6 +1197,9 @@ public class MyMoveWidget extends View {
 		}
 	}
 
+	private long pressDownStart;
+	private long pressCancelTime;
+
 
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
@@ -1303,28 +1311,24 @@ public class MyMoveWidget extends View {
 		}else {
 			switch (event.getAction()){
 				case MotionEvent.ACTION_DOWN:
+					if (tempWidgetData.getType() ==3){
+						rectangleState = setPressDownState(event.getX(),event.getY());
+					}
 					pressDownX = event.getRawX();
 					pressDownY = event.getRawY();
 
-					if (!tempWidgetData.isSelect()){
-						if (mTimer == null)
-							mTimer = new Timer();
-						mTimeTask = new TimerTask() {
-							@Override
-							public void run() {
-								Log.e(TAG, "==========TimerTask进来了");
-								Message message = Message.obtain();
-								message.what = TO_CHANGE_SELECT;
-								mHandler.sendMessage(message);
-							}
-						};
-						mTimer.schedule(mTimeTask, 500);
-					}
+					pressDownStart = System.currentTimeMillis();
+
 					break;
+				case MotionEvent.ACTION_MOVE:
 				case MotionEvent.ACTION_UP:
-					if (mTimeTask != null){
-						mTimeTask.cancel();
+					pressCancelTime = System.currentTimeMillis();
+					//在此事件的时间超过了 500毫秒
+					if (pressCancelTime - pressDownStart > 500){
+						mChildToolsClickListener.onSetParentUnselect();
+						tempWidgetData.setSelect(true);
 					}
+
 					break;
 			}
 		}

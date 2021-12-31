@@ -153,11 +153,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //			mUvcCameraHandler.stopRecording();
 //			stopTimer();
 //		}
-//		if (mUvcCameraHandler != null){
-//			mUvcCameraHandler.release();
-//			mUvcCameraHandler = null;
-//		}
+		if (mUvcCameraHandler != null){
+			mUvcCameraHandler.release();
+			mUvcCameraHandler = null;
+		}
 		if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
+			mViewModel.getMUsbMonitor().getValue().destroy();
 			mViewModel.getMUsbMonitor().getValue().unregister();
 		}
 
@@ -224,13 +225,13 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			MediaProjectionHelper.getInstance().stopService(mContext.get());
 		}
 
-		if (mUvcCameraHandler != null) {
-			mUvcCameraHandler.release();
-			mUvcCameraHandler = null;
-		}
-		if (mViewModel.getMUsbMonitor().getValue() != null){
-			mViewModel.getMUsbMonitor().getValue().destroy();
-		}
+//		if (mUvcCameraHandler != null) {
+//			mUvcCameraHandler.release();
+//			mUvcCameraHandler = null;
+//		}
+//		if (mViewModel.getMUsbMonitor().getValue() != null){
+//			mViewModel.getMUsbMonitor().getValue().destroy();
+//		}
 
 
 //		mDataBinding.textureViewPreviewFragment.onPause();
@@ -269,6 +270,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			if (mUvcCameraHandler != null && !mUvcCameraHandler.isReleased()){
 				if (isDebug)Log.e(TAG, "onConnect: != null");
 
+
 				mUvcCameraHandler.open(ctrlBlock);
 				startPreview();
 
@@ -299,27 +301,24 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		public void onDettach (UsbDevice device) {
 			//				mUvcCameraHandler.close();
 			if (isDebug)Log.e(TAG, "DD  onDetach: ");
-			if (mUvcCameraHandler!=null && mUvcCameraHandler.isOpened()){
-				mUvcCameraHandler.release();
-				mUvcCameraHandler = null;
-			}
+			onStop();
 		}
 		@Override
 		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
 			if (isDebug)Log.e(TAG, " DD  onDisconnect: ");
 
-			if (mUvcCameraHandler != null){
-				if (mUvcCameraHandler.isRecording()){
-					stopTimer();
-					mDataBinding.ivPreviewLeftGallery.setVisibility(View.VISIBLE);
-					mUvcCameraHandler.stopRecording();
-					mDataBinding.btPreviewLeftRecord.setSelected(false);
-				}
-				//				mUvcCameraHandler.stopTemperaturing();
-				//				mUvcCameraHandler.stopPreview();
-				mUvcCameraHandler.close();
-				//				mUvcCameraHandler.release();//拔出之时没释放掉这个资源。关闭窗口之时必须释放
-			}
+//			if (mUvcCameraHandler != null){
+//				if (mUvcCameraHandler.isRecording()){
+//					stopTimer();
+//					mDataBinding.ivPreviewLeftGallery.setVisibility(View.VISIBLE);
+//					mUvcCameraHandler.stopRecording();
+//					mDataBinding.btPreviewLeftRecord.setSelected(false);
+//				}
+//				//				mUvcCameraHandler.stopTemperaturing();
+//				//				mUvcCameraHandler.stopPreview();
+//				mUvcCameraHandler.close();
+//				//				mUvcCameraHandler.release();//拔出之时没释放掉这个资源。关闭窗口之时必须释放
+//			}
 
 		}
 		@Override
@@ -902,7 +901,15 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 								if (which != sp.getInt(DYConstants.LANGUAGE_SETTING,0)){
 									sp.edit().putInt(DYConstants.LANGUAGE_SETTING,which).apply();
 									popupWindow.dismiss();
-									//							Log.e(TAG, "onItemSelected:  changed position == " + position);
+
+//									if (mUvcCameraHandler != null){
+//										mUvcCameraHandler.release();
+//										mUvcCameraHandler = null;
+//									}
+//									if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
+//										mViewModel.getMUsbMonitor().getValue().unregister();
+//									}
+									onStop();
 									toSetLanguage(which);
 								}
 								dialog.dismiss();
@@ -1004,6 +1011,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				if (mUvcCameraHandler != null){
 					mUvcCameraHandler.setArea(new int[0]);
 				}
+			}
+
+			@Override
+			public void onSetParentUnselect () {
+				mDataBinding.dragTempContainerPreviewFragment.setAllChildUnSelect();
 			}
 		});
 	}
@@ -1386,6 +1398,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				if (allGranted){
 //					mDataBinding.dragTempContainerPreviewFragment.clearAll();
 //					if (mUvcCameraHandler != null)mUvcCameraHandler.close();
+					onStop();
 					Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
 				}
 			}
@@ -1560,8 +1573,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		Intent intent = new Intent(context, MainActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		context.startActivity(intent);
-		android.os.Process.killProcess(android.os.Process.myPid());
-		System.exit(0);
+//		android.os.Process.killProcess(android.os.Process.myPid());
+//		System.exit(0);
 	}
 	//修改机芯参数
 	public class SendCommand {
