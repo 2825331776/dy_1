@@ -165,9 +165,9 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
 			// カメラのopen処理
 
 			result = uvc_open(mDevice, &mDeviceHandle);
-			LOGE("result: %d",result);
-			LOGE("mDevice: %s",mDevice);
-			LOGE("mDeviceHandle: %s",mDeviceHandle);
+			LOGE("result: uvc_open ==  %d",result);
+//			LOGE("mDevice: %s",mDevice);
+//			LOGE("mDeviceHandle: %s",mDeviceHandle);
 			if (LIKELY(!result)) {
 				// open出来た時
 #if LOCAL_DEBUG
@@ -210,30 +210,30 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
 	RETURN(result, int);
 }
 
-// カメラを開放する
+// 释放照相机
 int UVCCamera::release() {
 	ENTER();
-	// カメラのclose処理
+	// 相机关闭过程
 	if (LIKELY(mDeviceHandle)) {
-		MARK("カメラがopenしていたら開放する");
-		// ステータスコールバックオブジェクトを破棄
-		// プレビューオブジェクトを破棄
+		MARK("如果相机是打开的，请打开它。");
+		// 丢弃状态回调对象
+		//丢弃预览对象
 		LOGE("UVCCamera::release() 0");
 		SAFE_DELETE(mPreview);
 		LOGE("UVCCamera::release() 1");
-		// カメラをclose
+		// 相机close
 		uvc_close(mDeviceHandle);
 		LOGE("UVCCamera::release() 2");
 		mDeviceHandle = NULL;
 	}
 	if (LIKELY(mDevice)) {
-		MARK("カメラを開放");
+		MARK("打开照相机");
 		LOGE("UVCCamera::release() 3");
 		uvc_unref_device(mDevice);
 		LOGE("UVCCamera::release() 4");
 		mDevice = NULL;
 	}
-	// カメラ機能フラグをクリア
+	// 清除相机功能标志
 	LOGE("UVCCamera::release() 5");
 	clearCameraParams();
 	LOGE("UVCCamera::release() 6");

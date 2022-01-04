@@ -126,6 +126,7 @@ UVCPreviewIR::~UVCPreviewIR() {
 inline const bool UVCPreviewIR::isRunning() const {return mIsRunning; }
 inline const bool UVCPreviewIR::isComputed() const {return mIsComputed; }
 inline const bool UVCPreviewIR::isCopyPicturing() const {return mIsCopyPicture;}
+inline const bool UVCPreviewIR::isVerifySN() const {return mIsVerifySn;}
 
 //此处会调用两次，第一次：初始化camera时：宽高是默认值；第二次（startPreview设置调用到）是传入了新的宽高，此时camera是已经初始化open。
 int UVCPreviewIR::setPreviewSize(int width, int height, int min_fps, int max_fps, int mode, float bandwidth,int currentAndroidVersion) {
@@ -355,6 +356,85 @@ int UVCPreviewIR::prepare_preview(uvc_stream_ctrl_t *ctrl) {
     RETURN(result, int);
 }
 
+
+
+string replace(string& base, string src, string dst)
+{
+    LOGE(" DecryptSN =====步骤十一 ===== >");
+    int pos = 0, srclen = src.size(), dstlen = dst.size();
+    while ((pos = base.find(src, pos)) && pos!= string::npos)
+    {
+        base.replace(pos, srclen, dst);
+        pos += dstlen;
+    }
+    return base;
+}
+
+// <summary>
+// 解密sn
+// </summary>
+// <param name="sn">用户sn</param>
+// <param name="ir_sn">设备sn</param>
+// <returns></returns>
+char *  UVCPreviewIR::DecryptSN(char * sn, char * ir_sn){
+    //string str = ir_sn.Replace("JD", "");
+    LOGE(" DecryptSN ir_sn ======= > %s",sn);
+    LOGE(" DecryptSN sn_char ===== > %s",ir_sn);
+
+    string s = ir_sn;
+    s = replace(s,"\0", "0");
+    string str = s.substr(2);
+    LOGE(" DecryptSN =====步骤一 ===== >");
+    int sn_sum = strtol(str.c_str(),NULL,10) % 127;
+    char strs [20];
+    strcpy(strs,sn);
+    LOGE(" DecryptSN =====步骤二 ===== >");
+    strs[0] = (char)(strs[0] ^ 18);
+    strs[8] = (char)(strs[8] ^ 18);
+    strs[11] = (char)(strs[11] ^ sn_sum);
+    strs[3] = (char)(strs[3] ^ sn_sum);
+    strs[7] = (char)(strs[7] ^ 18);
+    strs[9] = (char)(strs[9] ^ sn_sum);
+    LOGE(" DecryptSN =====步骤三 ===== >");
+    for (int i = 0; i < 20; i++)
+    {
+        strs[i] = (char)(strs[i] ^ 29);
+    }
+
+    char a;
+    // 前后0,2,4与7+0,7+2,7+4兑换
+    for (int i = 0; i < 5; i += 2)
+    {
+        a = strs[i];
+        strs[i] = strs[7 + i];
+        strs[7 + i] = a;
+    }
+    LOGE(" DecryptSN =====步骤四 ===== >");
+    for (int i = 0; i < 7; i += 3)
+    {
+        if (i == 0)
+        {
+            strs[i] = (char)(strs[i] ^ strs[20 - 3]);
+            strs[i + 1] = (char)(strs[i + 1] ^ strs[20 - 2]);
+            strs[i + 2] = (char)(strs[i + 2] ^ strs[20 - 1]);
+        }
+        else if (i == 3)
+        {
+            strs[i] = (char)(strs[i] ^ strs[20 - 1]);
+            strs[i + 1] = (char)(strs[i + 1] ^ strs[20 - 2]);
+            strs[i + 2] = (char)(strs[i + 2] ^ strs[20 - 3]);
+        }
+        else
+        {
+            strs[i] = (char)(strs[i] ^ strs[i + 3]);
+            strs[i + 1] = (char)(strs[i + 1] ^ strs[i + 4]);
+            strs[i + 2] = (char)(strs[i + 2] ^ strs[i + 5]);
+        }
+    }
+    LOGE(" DecryptSN =====步骤五 ==strs=== >%s" ,strs);
+    return strs;
+}
+
 /**
  *
  * @param ctrl
@@ -403,7 +483,27 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 //char强转成short类型 长度由requestWidth*requestHeight*2 变成requestWidth*requestHeight
 //                unsigned short* orgData=(unsigned short*)HoldBuffer;// char a数组[1,2] 经过强转short可能变成513(256*2+1)，或258(256*1+2)。
 
-                draw_preview_one(HoldBuffer, &mPreviewWindow, NULL, 4);
+                //
+                //根据 标识  去设置是否渲染 画面 读取SN号
+                if (isVerifySN()){
+//                    unsigned char * fourLinePara = HoldBuffer + ((256 * (192)) << 1);
+//                    int amountPixels = (256 << 1);
+//
+//                    int userArea = amountPixels + (127 << 1);
+//                    memcpy((void*)&machine_sn, fourLinePara + amountPixels + (32 << 1), (sizeof(char) << 5)); // ir序列号
+//                    memcpy((void*)&user_sn, fourLinePara + userArea + sn_length, sizeof(char) * sn_length);//序列号
+////                    LOGE(" ir_sn ======= > %s",machine_sn);
+////                    LOGE(" sn_char ===== > %s",user_sn);
+////                    LOGE(" haha ===== > %s",DecryptSN(user_sn,machine_sn));
+//                    snIsRight = DecryptSN("{uUj-e{}}-k-,/",machine_sn);
+
+
+                    mIsVerifySn = false;
+//                    fourLinePara = NULL;
+                }
+//                if (snIsRight){
+                    draw_preview_one(HoldBuffer, &mPreviewWindow, NULL, 4);
+//                }
 
                 tmp_buf=NULL;
 

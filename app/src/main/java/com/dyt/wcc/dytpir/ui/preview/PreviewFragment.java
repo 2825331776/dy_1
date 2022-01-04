@@ -254,7 +254,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private USBMonitor.OnDeviceConnectListener onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
 		@Override
 		public void onAttach (UsbDevice device) {
-			if (isDebug)Log.e(TAG, "DD  onAttach: "+ device.toString());
+//			if (isDebug)Log.e(TAG, "DD  onAttach: "+ device.toString());
 			Handler handler = new Handler();
 			handler.postDelayed(new Runnable() {
 				@Override
@@ -266,37 +266,24 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		}
 		@Override
 		public void onConnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock, boolean createNew) {
-			if (isDebug)Log.e(TAG, "onConnect: ");
+			if (isDebug)Log.e(TAG, "onConnect:  SN ========================= 》 " + device.getSerialNumber());
 
-			if (mUvcCameraHandler != null && !mUvcCameraHandler.isReleased()){
-				if (isDebug)Log.e(TAG, "onConnect: != null");
-
-
-				mUvcCameraHandler.open(ctrlBlock);
-				startPreview();
-
-				Handler handler = new Handler();
-				handler.postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
-					}
-				}, 300);
-			}else {
+			if (mUvcCameraHandler == null || mUvcCameraHandler.isReleased()){
 				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
 						mDataBinding.textureViewPreviewFragment,1,
 						384,292,1,null,0);
-				mUvcCameraHandler.open(ctrlBlock);
-				startPreview();
-
-				Handler handler = new Handler();
-				handler.postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
-					}
-				}, 300);
 			}
+
+			mUvcCameraHandler.open(ctrlBlock);
+			startPreview();
+
+			Handler handler = new Handler();
+			handler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
+				}
+			}, 300);
 		}
 		@Override
 		public void onDettach (UsbDevice device) {
@@ -503,7 +490,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					@Override
 					public void onClick (View v) {
 //						if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing()){
-//		//					startPreview();
 //							Log.e(TAG, "onClick: btFresh");
 //							setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
 //							mUvcCameraHandler.whenShutRefresh();
@@ -907,14 +893,19 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 									sp.edit().putInt(DYConstants.LANGUAGE_SETTING,which).apply();
 									popupWindow.dismiss();
 
-//									if (mUvcCameraHandler != null){
-//										mUvcCameraHandler.release();
-//										mUvcCameraHandler = null;
-//									}
-//									if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
-//										mViewModel.getMUsbMonitor().getValue().unregister();
-//									}
-									onStop();
+									if (mUvcCameraHandler != null ){
+										mUvcCameraHandler.close();
+										mUvcCameraHandler.release();
+										mUvcCameraHandler = null;
+										stt.release();
+										stt = null;
+									}
+									if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
+										mViewModel.getMUsbMonitor().getValue().unregister();
+										mViewModel.getMUsbMonitor().getValue().destroy();
+									}
+//									onStop();
+//									onDestroyView();
 									toSetLanguage(which);
 								}
 								dialog.dismiss();
