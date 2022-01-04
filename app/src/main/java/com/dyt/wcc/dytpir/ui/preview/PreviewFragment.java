@@ -157,11 +157,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			mUvcCameraHandler.release();
 			mUvcCameraHandler = null;
 		}
+		if (stt != null ){stt.release();stt = null;}
+
+
 		if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
-			mViewModel.getMUsbMonitor().getValue().destroy();
 			mViewModel.getMUsbMonitor().getValue().unregister();
 		}
-
 	}
 
 	/**
@@ -219,6 +220,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //		if (mDataBinding.dragTempContainerPreviewFragment.isHighTempAlarmToggle()){
 //			mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
 //		}
+		if (mViewModel.getMUsbMonitor().getValue() !=null ){
+			mViewModel.getMUsbMonitor().getValue().destroy();
+		}
 
 		if (MediaProjectionHelper.getInstance().getRecord_State() != 0){
 			MediaProjectionHelper.getInstance().stopMediaRecorder();
@@ -228,9 +232,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //		if (mUvcCameraHandler != null) {
 //			mUvcCameraHandler.release();
 //			mUvcCameraHandler = null;
-//		}
-//		if (mViewModel.getMUsbMonitor().getValue() != null){
-//			mViewModel.getMUsbMonitor().getValue().destroy();
 //		}
 
 
@@ -337,6 +338,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	@Override
 	public void onResume () {
 		super.onResume();
+		Log.e(TAG, "onResume: ");
 		//初始化语言，解决onStop 但没有OnDestroy 时 设置了英语锁屏又 返回 系统默认中文 的BUG
 		if (sp.getInt(DYConstants.LANGUAGE_SETTING,0) == 0){
 			configuration.locale = Locale.SIMPLIFIED_CHINESE;
@@ -346,6 +348,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			configuration.setLayoutDirection(Locale.ENGLISH);
 		}
 		getResources().updateConfiguration(configuration,metrics);
+
+		Log.e(TAG, "onResume:  mViewModel ===  " + (mViewModel == null));
 
 //		if (isDebug)Log.e(TAG, "onResume: ");
 
@@ -361,20 +365,22 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //				mDataBinding.flPreview.getLayoutParams().height = screenHeight;
 
 		//		Spinner
+
+
+		if (!mViewModel.getMUsbMonitor().getValue().isRegistered()
+				&& hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE)){
+			mViewModel.getMUsbMonitor().getValue().register();
+		}
+
 		List<UsbDevice> mUsbDeviceList = mViewModel.getMUsbMonitor().getValue().getDeviceList();
 		for (UsbDevice udv : mUsbDeviceList) {
 			//指定设备的连接，获取设备的名字，当前usb摄像头名为Xmodule-S0
 			if (isDebug)Log.e(TAG, "usb devices  == " + udv.toString());
 			if (isDebug)Log.e(TAG, "udv.getProductName()" + udv.getProductName());
 			if (udv.getVendorId() == 5396 && udv.getProductId() ==1 ) {
-//				if (isDebug)Log.e(TAG, "onResume: "+ " S0 " + udv.getProductId() + " "  + udv.getVendorId() );
+				//				if (isDebug)Log.e(TAG, "onResume: "+ " S0 " + udv.getProductId() + " "  + udv.getVendorId() );
 				BaseApplication.deviceName = udv.getProductName();
 			}
-		}
-
-		if (!mViewModel.getMUsbMonitor().getValue().isRegistered()
-				&& hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE)){
-			mViewModel.getMUsbMonitor().getValue().register();
 		}
 //		if(isDebug)Log.e(TAG, "onResume: before  ===  " +System.currentTimeMillis());
 	}
@@ -476,40 +482,39 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	 * 初始化界面的监听器
 	 */
 	private void initListener(){
-		////关闭 温度回调
-		//		mDataBinding.btStopTemp.setOnClickListener(new View.OnClickListener() {
-		//			@Override
-		//			public void onClick (View v) {
-		//				if (mUvcCameraHandler!= null ){
-		////					mUvcCameraHandler.stopTemperaturing();
-		//						Log.e(TAG, "initView: not null ==========================================" );
-		//						int a[] = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
-		//						Log.e(TAG, "initView: aa === > " + Arrays.toString(a));
-		//
+		//测试的 监听器
+				mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick (View v) {
+						if (mUvcCameraHandler!= null ){
+		//					mUvcCameraHandler.stopTemperaturing();
+//								Log.e(TAG, "initView: not null ==========================================" );
+//								int a[] = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
+//								Log.e(TAG, "initView: aa === > " + Arrays.toString(a));
+
+						}
+						//				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isTemperaturing()){
+		//					mUvcCameraHandler.startTemperaturing();
 		//				}
-		//				//				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isTemperaturing()){
-		////					mUvcCameraHandler.startTemperaturing();
-		////				}
-		//			}
-		//		});
-		//
-		//		// 打挡
-		//		mDataBinding.btFresh.setOnClickListener(new View.OnClickListener() {
-		//			@Override
-		//			public void onClick (View v) {
-		//				if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing()){
-		////					startPreview();
-		//					Log.e(TAG, "onClick: btFresh");
-		//					setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
-		//					mUvcCameraHandler.whenShutRefresh();
+					}
+				});
+
+				mDataBinding.btTest02.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick (View v) {
+//						if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing()){
+//		//					startPreview();
+//							Log.e(TAG, "onClick: btFresh");
+//							setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
+//							mUvcCameraHandler.whenShutRefresh();
+//						}
+		//				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isPreviewing()){
+		//					mUvcCameraHandler.stopTemperaturing();
+		//					mUvcCameraHandler.stopPreview();
+		//					mUvcCameraHandler.release();
 		//				}
-		////				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isPreviewing()){
-		////					mUvcCameraHandler.stopTemperaturing();
-		////					mUvcCameraHandler.stopPreview();
-		////					mUvcCameraHandler.release();
-		////				}
-		//			}
-		//		});
+					}
+				});
 
 		/**
 		 * 超温警告 ， 预览层去绘制框， DragTempContainer 控件去播放声音
@@ -925,10 +930,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onClick (View v) {
 				//请求权限
-				PermissionX.init(PreviewFragment.this).permissions(Manifest.permission.INTERNET).request(new RequestCallback() {
-					@Override
-					public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
-						if (allGranted){
+//				PermissionX.init(PreviewFragment.this).permissions(Manifest.permission.INTERNET).request(new RequestCallback() {
+//					@Override
+//					public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+//						if (allGranted){
 							View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_company_info,null);
 							PopCompanyInfoBinding popCompanyInfoBinding = DataBindingUtil.bind(view);
 							assert popCompanyInfoBinding != null;
@@ -949,9 +954,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 							});
 							//popupWindow.showAsDropDown(mDataBinding.flPreview,15,-popupWindow.getHeight()-20, Gravity.CENTER);
 							showPopWindows(view,30,15,20);
-						}
-					}
-				});
+//						}
+//					}
+//				});
 			}
 		});
 		mDataBinding.dragTempContainerPreviewFragment.setAddChildDataListener(new DragTempContainer.onAddChildDataListener() {
@@ -1124,7 +1129,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mViewModel.setDeviceConnectListener(onDeviceConnectListener);
 
 		mDataBinding.setPreviewViewModel(mViewModel);
-//		Log.e(TAG, "initView: behind =  " +System.currentTimeMillis());
+
+//		Log.e(TAG, "initView: ============================================== ");
 	}
 
 	/**
@@ -1391,14 +1397,18 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	};
 	//相册 按钮
 	public void toGallery(View view){
+		if (mDataBinding.btPreviewLeftRecord.isSelected()){
+			showToast(getResources().getString(R.string.toast_is_recording));
+			return;
+		}
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
 				,Manifest.permission.WRITE_EXTERNAL_STORAGE).request(new RequestCallback() {
 			@Override
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 				if (allGranted){
-//					mDataBinding.dragTempContainerPreviewFragment.clearAll();
-//					if (mUvcCameraHandler != null)mUvcCameraHandler.close();
-					onStop();
+//					onStop();
+//					if (mUvcCameraHandler!=null){
+//					}
 					Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
 				}
 			}
@@ -1453,24 +1463,24 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		}
 	}
 
-	public static class Check {
-		// 两次点击按钮之间的点击间隔不能少于1000毫秒
-		private static final int MIN_CLICK_DELAY_TIME = 1000;
-		private static long firstClick;
-		private static long lastClickTime;
-
-		public static boolean isFastClick() {
-			boolean flag = false;
-			long curClickTime = System.currentTimeMillis();
-			if (firstClick==0)firstClick = curClickTime;
-			lastClickTime = curClickTime;
-			//最后一次点击 减去 刚开始点击的 大于间隔
-			if ((lastClickTime - firstClick) >= MIN_CLICK_DELAY_TIME) {
-				flag = true;
-			}
-			return flag;
-		}
-	}
+//	public static class Check {
+//		// 两次点击按钮之间的点击间隔不能少于1000毫秒
+//		private static final int MIN_CLICK_DELAY_TIME = 1000;
+//		private static long firstClick;
+//		private static long lastClickTime;
+//
+//		public static boolean isFastClick() {
+//			boolean flag = false;
+//			long curClickTime = System.currentTimeMillis();
+//			if (firstClick==0)firstClick = curClickTime;
+//			lastClickTime = curClickTime;
+//			//最后一次点击 减去 刚开始点击的 大于间隔
+//			if ((lastClickTime - firstClick) >= MIN_CLICK_DELAY_TIME) {
+//				flag = true;
+//			}
+//			return flag;
+//		}
+//	}
 	//录制
 	public void toRecord(View view){
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
@@ -1496,26 +1506,26 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					 * 录制业务逻辑：点击开始录制，判断 是否在录制？ no-> 开始录制，更改录制按钮"结束录制" & 开始计时器
 					 * yes->结束录制。更改录制按钮"录制" （刷新媒体库）& 重置计时器
 					 */
-					if ( !Check.isFastClick() && mDataBinding.btPreviewLeftRecord.isSelected()){
-						showToast("录制时长应大于1S");
-						return;
-					}
-					if (mUvcCameraHandler.isOpened()){//mUvcCameraHandler.isOpened()
+//					if ( !Check.isFastClick() && mDataBinding.btPreviewLeftRecord.isSelected()){
+//						showToast("录制时长应大于1S");
+//						return;
+//					}
+					if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened() ){//mUvcCameraHandler.isOpened()
 						if (mDataBinding.btPreviewLeftRecord.isSelected() && mUvcCameraHandler.isRecording()){//停止录制
 							stopTimer();
 							mUvcCameraHandler.stopRecording();
-							mDataBinding.ivPreviewLeftGallery.setEnabled(true);
-							Check.firstClick = 0;
+//							mDataBinding.ivPreviewLeftGallery.setEnabled(true);
+//							Check.firstClick = 0;
 						}else if (!mDataBinding.btPreviewLeftRecord.isSelected() && !mUvcCameraHandler.isRecording()&& mUvcCameraHandler.isPreviewing()){//开始录制
 							startTimer();
 							mUvcCameraHandler.startRecording(sp.getInt(DYConstants.RECORD_AUDIO_SETTING,1));
-							mDataBinding.ivPreviewLeftGallery.setEnabled(false);
+//							mDataBinding.ivPreviewLeftGallery.setEnabled(false);
 						}else {
 							Log.e(TAG, "Record Error: error record state !");
 						}
 						mDataBinding.btPreviewLeftRecord.setSelected(!mDataBinding.btPreviewLeftRecord.isSelected());
 					}else {
-						showToast("not opened");
+						showToast(getResources().getString(R.string.toast_need_connect_camera));
 					}
 				}else {
 					showToast(getResources().getString(R.string.toast_dont_have_permission));

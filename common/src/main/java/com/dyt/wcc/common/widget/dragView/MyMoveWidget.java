@@ -408,22 +408,34 @@ public class MyMoveWidget extends View {
 	 */
 	private void getToolsDirection(float toolsWidth , float toolsHeight , int type){
 		//tools Direction
-//		if (type ==1 || type ==2){
-			if ((contentBgRight + toolsWidth <moveMaxWidth) && ((contentBgTop + toolsHeight) < moveMaxHeight)){               //tools right top
+//		if (type !=2) {
+			if ((contentBgRight + toolsWidth < moveMaxWidth) && ((contentBgTop + toolsHeight) < moveMaxHeight)) {               //tools right top
 				toolsLocationState = WIDGET_DIRECTION_STATE_RIGHT_TOP;
-			}else if ((contentBgRight +toolsWidth <moveMaxWidth)&&((contentBgBottom - toolsHeight) > 0)){//tools right bottom
+			} else if ((contentBgRight + toolsWidth < moveMaxWidth) && ((contentBgBottom - toolsHeight) > 0)) {//tools right bottom
 				toolsLocationState = WIDGET_DIRECTION_STATE_RIGHT_BOTTOM;
-			}else if ((contentBgLeft - toolsWidth > 0)&&((contentBgTop + toolsHeight) < moveMaxHeight)){                   //tools left top
+			} else if ((contentBgLeft - toolsWidth > 0) && ((contentBgTop + toolsHeight) < moveMaxHeight)) {                   //tools left top
 				toolsLocationState = WIDGET_DIRECTION_STATE_LEFT_TOP;
-			}else if ((contentBgLeft - toolsWidth > 0)&&(((contentBgBottom - toolsHeight) > 0))){       //tools left bottom
+			} else if ((contentBgLeft - toolsWidth > 0) && (((contentBgBottom - toolsHeight) > 0))) {       //tools left bottom
 				toolsLocationState = WIDGET_DIRECTION_STATE_LEFT_BOTTOM;
 			}
-		//线 特有的 移位
-		if (tempWidgetData.getType() == 2){
-			if (tempWidgetData.getOtherTemp().getStartPointY() >= tempWidgetData.getOtherTemp().getEndPointY()){//左低  右高
-
-			}else {
-
+//		}else {
+		if (type ==2){
+			//线 特有的 移位
+			//左高  右低
+			if (tempWidgetData.getOtherTemp().getStartPointY() >= tempWidgetData.getOtherTemp().getEndPointY()){
+				//右侧 距离够用
+				if (toolsLocationState == WIDGET_DIRECTION_STATE_RIGHT_TOP || toolsLocationState == WIDGET_DIRECTION_STATE_RIGHT_BOTTOM ){
+					toolsLocationState = WIDGET_DIRECTION_STATE_RIGHT_TOP;
+				}else {//右侧 距离不够用
+					toolsLocationState = WIDGET_DIRECTION_STATE_LEFT_BOTTOM;
+				}
+			}else {//左低  右高
+				//右侧 距离够用
+				if (toolsLocationState == WIDGET_DIRECTION_STATE_RIGHT_TOP || toolsLocationState == WIDGET_DIRECTION_STATE_RIGHT_BOTTOM ) {
+					toolsLocationState = WIDGET_DIRECTION_STATE_RIGHT_BOTTOM;
+				}else {//右侧 距离够用
+					toolsLocationState = WIDGET_DIRECTION_STATE_LEFT_TOP;
+				}
 			}
 		}
 //		Log.e(TAG, "getToolsDirection:  ===  " + toolsLocationState);
@@ -1250,6 +1262,7 @@ public class MyMoveWidget extends View {
 							tempWidgetData.getPointTemp().setStartPointY(y);
 							requestLayout();
 						}
+						//移动  线测温模式
 						if (tempWidgetData.getType()==2){
 							Log.e(TAG, "onTouchEvent: type == 2 "  );
 							//(event.getRawX()- pressDownX) 偏移量   (event.getRawY()- pressDownY)
@@ -1259,9 +1272,11 @@ public class MyMoveWidget extends View {
 							float xoff = (event.getRawX()- pressDownX),yoff = (event.getRawY()- pressDownY);
 							float sx = tempWidgetData.getOtherTemp().getStartPointX(), sy= tempWidgetData.getOtherTemp().getStartPointY() ;
 							float ex= tempWidgetData.getOtherTemp().getEndPointX() ,ey = tempWidgetData.getOtherTemp().getEndPointY();
-							float length = ex - sx;
-							if ((sx + xoff) >= padLeft && (sx + xoff) <= (moveMaxWidth - length)
-									&& (ex + xoff) >= length && (ex + xoff) <= moveMaxWidth - padRight){
+							float xLength = Math.abs(ex - sx);//x 轴 长度
+							float yLength = Math.abs(ey - sy);//y 轴 长度
+							//线测温模式 X 坐标 限制区域
+							if ((sx + xoff) >= padLeft && (sx + xoff) <= (moveMaxWidth - xLength - padRight)
+									&& (ex + xoff) >= padLeft+ xLength && (ex + xoff) <= moveMaxWidth - padRight){
 								sx += xoff;
 								ex += xoff;
 
@@ -1270,7 +1285,11 @@ public class MyMoveWidget extends View {
 								requestLayout();
 
 							}
-							if ( (ey + yoff) >= padTop && (sy + yoff) >= padTop && (sy + yoff) <= (moveMaxHeight - padBottom)){
+							//线测温模式 Y 坐标 限制区域
+							if ((Math.min(ey,sy) + yoff) >= padTop
+							&& ((Math.min(ey,sy)+ yoff) <= (moveMaxHeight - yLength - padBottom)) &&
+									(Math.max(ey,sy) + yoff) >= (padTop + yLength)
+									&& ((Math.max(ey,sy)+ yoff) <= (moveMaxHeight - padBottom))  ){
 								sy += yoff;
 								ey += yoff;
 								tempWidgetData.getOtherTemp().setStartPointY(sy);
@@ -1280,9 +1299,8 @@ public class MyMoveWidget extends View {
 
 							pressDownX = event.getRawX();
 							pressDownY = event.getRawY();
-
-//							Log.e(TAG, "onTouchEvent: offset x = " + xoff + " yoffset = "  + yoff);
 						}
+
 						if (tempWidgetData.getType()==3){
 							//计算触碰的方位
 							reviseRectangleLocation(tempWidgetData,event.getRawX()- pressDownX,event.getRawY()-pressDownY,rectangleState);

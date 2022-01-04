@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 
 import com.dyt.wcc.common.base.BaseApplication;
 import com.dyt.wcc.dytpir.utils.LanguageUtils;
-import com.tencent.bugly.crashreport.CrashReport;
 
 /**
 * <p>Copyright (C), 2021.04.01-? , DY Technology    </p>
@@ -29,7 +28,7 @@ public class DYTApplication extends BaseApplication {
 	public void onCreate () {
 		super.onCreate();
 		instance = this;
-		CrashReport.initCrashReport(getApplicationContext(), "253f40d84b", true);
+//		CrashReport.initCrashReport(getApplicationContext(), "253f40d84b", true);
 		//监听activity生命周期
 		registerActivityLifecycleCallbacks();
 	}

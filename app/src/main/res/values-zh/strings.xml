@@ -44,9 +44,11 @@
     <string name="SettingCameraParams_FreeAirTemp">环境温度 </string>
     <string name="SettingCameraParams_Humidity">湿度 (%)</string>
 
+
     <string name="setting_language_chinese">中文</string>
     <string name="setting_language_english">英语</string>
 
+    <string name="toast_is_recording">正在录制中…</string>
     <string name="toast_save_path">保存路径为:</string>
     <string name="toast_need_connect_camera">请连接相机</string>
     <string name="toast_dont_have_permission">没授予对应权限</string>

@@ -20,8 +20,9 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--dontwarn com.tencent.bugly.**
--keep public class com.tencent.bugly.**{*;}
+#第三方类库 Bugly
+#-dontwarn com.tencent.bugly.**
+#-keep public class com.tencent.bugly.**{*;}
 
 
 -keep public class * implements com.bumptech.glide.module.GlideModule

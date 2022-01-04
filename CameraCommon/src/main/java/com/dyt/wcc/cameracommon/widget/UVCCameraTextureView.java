@@ -1229,10 +1229,10 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                     //绘制超温警告的  四边形
                     if (isAlarm && (alarmCount > 15 && alarmCount < 30)){
                         linePaint.setColor(Color.RED);
-                        bitcanvas.drawLine(20,20,20 ,mViewHeight -20,linePaint);
-                        bitcanvas.drawLine(20,20,mViewWidth - 20 ,20,linePaint);
-                        bitcanvas.drawLine(mViewWidth - 20,mViewHeight -20,mViewWidth - 20 ,20,linePaint);
-                        bitcanvas.drawLine(mViewWidth - 20,mViewHeight -20,20,mViewHeight -20,linePaint);
+                        bitcanvas.drawLine(5,5,5 ,mViewHeight -5,linePaint);
+                        bitcanvas.drawLine(5,5,mViewWidth - 5 ,5,linePaint);
+                        bitcanvas.drawLine(mViewWidth - 5,mViewHeight -5,mViewWidth - 5 ,5,linePaint);
+                        bitcanvas.drawLine(mViewWidth - 5,mViewHeight -5,5,mViewHeight -5,linePaint);
                     }
                     //重置警告弹窗 的 帧数计数器
                     if (isAlarm){
