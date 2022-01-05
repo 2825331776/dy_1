@@ -147,7 +147,7 @@ int UVCPreviewIR::setPreviewSize(int width, int height, int min_fps, int max_fps
         requestMode = 0;
         requestBandwidth = bandwidth;
         uvc_stream_ctrl_t ctrl;
-        //by wp
+
         LOGE("uvc_get_stream_ctrl_format_size_fps ==  ===2222222222");
         result = uvc_get_stream_ctrl_format_size_fps(mDeviceHandle, &ctrl,
                                                      !requestMode ? UVC_FRAME_FORMAT_YUYV : UVC_FRAME_FORMAT_MJPEG,
@@ -356,13 +356,39 @@ int UVCPreviewIR::prepare_preview(uvc_stream_ctrl_t *ctrl) {
     RETURN(result, int);
 }
 
+//加密 标识符
+char * UVCPreviewIR::EncryptTag(char * tag){
+    int tagLength = strlen(tag);
+    char tagChar[tagLength];
+    strcpy(tagChar,tag);
+
+    for (int i = 0; i < tagLength; ++i) {
+//        if (tagChar[i] >= 65 && tagChar[i] < 90){
+            tagChar[i] = tagChar[i]-25;
+//        }
+    }
+    strcpy(tag,tagChar);
+    return tag;
+}
+//解密标识符
+char * UVCPreviewIR::DecryptTag(char * tag){
+    int tagLength = strlen(tag);
+    char tagChar[tagLength];
+    for (int i = 0; i < tagLength; ++i) {
+//        if (tagChar[i] >= 65 && tagChar[i] < 90){
+        tagChar[i] = tagChar[i]+25;
+//        }
+    }
+    strcpy(tag,tagChar);
+    return tag;
+}
 
 
 string replace(string& base, string src, string dst)
 {
-    LOGE(" DecryptSN =====步骤十一 ===== >");
+//    LOGE(" DecryptSN =====步骤十一 ===== >");
     int pos = 0, srclen = src.size(), dstlen = dst.size();
-    while ((pos = base.find(src, pos)) && pos!= string::npos)
+    while ((pos = base.find(src, pos)) && pos!= string::npos) //不能写成 ((pos = base.find(src, pos))!= string::npos)
     {
         base.replace(pos, srclen, dst);
         pos += dstlen;
@@ -370,37 +396,38 @@ string replace(string& base, string src, string dst)
     return base;
 }
 
-// <summary>
 // 解密sn
-// </summary>
 // <param name="sn">用户sn</param>
 // <param name="ir_sn">设备sn</param>
 // <returns></returns>
 char *  UVCPreviewIR::DecryptSN(char * sn, char * ir_sn){
     //string str = ir_sn.Replace("JD", "");
-    LOGE(" DecryptSN ir_sn ======= > %s",sn);
-    LOGE(" DecryptSN sn_char ===== > %s",ir_sn);
-
+//    LOGE(" DecryptSN ir_sn ======= > %s",sn);
+//    LOGE(" DecryptSN sn_char ===== > %s",ir_sn);
     string s = ir_sn;
     s = replace(s,"\0", "0");
-    string str = s.substr(2);
-    LOGE(" DecryptSN =====步骤一 ===== >");
-    int sn_sum = strtol(str.c_str(),NULL,10) % 127;
-    char strs [20];
+//    LOGE(" DecryptSN =====步骤一 ===== >s==== %s" , s.c_str());
+    string str = s.substr(2,30);
+//    LOGE(" DecryptSN =====步骤一 ===== > str === >  %s" , str.c_str());
+    int sn_sum = strtol(str.c_str(),NULL,0) % 127;
+    char strs[sn_length];
     strcpy(strs,sn);
-    LOGE(" DecryptSN =====步骤二 ===== >");
+//    for (int i = 0; i < 15; ++i) {
+//        LOGE(" DecryptSN sn ======= > %d",(int)sn[i]);
+//    }
+//    LOGE(" DecryptSN =====步骤二 ===== >strs ===>  %s " ,strs);
+//    LOGE(" DecryptSN =====步骤二 ===== >sn_sum ===>  %d " ,sn_sum);
     strs[0] = (char)(strs[0] ^ 18);
     strs[8] = (char)(strs[8] ^ 18);
     strs[11] = (char)(strs[11] ^ sn_sum);
     strs[3] = (char)(strs[3] ^ sn_sum);
     strs[7] = (char)(strs[7] ^ 18);
     strs[9] = (char)(strs[9] ^ sn_sum);
-    LOGE(" DecryptSN =====步骤三 ===== >");
-    for (int i = 0; i < 20; i++)
+//    LOGE(" DecryptSN =====步骤三 ===== >");
+    for (int i = 0; i < strlen(strs); i++)
     {
         strs[i] = (char)(strs[i] ^ 29);
     }
-
     char a;
     // 前后0,2,4与7+0,7+2,7+4兑换
     for (int i = 0; i < 5; i += 2)
@@ -409,20 +436,20 @@ char *  UVCPreviewIR::DecryptSN(char * sn, char * ir_sn){
         strs[i] = strs[7 + i];
         strs[7 + i] = a;
     }
-    LOGE(" DecryptSN =====步骤四 ===== >");
+//    LOGE(" DecryptSN =====步骤四 ===== >");
     for (int i = 0; i < 7; i += 3)
     {
         if (i == 0)
         {
-            strs[i] = (char)(strs[i] ^ strs[20 - 3]);
-            strs[i + 1] = (char)(strs[i + 1] ^ strs[20 - 2]);
-            strs[i + 2] = (char)(strs[i + 2] ^ strs[20 - 1]);
+            strs[i] = (char)(strs[i] ^ strs[strlen(strs) - 3]);
+            strs[i + 1] = (char)(strs[i + 1] ^ strs[strlen(strs) - 2]);
+            strs[i + 2] = (char)(strs[i + 2] ^ strs[strlen(strs) - 1]);
         }
         else if (i == 3)
         {
-            strs[i] = (char)(strs[i] ^ strs[20 - 1]);
-            strs[i + 1] = (char)(strs[i + 1] ^ strs[20 - 2]);
-            strs[i + 2] = (char)(strs[i + 2] ^ strs[20 - 3]);
+            strs[i] = (char)(strs[i] ^ strs[strlen(strs) - 1]);
+            strs[i + 1] = (char)(strs[i + 1] ^ strs[strlen(strs) - 2]);
+            strs[i + 2] = (char)(strs[i + 2] ^ strs[strlen(strs) - 3]);
         }
         else
         {
@@ -431,8 +458,11 @@ char *  UVCPreviewIR::DecryptSN(char * sn, char * ir_sn){
             strs[i + 2] = (char)(strs[i + 2] ^ strs[i + 5]);
         }
     }
-    LOGE(" DecryptSN =====步骤五 ==strs=== >%s" ,strs);
-    return strs;
+//    for (int index = 0 ; index < 15; index ++) {
+//        LOGE(" DecryptSN =====步骤五 ==strs=== >%s" ,strs);
+//    }
+    strcpy(sn,strs);
+    return sn;
 }
 
 /**
@@ -486,25 +516,40 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 //
                 //根据 标识  去设置是否渲染 画面 读取SN号
                 if (isVerifySN()){
-//                    unsigned char * fourLinePara = HoldBuffer + ((256 * (192)) << 1);
-//                    int amountPixels = (256 << 1);
-//
-//                    int userArea = amountPixels + (127 << 1);
-//                    memcpy((void*)&machine_sn, fourLinePara + amountPixels + (32 << 1), (sizeof(char) << 5)); // ir序列号
-//                    memcpy((void*)&user_sn, fourLinePara + userArea + sn_length, sizeof(char) * sn_length);//序列号
-////                    LOGE(" ir_sn ======= > %s",machine_sn);
-////                    LOGE(" sn_char ===== > %s",user_sn);
-////                    LOGE(" haha ===== > %s",DecryptSN(user_sn,machine_sn));
-//                    snIsRight = DecryptSN("{uUj-e{}}-k-,/",machine_sn);
+                    unsigned char * fourLinePara = HoldBuffer + ((256 * (192)) << 1);
+                    int amountPixels = (256 << 1);
 
-
+                    int userArea = amountPixels + (127 << 1);
+                    memcpy((void*)&machine_sn, fourLinePara + amountPixels + (32 << 1), (sizeof(char) << 5)); // ir序列号
+                    memcpy((void*)&user_sn, fourLinePara + userArea + 100, sizeof(char) * sn_length);//序列号
+//                    LOGE(" ir_sn ======= > %s",machine_sn);
+//                    LOGE(" sn_char ===== > %s",user_sn);
+//                    LOGE(" haha ===== > %s",DecryptSN(user_sn,machine_sn));
+                    char * destr ;
+                    destr = DecryptSN(user_sn,machine_sn);
+                    string ss  = destr;
+//                    LOGE(" haha ===加密前=== > %s",destr);
+//                    destr = EncryptTag(destr);
+////                    LOGE(" haha ==加密== > %d",destr[5]);
+////                    LOGE(" haha ==加密== > %c",destr[5]);
+//                    LOGE(" haha ===加密=== > %s",destr);
+//                    destr = DecryptTag(destr);
+//                    LOGE(" haha ===解密密=== > %s",destr);
+                    ss = ss.substr(0,8);
+                    if ((ss == "DYTCA10D") || (ss == "DYTCA10Q")){
+                        LOGE(" haha ==destr= YEs== > %s",ss.c_str());
+                        snIsRight = true;
+                    } else{
+                        snIsRight = false;
+                        LOGE(" haha ==NONONONONO=== > ");
+                    }
                     mIsVerifySn = false;
-//                    fourLinePara = NULL;
+                    fourLinePara = NULL;
+                    destr = NULL;
                 }
-//                if (snIsRight){
+                if (snIsRight){//sn 是否符合规定。
                     draw_preview_one(HoldBuffer, &mPreviewWindow, NULL, 4);
-//                }
-
+                }
                 tmp_buf=NULL;
 
                 mIsComputed=true;

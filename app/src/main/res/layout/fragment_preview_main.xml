@@ -212,21 +212,21 @@
 
 <!--测试按钮区-->
         <!--        测试按钮-->
-        <Button
-            android:id="@+id/btTest01"
-            android:text="StopTemp"
-            app:layout_constraintTop_toTopOf="@id/ll_container_preview_seekbar"
-            app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <!--        打挡-->
-        <Button
-            android:id="@+id/btTest02"
-            android:text="fresh"
-            app:layout_constraintTop_toBottomOf="@id/btTest01"
-            app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+<!--        <Button-->
+<!--            android:id="@+id/btTest01"-->
+<!--            android:text="StopTemp"-->
+<!--            app:layout_constraintTop_toTopOf="@id/ll_container_preview_seekbar"-->
+<!--            app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
+<!--        &lt;!&ndash;        打挡&ndash;&gt;-->
+<!--        <Button-->
+<!--            android:id="@+id/btTest02"-->
+<!--            android:text="fresh"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/btTest01"-->
+<!--            app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
 
 <!--        分割线-->
         <TextView

@@ -1054,6 +1054,12 @@ abstract class AbstractUVCCameraHandler extends Handler {
                         mHeight = 196;
                         if (DEBUG)Log.e(TAG, "handleOpen: 256 DEVICE ");
                     }
+                    find_str_postion = mSupportedSize.indexOf("256x192");
+                    if (find_str_postion >= 0) {
+                        mWidth = 256;
+                        mHeight = 192;
+                        if (DEBUG)Log.e(TAG, "handleOpen: 256*192 DEVICE ");
+                    }
                     find_str_postion = mSupportedSize.indexOf("640x516");
                     if (find_str_postion >= 0) {
                         mWidth = 640;

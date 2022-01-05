@@ -74,13 +74,15 @@ private:
 	int mcount ;
 	int mCurrentAndroidVersion;     //标志是否使用OpenCL加速渲染成图
 
-	//SN 校验
-	volatile bool mIsVerifySn = false; // 是否去刷新 SN
+//	//SN 校验
+	volatile bool mIsVerifySn = true; // 是否去刷新 SN
 	inline const bool isVerifySN() const;
 	bool snIsRight = false;//是否显示画面的标识
 	int sn_length = 15 ;
 	char machine_sn[32];//设备的SN号
 	char user_sn[20];//用户区的 SN号
+//	string theTag[2] = {"+@;*(\u0018\u0017+","+@;*(\u0018\u00178"};
+//	char myVerify[40];//存储的SN号
 
 
 
@@ -111,9 +113,13 @@ private:
 	void draw_preview_one(uint8_t* frameData, ANativeWindow **window, convFunc_t func, int pixelBytes);
 	void clearDisplay();
 	int copyToSurface(uint8_t *frameData, ANativeWindow **window);
-	//SN 相关
+	//SN 相关 ，sn 用户区 SN, ir_sn 设备sn
 	char * DecryptSN(char * sn, char * ir_sn);
 //	string replace(string& base, string src, string dst);
+	//加密 标识符
+	char * EncryptTag(char * tag);
+	//解密标识符
+	char * DecryptTag(char * tag);
 
 /****************************温度 私有函数 变量********************************/
 

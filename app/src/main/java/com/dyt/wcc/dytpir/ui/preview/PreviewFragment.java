@@ -470,37 +470,37 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	 */
 	private void initListener(){
 		//测试的 监听器
-				mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick (View v) {
-						if (mUvcCameraHandler!= null ){
-		//					mUvcCameraHandler.stopTemperaturing();
-//								Log.e(TAG, "initView: not null ==========================================" );
-//								int a[] = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
-//								Log.e(TAG, "initView: aa === > " + Arrays.toString(a));
-
-						}
-						//				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isTemperaturing()){
-		//					mUvcCameraHandler.startTemperaturing();
-		//				}
-					}
-				});
-
-				mDataBinding.btTest02.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick (View v) {
-//						if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing()){
-//							Log.e(TAG, "onClick: btFresh");
-//							setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
-//							mUvcCameraHandler.whenShutRefresh();
+//				mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
+//					@Override
+//					public void onClick (View v) {
+//						if (mUvcCameraHandler!= null ){
+//		//					mUvcCameraHandler.stopTemperaturing();
+////								Log.e(TAG, "initView: not null ==========================================" );
+////								int a[] = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
+////								Log.e(TAG, "initView: aa === > " + Arrays.toString(a));
+//
 //						}
-		//				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isPreviewing()){
-		//					mUvcCameraHandler.stopTemperaturing();
-		//					mUvcCameraHandler.stopPreview();
-		//					mUvcCameraHandler.release();
-		//				}
-					}
-				});
+//						//				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isTemperaturing()){
+//		//					mUvcCameraHandler.startTemperaturing();
+//		//				}
+//					}
+//				});
+//
+//				mDataBinding.btTest02.setOnClickListener(new View.OnClickListener() {
+//					@Override
+//					public void onClick (View v) {
+////						if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing()){
+////							Log.e(TAG, "onClick: btFresh");
+////							setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
+////							mUvcCameraHandler.whenShutRefresh();
+////						}
+//		//				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isPreviewing()){
+//		//					mUvcCameraHandler.stopTemperaturing();
+//		//					mUvcCameraHandler.stopPreview();
+//		//					mUvcCameraHandler.release();
+//		//				}
+//					}
+//				});
 
 		/**
 		 * 超温警告 ， 预览层去绘制框， DragTempContainer 控件去播放声音
