@@ -544,6 +544,7 @@ public final class USBMonitor {
 					for (int i = 0; i < n; i++) {
 						final UsbDevice device = devices.get(i);
 //						if (DEBUG)Log.e(TAG,"==========usbmonitor contains devices getProductName =====>"+device.getProductName());
+						//兼容tiny-c (device.getVendorId() == 3034 && device.getProductId() == 22592)
 						if((device.getVendorId() == 5396 && device.getProductId() ==1) || (device.getVendorId() == 3034 && device.getProductId() == 22592) ) {
 							mAsyncHandler.post(new Runnable() {
 								@Override

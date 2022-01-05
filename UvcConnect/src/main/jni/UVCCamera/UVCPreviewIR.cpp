@@ -528,14 +528,17 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     char * destr ;
                     destr = DecryptSN(user_sn,machine_sn);
                     string ss  = destr;
-//                    LOGE(" haha ===加密前=== > %s",destr);
-//                    destr = EncryptTag(destr);
+                    ss = ss.substr(0,8);
+
+//                    char  sa[] = "DYTCA10D";
+//                    LOGE(" haha ===加密前=== > %s",sa);
+//                    destr = EncryptTag(sa);
 ////                    LOGE(" haha ==加密== > %d",destr[5]);
 ////                    LOGE(" haha ==加密== > %c",destr[5]);
-//                    LOGE(" haha ===加密=== > %s",destr);
-//                    destr = DecryptTag(destr);
-//                    LOGE(" haha ===解密密=== > %s",destr);
-                    ss = ss.substr(0,8);
+//                    LOGE(" haha ===加密=== > %s",sa);
+//                    destr =  DecryptTag(sa);
+//                    LOGE(" haha ===解密密=== > %s",sa);
+
                     if ((ss == "DYTCA10D") || (ss == "DYTCA10Q")){
                         LOGE(" haha ==destr= YEs== > %s",ss.c_str());
                         snIsRight = true;
@@ -546,6 +549,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     mIsVerifySn = false;
                     fourLinePara = NULL;
                     destr = NULL;
+//                    sa = NULL;
                 }
                 if (snIsRight){//sn 是否符合规定。
                     draw_preview_one(HoldBuffer, &mPreviewWindow, NULL, 4);
