@@ -24,6 +24,10 @@ using namespace std;
 #include "libuvc_internal.h"
 #include "jpegext.h"
 
+#include <vector>
+#include "AES.h"
+#include "Base64.h"
+
 #define LOG_TAG "===UVCPREVIEW==="
 
 #define	LOCAL_DEBUG 0
@@ -62,6 +66,7 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh ,FrameImage * frameImage){
     mIsCopyPicture = false;
     OutPixelFormat=3;
     mTypeOfPalette=1;
+
 
 
     pthread_cond_init(&preview_sync, NULL);
@@ -396,6 +401,26 @@ string replace(string& base, string src, string dst)
     return base;
 }
 
+//字符串分割函数
+std::vector<std::string> split(std::string str, std::string pattern)
+{
+    std::string::size_type pos;
+    std::vector<std::string> result;
+    str += pattern;//扩展字符串以方便操作
+    int size = str.size();
+    for (int i = 0; i < size; i++)
+    {
+        pos = str.find(pattern, i);
+        if (pos < size)
+        {
+            std::string s = str.substr(i, pos - i);
+            result.push_back(s);
+            i = pos + pattern.size() - 1;
+        }
+    }
+    return result;
+}
+
 // 解密sn
 // <param name="sn">用户sn</param>
 // <param name="ir_sn">设备sn</param>
@@ -465,6 +490,81 @@ char *  UVCPreviewIR::DecryptSN(char * sn, char * ir_sn){
     return sn;
 }
 
+const char g_key[17] = "dyt1101c";
+const char g_iv[17] = "gfdertfghjkuyrtg";//ECB MODE不需要关心chain，可以填空
+string EncryptionAES(const string& strSrc) //AES加密
+{
+    size_t length = strSrc.length();
+    int block_num = length / BLOCK_SIZE + 1;
+    //明文
+    char* szDataIn = new char[block_num * BLOCK_SIZE + 1];
+    memset(szDataIn, 0x00, block_num * BLOCK_SIZE + 1);
+    strcpy(szDataIn, strSrc.c_str());
+
+    //进行PKCS7Padding填充。
+    int k = length % BLOCK_SIZE;
+    int j = length / BLOCK_SIZE;
+    int padding = BLOCK_SIZE - k;
+    for (int i = 0; i < padding; i++)
+    {
+        szDataIn[j * BLOCK_SIZE + k + i] = padding;
+    }
+    szDataIn[block_num * BLOCK_SIZE] = '\0';
+
+    //加密后的密文
+    char *szDataOut = new char[block_num * BLOCK_SIZE + 1];
+    memset(szDataOut, 0, block_num * BLOCK_SIZE + 1);
+
+    //进行进行AES的CBC模式加密
+    AES aes;
+    aes.MakeKey(g_key, g_iv, 16, 16);
+    aes.Encrypt(szDataIn, szDataOut, block_num * BLOCK_SIZE, AES::CBC);
+    string str = base64_encode((unsigned char*) szDataOut,
+                               block_num * BLOCK_SIZE);
+    delete[] szDataIn;
+    delete[] szDataOut;
+
+    return str;
+}
+string DecryptionAES(const string& strSrc) //AES解密
+{
+    string strData = base64_decode(strSrc);
+    size_t length = strData.length();
+    //密文
+    char *szDataIn = new char[length + 1];
+    memcpy(szDataIn, strData.c_str(), length+1);
+    //明文
+    char *szDataOut = new char[length + 1];
+    memcpy(szDataOut, strData.c_str(), length+1);
+
+    //进行AES的CBC模式解密
+    AES aes;
+    aes.MakeKey(g_key, g_iv, 16, 16);
+    aes.Decrypt(szDataIn, szDataOut, length, AES::CBC);
+
+    //去PKCS7Padding填充
+    if (0x00 < szDataOut[length - 1] <= 0x16)
+    {
+        int tmp = szDataOut[length - 1];
+        for (int i = length - 1; i >= length - tmp; i--)
+        {
+            if (szDataOut[i] != tmp)
+            {
+                memset(szDataOut, 0, length);
+                LOGE( "去填充失败！解密出错！！");
+//                cout << "去填充失败！解密出错！！" << endl;
+                break;
+            }
+            else
+                szDataOut[i] = 0;
+        }
+    }
+    string strDest(szDataOut);
+    delete[] szDataIn;
+    delete[] szDataOut;
+    return strDest;
+}
+
 /**
  *
  * @param ctrl
@@ -530,22 +630,54 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     string ss  = destr;
                     ss = ss.substr(0,8);
 
-//                    char  sa[] = "DYTCA10D";
-//                    LOGE(" haha ===加密前=== > %s",sa);
-//                    destr = EncryptTag(sa);
-////                    LOGE(" haha ==加密== > %d",destr[5]);
-////                    LOGE(" haha ==加密== > %c",destr[5]);
-//                    LOGE(" haha ===加密=== > %s",sa);
-//                    destr =  DecryptTag(sa);
-//                    LOGE(" haha ===解密密=== > %s",sa);
+//                    string sa = "DYTCA10Q";
+//                    sa = EncryptionAES(sa);
+//                    LOGE(" haha ===加密后=== > %s",sa.c_str());
+//                    sa = DecryptionAES(sa);
+//                    LOGE(" haha ===解密后=== > %s",sa.c_str());
 
-                    if ((ss == "DYTCA10D") || (ss == "DYTCA10Q")){
-                        LOGE(" haha ==destr= YEs== > %s",ss.c_str());
-                        snIsRight = true;
-                    } else{
-                        snIsRight = false;
-                        LOGE(" haha ==NONONONONO=== > ");
+                    FILE * inFile = NULL;
+                    inFile = fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/configs.txt","a+");
+
+//                    if (inFile)
+//                    {
+                        fseek(inFile,0,SEEK_END);
+                        int length = ftell(inFile);
+                        rewind(inFile);
+                        LOGE("sssss======File length =======> %d",length);
+//                        malloc()
+                        if (fread(&ssss,length, 1, inFile) != length){
+                        }
+                        fclose(inFile);
+//                    }
+                    std::vector<std::string> a1a1a1 =split(ssss,";");
+//                    LOGE("sssss=============> %s",ssss);
+                    for(int i=0; i<a1a1a1.size(); i++)
+                    {
+                        string adff = DecryptionAES(a1a1a1[i]);
+                        LOGE("sssss==========i = > %d ,===> %s",i,adff.c_str());
+                        LOGE("sssss==========,===> %s",ss.c_str());
+                        if ((ss == adff) ){
+                            snIsRight = true;
+                        } else{
+                            snIsRight = false;
+                        }
+                        LOGE("sssss==========i = > %d ,===> %s",i,a1a1a1[i].c_str());
                     }
+
+//                    string res = DecryptionAES(ssss);
+//                    LOGE("sssss=============> %s",res.c_str());
+//                    LOGE("sssss=============> %s",res.c_str());
+
+//                    string  res [] = NULL ;
+
+//                    if ((ss == "DYTCA10D") || (ss == "DYTCA10Q")){
+//                        LOGE(" haha ==destr= YEs== > %s",ss.c_str());
+//                        snIsRight = true;
+//                    } else{
+//                        snIsRight = false;
+//                        LOGE(" haha ==NONONONONO=== >%s",ss.c_str());
+//                    }
                     mIsVerifySn = false;
                     fourLinePara = NULL;
                     destr = NULL;

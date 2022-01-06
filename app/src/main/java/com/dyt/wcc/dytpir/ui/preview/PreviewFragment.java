@@ -1101,8 +1101,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 		mDataBinding.dragTempContainerPreviewFragment.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
 		mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING,0));
-//		Log.e(TAG, "initView: ==================== " + mDataBinding.toggleAreaCheck.isChecked());
-//		Log.e(TAG, "initView:  ===== 111 ===  " + mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray());
 
 //		Log.e(TAG, "initView:  ==111111= " + System.currentTimeMillis());
 //		mDataBinding.textureViewPreviewFragment.setAspectRatio(256/(float)192);

@@ -121,6 +121,8 @@ set(SRC_LISTS
         Parameters.cpp
         time_cal.cpp
         serenegiant_usb_UVCCamera.cpp
+        AES.cpp
+        Base64.cpp
 
         )
 

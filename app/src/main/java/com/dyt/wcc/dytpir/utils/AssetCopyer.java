@@ -51,6 +51,8 @@ public class AssetCopyer {
      */
 
     private  static void copyAssetsToDst(Context context,String srcPath,String dstPath) {
+        Log.e(TAG, "copyAssetsToDst:srcPath ======> " + srcPath);
+        Log.e(TAG, "copyAssetsToDst:dstPath ======> " + dstPath);
         try {
             String fileNames[] =context.getAssets().list(srcPath);
             if (fileNames.length > 0)
@@ -59,10 +61,13 @@ public class AssetCopyer {
                 file.mkdirs();
                 for (String fileName : fileNames)
                 {
-                    if(srcPath!="" && fileName.endsWith(".dat"))
+                    Log.e(TAG, "copyAssetsToDst: fileName======== > " + fileName);
+                    if("".equals(srcPath) && fileName.contains("dat") || (fileName.contains("configs")) )
                     {
-                        copyAssetsToDst(context,srcPath + "/" + fileName,dstPath+"/"+fileName);
-                    }else{
+//                        Log.e(TAG, "copyAssetsToDst: fileName===NO=endsWith=dat=== > " + fileName);
+//                        copyAssetsToDst(context,srcPath + "/" + fileName,dstPath+"/"+fileName);
+//                    }else{
+                        Log.e(TAG, "copyAssetsToDst: fileName=====endsWith=dat====== > " + fileName);
                         copyAssetsToDst(context, fileName,dstPath+"/"+fileName);
                     }
                 }
