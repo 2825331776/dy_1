@@ -256,17 +256,17 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //        Log.e(TAG, "setVideoEncoder: ");
     }
 
-    public int mSupportWidth;
-    public int mSupportHeight;
+//    public int mSupportWidth;
+//    public int mSupportHeight;
 
 
-    public void setSupportWidth(int width) {
-        mSupportWidth = width;
-    }
-
-    public void setSupportHeight(int height) {
-        mSupportHeight = height;
-    }
+//    public void setSupportWidth(int width) {
+//        mSupportWidth = width;
+//    }
+//
+//    public void setSupportHeight(int height) {
+//        mSupportHeight = height;
+//    }
 
     @Override
     public void setCallback(final Callback callback) {
@@ -299,8 +299,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
     }
 
     public void setSuportWH(int w, int h) {
-        mSupportWidth = w;
-        mSupportHeight = h;
+//        mSupportWidth = w;
+//        mSupportHeight = h;
         if (mRenderHandler != null) {
             mRenderHandler.setSuportWH(w, h);
         }

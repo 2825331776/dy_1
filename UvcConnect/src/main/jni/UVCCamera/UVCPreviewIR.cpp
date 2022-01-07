@@ -183,7 +183,8 @@ int UVCPreviewIR::setPreviewDisplay(ANativeWindow *preview_window) {
                  * 对于所有这些参数，如果提供0，则窗口的基值将恢复生效
                  */
 //                ANativeWindow_setBuffersGeometry(mPreviewWindow,
-//                                                 requestWidth, requestHeight -4, previewFormat);
+//                                                 requestWidth, requestHeight , previewFormat);
+                //S0机芯
                 ANativeWindow_setBuffersGeometry(mPreviewWindow,
                                                  requestWidth, requestHeight -4, previewFormat);
 

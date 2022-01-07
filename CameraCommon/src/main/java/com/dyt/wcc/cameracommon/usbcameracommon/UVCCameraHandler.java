@@ -130,7 +130,6 @@ public class UVCCameraHandler extends AbstractUVCCameraHandler {
 
 		thread.start();
 		mUVCCameraHandler=(UVCCameraHandler)thread.getHandler();
-		Log.e(TAG, "createHandler:  456 === " + System.currentTimeMillis());
 		return mUVCCameraHandler;
 		//return (UVCCameraHandler)thread.getHandler();
 	}
