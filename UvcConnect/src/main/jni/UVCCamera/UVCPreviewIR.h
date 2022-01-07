@@ -50,8 +50,6 @@ private:
 //	unsigned char *picRgbaOutBuffer;// 截屏时， 拷贝的rgba数据
 	char savePicPath[100];
 
-	char ssss[80] ;
-
 
 
 	ANativeWindow *mPreviewWindow;

@@ -624,64 +624,52 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     memcpy((void*)&user_sn, fourLinePara + userArea + 100, sizeof(char) * sn_length);//序列号
 //                    LOGE(" ir_sn ======= > %s",machine_sn);
 //                    LOGE(" sn_char ===== > %s",user_sn);
-//                    LOGE(" haha ===== > %s",DecryptSN(user_sn,machine_sn));
-                    char * destr ;
-                    destr = DecryptSN(user_sn,machine_sn);
-                    string ss  = destr;
-                    ss = ss.substr(0,8);
-
-//                    string sa = "DYTCA10Q";
-//                    sa = EncryptionAES(sa);
-//                    LOGE(" haha ===加密后=== > %s",sa.c_str());
-//                    sa = DecryptionAES(sa);
-//                    LOGE(" haha ===解密后=== > %s",sa.c_str());
+                    char * dytSn ;
+                    dytSn = DecryptSN(user_sn,machine_sn);
+                    LOGE("==============destr ============= %s",dytSn);
+                    string dytSnStr  = dytSn;
+                    dytSnStr = dytSnStr.substr(0,8);
+//                    LOGE("==============ss ============= %s",ss.c_str());
 
                     FILE * inFile = NULL;
                     inFile = fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/configs.txt","a+");
-
-//                    if (inFile)
-//                    {
+                    //存储文件流数据 的指针
+                    char * fileStore;
+                    //读取文件流 字符
+                    if (inFile)
+                    {
+                        //获取文件长度
                         fseek(inFile,0,SEEK_END);
                         int length = ftell(inFile);
                         rewind(inFile);
-                        LOGE("sssss======File length =======> %d",length);
-//                        malloc()
-                        if (fread(&ssss,length, 1, inFile) != length){
+                        //指针 分配内存
+                        fileStore = (char*)malloc(length);
+//                        LOGE("sssss======File length =======> %d",length);
+                        if (fread(fileStore,length, 1, inFile) != length){
                         }
                         fclose(inFile);
-//                    }
-                    std::vector<std::string> a1a1a1 =split(ssss,";");
-//                    LOGE("sssss=============> %s",ssss);
-                    for(int i=0; i<a1a1a1.size(); i++)
-                    {
-                        string adff = DecryptionAES(a1a1a1[i]);
-                        LOGE("sssss==========i = > %d ,===> %s",i,adff.c_str());
-                        LOGE("sssss==========,===> %s",ss.c_str());
-                        if ((ss == adff) ){
-                            snIsRight = true;
-                        } else{
-                            snIsRight = false;
-                        }
-                        LOGE("sssss==========i = > %d ,===> %s",i,a1a1a1[i].c_str());
                     }
-
-//                    string res = DecryptionAES(ssss);
-//                    LOGE("sssss=============> %s",res.c_str());
-//                    LOGE("sssss=============> %s",res.c_str());
-
-//                    string  res [] = NULL ;
-
-//                    if ((ss == "DYTCA10D") || (ss == "DYTCA10Q")){
-//                        LOGE(" haha ==destr= YEs== > %s",ss.c_str());
-//                        snIsRight = true;
-//                    } else{
-//                        snIsRight = false;
-//                        LOGE(" haha ==NONONONONO=== >%s",ss.c_str());
-//                    }
+                    //切割结果
+                    std::vector<std::string> split_result =split(fileStore,";");
+                    //遍历 结果 是否 符合筛选
+                    for(int i=0; i<split_result.size(); i++)
+                    {
+                        string decryptionSplitChild = DecryptionAES(split_result[i]).substr(0,8);
+                        if (dytSnStr == decryptionSplitChild){
+                            LOGE("=============SN匹配成功========");
+                            snIsRight = snIsRight | 1;
+                        } else{
+                            LOGE("==============SN匹配不成功========");
+                            snIsRight = snIsRight | 0;
+                        }
+                    }
                     mIsVerifySn = false;
+                    //释放用到的指针资源
                     fourLinePara = NULL;
-                    destr = NULL;
-//                    sa = NULL;
+                    dytSn = NULL;
+                    inFile = NULL;
+                    free(fileStore);
+                    fileStore = NULL;
                 }
                 if (snIsRight){//sn 是否符合规定。
                     draw_preview_one(HoldBuffer, &mPreviewWindow, NULL, 4);
@@ -689,7 +677,6 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 tmp_buf=NULL;
 
                 mIsComputed=true;
-//                LOGE("==================iscomputed  =====true");
             }
             pthread_mutex_unlock(&preview_mutex);
 
