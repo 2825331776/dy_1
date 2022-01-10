@@ -199,6 +199,7 @@ void FrameImage::getCameraPara(uint8_t *frame){
 //    LOGE("sn:%s\n",sn);
     int userArea=amountPixels+127;
 
+    //tinyC 这个地方需要手动查询
     memcpy(&correction,fourLinePara+userArea,sizeof( float));//修正
     userArea=userArea+2;
     memcpy(&Refltmp,fourLinePara+userArea,sizeof( float));//反射温度
@@ -252,13 +253,21 @@ int FrameImage:: getByteArrayTemperaturePara(uint8_t* para , uint8_t* data){
     //LOGE("getByteArrayTemperaturePara:%d,%d,%d,%d,%d,%d",para[16],para[17],para[18],para[19],para[20],para[21]);
     return true;
 }
+void FrameImage::setVidPid(int vid ,int pid){
+    this->mVid = vid;
+    this->mPid = pid;
+}
 /**********************************用户操作区 结束*************************************/
 
 /*********************************预览方法区  开始**************************************/
 void FrameImage::setPreviewSize(int width,int height ,int mode ){
     requestWidth = width,requestHeight = height;
     requestMode = mode;
-    mBuffer = new unsigned char[requestWidth*(requestHeight-4)*4];
+    if (mPid == 1 && mVid == 5396){
+        mBuffer = new unsigned char[requestWidth*(requestHeight-4)*4];
+    } else if (mPid == 22592 && mVid == 3034){
+        mBuffer = new unsigned char[requestWidth*(requestHeight)*4];
+    }
 
     switch (requestWidth)
         {
@@ -279,7 +288,7 @@ void FrameImage::setPreviewSize(int width,int height ,int mode ){
 
 //根据色板去渲染出一帧的画面
 unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
-//    LOGE("=========================onePreviewData==========================================");
+    LOGE("=========================onePreviewData==========================================");
     unsigned short *tmp_buf = (unsigned short *) frameData;
     /*if(mcount < 2){
         FILE* outFile = NULL;

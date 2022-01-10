@@ -450,14 +450,15 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mUvcCameraHandler.tempShowOnOff(isTempShow);//是否显示绘制的温度 0不显示，1显示。最终调用的是UVCCameraTextureView的绘制线程。
 
 		mUvcCameraHandler.startPreview(stt);
-		mUvcCameraHandler.startTemperaturing();//温度回调
+		//tinyC 暂时关闭 温度回调功能
+//		mUvcCameraHandler.startTemperaturing();//温度回调
 
 
 		new Handler().postDelayed(new Runnable() {
 			@Override
 			public void run () {
 				if (mUvcCameraHandler!=null && mUvcCameraHandler.isOpened()){
-					getCameraParams();
+//					getCameraParams();
 				}
 				//清除所有的控件
 //				mDataBinding.dragTempContainerPreviewFragment.clearAll();

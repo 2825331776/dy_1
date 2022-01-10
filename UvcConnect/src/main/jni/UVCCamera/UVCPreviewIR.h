@@ -49,7 +49,9 @@ private:
 	unsigned char *picOutBuffer;//生成图片时保存的原始数据
 //	unsigned char *picRgbaOutBuffer;// 截屏时， 拷贝的rgba数据
 	char savePicPath[100];
-
+	//设备类型 vid pid
+	int mVid;
+	int mPid;
 
 
 	ANativeWindow *mPreviewWindow;
@@ -153,6 +155,7 @@ public:
 	int setPreviewDisplay(ANativeWindow *preview_window);
     int startPreview();
     int stopPreview();
+	void setVidPid(int vid ,int pid);
 
 /***************************录制*****************************/
 //	int setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format);//把当前数据回调给Java层

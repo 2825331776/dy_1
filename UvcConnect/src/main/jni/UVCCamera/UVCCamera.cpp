@@ -183,6 +183,8 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
 				LOGE("vid=============%d  , pid=================%d",vid,pid);
 				mFrameImage = new FrameImage(mDeviceHandle);
 				mPreview = new UVCPreviewIR(mDeviceHandle,mFrameImage);
+				mPreview->setVidPid(mVid,mPid);
+				mFrameImage->setVidPid(mVid,mPid);
 				//mPreview = new UVCPreview(mDeviceHandle);
 				/*if(vid==5396)//IR device
 				{
@@ -320,8 +322,11 @@ int UVCCamera::setTemperatureCallback(JNIEnv *env, jobject temperature_callback_
 	int result = EXIT_FAILURE;
 	if (mPreview) {
 		//吴长城
+//		if (mPid == 1 && mVid == 5396 ){
+			result = mPreview->setTemperatureCallback(env, temperature_callback_obj);
+//		}
 //        LOGE("================setTemperatureCallback==================");
-		result = mPreview->setTemperatureCallback(env, temperature_callback_obj);
+
 	}
 	RETURN(result, int);
 }
@@ -1084,7 +1089,7 @@ int UVCCamera::internalSetCtrlValue(control_value_t &values,uint32_t value,diy f
     }
 	if (value == 32768){//打挡指令 0X8000
 		unsigned char data[8] = {0x0d,0xc1,0x00,0x00,0x00,0x00,0x00,0x00};
-		int ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
+		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
 	}
 
 	RETURN(ret,int);

@@ -889,6 +889,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
          **/
 //        private TcpClient mTcpClient;
         private int cameraType = 1; // 1为uvc,2为tcp
+        private int mVid ,mPid ;
 
         /************************/
 
@@ -920,6 +921,8 @@ abstract class AbstractUVCCameraHandler extends Handler {
             //            mEncoderType=2;
             mWidth = width;//探测器的面阵
             mHeight = height;
+            mVid = 0;
+            mPid = 0;
 
             System.setProperty("org.apache.poi.javax.xml.stream.XMLInputFactory", "com.fasterxml.aalto.stax.InputFactoryImpl");
             System.setProperty("org.apache.poi.javax.xml.stream.XMLOutputFactory", "com.fasterxml.aalto.stax.OutputFactoryImpl");
@@ -1024,6 +1027,9 @@ abstract class AbstractUVCCameraHandler extends Handler {
                     final UVCCamera camera;
                     camera = new UVCCamera(currentAndroidVersion);
                     camera.open(ctrlBlock);
+                    mVid = ctrlBlock.getVenderId();
+                    mPid = ctrlBlock.getProductId();
+//                    Log.e(TAG, "handleOpen:================= + ctrlBlock Vid ====  " + ctrlBlock.getVenderId() + " ==== pid ===" + ctrlBlock.getProductId());
                     synchronized (mSync) {
                         mUVCCamera = camera;
                     }
@@ -1229,7 +1235,12 @@ abstract class AbstractUVCCameraHandler extends Handler {
                  * if need Temperature callback
                  *set this setTemperatureCallback(...) function
                  *==========================================================================*/
-                mWeakCameraView.get().setSuportWH(mWidth, mHeight);
+                if (mVid == 5396 && mPid==1){
+                    mWeakCameraView.get().setSuportWH(mWidth, mHeight-4);
+                }else  if (mPid == 22592 && mVid == 3034){
+                    mWeakCameraView.get().setSuportWH(mWidth, mHeight);
+                }
+
                 ITemperatureCallback mTempCb = mWeakCameraView.get().getTemperatureCallback();
                 mUVCCamera.setTemperatureCallback(mTempCb);//将温度回调的对象  发送到底层
                 mWeakCameraView.get().setTemperatureCbing(false);//测温开关

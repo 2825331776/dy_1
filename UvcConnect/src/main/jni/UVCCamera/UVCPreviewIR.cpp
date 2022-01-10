@@ -182,11 +182,15 @@ int UVCPreviewIR::setPreviewDisplay(ANativeWindow *preview_window) {
                  * 则在将其合成到屏幕时将缩放其缓冲区以匹配该大小。 宽度和高度必须均为零或均为非零，
                  * 对于所有这些参数，如果提供0，则窗口的基值将恢复生效
                  */
-//                ANativeWindow_setBuffersGeometry(mPreviewWindow,
-//                                                 requestWidth, requestHeight , previewFormat);
                 //S0机芯
-                ANativeWindow_setBuffersGeometry(mPreviewWindow,
-                                                 requestWidth, requestHeight -4, previewFormat);
+                if (mPid == 1 && mVid == 5396){
+                    ANativeWindow_setBuffersGeometry(mPreviewWindow,
+                                                     requestWidth, requestHeight -4, previewFormat);
+                }else if (mPid == 22592 && mVid == 3034){
+                    ANativeWindow_setBuffersGeometry(mPreviewWindow,
+                                                 requestWidth, requestHeight , previewFormat);
+                }
+
 
             }
         }
@@ -221,6 +225,10 @@ int UVCPreviewIR::startPreview() {
     }
     ////LOGE("STARTPREVIEW RESULT2:%d",result);
     RETURN(result, int);
+}
+void UVCPreviewIR::setVidPid(int vid ,int pid){
+    mVid = vid;
+    mPid = pid;
 }
 
 int UVCPreviewIR::stopPreview() {
@@ -316,8 +324,13 @@ int UVCPreviewIR::prepare_preview(uvc_stream_ctrl_t *ctrl) {
     //此处初始化要mode判断 生成
     OutBuffer=new unsigned char[requestWidth*(requestHeight)*2];//分配内存：为啥要*2 在draw_preview_one中会赋值给 unsigned short 类型
     HoldBuffer=new unsigned char[requestWidth*(requestHeight)*2];
-    RgbaOutBuffer=new unsigned char[requestWidth*(requestHeight-4)*4];
-    RgbaHoldBuffer=new unsigned char[requestWidth*(requestHeight-4)*4];
+    if (mPid == 1 && mVid == 5396){
+        RgbaOutBuffer=new unsigned char[requestWidth*(requestHeight-4)*4];
+        RgbaHoldBuffer=new unsigned char[requestWidth*(requestHeight-4)*4];
+    }else if (mPid == 22592 && mVid == 3034){
+        RgbaOutBuffer=new unsigned char[requestWidth*(requestHeight)*4];
+        RgbaHoldBuffer=new unsigned char[requestWidth*(requestHeight)*4];
+    }
 
     picOutBuffer=new unsigned char[requestWidth*(requestHeight)*2];
 //    picRgbaOutBuffer=new unsigned char[requestWidth*(requestHeight-4)*4];
@@ -344,8 +357,15 @@ int UVCPreviewIR::prepare_preview(uvc_stream_ctrl_t *ctrl) {
             LOGE("frameSize=(%d,%d)@%s", frameWidth, frameHeight, (!requestMode ? "YUYV" : "MJPEG"));//frameSize=(256,196)@YUYV
             pthread_mutex_lock(&preview_mutex);
             if (LIKELY(mPreviewWindow)) {
-                ANativeWindow_setBuffersGeometry(mPreviewWindow,
-                                                 frameWidth, frameHeight-4, previewFormat);//ir软件384*292中，实质384*288图像数据，4行其他数据
+                if (mPid == 1 && mVid == 5396){
+                    ANativeWindow_setBuffersGeometry(mPreviewWindow,
+                                                     frameWidth, frameHeight-4, previewFormat);//ir软件384*292中，实质384*288图像数据，4行其他数据
+                }else if (mPid == 22592 && mVid == 3034){
+                    ANativeWindow_setBuffersGeometry(mPreviewWindow,
+                                                     frameWidth, frameHeight, previewFormat);//ir软件384*292中，实质384*288图像数据，4行其他数据
+                }
+//                ANativeWindow_setBuffersGeometry(mPreviewWindow,
+//                                                 frameWidth, frameHeight-4, previewFormat);//ir软件384*292中，实质384*288图像数据，4行其他数据
                 //LOGE("ANativeWindow_setBuffersGeometry:(%d,%d)", frameWidth, frameHeight);
             }
             pthread_mutex_unlock(&preview_mutex);
@@ -604,7 +624,11 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 uint8_t *tmp_buf=NULL;
                 //if(OutPixelFormat==3)//RGBA 32bit输出
                 mIsComputed=false;
-                mFrameImage->getCameraPara(HoldBuffer);
+
+                if (mPid == 1 && mVid == 5396){
+                    mFrameImage->getCameraPara(HoldBuffer);
+                }
+
 
                 // swap the buffers rgba
                 tmp_buf =RgbaOutBuffer;
@@ -672,9 +696,12 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     free(fileStore);
                     fileStore = NULL;
                 }
-                if (snIsRight){//sn 是否符合规定。
+                if (snIsRight){//s0 的 sn 是否符合规定。
+                    draw_preview_one(HoldBuffer, &mPreviewWindow, NULL, 4);
+                } else if (mPid == 22592 && mVid == 3034){
                     draw_preview_one(HoldBuffer, &mPreviewWindow, NULL, 4);
                 }
+
                 tmp_buf=NULL;
 
                 mIsComputed=true;
@@ -1508,8 +1535,9 @@ void UVCPreviewIR::do_temperature(JNIEnv *env)
 void UVCPreviewIR::do_temperature_callback(JNIEnv *env, uint8_t *frameData)
 {
 //   LOGE("=========do_temperature_callback ======");
-    mFrameImage->do_temperature_callback(env,frameData);
-
+    if (mPid == 1 && mVid == 5396){
+        mFrameImage->do_temperature_callback(env,frameData);
+    }
 }
 /***************************************温度相关 结束**************************************/
 
@@ -1554,8 +1582,9 @@ void UVCPreviewIR::clearDisplay() {//
 }
 
 int UVCPreviewIR:: getByteArrayTemperaturePara(uint8_t* para){
-
-    mFrameImage->getByteArrayTemperaturePara(para,HoldBuffer);
+    if (mPid == 1 && mVid == 5396){
+        mFrameImage->getByteArrayTemperaturePara(para,HoldBuffer);
+    }
     return true;
 }
 
