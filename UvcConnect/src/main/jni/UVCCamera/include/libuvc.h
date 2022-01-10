@@ -684,6 +684,9 @@ uvc_error_t uvc_get_pantilt_abs(uvc_device_handle_t *devh, int32_t* pan, int32_t
 uvc_error_t uvc_set_pantilt_abs(uvc_device_handle_t *devh, int32_t pan, int32_t tilt);
 uvc_error_t uvc_get_pantilt_rel(uvc_device_handle_t *devh, int8_t* pan_rel, uint8_t* pan_speed, int8_t* tilt_rel, uint8_t* tilt_speed, enum uvc_req_code req_code);
 uvc_error_t uvc_set_pantilt_rel(uvc_device_handle_t *devh, int8_t pan_rel, uint8_t pan_speed, int8_t tilt_rel, uint8_t tilt_speed);
+
+// 自定义通信
+uvc_error_t uvc_diy_communicate(uvc_device_handle_t *devh,uint8_t request_type, uint8_t bRequest, uint16_t wValue, uint16_t wIndex,unsigned char *data, uint16_t wLength, unsigned int timeout);
 //----------------------------------------------------------------------
 uvc_error_t uvc_get_roll_abs(uvc_device_handle_t *devh, int16_t* roll, enum uvc_req_code req_code);
 uvc_error_t uvc_set_roll_abs(uvc_device_handle_t *devh, int16_t roll);

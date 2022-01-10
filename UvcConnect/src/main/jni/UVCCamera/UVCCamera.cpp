@@ -58,6 +58,8 @@
  */
 UVCCamera::UVCCamera()
 :	mFd(0),
+	mPid(0),
+	mVid(0),
 	mUsbFs(NULL),
 	mContext(NULL),
 	mDevice(NULL),
@@ -174,6 +176,8 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
 				uvc_print_diag(mDeviceHandle, stderr);
 #endif
 				mFd = fd;
+				mVid = vid;
+				mPid = pid;
 				mStatusCallback = new UVCStatusCallback(mDeviceHandle);
 				mButtonCallback = new UVCButtonCallback(mDeviceHandle);
 				LOGE("vid=============%d  , pid=================%d",vid,pid);
@@ -242,6 +246,8 @@ int UVCCamera::release() {
 		close(mFd);
 		LOGE("UVCCamera::release() 8");
 		mFd = 0;
+		mPid = 0;
+		mVid = 0;
 		free(mUsbFs);
 		LOGE("UVCCamera::release() 9");
 		mUsbFs = NULL;
@@ -1052,6 +1058,39 @@ int UVCCamera::internalSetCtrlValue(control_value_t &values, uint32_t value,
 	}
 	RETURN(ret, int);
 }
+/**
+ * 自定义 UVC 通信函数
+ * @param values
+ * @param value
+ * @param func_diy
+ * @return
+ */
+int UVCCamera::internalSetCtrlValue(control_value_t &values,uint32_t value,diy func_diy){
+    LOGE("===========internalSetCtrlValue ==value= %d========",value);
+	int ret = 0;
+
+    if (value == 32772){//画面设置指令 0X8004 , 32773 == 0X8005
+		unsigned char data[8] = {0x14,0x85,0x00,0x03,0x00,0x00,0x00,0x00};
+    	//输出温度数据(AD值)
+		data[0] = 0x0a;
+		data[1] = 0x01;
+		data[2] = 0x00;
+		data[3] = 0x00;
+		data[4] = 0x00;
+		data[5] = 0x00;
+		data[6] = 0x00;
+		data[7] = 0x00;
+		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
+    }
+	if (value == 32768){//打挡指令 0X8000
+		unsigned char data[8] = {0x0d,0xc1,0x00,0x00,0x00,0x00,0x00,0x00};
+		int ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
+	}
+
+	RETURN(ret,int);
+}
+
+
 
 //======================================================================
 // スキャニングモード
@@ -2303,7 +2342,15 @@ int UVCCamera::setZoom(int zoom) {
 	ENTER();
 	int ret = UVC_ERROR_IO;
 	//if (mCtrlSupports & CTRL_ZOOM_ABS) {
+	if (mPid == 1 && mVid == 5396){
+		LOGE("==========mPid=1===,= mVid=5396==========");
 		ret = internalSetCtrlValue(mZoom, zoom,uvc_set_zoom_abs);
+	} else if (mPid == 22592 && mVid == 3034){
+		LOGE("==========mPid=22592===,= mVid=3034==========");
+		ret = internalSetCtrlValue(mZoom,zoom,uvc_diy_communicate);
+	} else {
+
+	}
 	//}
 	RETURN(ret, int);
 }

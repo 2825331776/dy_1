@@ -396,7 +396,7 @@ enum libusb_standard_request {
 	/** Set device address for all future accesses */
 	LIBUSB_REQUEST_SET_ADDRESS = 0x05,
 
-	/** Get the specified descriptor */
+	/** Get the specified descriptor  获取指定的描述符 */
 	LIBUSB_REQUEST_GET_DESCRIPTOR = 0x06,
 
 	/** Used to update existing descriptors or add new descriptors */
@@ -1833,6 +1833,10 @@ static inline int libusb_get_descriptor(libusb_device_handle *dev,
 	return libusb_control_transfer(dev, LIBUSB_ENDPOINT_IN,
 		LIBUSB_REQUEST_GET_DESCRIPTOR, (uint16_t) ((desc_type << 8) | desc_index),
 		0, data, (uint16_t) length, 1000);
+//	unsigned char datas[8] = {0x0d,0xc1,0x00,0x00,0x00,0x00,0x00,0x00,};
+//	return libusb_control_transfer(dev, 0x41,
+//								   0x45, 0x0078,
+//								   0x1d00, datas,sizeof(datas), 1000);
 }
 
 /** \ingroup desc
@@ -1852,9 +1856,13 @@ static inline int libusb_get_descriptor(libusb_device_handle *dev,
 static inline int libusb_get_string_descriptor(libusb_device_handle *dev,
 	uint8_t desc_index, uint16_t langid, unsigned char *data, int length)
 {
-	return libusb_control_transfer(dev, LIBUSB_ENDPOINT_IN,
-		LIBUSB_REQUEST_GET_DESCRIPTOR, (uint16_t)((LIBUSB_DT_STRING << 8) | desc_index),
-		langid, data, (uint16_t) length, 1000);
+//	return libusb_control_transfer(dev, LIBUSB_ENDPOINT_IN,
+//		LIBUSB_REQUEST_GET_DESCRIPTOR, (uint16_t)((LIBUSB_DT_STRING << 8) | desc_index),
+//		langid, data, (uint16_t) length, 1000);
+	unsigned char datas[8] = {0x0d,0xc1,0x00,0x00,0x00,0x00,0x00,0x00,};
+	return libusb_control_transfer(dev, 0x41,
+								   0x45, 0x0078,
+								   0x1d00, datas,sizeof(datas), 1000);
 }
 
 int LIBUSB_CALL libusb_get_string_descriptor_ascii(libusb_device_handle *dev,
