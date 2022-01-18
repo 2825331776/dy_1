@@ -1012,9 +1012,9 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                 }
                 isCamera2ing = false;
             }
-
-            public int mSuportWidth;//探测器的面阵
-            public int mSuportHeight;
+            //支持的宽高
+            public int mSupportWidth;
+            public int mSupportHeight;
 
 //            public void setTouchPoint(CopyOnWriteArrayList<TouchPoint> touchPoint) {
 //                this.mTouchPointLists = touchPoint;
@@ -1045,7 +1045,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //                    Log.e(TAG, "ITemperatureCallback.onReceiveTemperature.temperature[].length ==========="+temperature.length);
 //                    Log.e(TAG, " 取整 temperature[].length ==========="+temperature.length/256);
 //                    Log.e(TAG, " 取余 temperature[].length ==========="+temperature.length%256);
-                    System.arraycopy(temperature, 0, temperature1, 0, (mSuportHeight) * mSuportWidth + 10);
+                    System.arraycopy(temperature, 0, temperature1, 0, (mSupportHeight) * mSupportWidth + 10);
 //                    if (UnitTemperature == 0) {     //摄氏度
 //                        //Log.e(TAG, "000000000");
 ////                        temperature1 = new float[mSuportHeight*mSuportWidth*4]; 初始化太迟 之前访问会报错
@@ -1092,6 +1092,10 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //                }
 //            };
 
+            /**
+             * JNI获取的温度回调到Java层
+             * @return
+             */
             public ITemperatureCallback getTemperatureCallback() {
                 //by wp
                 //Log.e(TAG, "获取UVC温度回调==== ");
@@ -1108,10 +1112,10 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
             }
 
             public void setSuportWH(int w, int h) {
-                mSuportHeight = h;
-                mSuportWidth = w;
-                widthRatio=mSuportWidth*1.0f/icon.getWidth();
-                heightRatio=(mSuportHeight)*1.0f/icon.getHeight();//数据写死了
+                mSupportHeight = h;
+                mSupportWidth = w;
+                widthRatio=mSupportWidth*1.0f/icon.getWidth();
+                heightRatio=(mSupportHeight)*1.0f/icon.getHeight();//数据写死了
                 Log.e(TAG, "widthRatio=" + widthRatio);
                 Log.e(TAG, "heightRatio=" + heightRatio);
             }
@@ -1368,27 +1372,27 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                      */
                     //绘制 全幅 最高温 最低温  中心点温度 ,并且查找点是否 不在线 和矩形之中
                     if ((featurePointsControl & 0x0f00) > 0 && (true)){//最高点温度
-                        bpRectF.left = temperature1[1] * (icon.getWidth() / (float) mSuportWidth) - mBitmapRectSize / 2.0f;
-                        bpRectF.right = temperature1[1] * (icon.getWidth() / (float) mSuportWidth) + mBitmapRectSize / 2.0f;
-                        bpRectF.top = temperature1[2] * (icon.getHeight() / (float) (mSuportHeight)) - mBitmapRectSize / 2.0f;
-                        bpRectF.bottom = temperature1[2] * (icon.getHeight() / (float) (mSuportHeight)) + mBitmapRectSize / 2.0f;
+                        bpRectF.left = temperature1[1] * (icon.getWidth() / (float) mSupportWidth) - mBitmapRectSize / 2.0f;
+                        bpRectF.right = temperature1[1] * (icon.getWidth() / (float) mSupportWidth) + mBitmapRectSize / 2.0f;
+                        bpRectF.top = temperature1[2] * (icon.getHeight() / (float) (mSupportHeight)) - mBitmapRectSize / 2.0f;
+                        bpRectF.bottom = temperature1[2] * (icon.getHeight() / (float) (mSupportHeight)) + mBitmapRectSize / 2.0f;
                         bitcanvas.drawBitmap(highTempBt,null,bpRectF,photoPaint);
                         tempTextPaint.setColor(Color.RED);
-	                    xy2DrawText(temperature1[1] * (icon.getWidth() / (float) mSuportWidth),
-			                    temperature1[2] * (icon.getHeight() / (float) (mSuportHeight)),
+	                    xy2DrawText(temperature1[1] * (icon.getWidth() / (float) mSupportWidth),
+			                    temperature1[2] * (icon.getHeight() / (float) (mSupportHeight)),
                                 decimalFormat.format(TempConvertUtils.centigrade2Temp(temperature1[3],mDragTempContainer.getTempSuffixMode()))
                                         + DragTempContainer.tempSuffixList[mDragTempContainer.getTempSuffixMode()],tempTextBgTextPaint,tempTextPaint,0);
                     }
                     if ((featurePointsControl & 0x00f0) > 0 && (true)){//最低点温度
-                        bpRectF.left = temperature1[4] * (icon.getWidth() / (float) mSuportWidth) - mBitmapRectSize / 2.0f;
-                        bpRectF.right = temperature1[4] * (icon.getWidth() / (float) mSuportWidth) + mBitmapRectSize / 2.0f;
-                        bpRectF.top = temperature1[5] * (icon.getHeight() / (float) (mSuportHeight )) - mBitmapRectSize / 2.0f;
-                        bpRectF.bottom = temperature1[5] * (icon.getHeight() / (float) (mSuportHeight )) + mBitmapRectSize / 2.0f;
+                        bpRectF.left = temperature1[4] * (icon.getWidth() / (float) mSupportWidth) - mBitmapRectSize / 2.0f;
+                        bpRectF.right = temperature1[4] * (icon.getWidth() / (float) mSupportWidth) + mBitmapRectSize / 2.0f;
+                        bpRectF.top = temperature1[5] * (icon.getHeight() / (float) (mSupportHeight )) - mBitmapRectSize / 2.0f;
+                        bpRectF.bottom = temperature1[5] * (icon.getHeight() / (float) (mSupportHeight )) + mBitmapRectSize / 2.0f;
                         bitcanvas.drawBitmap(lowTempBt,null,bpRectF,photoPaint);
                         tempTextPaint.setColor(Color.BLUE);
 
-	                    xy2DrawText(temperature1[4] * (icon.getWidth() / (float) mSuportWidth),
-			                    temperature1[5] * (icon.getHeight() / (float) (mSuportHeight)),
+	                    xy2DrawText(temperature1[4] * (icon.getWidth() / (float) mSupportWidth),
+			                    temperature1[5] * (icon.getHeight() / (float) (mSupportHeight)),
 			                      decimalFormat.format(TempConvertUtils.centigrade2Temp(temperature1[6],mDragTempContainer.getTempSuffixMode()))
                                           + DragTempContainer.tempSuffixList[mDragTempContainer.getTempSuffixMode()],tempTextBgTextPaint,tempTextPaint,0);
                     }

@@ -285,6 +285,26 @@ void FrameImage::setPreviewSize(int width,int height ,int mode ){
                 break;
         }
 }
+/**
+ *
+ * @param tmp_buf
+ * @param size
+ * @param type
+ */
+void SearchMaxMin(unsigned short * tempAD_data,int size ,unsigned short * max, unsigned short * min){
+    if (tempAD_data!= NULL){
+        *min = tempAD_data[0];
+        *max = tempAD_data[0];
+        for (int i = 0; i < size; ++i) {
+            if (*min > tempAD_data[i]){
+                *min = tempAD_data[i];
+            }
+            if (*max < tempAD_data[i]){
+                *max = tempAD_data[i];
+            }
+        }
+    }
+}
 
 //根据色板去渲染出一帧的画面
 unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
@@ -321,13 +341,23 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
         currentpalette = DYgetPalette(mTypeOfPalette);
         mIsPaletteChanged = false;
     }
+    if (mVid == 5396 && mPid==1){
+        int amountPixels1 = requestWidth*(requestHeight-4);
+        amountPixels1 = amountPixels1 + 4;//倒数第四行的 第四位
+        max = tmp_buf[amountPixels1];
+        amountPixels1 = amountPixels1 + 3;//倒数第四行的 第七位
+        min = tmp_buf[amountPixels1];
+        ro = max - min;
+    }else if (mPid == 22592 && mVid == 3034){
+//        LOGE("==============tmp_buf[100]==value  ==%d=============",tmp_buf[100]);
+        SearchMaxMin(tmp_buf,(requestHeight * requestWidth),&max,&min);
+//        LOGE( "==========max AD === %d  , min Ad ======= %d" ,max , min );
+
+        ro = max - min;
+    }
+
     //获取图幅中的 最大最小AD值
-    int amountPixels1 = requestWidth*(requestHeight-4);
-    amountPixels1 = amountPixels1 + 4;//倒数第四行的 第四位
-    max = tmp_buf[amountPixels1];
-    amountPixels1 = amountPixels1 + 3;//倒数第四行的 第七位
-    min = tmp_buf[amountPixels1];
-    ro = max - min;
+
 
     //定义三个变量去绘制灰度图
     int grayMin = min;
@@ -635,74 +665,130 @@ int FrameImage::setTemperatureCallback(JNIEnv *env, jobject temperature_callback
         }
     RETURN(0, int);
 }
+/**
+ *
+ * @param env
+ * @param frameData HoldBuffer = requestWidth * requestHeight * 2
+ */
 //查询温度对照表，将查询之后的具体数据回调给java层onReceiveTemperature函数
 void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
+    //共用的指针。
     unsigned short* orgData=(unsigned short *)frameData;
-    unsigned short* fourLinePara = orgData + requestWidth*(requestHeight-4);//后四行参数
-    if(UNLIKELY(isNeedWriteTable))
-    {
+
+    if (mPid == 1 && mVid == 5396){
+        unsigned short* fourLinePara = orgData + requestWidth*(requestHeight-4);//后四行参数
+        if(UNLIKELY(isNeedWriteTable))
+        {
 //        LOGE("===================isNeedWriteTable================update temperatureTable===============");
-        //根据后四行参数，填充整个的温度对照表 rangeMode设置的固定120
-        thermometryT4Line(requestWidth,requestHeight,temperatureTable,fourLinePara,
-                          &floatFpaTmp,&correction,&Refltmp,&Airtmp,&humi,&emiss,&distance,
-                          cameraLens,shutterFix,rangeMode);
-        isNeedWriteTable=false;
-        isNeedFreshAD = true;
-    }
+            //根据后四行参数，填充整个的温度对照表 rangeMode设置的固定120
+            thermometryT4Line(requestWidth,requestHeight,temperatureTable,fourLinePara,
+                              &floatFpaTmp,&correction,&Refltmp,&Airtmp,&humi,&emiss,&distance,
+                              cameraLens,shutterFix,rangeMode);
 
-//   LOGE(" 8000 %f",temperatureTable[8000]);
-//    LOGE(" 4000   %f",temperatureTable[4000]);
-//    LOGE("12000  %f",temperatureTable[12000]);
-//    LOGE("6000  %f",temperatureTable[6000]);
-//    LOGE("10000  %f",temperatureTable[10000]);
-//    LOGE("7000  %f",temperatureTable[7000]);
-//    LOGE("9000  %f",temperatureTable[9000]);
-//    LOGE("7500  %f",temperatureTable[7500]);
-//    LOGE("9500  %f",temperatureTable[9500]);
-
-    float* temperatureData = mCbTemper;//temperatureData指向mCbTemper的首地址，更改temperatureData也就是更改mCbTemper
-    //根据8004或者8005模式来查表，8005模式下仅输出以上注释的10个参数，8004模式下数据以上参数+全局温度数据
-    thermometrySearch(requestWidth,requestHeight,temperatureTable,orgData,temperatureData,rangeMode,OUTPUTMODE);
+            isNeedFreshAD = true;
+        }
+        //temperatureData指向mCbTemper的首地址，更改temperatureData也就是更改mCbTemper
+        float* temperatureData = mCbTemper;
+        //根据8004或者8005模式来查表，8005模式下仅输出以上注释的10个参数，8004模式下数据以上参数+全局温度数据
+        thermometrySearch(requestWidth,requestHeight,temperatureTable,orgData,temperatureData,rangeMode,OUTPUTMODE);
 //    LOGE("centerTmp:%.2f,maxTmp:%.2f,minTmp:%.2f,avgTmp:%.2f\n",temperatureData[0],temperatureData[3],temperatureData[6],temperatureData[9]);
-    jfloatArray mNCbTemper= env->NewFloatArray(requestWidth*(requestHeight-4)+10);
-    /**
-     *从mCbTemper 取出10+requestWidth*(requestHeight-4) 个长度的值给 mNCbTemper（这个值要传递给Java层）
-     */
-    env->SetFloatArrayRegion(mNCbTemper, 0, 10+requestWidth*(requestHeight-4), mCbTemper);
-    if (mTemperatureCallbackObj!=NULL)
-    {
-        //调用java层的 onReceiveTemperature ，传回mNCbTemper（整个图幅温度数据+ 后四行10个温度分析 的数据） 实参
-        env->CallVoidMethod(mTemperatureCallbackObj, iTemperatureCallback.onReceiveTemperature, mNCbTemper);
-        env->ExceptionClear();
-
-
-    }
+        jfloatArray mNCbTemper= env->NewFloatArray(requestWidth*(requestHeight-4)+10);
+        /**
+         *从mCbTemper 取出10+requestWidth*(requestHeight-4) 个长度的值给 mNCbTemper（这个值要传递给Java层）
+         */
+        env->SetFloatArrayRegion(mNCbTemper, 0, 10+requestWidth*(requestHeight-4), mCbTemper);
+        if (mTemperatureCallbackObj!=NULL)
+        {
+            //调用java层的 onReceiveTemperature ，传回mNCbTemper（整个图幅温度数据+ 后四行10个温度分析 的数据） 实参
+            env->CallVoidMethod(mTemperatureCallbackObj, iTemperatureCallback.onReceiveTemperature, mNCbTemper);
+            env->ExceptionClear();
+        }
 //    pthread_mutex_lock(&fixed_mutex);
-    if (isNeedFreshAD){
-        LOGE(" 5753 %f",temperatureTable[5753]);
-        LOGE(" 5532   %f",temperatureTable[5532]);
-//        LOGE("12000  %f",temperatureTable[12000]);
-//        LOGE("6000  %f",temperatureTable[6000]);
-//        float* a = &temperatureTable[0];
-//        memcpy(tempData,temperatureTable,16384*4);
-        LOGE("refresh AD ====  maxThumbValue == %f ,  minThumbValue ==== %f " , maxThumbValue , minThumbValue);
-        maxThumbAD = getDichotomySearch(temperatureTable,16384,maxThumbValue,0,16384);
-        minThumbAD = getDichotomySearch(temperatureTable,16384,minThumbValue,0,16384);
-        isNeedFreshAD = false;
-        //3 全幅最高温 ，6 是全幅最低温 AD值
+        //固定温度条： 刷新 最大 最小AD的 ，S0通过查表刷新。
+        if (isNeedFreshAD){
+//            LOGE("refresh AD ====  maxThumbValue == %f ,  minThumbValue ==== %f " , maxThumbValue , minThumbValue);
+            maxThumbAD = getDichotomySearch(temperatureTable,16384,maxThumbValue,0,16384);
+            minThumbAD = getDichotomySearch(temperatureTable,16384,minThumbValue,0,16384);
+            isNeedFreshAD = false;
+            //3 全幅最高温 ，6 是全幅最低温 AD值
 //        LOGE("max temp   = %f  , min temp = %f",)
-    }
-
-
+        }
 //    pthread_mutex_unlock(&fixed_mutex);
 
-    env->DeleteLocalRef(mNCbTemper);
+        env->DeleteLocalRef(mNCbTemper);
 
-    temperatureData=NULL;
-    fourLinePara=NULL;
-    orgData=NULL;
+        temperatureData=NULL;
+        fourLinePara=NULL;
+
 //    LOGE("do_temperature_callback EXIT();");
 //    EXIT();
+    }else if (mPid == 22592 && mVid == 3034){
+        //记录十个特征点温度。
+        float minX, minY, minTemp, maxX,maxY,maxTemp ,centerTemp;
+        //创建返回Java层的 温度数组 。 returnTempData  返回的数据指针。
+        jfloatArray mNCbTemper= env->NewFloatArray(requestWidth* requestHeight+10);
+        jfloat  * returnTempData = (jfloat * ) env->GetFloatArrayElements(mNCbTemper,0);
+        //读取中心点温度 .centerData 中心点指针，centerTemp 中心点指针AD值转成的温度
+        unsigned short* centerData=(unsigned short *)frameData;
+        centerData = centerData + (requestWidth * requestHeight)/2;
+        centerTemp = (*centerData)/64.0f - 273.15f;
+        returnTempData[0] = centerTemp;
+
+        //一次遍历拿到最大最小值。及其坐标。以及 更正没一个AD 转温度。
+        for (int i = 0; i < (requestWidth* requestHeight); ++i) {
+            //
+            if (i == 0){
+                minX = 0;
+                minY = 0;
+                minTemp = (orgData[0] / 64 - 273.15f);
+                maxX = requestWidth;
+                maxY = requestHeight;
+                maxTemp = (orgData[0] / 64 - 273.15f);
+            }
+            if (minTemp > (orgData[i] / 64 - 273.15f)){
+                minX = i % requestWidth;
+                minY = i / requestWidth;
+                minTemp = (orgData[i] / 64 - 273.15f);
+            }
+            if (maxTemp < (orgData[i] / 64 - 273.15f)){
+                maxX = i % requestWidth;
+                maxY = i / requestWidth;
+                maxTemp = (orgData[i] / 64 - 273.15f);
+            }
+
+            returnTempData[i+10] = (orgData[i] / 64 - 273.15f);
+        }
+        returnTempData[1] = maxX;
+        returnTempData[2] = maxY;
+        returnTempData[3] = maxTemp;
+        returnTempData[4] = minX;
+        returnTempData[5] = minY;
+        returnTempData[6] = minTemp;
+        returnTempData[7] = 0;
+        returnTempData[8] = 0;
+        returnTempData[9] = 0;
+
+        if (mTemperatureCallbackObj!=NULL)
+        {
+            //调用java层的 onReceiveTemperature ，传回mNCbTemper（整个图幅温度数据+ 后四行10个温度分析 的数据） 实参
+            env->CallVoidMethod(mTemperatureCallbackObj, iTemperatureCallback.onReceiveTemperature, mNCbTemper);
+            env->ExceptionClear();
+        }
+        //固定温度条： 刷新 最大 最小AD的 ，tinyC 通过计算获取。
+        if (isNeedFreshAD){
+//            LOGE("refresh AD ====  maxThumbValue == %f ,  minThumbValue ==== %f " , maxThumbValue , minThumbValue);
+            maxThumbAD = (maxThumbValue + 273.15f ) * 64;
+            minThumbAD = (minThumbValue + 273.15f ) * 64;
+            isNeedFreshAD = false;
+        }
+
+        centerData = NULL;
+        returnTempData = NULL;
+
+        env->DeleteLocalRef(mNCbTemper);
+    }
+    orgData=NULL;
+
 }
 
 /***************************************温度结束****************************************/

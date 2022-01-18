@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UVCCamera {
-	private static final boolean DEBUG = false;	// TODO set false when releasing
+	private static final boolean DEBUG = true;	// TODO set false when releasing
 	private static final String TAG = UVCCamera.class.getSimpleName();
 	private static final String DEFAULT_USBFS = "/dev/bus/usb";
 
@@ -433,7 +433,7 @@ public class UVCCamera {
     }
 
     /**
-	 * set frame callback  图像回调接口   录制图层视频
+	 * set frame callback  图像回调接口 录制图层视频
 	 * @param callback
 	 * @param pixelFormat
 	 */
@@ -458,9 +458,8 @@ public class UVCCamera {
         return status;
     }
 	/**
-	 * para of temp
-	 *
-	 *
+	 * @param len 传入长度
+	 * @return byte 数组 机芯参数的数组。
 	 */
 	public byte[] getByteArrayTemperaturePara(int len) {
 		boolean status = false;
@@ -973,12 +972,12 @@ public class UVCCamera {
 	public synchronized void updateCameraParams() {
     	if (mNativePtr != 0) {
     		if ((mControlSupports == 0) || (mProcSupports == 0)) {
-        		// サポートしている機能フラグを取得
+        		// サポートしている機能フラグを取得  获取支持的功能标志
     			if (mControlSupports == 0)
     				mControlSupports = nativeGetCtrlSupports(mNativePtr);
     			if (mProcSupports == 0)
     				mProcSupports = nativeGetProcSupports(mNativePtr);
-    	    	// 設定値を取得
+    	    	// 設定値を取得  获取设置值
     	    	if ((mControlSupports != 0) && (mProcSupports != 0)) {
 	    	    	nativeUpdateBrightnessLimit(mNativePtr);
 	    	    	nativeUpdateContrastLimit(mNativePtr);

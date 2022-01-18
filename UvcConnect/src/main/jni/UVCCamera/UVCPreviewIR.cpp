@@ -317,6 +317,11 @@ void *UVCPreviewIR::preview_thread_func(void *vptr_args)
     pthread_exit(NULL);
 }
 
+/**
+ *
+ * @param ctrl
+ * @return
+ */
 int UVCPreviewIR::prepare_preview(uvc_stream_ctrl_t *ctrl) {
 //LOGE("prepare_preview");
     uvc_error_t result;
@@ -612,6 +617,8 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 //等待数据 初始化到位,之后运行下面的代码。
                 pthread_cond_wait(&preview_sync, &preview_mutex);
 //                 LOGE("waitPreviewFrame02============================");
+                //判断机芯型号，去运行不同的代码。
+
 
                 if (isCopyPicturing()){//判断截屏
                     LOGE("======mutex===========");
@@ -626,6 +633,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 mIsComputed=false;
 
                 if (mPid == 1 && mVid == 5396){
+                    //获取机芯的参数，环境温度  反射率 等等。S0机芯
                     mFrameImage->getCameraPara(HoldBuffer);
                 }
 
@@ -638,67 +646,73 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 //char强转成short类型 长度由requestWidth*requestHeight*2 变成requestWidth*requestHeight
 //                unsigned short* orgData=(unsigned short*)HoldBuffer;// char a数组[1,2] 经过强转short可能变成513(256*2+1)，或258(256*1+2)。
 
-                //
-                //根据 标识  去设置是否渲染 画面 读取SN号
-                if (isVerifySN()){
-                    unsigned char * fourLinePara = HoldBuffer + ((256 * (192)) << 1);
-                    int amountPixels = (256 << 1);
+                if (mPid == 22592 && mVid == 3034){//tinyC机芯
+                    snIsRight = true;
+                }else  if (mVid == 5396 && mPid==1){//S0机芯
 
-                    int userArea = amountPixels + (127 << 1);
-                    memcpy((void*)&machine_sn, fourLinePara + amountPixels + (32 << 1), (sizeof(char) << 5)); // ir序列号
-                    memcpy((void*)&user_sn, fourLinePara + userArea + 100, sizeof(char) * sn_length);//序列号
+                    //根据 标识  去设置是否渲染 画面 读取SN号
+                    if (isVerifySN()) {
+                        unsigned char *fourLinePara = HoldBuffer + ((256 * (192)) << 1);
+                        int amountPixels = (256 << 1);
+
+                        int userArea = amountPixels + (127 << 1);
+                        memcpy((void *) &machine_sn, fourLinePara + amountPixels + (32 << 1),
+                               (sizeof(char) << 5)); // ir序列号
+                        memcpy((void *) &user_sn, fourLinePara + userArea + 100,
+                               sizeof(char) * sn_length);//序列号
 //                    LOGE(" ir_sn ======= > %s",machine_sn);
 //                    LOGE(" sn_char ===== > %s",user_sn);
-                    char * dytSn ;
-                    dytSn = DecryptSN(user_sn,machine_sn);
-                    LOGE("==============destr ============= %s",dytSn);
-                    string dytSnStr  = dytSn;
-                    dytSnStr = dytSnStr.substr(0,8);
+                        char *dytSn;
+                        dytSn = DecryptSN(user_sn, machine_sn);
+                        LOGE("==============destr ============= %s", dytSn);
+                        string dytSnStr = dytSn;
+                        dytSnStr = dytSnStr.substr(0, 8);
 //                    LOGE("==============ss ============= %s",ss.c_str());
 
-                    FILE * inFile = NULL;
-                    inFile = fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/configs.txt","a+");
-                    //存储文件流数据 的指针
-                    char * fileStore;
-                    //读取文件流 字符
-                    if (inFile)
-                    {
-                        //获取文件长度
-                        fseek(inFile,0,SEEK_END);
-                        int length = ftell(inFile);
-                        rewind(inFile);
-                        //指针 分配内存
-                        fileStore = (char*)malloc(length);
+                        FILE *inFile = NULL;
+                        inFile = fopen(
+                                "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/configs.txt",
+                                "a+");
+                        //存储文件流数据 的指针
+                        char *fileStore;
+                        //读取文件流 字符
+                        if (inFile) {
+                            //获取文件长度
+                            fseek(inFile, 0, SEEK_END);
+                            int length = ftell(inFile);
+                            rewind(inFile);
+                            //指针 分配内存
+                            fileStore = (char *) malloc(length);
 //                        LOGE("sssss======File length =======> %d",length);
-                        if (fread(fileStore,length, 1, inFile) != length){
+                            if (fread(fileStore, length, 1, inFile) != length) {
+                            }
+                            fclose(inFile);
                         }
-                        fclose(inFile);
-                    }
-                    //切割结果
-                    std::vector<std::string> split_result =split(fileStore,";");
-                    //遍历 结果 是否 符合筛选
-                    for(int i=0; i<split_result.size(); i++)
-                    {
-                        string decryptionSplitChild = DecryptionAES(split_result[i]).substr(0,8);
-                        if (dytSnStr == decryptionSplitChild){
-                            LOGE("=============SN匹配成功========");
-                            snIsRight = snIsRight | 1;
-                        } else{
-                            LOGE("==============SN匹配不成功========");
-                            snIsRight = snIsRight | 0;
+                        //切割结果
+                        std::vector<std::string> split_result = split(fileStore, ";");
+                        //遍历 结果 是否 符合筛选
+                        for (int i = 0; i < split_result.size(); i++) {
+                            string decryptionSplitChild = DecryptionAES(split_result[i]).substr(0,
+                                                                                                8);
+                            if (dytSnStr == decryptionSplitChild) {
+                                LOGE("=============SN匹配成功========");
+                                snIsRight = snIsRight | 1;
+                            } else {
+                                LOGE("==============SN匹配不成功========");
+                                snIsRight = snIsRight | 0;
+                            }
                         }
+                        mIsVerifySn = false;
+                        //释放用到的指针资源
+                        fourLinePara = NULL;
+                        dytSn = NULL;
+                        inFile = NULL;
+                        free(fileStore);
+                        fileStore = NULL;
                     }
-                    mIsVerifySn = false;
-                    //释放用到的指针资源
-                    fourLinePara = NULL;
-                    dytSn = NULL;
-                    inFile = NULL;
-                    free(fileStore);
-                    fileStore = NULL;
                 }
+                //判断完了之后去 渲染成图
                 if (snIsRight){//s0 的 sn 是否符合规定。
-                    draw_preview_one(HoldBuffer, &mPreviewWindow, NULL, 4);
-                } else if (mPid == 22592 && mVid == 3034){
                     draw_preview_one(HoldBuffer, &mPreviewWindow, NULL, 4);
                 }
 
@@ -1537,7 +1551,10 @@ void UVCPreviewIR::do_temperature_callback(JNIEnv *env, uint8_t *frameData)
 //   LOGE("=========do_temperature_callback ======");
     if (mPid == 1 && mVid == 5396){
         mFrameImage->do_temperature_callback(env,frameData);
+    } else if (mPid == 22592 && mVid == 3034){
+        mFrameImage->do_temperature_callback(env,frameData);
     }
+
 }
 /***************************************温度相关 结束**************************************/
 

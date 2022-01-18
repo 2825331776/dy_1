@@ -2,6 +2,7 @@
 .gradle
 .idea
 /local.properties
+/gradle.properties
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
@@ -14,4 +15,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+gradle.properties
 /UvcConnect/build/

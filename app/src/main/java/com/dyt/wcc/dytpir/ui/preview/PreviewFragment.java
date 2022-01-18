@@ -451,7 +451,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 		mUvcCameraHandler.startPreview(stt);
 		//tinyC 暂时关闭 温度回调功能
-//		mUvcCameraHandler.startTemperaturing();//温度回调
+		mUvcCameraHandler.startTemperaturing();//温度回调
 
 
 		new Handler().postDelayed(new Runnable() {

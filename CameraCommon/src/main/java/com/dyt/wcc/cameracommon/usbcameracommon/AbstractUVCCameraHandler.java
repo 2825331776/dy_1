@@ -1227,7 +1227,8 @@ abstract class AbstractUVCCameraHandler extends Handler {
                  * if need rgba callback
                  *set this setFrameCallback(...) function
                  *==========================================================================*/
-    			mUVCCamera.setFrameCallback(mIFrameCallback, UVCCamera.PIXEL_FORMAT_RGBX);
+                //2022年1月13日10:26:00  注释  帧回调接口。  本来native 的方法已经注释，JNI的函数也已注释。 本次注释不报错
+//    			mUVCCamera.setFrameCallback(mIFrameCallback, UVCCamera.PIXEL_FORMAT_RGBX);
 //                mIsCapturing=true;
 //    			mUVCCamera.startCapture();
 
@@ -1240,7 +1241,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
                 }else  if (mPid == 22592 && mVid == 3034){
                     mWeakCameraView.get().setSuportWH(mWidth, mHeight);
                 }
-
+                // 温度回调 接口
                 ITemperatureCallback mTempCb = mWeakCameraView.get().getTemperatureCallback();
                 mUVCCamera.setTemperatureCallback(mTempCb);//将温度回调的对象  发送到底层
                 mWeakCameraView.get().setTemperatureCbing(false);//测温开关

@@ -357,7 +357,7 @@ int UVCCamera::getByteArrayTemperaturePara(uint8_t* para) {
     LOGE("UVCCamera::getByteArrayTemperaturePara");
 	int result = EXIT_FAILURE;
 	if (mDeviceHandle) {
-	result=	mPreview->getByteArrayTemperaturePara(para);//吴长城
+		result=	mPreview->getByteArrayTemperaturePara(para);//吴长城
 	//LOGE("UVCCamera::getByteArrayTemperaturePara:%d,%d,%d,%d,%d,%o",para[1],para[5],para[9],para[13],para[17],para);
 	}
 	RETURN(result, int);
