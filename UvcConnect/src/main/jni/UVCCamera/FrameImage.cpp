@@ -308,7 +308,7 @@ void SearchMaxMin(unsigned short * tempAD_data,int size ,unsigned short * max, u
 
 //根据色板去渲染出一帧的画面
 unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
-    LOGE("=========================onePreviewData==========================================");
+//    LOGE("=========================onePreviewData==========================================");
     unsigned short *tmp_buf = (unsigned short *) frameData;
     /*if(mcount < 2){
         FILE* outFile = NULL;

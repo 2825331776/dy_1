@@ -31,7 +31,7 @@ public class ByteUtilsCC {
 	}
 
 	/**
-	 *
+	 *	S0机芯 解析温度数据。
 	 * @param data
 	 * @return
 	 */
@@ -49,6 +49,24 @@ public class ByteUtilsCC {
 	}
 
 	/**
+	 * tinyC 机芯 解析数据
+	 * @param data
+	 * @return
+	 */
+	public static Map<String,Float> tinyCParseCameraParams(byte [] data){
+		Map<String , Float> result = new HashMap<>();
+
+//		result.put(DYConstants.setting_correction,get4Byte2Float(data,0));
+//		result.put(DYConstants.setting_reflect,data[0]);
+//		result.put(DYConstants.setting_environment,data[1]);
+//		result.put(DYConstants.setting_humidity,data[2]);
+//		result.put(DYConstants.setting_emittance,data[3]);
+//		result.put(DYConstants.setting_distance,get2Byte2Short(data,20));//getShort   共计 拿了byte的 前 0-21
+//		Log.e("===Map=======",result.toString());
+		return result;
+	}
+
+	/**
 	 * 通过byte数组取得float
 	 * @param b 数据源
 	 * @param index 开始的下标
@@ -57,7 +75,7 @@ public class ByteUtilsCC {
 	public static float get4Byte2Float(byte[] b, int index) {
 		int l;
 		l = b[index + 0];
-		l &= 0xff; //0xff = 255 = 15* 16+ 15   :此处的含义是取 int l（32位2进制） 取其后八位  d的八位
+		l &= 0xff; //0xff = 255 = 15* 16+ 15   :此处的含义是取 int l（32位2进制） 取其后八位  b的八位
 		l |= ((long) b[index + 1] << 8); //把这个index+1 填充到 C的八位
 		l &= 0xffff;
 		l |= ((long) b[index + 2] << 16);//   b 的八位

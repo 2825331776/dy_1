@@ -232,6 +232,31 @@ static jbyteArray nativeGetByteArrayTemperaturePara(JNIEnv *env, jobject thiz,
 	return array;
 }
 
+/**
+ * 获取 Tinyc 机芯 设置参数
+ * @param env
+ * @param thiz
+ * @param id_camera
+ * @param len 定义多长的 byte 数组去接收 返回的参数
+ * @return
+ */
+static jbyteArray nativeGetCameraParams(JNIEnv *env, jobject thiz,
+													ID_TYPE id_camera,int len) {
+	ENTER();
+	UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
+	jbyteArray array=(env)->NewByteArray(len);
+	//通过传入的长度分配了一个len字节的内存。也就是len个长度的char
+	uint8_t *para=(uint8_t *)malloc(len*sizeof(uint8_t));//
+	memset(para,0,20);
+	int status=0;
+	if (LIKELY(camera)) {
+		status=camera->getCameraParams((uint8_t*)para);
+	}
+	env->SetByteArrayRegion(array,0,len*sizeof(jbyte),(jbyte*)para);
+	free(para);
+	return array;
+}
+
 static jint nativeGetByteArrayPicture(JNIEnv *env, jobject thiz,
 	ID_TYPE id_camera,jbyteArray frame) {
 
@@ -1959,6 +1984,28 @@ static jint nativeUpdateZoomLimit(JNIEnv *env, jobject thiz,
 	}
 	RETURN(result, jint);
 }
+//发送float 数据下来
+static jint nativeSendOrder(JNIEnv *env, jobject thiz,
+                          ID_TYPE id_camera, jfloat data , jint mark) {
+    jint result = JNI_ERR;
+    ENTER();
+    UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
+    if (LIKELY(camera)) {
+        result = camera->sendOrder(data , mark);
+    }
+    RETURN(result, jint);
+}
+////发送int 类型的指令。
+//static jint nativeSendOrder(JNIEnv *env, jobject thiz,
+//                          ID_TYPE id_camera, jint order) {
+//    jint result = JNI_ERR;
+//    ENTER();
+//    UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
+//    if (LIKELY(camera)) {
+////        result = camera->sendOrder(order);
+//    }
+//    RETURN(result, jint);
+//}
 
 static jint nativeSetZoom(JNIEnv *env, jobject thiz,
 	ID_TYPE id_camera, jint zoom) {
@@ -2291,6 +2338,7 @@ static JNINativeMethod methods[] = {
 	{ "nativeSetFrameCallback",			"(JLcom/serenegiant/usb/IFrameCallback;I)I", (void *) nativeSetFrameCallback },
     { "nativeGetByteArrayPicture",			"(J[B)I", (void *) nativeGetByteArrayPicture },
    { "nativeGetByteArrayTemperaturePara",			"(JI)[B", (void *) nativeGetByteArrayTemperaturePara },
+	{ "nativeGetCameraParams",			"(JI)[B", (void *) nativeGetCameraParams },
 
 	{ "nativeSetCaptureDisplay",		"(JLandroid/view/Surface;)I", (void *) nativeSetCaptureDisplay },
     { "nativeStartStopTemp",		"(JI)I", (void *) nativeStartStopTemp },
@@ -2440,6 +2488,9 @@ static JNINativeMethod methods[] = {
 	{ "nativeUpdateZoomLimit",			"(J)I", (void *) nativeUpdateZoomLimit },
 	{ "nativeSetZoom",					"(JI)I", (void *) nativeSetZoom },
 	{ "nativeGetZoom",					"(J)I", (void *) nativeGetZoom },
+
+    { "nativeSendOrder",					"(JFI)I", (void *) nativeSendOrder },
+//    { "nativeSendOrder",					"(J)I", (void *) nativeSendOrder },
 
 	{ "nativeUpdateZoomRelLimit",		"(J)I", (void *) nativeUpdateZoomRelLimit },
 	{ "nativeSetZoomRel",				"(JI)I", (void *) nativeSetZoomRel },

@@ -101,6 +101,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private View popView;
 	private Map<String ,Float>                 cameraParams ;
 	private SharedPreferences sp;
+	private int mVid , mPid; //设备 vid pid
 
 //	private USBMonitor mUsbMonitor ;
 	private int mTextureViewWidth,mTextureViewHeight;
@@ -188,6 +189,32 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		}
 	}
 
+	/**
+	 * 获取tinyC 参数
+	 */
+	private void getTinyCCameraParams(){//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
+		byte [] tempParams = mUvcCameraHandler.getTinyCCameraParams(20);
+		for (int i = 0 ; i < tempParams.length ; i ++ ){
+			Log.e(TAG, "getTinyCCameraParams:  " + i + " === >" + tempParams[i]);
+		}
+//		cameraParams = ByteUtilsCC.tinyCParseCameraParams(tempParams);
+
+//		if (cameraParams != null){
+//			sp.edit().putFloat(DYConstants.setting_correction,
+//					cameraParams.get(DYConstants.setting_correction)!=null?cameraParams.get(DYConstants.setting_correction):0.0f).apply();
+//			sp.edit().putFloat(DYConstants.setting_emittance,
+//					cameraParams.get(DYConstants.setting_emittance)).apply();
+//			sp.edit().putFloat(DYConstants.setting_distance,
+//					cameraParams.get(DYConstants.setting_distance)).apply();
+//			sp.edit().putFloat(DYConstants.setting_reflect,
+//					cameraParams.get(DYConstants.setting_reflect)!=null?cameraParams.get(DYConstants.setting_reflect):0.0f).apply();
+//			sp.edit().putFloat(DYConstants.setting_environment,
+//					cameraParams.get(DYConstants.setting_environment)!=null?cameraParams.get(DYConstants.setting_environment):0.0f).apply();
+//			sp.edit().putFloat(DYConstants.setting_humidity,
+//					cameraParams.get(DYConstants.setting_humidity)).apply();
+//		}
+	}
+
 	@Override
 	public void onDetach () {
 		super.onDetach();
@@ -267,6 +294,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		@Override
 		public void onConnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock, boolean createNew) {
 			if (isDebug)Log.e(TAG, "onConnect:  SN ========================= 》 " + device.getSerialNumber());
+			mVid = device.getVendorId();
+			mPid = device.getProductId();
 
 			if (mUvcCameraHandler == null || mUvcCameraHandler.isReleased()){
 				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
@@ -295,6 +324,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
 			if (isDebug)Log.e(TAG, " DD  onDisconnect: ");
 
+			mVid = 0;
+			mPid = 0;
 //			if (mUvcCameraHandler != null){
 //				if (mUvcCameraHandler.isRecording()){
 //					stopTimer();
@@ -338,22 +369,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 		Log.e(TAG, "onResume:  mViewModel ===  " + (mViewModel == null));
 
-//		if (isDebug)Log.e(TAG, "onResume: ");
-
-//		if (isDebug)Log.e(TAG, "onResume: preview widget == width == " + mDataBinding.flPreview.getMeasuredWidth()
-//				+ " height == " + mDataBinding.flPreview.getMeasuredHeight());
-//		if (isDebug)
-//			Log.e(TAG, "onResume:seekbar ===  " + mDataBinding.customSeekbarPreviewFragment.getMeasuredWidth());
-
-//				FrameLayout.LayoutParams fLayoutParams = new FrameLayout.LayoutParams(screenHeight/3*4,screenHeight);
-		//		mDataBinding.dragTempContainerPreviewFragment.setLayoutParams(fLayoutParams);
-		//		mDataBinding.textureViewPreviewFragment.setLayoutParams(fLayoutParams);
-//				mDataBinding.flPreview.getLayoutParams().width = screenHeight /3*4;
-//				mDataBinding.flPreview.getLayoutParams().height = screenHeight;
-
-		//		Spinner
-
-
 		if (!mViewModel.getMUsbMonitor().getValue().isRegistered()
 				&& hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE)){
 			mViewModel.getMUsbMonitor().getValue().register();
@@ -381,7 +396,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private void startPreview () {
 //				if (isDebug)Log.e(TAG, "startPreview: flPreview  width == " + mDataBinding.flPreview.getMeasuredWidth()
 //						+ " height == " + mDataBinding.flPreview.getMeasuredHeight());
-//		mDataBinding.toggleAreaCheck.setChecked(false);
 
 		stt = new Surface(mDataBinding.textureViewPreviewFragment.getSurfaceTexture());
 
@@ -668,7 +682,14 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			public void onClick (View v) {
 				//打开设置第一步：获取机芯数据。
 				if (mUvcCameraHandler.isOpened()){
-					getCameraParams();//
+					if (mPid == 1 && mVid == 5396){
+						getCameraParams();//
+					}else if (mPid == 22592 && mVid == 3034){
+						getTinyCCameraParams();//
+
+						return;
+					}
+
 				}
 				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_setting,null);
 
@@ -704,7 +725,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 								byte[] iputEm = new byte[4];
 								ByteUtil.putFloat(iputEm,value,0);
 								if (mUvcCameraHandler!= null) {
-									mSendCommand.sendFloatCommand(4 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+									if (mPid == 1 && mVid == 5396) {
+										mSendCommand.sendFloatCommand(4 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+									} else if (mPid == 22592 && mVid == 3034){
+										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,100,3);
+									}
 									sp.edit().putFloat(DYConstants.setting_emittance,value).apply();
 									showToast("发射率设置完成");
 								}

@@ -462,8 +462,12 @@ public class UVCCamera {
 	 * @return byte 数组 机芯参数的数组。
 	 */
 	public byte[] getByteArrayTemperaturePara(int len) {
-		boolean status = false;
+//		boolean status = false;
 		return nativeGetByteArrayTemperaturePara(mNativePtr, len);
+	}
+	public byte[] getTinyCCameraParams(int len) {
+//		boolean status = false;
+		return nativeGetCameraParams(mNativePtr, len);
 	}
 	/**
 	 * set ir temperature callback
@@ -939,6 +943,21 @@ public class UVCCamera {
     	}
     }
 
+	/**
+	 * 发送具体数值到JNI层
+	 * @param zoom
+	 */
+	public synchronized void sendOrder(final float zoom , final  int mark) {
+		if (mNativePtr != 0) {
+			nativeSendOrder(mNativePtr, zoom ,mark);
+		}
+	}
+//	public synchronized void sendOrder(final int zoom) {
+//		if (mNativePtr != 0) {
+//			nativeSendOrder(mNativePtr, zoom);
+//		}
+//	}
+
     /**
      * @param zoom_abs
      * @return zoom[%]
@@ -1117,6 +1136,7 @@ public class UVCCamera {
     private static final native int nativeGetByteArrayPicture(final long mNativePtr,byte[] frame);
 
 	private static final native byte[] nativeGetByteArrayTemperaturePara(final long mNativePtr,int len);
+	private static final native byte[] nativeGetCameraParams(final long mNativePtr,int len);
 	private static final native int nativeSetTemperatureCallback(final long mNativePtr,  final ITemperatureCallback callback);
 	private static final native void nativeWhenShutRefresh(final long mNativePtr);
 	private static final native void nativeWhenChangeTempPara(final long mNativePtr);
@@ -1416,6 +1436,10 @@ public class UVCCamera {
     private final native int nativeUpdateZoomLimit(final long id_camera);
     private static final native int nativeSetZoom(final long id_camera, final int zoom);
     private static final native int nativeGetZoom(final long id_camera);
+    //发送指令 ，吴长城
+	private static final native int nativeSendOrder(final long id_camera, final float zoom , final int mark);
+//	private static final native int nativeSendOrder(final long id_camera, final int zoom);
+
 
     private final native int nativeUpdateZoomRelLimit(final long id_camera);
     private static final native int nativeSetZoomRel(final long id_camera, final int zoom_rel);

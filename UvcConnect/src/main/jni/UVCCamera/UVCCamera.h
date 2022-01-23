@@ -188,6 +188,9 @@ class UVCCamera {
 		paramget_func_u32 get_func, paramset_func_u32 set_func);
 	//自定义 UVC 通讯函数
 	int internalSetCtrlValue(control_value_t &values,uint32_t value,diy func_diy);
+	//自定义 UVC 获取机芯参数
+	int internalSetCtrlValue(uint8_t * params,diy func_diy);
+
 public:
 	UVCCamera();
 	~UVCCamera();
@@ -340,6 +343,8 @@ void whenShutRefresh() ;
 	int updatePowerlineFrequencyLimit(int &min, int &max, int &def);
 	int setPowerlineFrequency(int frequency);
 	int getPowerlineFrequency();
+	//发送具体指令值给 JNI
+	int sendOrder(float value , int mark);
 
 	int updateZoomLimit(int &min, int &max, int &def);
 	int setZoom(int zoom);
@@ -382,6 +387,7 @@ void whenShutRefresh() ;
 	void setCameraLens(int mCameraLens);
 	int getByteArrayPicture(uint8_t* frame);
 	int getByteArrayTemperaturePara(uint8_t* para);
+	int getCameraParams(uint8_t* para);
 	void whenChangeTempPara();
 };
 

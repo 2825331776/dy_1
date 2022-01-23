@@ -178,6 +178,22 @@ abstract class AbstractUVCCameraHandler extends Handler {
         }
     }
 
+    /**
+     *  add 吴长城  通过这个函数 获取 tinyc 机芯的参数
+     * @param arraysLength
+     * @return
+     */
+    public byte[] getTinyCCameraParams(int arraysLength) {
+        final CameraThread thread = mWeakThread.get();
+        if ((thread != null) && (thread.mUVCCamera) != null) {
+            return thread.mUVCCamera.getTinyCCameraParams(arraysLength);
+        } else {
+            byte[] para = new byte[arraysLength];
+            return para;
+        }
+    }
+
+
     public int getHighThrow() {
         final CameraThread thread = mWeakThread.get();
         if ((thread != null) && (thread.mUVCCamera) != null) {
@@ -633,6 +649,27 @@ abstract class AbstractUVCCameraHandler extends Handler {
         }
         return 100;
     }
+
+    /**
+     * 发送指令 到 下层，重写 一个发送 Int 指令。一个发送具体float 数据的指令 的。
+     * @param flag
+     * @param value
+     * @param mark 标识位 ： 发送的更改数据 标识更改哪里，比如是环境温度 还是什么
+     * @return
+     */
+    public int sendOrder(final int flag, final float value, final int mark ){
+        checkReleased();
+        final CameraThread thread = mWeakThread.get();
+        final UVCCamera camera = (thread != null ? thread.mUVCCamera : null);
+        if (camera != null){
+            if (flag == UVCCamera.CTRL_ZOOM_ABS){
+                camera.sendOrder(value ,mark);
+                return 1;
+            }
+        }
+        return -1;
+    }
+
 
     public void whenShutRefresh() {
         checkReleased();

@@ -380,6 +380,7 @@ int UVCPreviewIR::prepare_preview(uvc_stream_ctrl_t *ctrl) {
         }
         frameMode = requestMode;
         frameBytes = frameWidth * frameHeight * (!requestMode ? 2 : 4);
+        LOGE(" frameBytes ==== %d  , requestMode ========  %d", frameBytes , requestMode);
         previewBytes = frameWidth * frameHeight * PREVIEW_PIXEL_BYTES;
     }else{
         LOGE("could not negotiate with camera:err=%d", result);
@@ -647,6 +648,53 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
 //                unsigned short* orgData=(unsigned short*)HoldBuffer;// char a数组[1,2] 经过强转short可能变成513(256*2+1)，或258(256*1+2)。
 
                 if (mPid == 22592 && mVid == 3034){//tinyC机芯
+                    //读取用户区数据
+                    unsigned char data[8] = {0x0d,0xc1,0x00,0x00,0x00,0x00,0x00,0x00};
+                    int ret = -1;
+                    // 读取用户区域
+                    int dataLen = 24; //获取或读取数据大小
+                    unsigned char readData[24] = {0};
+                    for(int i=0;i<dataLen;i++){
+                        readData[i] = 50;
+                    }
+                    int dwStartAddr = 0x7FF000;// 用户区域首地址
+                    int sector_count = 1;	// 需要擦除扇区的数量
+
+                    data[0] = 0x01;
+                    data[1] = 0x82;
+                    data[2] = ((dwStartAddr&0xff000000)>>24);
+                    data[3] = ((dwStartAddr&0x00ff0000)>>16);
+                    data[4] = ((dwStartAddr&0x0000ff00)>>8);
+                    data[5] = (dwStartAddr&0x000000ff);
+                    data[6] = (dataLen>>8);
+                    data[7] = (dataLen&0xff);
+                    ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
+                    unsigned char status;
+                    for(int index = 0;index < 1000;index++){
+                        uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
+                        if((status & 0x01) == 0x00){
+                            if((status & 0x02) == 0x00){
+                                break;
+                            }else if((status & 0xFC) != 0x00){
+//                                RETURN(-1,int);
+                                snIsRight = false;
+                            }
+                        }
+                    }
+                    ret = uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x1d08,readData, sizeof(readData),1000);
+
+//                    for (int i = 0; i < split_result.size(); i++) {
+//                        string decryptionSplitChild = DecryptionAES(split_result[i]).substr(0,8);
+//                        if (dytSnStr == decryptionSplitChild) {
+//                            LOGE("=============SN匹配成功========");
+//                            snIsRight = snIsRight | 1;
+//                        } else {
+//                            LOGE("==============SN匹配不成功========");
+//                            snIsRight = snIsRight | 0;
+//                        }
+//                    }
+//                    LOGE("==========read Data ================= %s" , readData);
+
                     snIsRight = true;
                 }else  if (mVid == 5396 && mPid==1){//S0机芯
 
@@ -692,8 +740,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         std::vector<std::string> split_result = split(fileStore, ";");
                         //遍历 结果 是否 符合筛选
                         for (int i = 0; i < split_result.size(); i++) {
-                            string decryptionSplitChild = DecryptionAES(split_result[i]).substr(0,
-                                                                                                8);
+                            string decryptionSplitChild = DecryptionAES(split_result[i]).substr(0,8);
                             if (dytSnStr == decryptionSplitChild) {
                                 LOGE("=============SN匹配成功========");
                                 snIsRight = snIsRight | 1;
@@ -755,8 +802,8 @@ void UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_arg
     //LOGE("uvc_preview_frame_callback00  tmp_buf:%d,%d,%d,%d",tmp_buf[384*144*4],tmp_buf[384*144*4+1],tmp_buf[384*144*4+2],tmp_buf[384*144*4+3]);
     //LOGE("uvc_preview_frame_callback hold_bytes:%d,preview->frameBytes:%d",hold_bytes,preview->frameBytes);
     if(UNLIKELY(hold_bytes < preview->frameBytes))//判断hold_bytes 不小于preview.frameBytes则跳转到 后面正常运行     UNLIKELY期待值大几率为false时,等价于if(value)
-    {
-        LOGE("uvc_preview_frame_callback hold_bytes < 111  preview->frameBytes");
+    {   //有手机两帧才返回一帧的数据。
+        LOGE("uvc_preview_frame_callback hold_bytes ===> %d < preview->frameBytes  ==== > %d" , hold_bytes, preview->frameBytes);
         return;
     }
 //    char i = frameData[0];
@@ -768,8 +815,11 @@ void UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_arg
 //        pthread_mutex_lock(&preview->data_callback_mutex);
 //        {
 //        LOGE("======================uvc_preview_frame_callback01======================");
+//            unsigned  char * thedata = preview->OutBuffer;
+
             //void *memcpy(void *destin, void *source, unsigned n);从源source中拷贝n个字节到目标destin中
             memcpy(preview->OutBuffer,frameData,(preview->requestWidth)*(preview->requestHeight)*2);
+
 //        LOGE("===================frameSize ===========%s",sizeof(OutBuffer));
             //LOGE("uvc_preview_frame_callback02");
             /* swap the buffers org */

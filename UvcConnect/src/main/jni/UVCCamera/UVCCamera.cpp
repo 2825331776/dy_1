@@ -357,11 +357,36 @@ int UVCCamera::getByteArrayTemperaturePara(uint8_t* para) {
     LOGE("UVCCamera::getByteArrayTemperaturePara");
 	int result = EXIT_FAILURE;
 	if (mDeviceHandle) {
-		result=	mPreview->getByteArrayTemperaturePara(para);//吴长城
+        if (mPid == 1 && mVid == 5396){
+            result=	mPreview->getByteArrayTemperaturePara(para);//吴长城
+        }
+//        else if (mPid == 22592 && mVid == 3034){
+//        	//tinyc 获取机芯的参数
+//            result =  internalSetCtrlValue(para,uvc_diy_communicate);
+//        }
+
 	//LOGE("UVCCamera::getByteArrayTemperaturePara:%d,%d,%d,%d,%d,%o",para[1],para[5],para[9],para[13],para[17],para);
 	}
 	RETURN(result, int);
 }
+
+/**
+ * 获取 tinyc 设置参数
+ * @param para
+ * @return
+ */
+int UVCCamera::getCameraParams(uint8_t* para){
+	LOGE("UVCCamera::getCameraParams");
+	int result = EXIT_FAILURE;
+	if (mDeviceHandle) {
+		if (mPid == 22592 && mVid == 3034){
+        	//tinyc 获取机芯的参数
+            result =  internalSetCtrlValue(para,uvc_diy_communicate);
+        }
+	}
+	RETURN(result, int);
+}
+
 void UVCCamera::whenShutRefresh() {
 	ENTER();
 	if (mDeviceHandle) {
@@ -1063,6 +1088,10 @@ int UVCCamera::internalSetCtrlValue(control_value_t &values, uint32_t value,
 	}
 	RETURN(ret, int);
 }
+
+
+
+
 /**
  * 自定义 UVC 通信函数
  * @param values
@@ -1091,6 +1120,99 @@ int UVCCamera::internalSetCtrlValue(control_value_t &values,uint32_t value,diy f
 		unsigned char data[8] = {0x0d,0xc1,0x00,0x00,0x00,0x00,0x00,0x00};
 		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
 	}
+
+	RETURN(ret,int);
+}
+int UVCCamera::internalSetCtrlValue(uint8_t * params,diy func_diy){
+	int ret = 0;
+		// 发射率
+		unsigned char flashId[2] = {0};
+		unsigned char data[8] = {0x14,0x85,0x00,0x03,0x00,0x00,0x00,0x00};
+		unsigned char data2[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x02};
+		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
+		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
+
+		unsigned char status;
+		for(int index = 0;index < 1000;index++){
+			func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
+			if((status & 0x01) == 0x00){
+				if((status & 0x02) == 0x00){
+					break;
+				}else if((status & 0xFC) != 0x00){
+					LOGE("===========================return ==========================");
+					RETURN(-1,int);
+				}
+			}
+		}
+		ret = func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x1d10,flashId, sizeof(flashId),1000);
+
+		params[0] = flashId[0];
+		params[1] = flashId[1];
+		LOGE("发射率 0 ==== %d",flashId[0]);
+		LOGE("发射率 1 ==== %d",flashId[1]);
+
+		// 获取 反射温度（已成功）
+		data[3] = 0x01;
+		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
+		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
+        for(int index = 0;index < 1000;index++){
+            func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
+            if((status & 0x01) == 0x00){
+                if((status & 0x02) == 0x00){
+                    break;
+                }else if((status & 0xFC) != 0x00){
+                    LOGE("===========================return ==========================");
+                    RETURN(-1,int);
+                }
+            }
+        }
+		ret = func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x1d10,flashId, sizeof(flashId),1000);
+		params[2] = flashId[0];
+		params[3] = flashId[1];
+		LOGE("反射温度 0 ==== %d",flashId[0]);
+		LOGE("反射温度 1 ==== %d",flashId[1]);
+
+		// 获取 大气温度（已成功）
+		data[3] = 0x02;
+		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
+		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
+        for(int index = 0;index < 1000;index++){
+            func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
+            if((status & 0x01) == 0x00){
+                if((status & 0x02) == 0x00){
+                    break;
+                }else if((status & 0xFC) != 0x00){
+                    LOGE("===========================return ==========================");
+                    RETURN(-1,int);
+                }
+            }
+        }
+		ret = func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x1d10,flashId, sizeof(flashId),1000);
+		params[4] = flashId[0];
+		params[5] = flashId[1];
+		LOGE("大气温度 0 ==== %d",flashId[0]);
+		LOGE("大气温度 1 ==== %d",flashId[1]);
+
+		// 获取 大气透过率（已成功）
+		data[3] = 0x04;
+		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
+		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
+        for(int index = 0;index < 1000;index++){
+            func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
+            if((status & 0x01) == 0x00){
+                if((status & 0x02) == 0x00){
+                    break;
+                }else if((status & 0xFC) != 0x00){
+                    LOGE("===========================return ==========================");
+                    RETURN(-1,int);
+                }
+            }
+        }
+		ret = func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x1d10,flashId, sizeof(flashId),1000);
+		LOGE("大气透过率 0 ==== %d",flashId[0]);
+		LOGE("大气透过率 1 ==== %d",flashId[1]);
+		params[6] = flashId[0];
+		params[7] = flashId[1];
 
 	RETURN(ret,int);
 }
@@ -2341,6 +2463,71 @@ int UVCCamera::updateZoomLimit(int &min, int &max, int &def) {
 	}
 	RETURN(ret, int);
 }
+int UVCCamera::sendOrder(float value , int mark) {
+    ENTER();
+    int ret = UVC_ERROR_IO;
+//    LOGE("====");
+    unsigned char data[8] = {0x14,0xc5,0x00,0x00,0x00,0x00,0x00,0x00};
+    unsigned char data2[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x02};
+    data[0] = 0x14;
+    data[1] = 0xc5;
+    data[2] = 0x00;
+    data[3] = 0x01; //0x01 = 反射温度；0x02 = 大气温度；0x04 = 大气透过率；0x05=高低温度段；0x03 发射率
+    data[4] = 0x00;
+    data[5] = 0x00;
+
+    if(mark == 1 ){         //反射温度  ， 温度转 K 华氏度
+        int val = (int )(value + 273.15f);
+        data[3] = 0x01; //0x01 = 反射温度；0x02 = 大气温度；0x04 = 大气透过率；0x05=高低温度段
+        data[6] = (val >> 8);
+        data[7] = (val & 0xff);
+        LOGE("=================== 反射温度=====================");
+    }
+    if(mark == 2 ){         //大气温度
+        int val = (int )(value + 273.15f);
+        data[3] = 0x02; //0x01 = 反射温度；0x02 = 大气温度；0x04 = 大气透过率；0x05=高低温度段
+        data[6] = (val >> 8);
+        data[7] = (val & 0xff);
+        LOGE("=================== 大气温度=====================");
+    }
+    if(mark == 3 ){         //发射率
+        int val = (int )(value * 128);
+        data[3] = 0x03; //0x01 = 反射温度；0x02 = 大气温度；0x04 = 大气透过率；0x05=高低温度段
+        data[6] = (val >> 8);
+        data[7] = (val & 0xff);
+        LOGE("=================== 发射率=====================");
+    }
+    if(mark == 4 ){         //大气透过率
+        int val = (int )(value * 128);
+        data[3] = 0x04; //0x01 = 反射温度；0x02 = 大气温度；0x04 = 大气透过率；0x05=高低温度段
+        data[6] = (val >> 8);
+        data[7] = (val & 0xff);
+        LOGE("=================== 大气透过率=====================");
+    }
+
+    if (data[3] != 0x00){//保证修改的 值有数据
+		LOGE("========== 修改设置前 ========= ret === %d ==================",ret);
+        ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
+        ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
+		LOGE("========== 修改设置后 ========= ret === %d ==================",ret);
+//		保存设置
+		data[0] = 0x01;
+		data[1] = 0x0B;
+		data[2] = 0x0C;
+		data[3] = 0x00;
+		data[4] = 0x00;
+		data[5] = 0x00;
+		data[6] = 0x00;
+		data[7] = 0x00;
+		ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
+		LOGE("======== 保存设置 ============ ret === %d ==================",ret);
+    }
+
+
+
+    RETURN(ret, int);
+}
+
 
 // ズーム(abs)を設定  设置缩放ABS
 int UVCCamera::setZoom(int zoom) {
