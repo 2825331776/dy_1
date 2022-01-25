@@ -1,7 +1,10 @@
 package com.dyt.wcc.dytpir.utils;
 
+import android.util.Log;
+
 import com.dyt.wcc.dytpir.constans.DYConstants;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +15,8 @@ import java.util.Map;
  * 描   述：
  */
 public class ByteUtilsCC {
+
+	private static final String TAG = "ByteUtilsCC";
 
 	/**
 	 * @param data byte数据源。1 byte = 8 bits   eg:0000 0000
@@ -49,20 +54,58 @@ public class ByteUtilsCC {
 	}
 
 	/**
-	 * tinyC 机芯 解析数据
+	 * tinyC JNI获取到Byte数组转成HashMap
 	 * @param data
+	 * 发射率 0-1      emittance  取值 ： （0 -1）
+	 * 反射温度 2-3     reflect  取值 ： （-20 - 120）
+	 * 环境温度 4-5     environment  取值 ： （-20 - 50）
+	 * 湿度 6-7         humidity  取值 ： （0 - 100）
+	 * 多余 8-9
 	 * @return
 	 */
-	public static Map<String,Float> tinyCParseCameraParams(byte [] data){
+	public static Map<String,Float> tinyCByte2HashMap(byte [] data){
 		Map<String , Float> result = new HashMap<>();
+		short numberData = 0;
+		float params = 0.0f;
+		result.put(DYConstants.setting_correction,0.0f);
 
-//		result.put(DYConstants.setting_correction,get4Byte2Float(data,0));
-//		result.put(DYConstants.setting_reflect,data[0]);
-//		result.put(DYConstants.setting_environment,data[1]);
-//		result.put(DYConstants.setting_humidity,data[2]);
-//		result.put(DYConstants.setting_emittance,data[3]);
-//		result.put(DYConstants.setting_distance,get2Byte2Short(data,20));//getShort   共计 拿了byte的 前 0-21
-//		Log.e("===Map=======",result.toString());
+		numberData = (short) (data[3] & 0xff);
+		numberData |= (data[2]<<8 & 0xff00);
+		params = numberData - 273.15f;
+		DecimalFormat df = new DecimalFormat("##0.00");
+		params = Math.round(params* 100f) / 100f ;
+		params = Float.parseFloat(df.format(params));
+//		Log.e(TAG, "反射温度: numberData " +numberData);
+//		Log.e(TAG, "反射温度: params " + params);
+		result.put(DYConstants.setting_reflect,params);//反射温度 =》 反射温度
+
+		numberData = (short) (data[5] & 0xff);
+		numberData |= (data[4]<<8 & 0xff00);
+		params = numberData - 273.15f;
+		params = Math.round(params* 100f) / 100f ;
+		params = Float.parseFloat(df.format(params));
+//		Log.e(TAG, "环境温度: numberData " +numberData);
+//		Log.e(TAG, "环境温度: params " + params);
+		result.put(DYConstants.setting_environment,params);//环境温度 =》 大气温度
+
+		numberData = (short) (data[7] & 0xff);
+		params = numberData/128.0f;
+		params = Math.round(params* 100f) / 100f ;
+		params = Float.parseFloat(df.format(params));
+//		Log.e(TAG, "湿度: numberData " +numberData);
+//		Log.e(TAG, "湿度: params " + params);
+		result.put(DYConstants.setting_humidity,params);//湿度 =》 大气透过率
+
+		numberData = (short) (data[1] & 0xff);
+		params = numberData/128.0f;
+		params = Math.round(params* 100f) / 100f ;
+		params = Float.parseFloat(df.format(params));
+//		Log.e(TAG, "发射率: numberData " +numberData);
+//		Log.e(TAG, "发射率: params " + params);
+		result.put(DYConstants.setting_emittance,params);//发射率 = 》 发射率
+
+		result.put(DYConstants.setting_distance,0.25f);//getShort   共计 拿了byte的 前 0-21
+		Log.e("===Map=======",result.toString());
 		return result;
 	}
 

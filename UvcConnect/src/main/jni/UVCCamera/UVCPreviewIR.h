@@ -119,7 +119,7 @@ private:
 	void clearDisplay();
 	int copyToSurface(uint8_t *frameData, ANativeWindow **window);
 	//SN 相关 ，sn 用户区 SN, ir_sn 设备sn
-	char * DecryptSN(char * sn, char * ir_sn);
+	void * DecryptSN(void * sn, void * ir_sn);
 //	string replace(string& base, string src, string dst);
 	//加密 标识符
 	char * EncryptTag(char * tag);
@@ -156,6 +156,7 @@ public:
     int startPreview();
     int stopPreview();
 	void setVidPid(int vid ,int pid);
+	void setIsVerifySn();
 
 /***************************录制*****************************/
 //	int setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format);//把当前数据回调给Java层

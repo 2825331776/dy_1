@@ -230,6 +230,9 @@ void UVCPreviewIR::setVidPid(int vid ,int pid){
     mVid = vid;
     mPid = pid;
 }
+void UVCPreviewIR::setIsVerifySn(){
+    mIsVerifySn = !mIsVerifySn;
+}
 
 int UVCPreviewIR::stopPreview() {
     ENTER();
@@ -452,22 +455,30 @@ std::vector<std::string> split(std::string str, std::string pattern)
 // <param name="sn">用户sn</param>
 // <param name="ir_sn">设备sn</param>
 // <returns></returns>
-char *  UVCPreviewIR::DecryptSN(char * sn, char * ir_sn){
+void *  UVCPreviewIR::DecryptSN(void * userSn, void * ir){
+    char * sn = ( char*)userSn;
+    char * ir_sn = ( char*)ir;
     //string str = ir_sn.Replace("JD", "");
-//    LOGE(" DecryptSN ir_sn ======= > %s",sn);
+//    LOGE(" DecryptSN ir_sn ======= > %s =======**===== > %d",sn, strlen(sn));
 //    LOGE(" DecryptSN sn_char ===== > %s",ir_sn);
-    string s = ir_sn;
+    string s = (char *)ir_sn;
     s = replace(s,"\0", "0");
 //    LOGE(" DecryptSN =====步骤一 ===== >s==== %s" , s.c_str());
-    string str = s.substr(2,30);
+    string str = s.substr(2,4);
 //    LOGE(" DecryptSN =====步骤一 ===== > str === >  %s" , str.c_str());
     int sn_sum = strtol(str.c_str(),NULL,0) % 127;
     char strs[sn_length];
-    strcpy(strs,sn);
-//    for (int i = 0; i < 15; ++i) {
-//        LOGE(" DecryptSN sn ======= > %d",(int)sn[i]);
+//    for (int i = 0; i < strlen(sn); i++) {
+//        LOGE(" >>>DecryptSN sn ======= > %d",(int)sn[i]);
 //    }
-//    LOGE(" DecryptSN =====步骤二 ===== >strs ===>  %s " ,strs);
+    mempcpy(strs,sn,15);
+    int strs_len = strlen(strs);
+//    LOGE(" DecryptSN =====步骤四222 ===== > %d", strlen(strs));
+    //strcpy(strs,sn);
+//    for (int i = 0; i < strs_len; i++) {
+//        LOGE(" DecryptSN sn ======= > %d",(int)strs[i]);
+//    }
+//    LOGE(" DecryptSN =====步骤二 ===== >strs ===>  %s==%d==%d " ,strs,strlen(strs),strlen(sn));
 //    LOGE(" DecryptSN =====步骤二 ===== >sn_sum ===>  %d " ,sn_sum);
     strs[0] = (char)(strs[0] ^ 18);
     strs[8] = (char)(strs[8] ^ 18);
@@ -475,8 +486,8 @@ char *  UVCPreviewIR::DecryptSN(char * sn, char * ir_sn){
     strs[3] = (char)(strs[3] ^ sn_sum);
     strs[7] = (char)(strs[7] ^ 18);
     strs[9] = (char)(strs[9] ^ sn_sum);
-//    LOGE(" DecryptSN =====步骤三 ===== >");
-    for (int i = 0; i < strlen(strs); i++)
+//    LOGE(" DecryptSN =====步骤三 ===== >%d==%d",strs[9],strs_len);
+    for (int i = 0; i < strs_len; i++)
     {
         strs[i] = (char)(strs[i] ^ 29);
     }
@@ -489,19 +500,20 @@ char *  UVCPreviewIR::DecryptSN(char * sn, char * ir_sn){
         strs[7 + i] = a;
     }
 //    LOGE(" DecryptSN =====步骤四 ===== >");
+//    LOGE(" DecryptSN =====步骤四 ===== > %d", strs_len);
     for (int i = 0; i < 7; i += 3)
     {
         if (i == 0)
         {
-            strs[i] = (char)(strs[i] ^ strs[strlen(strs) - 3]);
-            strs[i + 1] = (char)(strs[i + 1] ^ strs[strlen(strs) - 2]);
-            strs[i + 2] = (char)(strs[i + 2] ^ strs[strlen(strs) - 1]);
+            strs[i] = (char)(strs[i] ^ strs[strs_len - 3]);
+            strs[i + 1] = (char)(strs[i + 1] ^ strs[strs_len - 2]);
+            strs[i + 2] = (char)(strs[i + 2] ^ strs[strs_len - 1]);
         }
         else if (i == 3)
         {
-            strs[i] = (char)(strs[i] ^ strs[strlen(strs) - 1]);
-            strs[i + 1] = (char)(strs[i + 1] ^ strs[strlen(strs) - 2]);
-            strs[i + 2] = (char)(strs[i + 2] ^ strs[strlen(strs) - 3]);
+            strs[i] = (char)(strs[i] ^ strs[strs_len - 1]);
+            strs[i + 1] = (char)(strs[i + 1] ^ strs[strs_len - 2]);
+            strs[i + 2] = (char)(strs[i + 2] ^ strs[strs_len - 3]);
         }
         else
         {
@@ -513,10 +525,22 @@ char *  UVCPreviewIR::DecryptSN(char * sn, char * ir_sn){
 //    for (int index = 0 ; index < 15; index ++) {
 //        LOGE(" DecryptSN =====步骤五 ==strs=== >%s" ,strs);
 //    }
-    strcpy(sn,strs);
-    return sn;
+//    strcpy(sn,strs);
+    mempcpy(sn,strs,15);
+    char * returnSn ;
+    returnSn= (char *)(sn + 15);
+    *returnSn = 0;
+    LOGE("===== returnSn ========== %s ========" ,returnSn);
+
+    ir_sn = NULL;
+    returnSn = NULL;
+//    for (int i = 0; i < strs_len; i++) {
+//        LOGE(" DecryptSN sn ======= > %d",(int)sn[i]);
+//    }
+    return userSn;
 }
 
+//DYTCA10D DYTCA10Q DYTCA10L
 const char g_key[17] = "dyt1101c";
 const char g_iv[17] = "gfdertfghjkuyrtg";//ECB MODE不需要关心chain，可以填空
 string EncryptionAES(const string& strSrc) //AES加密
@@ -618,9 +642,6 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 //等待数据 初始化到位,之后运行下面的代码。
                 pthread_cond_wait(&preview_sync, &preview_mutex);
 //                 LOGE("waitPreviewFrame02============================");
-                //判断机芯型号，去运行不同的代码。
-
-
                 if (isCopyPicturing()){//判断截屏
                     LOGE("======mutex===========");
                     memset(picOutBuffer,0,256*196*2);
@@ -632,13 +653,10 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 uint8_t *tmp_buf=NULL;
                 //if(OutPixelFormat==3)//RGBA 32bit输出
                 mIsComputed=false;
-
+                //S0机芯 获取机芯的参数，环境温度  反射率 等等 用于 温度对照表。
                 if (mPid == 1 && mVid == 5396){
-                    //获取机芯的参数，环境温度  反射率 等等。S0机芯
                     mFrameImage->getCameraPara(HoldBuffer);
                 }
-
-
                 // swap the buffers rgba
                 tmp_buf =RgbaOutBuffer;
                 RgbaOutBuffer= RgbaHoldBuffer;
@@ -646,17 +664,18 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 //初始时outbuffer里面没有数据了，数据给holdbuffer，自己指向原来holdbuffer分配的内存首地址
                 //char强转成short类型 长度由requestWidth*requestHeight*2 变成requestWidth*requestHeight
 //                unsigned short* orgData=(unsigned short*)HoldBuffer;// char a数组[1,2] 经过强转short可能变成513(256*2+1)，或258(256*1+2)。
-
+            //判断机芯型号，去运行不同的代码。
+            if (isVerifySN()) {
+                char *dytSn;
+                string dytSnStr;
                 if (mPid == 22592 && mVid == 3034){//tinyC机芯
-                    //读取用户区数据
+                        //读取用户区数据
                     unsigned char data[8] = {0x0d,0xc1,0x00,0x00,0x00,0x00,0x00,0x00};
                     int ret = -1;
                     // 读取用户区域
-                    int dataLen = 24; //获取或读取数据大小
-                    unsigned char readData[24] = {0};
-                    for(int i=0;i<dataLen;i++){
-                        readData[i] = 50;
-                    }
+                    int dataLen = 15; //获取或读取数据大小
+                    unsigned char readData[15] = {0};
+                    LOGE("=============  redaData length = > %d ",sizeof (readData));
                     int dwStartAddr = 0x7FF000;// 用户区域首地址
                     int sector_count = 1;	// 需要擦除扇区的数量
 
@@ -682,24 +701,63 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         }
                     }
                     ret = uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x1d08,readData, sizeof(readData),1000);
+                    LOGE("==========read Data ================= %s" , readData);
 
-//                    for (int i = 0; i < split_result.size(); i++) {
-//                        string decryptionSplitChild = DecryptionAES(split_result[i]).substr(0,8);
-//                        if (dytSnStr == decryptionSplitChild) {
-//                            LOGE("=============SN匹配成功========");
-//                            snIsRight = snIsRight | 1;
-//                        } else {
-//                            LOGE("==============SN匹配不成功========");
-//                            snIsRight = snIsRight | 0;
-//                        }
-//                    }
-//                    LOGE("==========read Data ================= %s" , readData);
+                    unsigned char flashId[16] = {0};
+                    data[0] = 0x05;
+                    data[1] = 0x84;
+                    data[2] = 0x07;
+                    data[3] = 0x00;
+                    data[4] = 0x00;
+                    data[5] = 0x10;
+                    data[6] = 0x00;
+                    data[7] = 0x10;
+                    ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
 
-                    snIsRight = true;
+                    unsigned char status1;
+                    for(int index = 0;index < 1000;index++){
+                        uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status1, 1,1000);
+                        if((status & 0x01) == 0x00){
+                            if((status & 0x02) == 0x00){
+                                break;
+                            }else if((status & 0xFC) != 0x00){
+//                                RETURN(-1,int);
+                                LOGE("=====读取Sn ====RETURN================= ");
+                            }
+                        }
+                    }
+                    ret = uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x1d08,flashId, sizeof(flashId),1000);
+
+                    for (int i = 0; i < 15; i++) {
+                        LOGE("========= i = %d  char ===> %d", i, readData[i]);
+                    }
+//                    char  robotSn [10] = {0};
+//                    copy(flashId,6,robotSn,0,10);
+//                    mempcpy(robotSn,flashId,6);
+                    unsigned char * flashD = flashId;
+                    flashD = flashD + 6;
+//                    string a ;
+//                    a.append(reinterpret_cast<const char*>(flashD));
+//                    string b;
+//                    b.append(reinterpret_cast<const char*>(readData));
+
+                    LOGE("==========read Data ==机器Sn=============== %s" , flashId);
+//                    LOGE("==========read Data flashD  ==机器Sn=============== %s" , a.c_str());
+//                    LOGE("==========read Data b  ==机器Sn=============== %s" , b.c_str());
+                    //dytSn = DecryptSN((void*)b.c_str(), (void*)a.c_str());
+                    LOGE("=============  redaData length = > %s==%d ",readData,sizeof (readData));
+                    dytSn = (char *)DecryptSN(readData, flashD);
+                    dytSnStr = dytSn;
+                    dytSnStr = dytSnStr.substr(0, 8);
+                    LOGE("==============destr ============= %s", dytSn);
+
+                    flashD = NULL;
+
+//                    snIsRight = true;
                 }else  if (mVid == 5396 && mPid==1){//S0机芯
 
                     //根据 标识  去设置是否渲染 画面 读取SN号
-                    if (isVerifySN()) {
+//                    if (isVerifySN()) {
                         unsigned char *fourLinePara = HoldBuffer + ((256 * (192)) << 1);
                         int amountPixels = (256 << 1);
 
@@ -708,56 +766,60 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                                (sizeof(char) << 5)); // ir序列号
                         memcpy((void *) &user_sn, fourLinePara + userArea + 100,
                                sizeof(char) * sn_length);//序列号
-//                    LOGE(" ir_sn ======= > %s",machine_sn);
-//                    LOGE(" sn_char ===== > %s",user_sn);
-                        char *dytSn;
-                        dytSn = DecryptSN(user_sn, machine_sn);
+//                        LOGE(" ir_sn ======= > %s",machine_sn);
+//                        LOGE(" sn_char ===== > %s",user_sn);
+                        //解密之后的数据
+                        dytSn =(char *)DecryptSN(user_sn, machine_sn);
                         LOGE("==============destr ============= %s", dytSn);
-                        string dytSnStr = dytSn;
+                        dytSnStr = dytSn;
                         dytSnStr = dytSnStr.substr(0, 8);
 //                    LOGE("==============ss ============= %s",ss.c_str());
-
-                        FILE *inFile = NULL;
-                        inFile = fopen(
-                                "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/configs.txt",
-                                "a+");
-                        //存储文件流数据 的指针
-                        char *fileStore;
-                        //读取文件流 字符
-                        if (inFile) {
-                            //获取文件长度
-                            fseek(inFile, 0, SEEK_END);
-                            int length = ftell(inFile);
-                            rewind(inFile);
-                            //指针 分配内存
-                            fileStore = (char *) malloc(length);
-//                        LOGE("sssss======File length =======> %d",length);
-                            if (fread(fileStore, length, 1, inFile) != length) {
-                            }
-                            fclose(inFile);
-                        }
-                        //切割结果
-                        std::vector<std::string> split_result = split(fileStore, ";");
-                        //遍历 结果 是否 符合筛选
-                        for (int i = 0; i < split_result.size(); i++) {
-                            string decryptionSplitChild = DecryptionAES(split_result[i]).substr(0,8);
-                            if (dytSnStr == decryptionSplitChild) {
-                                LOGE("=============SN匹配成功========");
-                                snIsRight = snIsRight | 1;
-                            } else {
-                                LOGE("==============SN匹配不成功========");
-                                snIsRight = snIsRight | 0;
-                            }
-                        }
-                        mIsVerifySn = false;
                         //释放用到的指针资源
                         fourLinePara = NULL;
-                        dytSn = NULL;
-                        inFile = NULL;
-                        free(fileStore);
-                        fileStore = NULL;
+
+                }
+
+                FILE *inFile = NULL;
+                inFile = fopen(
+                        "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/configs.txt",
+                        "a+");
+                //存储文件流数据 的指针
+                char *fileStore;
+                //读取文件流 字符
+                if (inFile) {
+                    //获取文件长度
+                    fseek(inFile, 0, SEEK_END);
+                    int length = ftell(inFile);
+                    rewind(inFile);
+                    //指针 分配内存
+                    fileStore = (char *) malloc(length);
+//                        LOGE("sssss======File length =======> %d",length);
+                    if (fread(fileStore, length, 1, inFile) != length) {
+                    }
+                    fclose(inFile);
+                }
+                //切割结果
+                std::vector<std::string> split_result = split(fileStore, ";");
+                //遍历 结果 是否 符合筛选
+                for (int i = 0; i < split_result.size(); i++) {
+                    string decryptionSplitChild = DecryptionAES(split_result[i]).substr(0,8);
+                    if (dytSnStr == decryptionSplitChild) {
+                        LOGE("=============SN匹配成功========");
+                        snIsRight = snIsRight | 1;
+                    } else {
+                        LOGE("==============SN匹配不成功========");
+                        snIsRight = snIsRight | 0;
                     }
                 }
+                inFile = NULL;
+                free(fileStore);
+                fileStore = NULL;
+                dytSn = NULL;
+
+                //分支结束 之前将标识 设置为 false
+                mIsVerifySn = false;
+            }
+
                 //判断完了之后去 渲染成图
                 if (snIsRight){//s0 的 sn 是否符合规定。
                     draw_preview_one(HoldBuffer, &mPreviewWindow, NULL, 4);
@@ -801,6 +863,7 @@ void UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_arg
     //unsigned short* tmp_buf=(unsigned short*)frameData;
     //LOGE("uvc_preview_frame_callback00  tmp_buf:%d,%d,%d,%d",tmp_buf[384*144*4],tmp_buf[384*144*4+1],tmp_buf[384*144*4+2],tmp_buf[384*144*4+3]);
     //LOGE("uvc_preview_frame_callback hold_bytes:%d,preview->frameBytes:%d",hold_bytes,preview->frameBytes);
+
     if(UNLIKELY(hold_bytes < preview->frameBytes))//判断hold_bytes 不小于preview.frameBytes则跳转到 后面正常运行     UNLIKELY期待值大几率为false时,等价于if(value)
     {   //有手机两帧才返回一帧的数据。
         LOGE("uvc_preview_frame_callback hold_bytes ===> %d < preview->frameBytes  ==== > %d" , hold_bytes, preview->frameBytes);

@@ -1123,6 +1123,12 @@ int UVCCamera::internalSetCtrlValue(control_value_t &values,uint32_t value,diy f
 
 	RETURN(ret,int);
 }
+/**
+ * 获取 tinyc 机芯参数
+ * @param params
+ * @param func_diy
+ * @return
+ */
 int UVCCamera::internalSetCtrlValue(uint8_t * params,diy func_diy){
 	int ret = 0;
 		// 发射率
@@ -1132,7 +1138,7 @@ int UVCCamera::internalSetCtrlValue(uint8_t * params,diy func_diy){
 		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
 		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
 
-		unsigned char status;
+		unsigned char status = 0;
 		for(int index = 0;index < 1000;index++){
 			func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
 			if((status & 0x01) == 0x00){
@@ -1152,6 +1158,7 @@ int UVCCamera::internalSetCtrlValue(uint8_t * params,diy func_diy){
 		LOGE("发射率 1 ==== %d",flashId[1]);
 
 		// 获取 反射温度（已成功）
+		status = 0;
 		data[3] = 0x01;
 		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
 		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
@@ -1174,6 +1181,7 @@ int UVCCamera::internalSetCtrlValue(uint8_t * params,diy func_diy){
 
 		// 获取 大气温度（已成功）
 		data[3] = 0x02;
+		status = 0;
 		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
 		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
         for(int index = 0;index < 1000;index++){
@@ -1195,6 +1203,7 @@ int UVCCamera::internalSetCtrlValue(uint8_t * params,diy func_diy){
 
 		// 获取 大气透过率（已成功）
 		data[3] = 0x04;
+	status = 0;
 		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
 		ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
         for(int index = 0;index < 1000;index++){
@@ -2476,6 +2485,8 @@ int UVCCamera::sendOrder(float value , int mark) {
     data[4] = 0x00;
     data[5] = 0x00;
 
+    mPreview->setIsVerifySn();
+
     if(mark == 1 ){         //反射温度  ， 温度转 K 华氏度
         int val = (int )(value + 273.15f);
         data[3] = 0x01; //0x01 = 反射温度；0x02 = 大气温度；0x04 = 大气透过率；0x05=高低温度段
@@ -2522,9 +2533,6 @@ int UVCCamera::sendOrder(float value , int mark) {
 		ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
 		LOGE("======== 保存设置 ============ ret === %d ==================",ret);
     }
-
-
-
     RETURN(ret, int);
 }
 

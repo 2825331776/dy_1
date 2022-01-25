@@ -191,28 +191,30 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 	/**
 	 * 获取tinyC 参数
+	 *  * 发射率 0-1      emittance  取值 ： （0 -1）
+	 * 	 * 反射温度 2-3     reflect  取值 ： （-20 - 120）
+	 * 	 * 环境温度 4-5     environment  取值 ： （-20 - 50）
+	 * 	 * 湿度 6-7         humidity  取值 ： （0 - 100）
+	 * 	 * 多余 8-9
 	 */
 	private void getTinyCCameraParams(){//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
-		byte [] tempParams = mUvcCameraHandler.getTinyCCameraParams(20);
-		for (int i = 0 ; i < tempParams.length ; i ++ ){
-			Log.e(TAG, "getTinyCCameraParams:  " + i + " === >" + tempParams[i]);
-		}
-//		cameraParams = ByteUtilsCC.tinyCParseCameraParams(tempParams);
+		byte [] tempParams = mUvcCameraHandler.getTinyCCameraParams(10);
+		cameraParams = ByteUtilsCC.tinyCByte2HashMap(tempParams);
 
-//		if (cameraParams != null){
-//			sp.edit().putFloat(DYConstants.setting_correction,
-//					cameraParams.get(DYConstants.setting_correction)!=null?cameraParams.get(DYConstants.setting_correction):0.0f).apply();
-//			sp.edit().putFloat(DYConstants.setting_emittance,
-//					cameraParams.get(DYConstants.setting_emittance)).apply();
-//			sp.edit().putFloat(DYConstants.setting_distance,
-//					cameraParams.get(DYConstants.setting_distance)).apply();
-//			sp.edit().putFloat(DYConstants.setting_reflect,
-//					cameraParams.get(DYConstants.setting_reflect)!=null?cameraParams.get(DYConstants.setting_reflect):0.0f).apply();
-//			sp.edit().putFloat(DYConstants.setting_environment,
-//					cameraParams.get(DYConstants.setting_environment)!=null?cameraParams.get(DYConstants.setting_environment):0.0f).apply();
-//			sp.edit().putFloat(DYConstants.setting_humidity,
-//					cameraParams.get(DYConstants.setting_humidity)).apply();
-//		}
+		if (cameraParams != null){
+			sp.edit().putFloat(DYConstants.setting_correction,
+					cameraParams.get(DYConstants.setting_correction)!=null?cameraParams.get(DYConstants.setting_correction):0.0f).apply();
+			sp.edit().putFloat(DYConstants.setting_emittance,
+					cameraParams.get(DYConstants.setting_emittance)).apply();
+			sp.edit().putFloat(DYConstants.setting_distance,
+					cameraParams.get(DYConstants.setting_distance)).apply();
+			sp.edit().putFloat(DYConstants.setting_reflect,
+					cameraParams.get(DYConstants.setting_reflect)!=null?cameraParams.get(DYConstants.setting_reflect):0.0f).apply();
+			sp.edit().putFloat(DYConstants.setting_environment,
+					cameraParams.get(DYConstants.setting_environment)!=null?cameraParams.get(DYConstants.setting_environment):0.0f).apply();
+			sp.edit().putFloat(DYConstants.setting_humidity,
+					cameraParams.get(DYConstants.setting_humidity)).apply();
+		}
 	}
 
 	@Override
@@ -686,10 +688,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 						getCameraParams();//
 					}else if (mPid == 22592 && mVid == 3034){
 						getTinyCCameraParams();//
-
-						return;
 					}
-
 				}
 				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_setting,null);
 
@@ -726,9 +725,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 								ByteUtil.putFloat(iputEm,value,0);
 								if (mUvcCameraHandler!= null) {
 									if (mPid == 1 && mVid == 5396) {
-										mSendCommand.sendFloatCommand(4 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+										mSendCommand.sendFloatCommand(4 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
+												20, 40, 60, 80, 120);
 									} else if (mPid == 22592 && mVid == 3034){
-										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,100,3);
+										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,value,3);
 									}
 									sp.edit().putFloat(DYConstants.setting_emittance,value).apply();
 									showToast("发射率设置完成");
@@ -752,7 +752,13 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 								byte[] bIputDi = new byte[4];
 								ByteUtil.putInt(bIputDi,value,0);
 								if (mUvcCameraHandler!= null) {
-									mSendCommand.sendShortCommand(5 * 4, bIputDi[0], bIputDi[1], 20, 40, 60);
+									if (mPid == 1 && mVid == 5396) {
+										mSendCommand.sendShortCommand(5 * 4, bIputDi[0], bIputDi[1], 20, 40, 60);
+									}
+//									else if (mPid == 22592 && mVid == 3034){
+//										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,value,3);
+//									}
+
 									sp.edit().putFloat(DYConstants.setting_distance,value).apply();
 									showToast("距离设置完成");
 								}
@@ -775,7 +781,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 								byte[] iputEm = new byte[4];
 								ByteUtil.putFloat(iputEm,value,0);
 								if (mUvcCameraHandler!= null) {
-									mSendCommand.sendFloatCommand(1 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+									if (mPid == 1 && mVid == 5396) {
+										mSendCommand.sendFloatCommand(1 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
+												20, 40, 60, 80, 120);
+									} else if (mPid == 22592 && mVid == 3034){
+										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,value,1);
+									}
 									sp.edit().putFloat(DYConstants.setting_reflect,value).apply();
 									showToast("反射温度设置完成");
 								}
@@ -821,7 +832,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 								byte[] iputEm = new byte[4];
 								ByteUtil.putFloat(iputEm,value,0);
 								if (mUvcCameraHandler!= null) {
-									mSendCommand.sendFloatCommand(2 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+									if (mPid == 1 && mVid == 5396) {
+										mSendCommand.sendFloatCommand(2 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+									} else if (mPid == 22592 && mVid == 3034){
+										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,value,2);
+									}
+
 									sp.edit().putFloat(DYConstants.setting_environment,value).apply();
 									showToast("环境温度设置完成");
 								}
@@ -845,7 +861,13 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 								byte[] iputEm = new byte[4];
 								ByteUtil.putFloat(iputEm,fvalue,0);
 								if (mUvcCameraHandler!= null) {
-									mSendCommand.sendFloatCommand(3 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+									if (mPid == 1 && mVid == 5396) {
+										mSendCommand.sendFloatCommand(3 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
+												20, 40, 60, 80, 120);
+									} else if (mPid == 22592 && mVid == 3034){
+										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,value,4);
+									}
+
 									sp.edit().putFloat(DYConstants.setting_humidity,fvalue).apply();
 									showToast("湿度设置完成");
 								}

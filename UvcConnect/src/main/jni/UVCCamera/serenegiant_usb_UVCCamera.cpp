@@ -247,7 +247,7 @@ static jbyteArray nativeGetCameraParams(JNIEnv *env, jobject thiz,
 	jbyteArray array=(env)->NewByteArray(len);
 	//通过传入的长度分配了一个len字节的内存。也就是len个长度的char
 	uint8_t *para=(uint8_t *)malloc(len*sizeof(uint8_t));//
-	memset(para,0,20);
+	memset(para,0,len);
 	int status=0;
 	if (LIKELY(camera)) {
 		status=camera->getCameraParams((uint8_t*)para);
