@@ -673,6 +673,8 @@ int FrameImage::setTemperatureCallback(JNIEnv *env, jobject temperature_callback
 //查询温度对照表，将查询之后的具体数据回调给java层onReceiveTemperature函数
 void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
     //共用的指针。
+//    LOGE("========0 ======= %d",frameData[0]);
+//    LOGE("========1 ======= %d",frameData[1]);
     unsigned short* orgData=(unsigned short *)frameData;
 
     if (mPid == 1 && mVid == 5396){
@@ -727,47 +729,65 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
         float minX, minY, minTemp, maxX,maxY,maxTemp ,centerTemp;
         //创建返回Java层的 温度数组 。 returnTempData  返回的数据指针。
         jfloatArray mNCbTemper= env->NewFloatArray(requestWidth* requestHeight+10);
-        jfloat  * returnTempData = (jfloat * ) env->GetFloatArrayElements(mNCbTemper,0);
+        jfloat * returnTempData = (jfloat *) env->GetFloatArrayElements(mNCbTemper,0);
+        jfloat * controlTemp = returnTempData;
         //读取中心点温度 .centerData 中心点指针，centerTemp 中心点指针AD值转成的温度
         unsigned short* centerData=(unsigned short *)frameData;
         centerData = centerData + (requestWidth * requestHeight)/2;
         centerTemp = (*centerData)/64.0f - 273.15f;
-        returnTempData[0] = centerTemp;
-
+        *controlTemp = centerTemp;
+//        LOGE("========= orgData[100] ======== %d ===============" , orgData[100]);
+        controlTemp = returnTempData;
+        controlTemp = controlTemp+10;
         //一次遍历拿到最大最小值。及其坐标。以及 更正没一个AD 转温度。
-        for (int i = 0; i < (requestWidth* requestHeight); ++i) {
-            //
-            if (i == 0){
-                minX = 0;
-                minY = 0;
-                minTemp = (orgData[0] / 64 - 273.15f);
-                maxX = requestWidth;
-                maxY = requestHeight;
-                maxTemp = (orgData[0] / 64 - 273.15f);
+        for (int i = 0; i < requestHeight;i++) {
+            for (int j = 0; j < requestWidth; j++) {
+                //赋予初始值
+                if (i == 0 && j== 0){
+                    minX = 0;
+                    minY = 0;
+                    minTemp = *orgData ;
+                    maxX = 0;
+                    maxY = 0;
+                    maxTemp = *orgData ;
+                }
+                if (minTemp > *orgData){
+                    minX = j ;
+                    minY = i;
+                    minTemp = *orgData ;
+                }
+                if (maxTemp < *orgData){
+                    maxX = j ;
+                    maxY = i;
+                    maxTemp = *orgData;
+                }
+                *controlTemp = (*orgData) / 64.0f - 273.15f;
+                orgData++;
+                controlTemp++;
             }
-            if (minTemp > (orgData[i] / 64 - 273.15f)){
-                minX = i % requestWidth;
-                minY = i / requestWidth;
-                minTemp = (orgData[i] / 64 - 273.15f);
-            }
-            if (maxTemp < (orgData[i] / 64 - 273.15f)){
-                maxX = i % requestWidth;
-                maxY = i / requestWidth;
-                maxTemp = (orgData[i] / 64 - 273.15f);
-            }
-
-            returnTempData[i+10] = (orgData[i] / 64 - 273.15f);
         }
-        returnTempData[1] = maxX;
-        returnTempData[2] = maxY;
-        returnTempData[3] = maxTemp;
-        returnTempData[4] = minX;
-        returnTempData[5] = minY;
-        returnTempData[6] = minTemp;
-        returnTempData[7] = 0;
-        returnTempData[8] = 0;
-        returnTempData[9] = 0;
 
+        minTemp = minTemp/64.0f - 273.15;
+        maxTemp = maxTemp/64.0f - 273.15;
+        controlTemp = returnTempData;
+        controlTemp++;
+        *controlTemp = maxX;
+        controlTemp++;
+        *controlTemp = maxY;
+        controlTemp++;
+        *controlTemp = maxTemp;
+        controlTemp++;
+        *controlTemp = minX;
+        controlTemp++;
+        *controlTemp = minY;
+        controlTemp++;
+        *controlTemp = minTemp;
+        controlTemp++;
+        *controlTemp = 0;
+        controlTemp++;
+        *controlTemp = 0;
+        controlTemp++;
+        *controlTemp = 0;
         if (mTemperatureCallbackObj!=NULL)
         {
             //调用java层的 onReceiveTemperature ，传回mNCbTemper（整个图幅温度数据+ 后四行10个温度分析 的数据） 实参
@@ -784,6 +804,7 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
 
         centerData = NULL;
         returnTempData = NULL;
+        controlTemp = NULL;
 
         env->DeleteLocalRef(mNCbTemper);
     }

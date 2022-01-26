@@ -295,7 +295,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		}
 		@Override
 		public void onConnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock, boolean createNew) {
-			if (isDebug)Log.e(TAG, "onConnect:  SN ========================= 》 " + device.getSerialNumber());
+//			if (isDebug)Log.e(TAG, "onConnect:  SN ========================= 》 " + device.getSerialNumber());
 			mVid = device.getVendorId();
 			mPid = device.getProductId();
 

@@ -18,7 +18,9 @@
 #define DEFAULT_PREVIEW_MODE 0
 #define DEFAULT_BANDWIDTH 1.0f
 
-
+//自定义UVC通讯接口
+typedef uvc_error_t (*diy)(uvc_device_handle_t *devh,uint8_t request_type, uint8_t bRequest,
+						   uint16_t wValue, uint16_t wIndex,unsigned char *data, uint16_t wLength, unsigned int timeout);
 
 typedef uvc_error_t (*convFunc_t)(uvc_frame_t *in, uvc_frame_t *out);
 struct irBuffer//使用专业级图像算法所需要的缓存
@@ -89,7 +91,12 @@ private:
 //	string theTag[2] = {"+@;*(\u0018\u0017+","+@;*(\u0018\u00178"};
 //	char myVerify[40];//存储的SN号
 
-
+//	Tinyc使用锁 相关变量
+	pthread_mutex_t tinyc_send_order_mutex;
+	int getTinyCParams(void * returnData, diy func_diy);//获取tinyc 机芯参数。仅获取
+	int sendTinyCOrder(uint32_t* value,diy func_diy);// tinyc 打挡  获取数据 纯标识位 指令
+	int sendTinyCParamsModification(float * value,diy func_diy , uint32_t mark);//tinyc 机芯参数 修改
+	int getTinyCUserData(void * returnData ,diy func_diy,int userMark);//读取用户区数据
 
 
 	int mPixelFormat;
@@ -157,6 +164,7 @@ public:
     int stopPreview();
 	void setVidPid(int vid ,int pid);
 	void setIsVerifySn();
+	int sendTinyCAllOrder(void * params , diy func_tinyc, int mark);
 
 /***************************录制*****************************/
 //	int setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format);//把当前数据回调给Java层

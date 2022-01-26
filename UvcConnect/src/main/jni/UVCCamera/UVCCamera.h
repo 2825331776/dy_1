@@ -105,9 +105,9 @@ typedef uvc_error_t (*paramset_func_i8u8)(uvc_device_handle_t *devh, int8_t valu
 typedef uvc_error_t (*paramset_func_i8u8u8)(uvc_device_handle_t *devh, int8_t value1, uint8_t value2, uint8_t value3);
 typedef uvc_error_t (*paramset_func_i32i32)(uvc_device_handle_t *devh, int32_t value1, int32_t value2);
 
-//自定义UVC通讯接口
-typedef uvc_error_t (*diy)(uvc_device_handle_t *devh,uint8_t request_type, uint8_t bRequest,
-		uint16_t wValue, uint16_t wIndex,unsigned char *data, uint16_t wLength, unsigned int timeout);
+////自定义UVC通讯接口
+//typedef uvc_error_t (*diy)(uvc_device_handle_t *devh,uint8_t request_type, uint8_t bRequest,
+//		uint16_t wValue, uint16_t wIndex,unsigned char *data, uint16_t wLength, unsigned int timeout);
 
 class UVCCamera {
 	char *mUsbFs;
@@ -186,10 +186,10 @@ class UVCCamera {
 		paramget_func_i32 get_func, paramset_func_i32 set_func);
 	int internalSetCtrlValue(control_value_t &values, uint32_t value,
 		paramget_func_u32 get_func, paramset_func_u32 set_func);
-	//自定义 UVC 通讯函数
-	int internalSetCtrlValue(control_value_t &values,uint32_t value,diy func_diy);
-	//自定义 UVC 获取机芯参数
-	int internalSetCtrlValue(uint8_t * params,diy func_diy);
+//	//自定义 UVC 通讯函数
+//	int internalSetCtrlValue(control_value_t &values,uint32_t value,diy func_diy);
+//	//自定义 UVC 获取机芯参数
+//	int internalSetCtrlValue(uint8_t * params,diy func_diy);
 
 public:
 	UVCCamera();
