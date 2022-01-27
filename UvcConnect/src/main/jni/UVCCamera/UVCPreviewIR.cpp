@@ -194,8 +194,6 @@ int UVCPreviewIR::setPreviewDisplay(ANativeWindow *preview_window) {
                     ANativeWindow_setBuffersGeometry(mPreviewWindow,
                                                  requestWidth, requestHeight , previewFormat);
                 }
-
-
             }
         }
     }
@@ -239,7 +237,7 @@ void UVCPreviewIR::setIsVerifySn(){
 }
 int UVCPreviewIR::sendTinyCAllOrder(void * params , diy func_tinyc, int mark){
     int ret = UVC_ERROR_IO;
-    LOGE("=======sendTinyCAllOrder === lock==Thread id = %d===== mark = %d==" , getpid() , mark);
+    LOGE("=======sendTinyCAllOrder === lock==Thread id = %d===== mark = %d==" , gettid() , mark);
 //    LOGE("=======mark === >%d=========" , mark);
     pthread_mutex_lock(&tinyc_send_order_mutex);
     if (mark == 10){//获去tinyc机芯参数列表
@@ -254,7 +252,7 @@ int UVCPreviewIR::sendTinyCAllOrder(void * params , diy func_tinyc, int mark){
         ret = getTinyCUserData(params,func_tinyc,mark);
     }
     pthread_mutex_unlock(&tinyc_send_order_mutex);
-    LOGE("=======sendTinyCAllOrder === unlock=Thread id ===%d=== mark = %d====" , getpid(), mark);
+    LOGE("=======sendTinyCAllOrder === unlock=Thread id ===%d=== mark = %d====" , gettid(), mark);
     RETURN(ret,int);
 }
 int UVCPreviewIR::sendTinyCOrder(uint32_t* value,diy func_diy){
@@ -292,32 +290,33 @@ int UVCPreviewIR::sendTinyCParamsModification(float * value,diy func_diy , uint3
 
 //    setIsVerifySn();
     if(mark == 1 ){         //反射温度  ， 温度转 K 华氏度
+        LOGE("=================== 反射温度===============%f======" ,(*value));
         int val = (int )(*value + 273.15f);
         data[3] = 0x01; //0x01 = 反射温度；0x02 = 大气温度；0x04 = 大气透过率；0x05=高低温度段
         data[6] = (val >> 8);
         data[7] = (val & 0xff);
-        LOGE("=================== 反射温度=====================");
     }
     if(mark == 2 ){         //大气温度
+        LOGE("=================== 大气温度===============%f======" ,(*value));
         int val = (int )(*value + 273.15f);
         data[3] = 0x02; //0x01 = 反射温度；0x02 = 大气温度；0x04 = 大气透过率；0x05=高低温度段
         data[6] = (val >> 8);
         data[7] = (val & 0xff);
-        LOGE("=================== 大气温度=====================");
     }
     if(mark == 3 ){         //发射率
+        LOGE("=================== 发射率===============%f======" ,(*value));
         int val = (int )(*value * 128);
         data[3] = 0x03; //0x01 = 反射温度；0x02 = 大气温度；0x04 = 大气透过率；0x05=高低温度段
         data[6] = (val >> 8);
         data[7] = (val & 0xff);
-        LOGE("=================== 发射率=====================");
+
     }
     if(mark == 4 ){         //大气透过率
+        LOGE("=================== 大气透过率===============%f======" ,(*value));
         int val = (int )(*value * 128);
         data[3] = 0x04; //0x01 = 反射温度；0x02 = 大气温度；0x04 = 大气透过率；0x05=高低温度段
         data[6] = (val >> 8);
         data[7] = (val & 0xff);
-        LOGE("=================== 大气透过率=====================");
     }
 
     if (data[3] != 0x00){//保证修改的 值有数据
@@ -326,16 +325,20 @@ int UVCPreviewIR::sendTinyCParamsModification(float * value,diy func_diy , uint3
         ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
         LOGE("========== 修改设置后 ========= ret === %d ==================",ret);
 //		保存设置
-        data[0] = 0x01;
-        data[1] = 0x0B;
-        data[2] = 0x0C;
-        data[3] = 0x00;
-        data[4] = 0x00;
-        data[5] = 0x00;
-        data[6] = 0x00;
-        data[7] = 0x00;
-        ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
-        LOGE("======== 保存设置 ============ ret === %d ==================",ret);
+        if (ret == 0){
+            ret = UVC_ERROR_IO;
+
+            data[0] = 0x01;
+            data[1] = 0x0B;
+            data[2] = 0x0C;
+            data[3] = 0x00;
+            data[4] = 0x00;
+            data[5] = 0x00;
+            data[6] = 0x00;
+            data[7] = 0x00;
+            ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
+            LOGE("======== 保存设置 ============ ret === %d ==================",ret);
+        }
     }
     RETURN(ret,int);
 }
@@ -533,7 +536,6 @@ int UVCPreviewIR::stopPreview() {
 //            LOGE("UVCPreviewIR::stopPreview preview thread: EXIT_SUCCESS result =  %d" ,*result_preview_join);
             LOGE("UVCPreviewIR::stopPreview preview thread: EXIT_SUCCESS");
         }
-
 
         if(mIsTemperaturing){
             mIsTemperaturing=false;
@@ -812,6 +814,7 @@ void *  UVCPreviewIR::DecryptSN(void * userSn, void * robotSn){
     *returnSn = 0;
     LOGE("===== returnSn ========== %s ========" ,returnSn);
 
+    sn = NULL;
     ir_sn = NULL;
     returnSn = NULL;
 //    for (int i = 0; i < strs_len; i++) {
@@ -870,7 +873,7 @@ string DecryptionAES(const string& strSrc) //AES解密
 
     //进行AES的CBC模式解密
     AES aes;
-    aes.MakeKey(g_key, g_iv, 16, 16);
+    aes.MakeKey(g_key, g_iv, 8, 16);
     aes.Decrypt(szDataIn, szDataOut, length, AES::CBC);
 
     //去PKCS7Padding填充
@@ -1189,7 +1192,7 @@ int UVCPreviewIR::copyToSurface(uint8_t *frameData, ANativeWindow **window) {
         result = -1;
     }
     //LOGE("copyToSurface6");
-    return result;
+//    return result;
     RETURN(result, int);
 }
 /*************************************预览 结束****************************************************/
@@ -1317,6 +1320,7 @@ void UVCPreviewIR::savePicDefineData() {
     irDataPar.typeAndSize = (1 << 4) | 4;;
     memset(irDataPar.reserved,0,18);
     len += sizeof(irDataPar);
+
     adPicbuffer = NULL;
 //    LOGE("===D_IR_DATA_PAR=========%d",sizeof(irDataPar));
     LOGE("=======raw_max =====  %d", irDataPar.raw_max);
@@ -1716,73 +1720,10 @@ void UVCPreviewIR::savePicDefineData() {
     } else{
         //todo java  截屏失败
     }
-//    LOGE("============D_saveData result===============%d",result);
+    dataParBuf = NULL;
     free(old_dataParBuf);
+    old_dataParBuf = NULL;
 }
-
-
-
-//int UVCPreviewIR::stopCapture(){
-//    ENTER();
-//    pthread_mutex_lock(&capture_mutex);
-//    {
-//        if (isRunning() && mIsCapturing)
-//        {
-//            //LOGE("stopCapture");
-//            mIsCapturing = false;
-//            pthread_cond_signal(&capture_sync);
-//            pthread_cond_wait(&capture_sync, &capture_mutex);	// wait finishing Temperatur
-//        }
-//    }
-//    pthread_mutex_unlock(&capture_mutex);
-//    if (pthread_join(capture_thread, NULL) != EXIT_SUCCESS)
-//    {
-//        //LOGE("UVCPreviewIR::stopCapture capture_thread: pthread_join failed");
-//    }else{
-//        //LOGE("UVCPreviewIR::stopCapture capture_thread: pthread_join success");
-//    }
-//    RETURN(0, int);
-//}
-
-
-//the actual function for capturing
-//void UVCPreviewIR::do_capture(JNIEnv *env)
-//{
-//    ENTER();
-//    //LOGE("do_capture");
-//    for (; isRunning()&&mIsCapturing;)
-//    {
-//        //LOGE("do_capture00");
-//        pthread_mutex_lock(&capture_mutex);
-//        {
-//            pthread_cond_wait(&capture_sync, &capture_mutex);
-//            if(LIKELY(OutPixelFormat==3))//RGBA 32bit输出
-//            {
-//                //LOGE("do_capture01");
-//                do_capture_callback(env, RgbaOutBuffer);
-//            }
-//            else if(UNLIKELY(OutPixelFormat==1))//YUYV或者原始数据输出16bit
-//            {
-//                //LOGE("do_capture02");
-//                do_capture_callback(env, OutBuffer);
-//            }
-//            //LOGE("do_capture03");
-//        }
-//        pthread_mutex_unlock(&capture_mutex);
-//    }
-//    pthread_cond_broadcast(&capture_sync);
-//    //LOGE("do_capture EXIT");
-//    EXIT();
-//}
-
-/**
-* call IFrameCallback#onFrame if needs
- */
-//void UVCPreviewIR::do_capture_callback(JNIEnv *env, uint8_t *frameData) {
-//    ENTER();
-//    mFrameImage->do_capture_callback(env,frameData);
-//    EXIT();
-//}
 /***************************************录制相关 结束**************************************/
 
 /***********************************温度相关 开始******************************************************/
@@ -1927,6 +1868,7 @@ void UVCPreviewIR::clearDisplay() {//
                     memset(dest, 0, bytes);
                     dest += stride;
                 }
+                dest = NULL;
                 ANativeWindow_unlockAndPost(mPreviewWindow);
             }
         }

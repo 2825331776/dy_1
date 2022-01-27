@@ -62,6 +62,8 @@ private:
 	volatile int minThumbAD;
 	volatile int maxThumbAD;
 	int roThumb;
+	int frameWidth;
+	int frameHeight;
 //	pthread_mutex_t fixed_mutex;
 //	pthread_cond_t  fixed_cond;
 //	float tempData[16384];

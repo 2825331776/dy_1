@@ -865,9 +865,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 										mSendCommand.sendFloatCommand(3 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
 												20, 40, 60, 80, 120);
 									} else if (mPid == 22592 && mVid == 3034){
-										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,value,4);
+										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,fvalue,4);
 									}
-
 									sp.edit().putFloat(DYConstants.setting_humidity,fvalue).apply();
 									showToast("湿度设置完成");
 								}

@@ -29,7 +29,6 @@ FrameImage::FrameImage(uvc_device_handle_t *devh)  {
             memset(palette, 0, 3*256*sizeof(unsigned char));
             memset(cameraSoftVersion, 0, 16);
 
-//            pthread_mutex_init(&temperature_mutex,NULL);
               isNeedWriteTable=true;//是否需要刷新温度对照表，刚开始要刷新。
               floatFpaTmp = correction = Refltmp = Airtmp = humi = emiss = distance =0;
               cameraLens=130;
@@ -212,17 +211,20 @@ void FrameImage::getCameraPara(uint8_t *frame){
     userArea=userArea+2;
     memcpy(&distance,fourLinePara+userArea,sizeof(float));//距离
 //    LOGE("<<<<<<<<<<correction==%f Refltmp==%f Airtmp==%f humi==%f emiss==%f distance==%f\n",correction,Refltmp,Airtmp,humi,emiss,distance);
+
+    orgData = NULL;
+    fourLinePara = NULL;
 }
 
-/*
-在这里可以返回测温相关参数
-fix       float 0-3
-Refltmp   float 3-7
-Airtmp    float 7-11
-humi      float 11-15
-emiss     float 15-19
-distance  float  20-23
-version          112-127
+/**
+*<p>在这里可以返回测温相关参数</p>
+*<p>   fix       float 0-3     </p>
+*<p>   Refltmp   float 3-7     </p>
+*<p>   Airtmp    float 7-11    </p>
+*<p>   humi      float 11-15   </p>
+*<p>   emiss     float 15-19      </p>
+*<p>   distance  float  20-23     </p>
+*<p>   version          112-127   </p>
 */
 int FrameImage:: getByteArrayTemperaturePara(uint8_t* para , uint8_t* data){
     uint8_t* TempPara;
@@ -251,6 +253,7 @@ int FrameImage:: getByteArrayTemperaturePara(uint8_t* para , uint8_t* data){
     //LOGE("getByteArrayTemperaturePara version:%c",TempPara[j]);
     //}
     //LOGE("getByteArrayTemperaturePara:%d,%d,%d,%d,%d,%d",para[16],para[17],para[18],para[19],para[20],para[21]);
+    TempPara = NULL;
     return true;
 }
 void FrameImage::setVidPid(int vid ,int pid){
@@ -265,8 +268,12 @@ void FrameImage::setPreviewSize(int width,int height ,int mode ){
     requestMode = mode;
     if (mPid == 1 && mVid == 5396){
         mBuffer = new unsigned char[requestWidth*(requestHeight-4)*4];
+        frameWidth = requestWidth;
+        frameHeight = requestHeight-4;
     } else if (mPid == 22592 && mVid == 3034){
         mBuffer = new unsigned char[requestWidth*(requestHeight)*4];
+        frameWidth = requestWidth;
+        frameHeight = requestHeight;
     }
 
     switch (requestWidth)
@@ -331,11 +338,9 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
         mcount++;
     }*/
 
-
     /**
      * 渲染逻辑： 功能需求： 框内细查， 非框内细查， 固定温度条。
      * 固定温度条的时候
-     *
      */
     if (mIsPaletteChanged){
         currentpalette = DYgetPalette(mTypeOfPalette);
@@ -352,12 +357,8 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
 //        LOGE("==============tmp_buf[100]==value  ==%d=============",tmp_buf[100]);
         SearchMaxMin(tmp_buf,(requestHeight * requestWidth),&max,&min);
 //        LOGE( "==========max AD === %d  , min Ad ======= %d" ,max , min );
-
         ro = max - min;
     }
-
-    //获取图幅中的 最大最小AD值
-
 
     //定义三个变量去绘制灰度图
     int grayMin = min;
@@ -381,8 +382,8 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
     int loopnum=areasize/4;
     //如果是 框内细查 或者 是 固定温度条，优先绘制灰度图
     if ((mIsAreachecked && loopnum > 0) || isFixedTempStrip){
-        for (int i = 0; i < requestHeight - 4; i++) {
-            for (int j = 0; j < requestWidth; j++) {
+        for (int i = 0; i < frameHeight; i++) {
+            for (int j = 0; j < frameWidth; j++) {
                 int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - grayMin * 1.0) / grayRo);
                 if (gray < 0) {
                     gray = 0;
@@ -397,7 +398,6 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
             }
         }
     }
-
 //    LOGE(" === areasize == %d  ", areasize);
 
 
@@ -422,7 +422,6 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
 //        int loopnum=areasize/4;
         if (loopnum > 0){//框内细查 存在添加的框
 //            LOGE(" === heckArea %d   === ", mCheckArea[1]);
-
             //根据框 拿色板去渲染
             for(int m=0;m<loopnum;m++){
                 for (int i = mCheckArea[4 * m + 2]; i < mCheckArea[4 * m + 3]; i++) {
@@ -450,13 +449,10 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
                     }
                 }
             }
-
-        } else{//框内细查 没有添加框，则根据 色板去渲染 范围内的点
-            for (int i = 0; i < requestHeight - 4; i++) {
-                for (int j = 0; j < requestWidth; j++) {
-//              LOGE("this requestHeight and requestwidth==============%d========================%d",requestHeight,requestWidth);
+        } else{//框内细查 并不存在矩形（绘制渲染全图， 是否固定温度条 ）
+            for (int i = 0; i < frameHeight; i++) {
+                for (int j = 0; j < frameWidth; j++) {
                     //黑白：灰度值0-254单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
-//              LOGE("====================%d======================",tmp_buf[i * requestWidth + j]);
                     int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
                     if (gray < 0) {
                         gray = 0;
@@ -475,10 +471,10 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
                 }
             }
         }
-    } else{ //非框内细查，则根据 色板的 拖动条设置去渲染
-        if (isFixedTempStrip){
+    } else{ //非框内细查，
+        if (isFixedTempStrip){//非框内细查，固定温度条
 //            LOGE("=====  quanfu Max ==%d , maxThumbAd===  %d =,=minThumbAD == %d ==, maxThumbValue = %f , == minThumbValue == %f ",grayMax, maxThumbAD, minThumbAD,maxThumbValue , minThumbValue );
-            for (int i = 0; i < requestHeight - 4; i++) {
+            for (int i = 0; i < frameHeight; i++) {
                 for (int j = 0; j < requestWidth; j++) {
                 if (tmp_buf[i * requestWidth + j] >= min && tmp_buf[i * requestWidth + j] <= (min + ro)) {
                     int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
@@ -499,15 +495,10 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
                 }
                 }
             }
-        } else{
-            for (int i = 0; i < requestHeight - 4; i++) {
-                for (int j = 0; j < requestWidth; j++) {
-
+        } else{//非框内细查，非固定温度条
+            for (int i = 0; i < frameHeight; i++) {
+                for (int j = 0; j < frameWidth; j++) {
                     //黑白：灰度值0-254单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
-//              LOGE("====================%d======================",tmp_buf[i * requestWidth + j]);
-//                if (tmp_buf[i * requestWidth + j] >= min &&
-//                    tmp_buf[i * requestWidth + j] <= (min + ro)) {
-
                     int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - min * 1.0) / ro);
                     if (gray < 0) {
                         gray = 0;
@@ -524,11 +515,8 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
                             paletteNum + 2];
                     mBuffer[4 * (i * requestWidth + j) + 3] = 1;
                 }
-//            }
             }
         }
-
-
     }
     tmp_buf = NULL;
     return mBuffer;
@@ -575,64 +563,6 @@ void FrameImage::copyFrameTO292(const uint8_t *src, uint8_t *dest, const int wid
     }
 }
 /*******************************预览方法区 结束****************************************/
-
-/*******************************录制方法区 开始****************************************/
-//设置 帧回调的java  对应的方法
-//int FrameImage::setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format){
-//    ENTER();
-//    LOGE("setFrameCallback步骤8");
-//        OutPixelFormat=pixel_format;
-//        if (!env->IsSameObject(mFrameCallbackObj, frame_callback_obj))
-//        {
-//            iframecallback_fields.onFrame = NULL;
-//            if (mFrameCallbackObj){
-//                env->DeleteGlobalRef(mFrameCallbackObj);
-//            }
-//            mFrameCallbackObj = frame_callback_obj;
-//            if (frame_callback_obj){
-//                // get method IDs of Java object for callback
-//                jclass clazz = env->GetObjectClass(frame_callback_obj);
-//                if (LIKELY(clazz)){
-//                    iframecallback_fields.onFrame = env->GetMethodID(clazz,"onFrame",	"(Ljava/nio/ByteBuffer;)V");
-//                }else{
-//                    LOGE("failed to get object class");
-//                }
-//                env->ExceptionClear();
-//                if (!iframecallback_fields.onFrame){
-//                    //LOGE("Can't find IFrameCallback#onFrame");
-//                    env->DeleteGlobalRef(frame_callback_obj);
-//                    mFrameCallbackObj = frame_callback_obj = NULL;
-//                }
-//            }
-//        }
-//    LOGE("setFrameCallback finish");
-//    RETURN(0, int);
-//}
-
-//the actual function for capturing 录制传递数据到java层的 回调接口
-//void FrameImage::do_capture_callback(JNIEnv *env, uint8_t *frameData) {
-////    ENTER();
-////    LOGE("=====================do_capture_callback==========================");
-//    if (LIKELY(mFrameCallbackObj))
-//    {
-//        jobject buf;
-//        //LOGE("do_capture_callback NewDirectByteBuffer");
-//        if(LIKELY(OutPixelFormat==3))//RGBA 32bit输出
-//        {
-//            buf = env->NewDirectByteBuffer(frameData, requestWidth*(requestHeight-4)*4);
-//            env->CallVoidMethod(mFrameCallbackObj, iframecallback_fields.onFrame, buf);
-//        }
-//        else if(UNLIKELY(OutPixelFormat==1))//YUYV或者原始数据输出16bit
-//        {
-//            buf = env->NewDirectByteBuffer(frameData, requestWidth*(requestHeight-4)*2);
-//            env->CallVoidMethod(mFrameCallbackObj, iframecallback_fields.onFrame, buf);
-//        }
-//        env->ExceptionClear();
-//        env->DeleteLocalRef(buf);
-//    }
-////    EXIT();
-//}
-/*******************************录制方法区 结束****************************************/
 
 /***************************************温度 开始****************************************/
 //设置温度回调接口 对象及其回调的具体方法
@@ -721,7 +651,6 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
 
         temperatureData=NULL;
         fourLinePara=NULL;
-
 //    LOGE("do_temperature_callback EXIT();");
 //    EXIT();
     }else if (mPid == 22592 && mVid == 3034){
@@ -794,7 +723,7 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
             env->CallVoidMethod(mTemperatureCallbackObj, iTemperatureCallback.onReceiveTemperature, mNCbTemper);
             env->ExceptionClear();
         }
-        //固定温度条： 刷新 最大 最小AD的 ，tinyC 通过计算获取。
+        //固定温度条： 刷新最大最小AD值 ，tinyC通过计算获取。
         if (isNeedFreshAD){
 //            LOGE("refresh AD ====  maxThumbValue == %f ,  minThumbValue ==== %f " , maxThumbValue , minThumbValue);
             maxThumbAD = (maxThumbValue + 273.15f ) * 64;
@@ -809,7 +738,6 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
         env->DeleteLocalRef(mNCbTemper);
     }
     orgData=NULL;
-
 }
 
 /***************************************温度结束****************************************/
