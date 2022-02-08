@@ -470,16 +470,16 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mUvcCameraHandler.startTemperaturing();//温度回调
 
 
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			public void run () {
-				if (mUvcCameraHandler!=null && mUvcCameraHandler.isOpened()){
-//					getCameraParams();
-				}
-				//清除所有的控件
-//				mDataBinding.dragTempContainerPreviewFragment.clearAll();
-			}
-		},3000);
+//		new Handler().postDelayed(new Runnable() {
+//			@Override
+//			public void run () {
+//				if (mUvcCameraHandler!=null && mUvcCameraHandler.isOpened()){
+////					getCameraParams();
+//				}
+//				//清除所有的控件
+////				mDataBinding.dragTempContainerPreviewFragment.clearAll();
+//			}
+//		},3000);
 	}
 
 	/**
@@ -1546,7 +1546,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //						showToast("录制时长应大于1S");
 //						return;
 //					}
-					if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened() ){//mUvcCameraHandler.isOpened()
+					if (mUvcCameraHandler != null && mUvcCameraHandler.isTemperaturing() ){//mUvcCameraHandler.isOpened()
 						if (mDataBinding.btPreviewLeftRecord.isSelected() && mUvcCameraHandler.isRecording()){//停止录制
 							stopTimer();
 							mUvcCameraHandler.stopRecording();

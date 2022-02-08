@@ -154,7 +154,6 @@ public class DragTempContainer extends RelativeLayout {
 		return userAddData;
 	}
 
-
 	/**
 	 * <p>通过添加的 数据源列表，得到其中矩形的坐标的 int [] 数组。</p>
 	 * <p>排布顺序，开始X，> 结束X， 开始Y，> 结束Y。</p>
@@ -648,7 +647,6 @@ public class DragTempContainer extends RelativeLayout {
 		widget.setTempTextSize(20);
 		widget.addToolsBp(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_areacheck_tools_delete));
 		widget.setPointTemp(pointTempWidget);
-
 //
 		resetUserAddView(widget);
 		drawTempMode = -1;
@@ -690,11 +688,13 @@ public class DragTempContainer extends RelativeLayout {
 	private void resetUserAddView(TempWidgetObj childData){
 		int type = childData.getType();
 		MyMoveWidget firstTypeChildView  = null;//记录当前 数据源 类型的 第一个 子View，比如子View的 第一个点  第一个 线  第一个 矩形
+		TempWidgetObj firstTypeData = null;
 		int typeCount = 0;//记录共有多少 数据源类型
 		//遍历 子View 引用集合
 		for (MyMoveWidget childView : userAddView){
 			if (type == childView.getViewData().getType() && firstTypeChildView ==null){
 				firstTypeChildView = childView;
+				firstTypeData = childView.getViewData();
 			}
 			if (type == childView.getViewData().getType()){
 				typeCount++;
@@ -704,7 +704,7 @@ public class DragTempContainer extends RelativeLayout {
 			case 1:
 				if (typeCount == POINT_MAX_NUMBER){
 					removeView(firstTypeChildView);
-					userAddData.remove(childData);
+					userAddData.remove(firstTypeData);
 					userAddView.remove(firstTypeChildView);
 				}
 				addChild(childData);
@@ -712,15 +712,18 @@ public class DragTempContainer extends RelativeLayout {
 			case 2:
 				if (typeCount == LINE_MAX_NUMBER){
 					removeView(firstTypeChildView);
-					userAddData.remove(childData);
+					userAddData.remove(firstTypeData);
 					userAddView.remove(firstTypeChildView);
+//					removeView(firstTypeChildView);
+					Log.e(TAG, "resetUserAddView: ==============delete line view ==========" + userAddView.size());
+					Log.e(TAG, "resetUserAddView: ==============delete line view ==========" + userAddData.size());
 				}
 				addChild(childData);
 				break;
 			case 3:
 				if (typeCount == RECTANGLE_MAX_NUMBER){
 					removeView(firstTypeChildView);
-					userAddData.remove(childData);
+					userAddData.remove(firstTypeData);
 					userAddView.remove(firstTypeChildView);
 				}
 				addChild(childData);
@@ -1074,11 +1077,6 @@ public class DragTempContainer extends RelativeLayout {
 	 */
 	public void setAllChildUnSelect(){
 //		if (isDebug)Log.e(TAG, "Parent setAllChildUnSelect: ");
-//		if (userAddData.size() > 0){
-//			for (TempWidgetObj child : userAddData){
-////				child.setSelectedState(false);
-//			}
-//		}
 		for(TempWidgetObj obj : userAddData){
 			obj.setSelect(false);
 		}
@@ -1086,14 +1084,6 @@ public class DragTempContainer extends RelativeLayout {
 			widget.setSelectedState(false);
 			widget.requestLayout();
 		}
-
-
-//		if (selectChild != null){
-//			selectChild.setSelectedState(false);
-////			removeView(selectChild);
-//			removeAllViews();
-//			selectChild = null;
-//		}
 	}
 
 	public void deleteChildView(TempWidgetObj childData){
@@ -1101,6 +1091,7 @@ public class DragTempContainer extends RelativeLayout {
 		for ( MyMoveWidget widget : userAddView){
 			if (childData == widget.getViewData()){
 				removeView(widget);
+				Log.e(TAG, "deleteChildView: ==========================do it ============");
 			}
 		}
 	}
@@ -1166,6 +1157,8 @@ public class DragTempContainer extends RelativeLayout {
 							updateLRTemp(userAddData.get(i).getOtherTemp(),userAddData.get(i).getType());
 						}
 //						if (userAddData.size() == userAddView.size()){
+						Log.e(TAG, "handleMessage: userAddView size = > " + userAddView.size());
+						Log.e(TAG, "handleMessage: userAddData size = > " + userAddData.size());
 							userAddView.get(i).invalidate();
 //						}
 					}
