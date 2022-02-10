@@ -701,6 +701,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				assert popSettingBinding != null;
 				//第二步：将获取的数据 展示在输入框内
 				if (cameraParams != null) {
+					if (mPid == 22592 && mVid == 3034){
+						popSettingBinding.etCameraSettingReflect.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
+						popSettingBinding.etCameraSettingFreeAirTemp.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
+						popSettingBinding.etCameraSettingDistance.setEnabled(false);
+					}
 					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(cameraParams.get(DYConstants.setting_emittance)));//发射率 0-1
 					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(cameraParams.get(DYConstants.setting_distance)));//距离 0-5
 					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int)(cameraParams.get(DYConstants.setting_humidity)*100)));//湿度 0-100

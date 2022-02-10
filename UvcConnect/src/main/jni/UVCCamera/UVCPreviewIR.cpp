@@ -67,8 +67,6 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh ,FrameImage * frameImage){
     OutPixelFormat=3;
     mTypeOfPalette=1;
 
-
-
     pthread_cond_init(&preview_sync, NULL);
     pthread_mutex_init(&preview_mutex, NULL);
 //
@@ -80,7 +78,8 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh ,FrameImage * frameImage){
 
     pthread_mutex_init(&data_callback_mutex,NULL);
 
-    pthread_mutex_init(&tinyc_send_order_mutex,NULL);
+//    pthread_cond_init(&tinyC_send_order_sync,NULL);
+    pthread_mutex_init(&tinyC_send_order_mutex,NULL);
 
 //    pthread_mutex_init(&fixed_mutex,NULL);
     EXIT();
@@ -107,7 +106,8 @@ UVCPreviewIR::~UVCPreviewIR() {
 
     pthread_mutex_destroy(&data_callback_mutex);
 
-    pthread_mutex_destroy(&tinyc_send_order_mutex);
+//    pthread_cond_destroy(&tinyC_send_order_sync);
+    pthread_mutex_destroy(&tinyC_send_order_mutex);
 //    pthread_mutex_destroy(&fixed_mutex);
     //LOGE("~UVCPreviewIR() 8");
 
@@ -235,23 +235,31 @@ void UVCPreviewIR::setVidPid(int vid ,int pid){
 void UVCPreviewIR::setIsVerifySn(){
     mIsVerifySn = !mIsVerifySn;
 }
+/**
+ *
+ * @param params
+ * @param func_tinyc
+ * @param mark
+ * @return
+ */
 int UVCPreviewIR::sendTinyCAllOrder(void * params , diy func_tinyc, int mark){
     int ret = UVC_ERROR_IO;
     LOGE("=======sendTinyCAllOrder === lock==Thread id = %d===== mark = %d==" , gettid() , mark);
 //    LOGE("=======mark === >%d=========" , mark);
-    pthread_mutex_lock(&tinyc_send_order_mutex);
-    if (mark == 10){//获去tinyc机芯参数列表
+    pthread_mutex_lock(&tinyC_send_order_mutex);
+        if (mark == 10){//获去tinyC机芯参数列表
         ret = getTinyCParams(params, func_tinyc);
-    } else if (mark == 100){//纯指令， 打挡  返回AD流
+    } else if (mark == 100){//纯指令， 打挡  切换返回数据流
         LOGE("=========mark == 100======= === %d=======" ,*((int*)params));
         ret = sendTinyCOrder((uint32_t*) params, func_tinyc);
-    } else if ( mark > 0 && mark < 10){//设置机芯参数
+    } else if ( mark > 0 && mark < 10){//修改tinyC机芯参数
         ret = sendTinyCParamsModification((float*)(params),func_tinyc,mark);
-    } else if (mark == 20 || mark == 21){
+    } else if (mark == 20 || mark == 21){//获取机器的SN  和 用户区的SN
         LOGE("=========mark == 20 || mark == 21=======" );
         ret = getTinyCUserData(params,func_tinyc,mark);
     }
-    pthread_mutex_unlock(&tinyc_send_order_mutex);
+    LOGE("=======sendTinyCAllOrder === ret =====**** = %d====" , ret);
+    pthread_mutex_unlock(&tinyC_send_order_mutex);
     LOGE("=======sendTinyCAllOrder === unlock=Thread id ===%d=== mark = %d====" , gettid(), mark);
     RETURN(ret,int);
 }
@@ -287,7 +295,6 @@ int UVCPreviewIR::sendTinyCParamsModification(float * value,diy func_diy , uint3
     data[3] = 0x01; //0x01 = 反射温度；0x02 = 大气温度；0x04 = 大气透过率；0x05=高低温度段；0x03 发射率
     data[4] = 0x00;
     data[5] = 0x00;
-
 //    setIsVerifySn();
     if(mark == 1 ){         //反射温度  ， 温度转 K 华氏度
         LOGE("=================== 反射温度===============%f======" ,(*value));
@@ -350,7 +357,7 @@ int UVCPreviewIR::getTinyCUserData(void * returnData ,diy func_diy,int userMark)
     if(userMark == 20){//读取用户区SN
         // 读取用户区域
         int dataLen = 15; //获取或读取数据大小
-        unsigned char * readData = (unsigned char * )returnData;
+        unsigned char * readData = (unsigned char *)returnData;
 //        LOGE("=============  redaData length = > %d ",sizeof (readData));
         int dwStartAddr = 0x7FF000;// 用户区域首地址
 
@@ -485,7 +492,6 @@ int UVCPreviewIR::getTinyCParams(void * rdata , diy func_diy){
     *backData = flashId[1];
     LOGE("大气温度 0 ==== %d",flashId[0]);
     LOGE("大气温度 1 ==== %d",flashId[1]);
-
     // 获取 大气透过率（已成功）
     data[3] = 0x04;
     status = 0;
@@ -731,7 +737,7 @@ std::vector<std::string> split(std::string str, std::string pattern)
     return result;
 }
 
-// 解密sn
+// 解密用户区 SN
 // <param name="sn">用户sn</param>
 // <param name="ir_sn">设备sn</param>
 // <returns></returns>
@@ -761,7 +767,7 @@ void *  UVCPreviewIR::DecryptSN(void * userSn, void * robotSn){
 //        LOGE(" DecryptSN sn ======= > %d",(int)strs[i]);
 //    }
 //    LOGE(" DecryptSN =====步骤二 ===== >strs ===>  %s==%d==%d " ,strs,strlen(strs),strlen(sn));
-    LOGE(" DecryptSN =====步骤二 ===== >sn_sum ===>  %d " ,sn_sum);
+//    LOGE(" DecryptSN =====步骤二 ===== >sn_sum ===>  %d " ,sn_sum);
     strs[0] = (char)(strs[0] ^ 18);
     strs[8] = (char)(strs[8] ^ 18);
     strs[11] = (char)(strs[11] ^ sn_sum);
@@ -812,7 +818,7 @@ void *  UVCPreviewIR::DecryptSN(void * userSn, void * robotSn){
     char * returnSn ;
     returnSn= (char *)(sn + 15);
     *returnSn = 0;
-    LOGE("===== returnSn ========== %s ========" ,returnSn);
+//    LOGE("===== returnSn ========== %s ========" ,returnSn);
 
     sn = NULL;
     ir_sn = NULL;
@@ -825,7 +831,7 @@ void *  UVCPreviewIR::DecryptSN(void * userSn, void * robotSn){
 
 //DYTCA10D DYTCA10Q DYTCA10L
 const char g_key[17] = "dyt1101c";
-const char g_iv[17] = "gfdertfghjkuyrtg";//ECB MODE不需要关心chain，可以填空
+const char g_iv[17] = "dyt0526cdyt0526c";//ECB MODE不需要关心chain，可以填空
 string EncryptionAES(const string& strSrc) //AES加密
 {
     size_t length = strSrc.length();
@@ -873,7 +879,7 @@ string DecryptionAES(const string& strSrc) //AES解密
 
     //进行AES的CBC模式解密
     AES aes;
-    aes.MakeKey(g_key, g_iv, 8, 16);
+    aes.MakeKey(g_key, g_iv, 16, 16);
     aes.Decrypt(szDataIn, szDataOut, length, AES::CBC);
 
     //去PKCS7Padding填充
@@ -899,7 +905,6 @@ string DecryptionAES(const string& strSrc) //AES解密
     return strDest;
 }
 
-int  flag = 0;
 
 /**
  *
@@ -953,32 +958,33 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 if (isVerifySN()) {
                     char *dytSn;
                     string dytSnStr;
+                    //解码用户区 写入的 用户SN号
                     if (mPid == 22592 && mVid == 3034){//tinyC机芯
-                        snIsRight = true;
-                        unsigned char * robotSN = (unsigned char *)malloc(sizeof (char )*15);
-                        unsigned char * userSn = (unsigned char *)malloc(sizeof (char )*15);
-                        unsigned char * userSnSixLast = robotSN + 6;
+//                        snIsRight = true;
+                        unsigned char * tinyC_robotSN = (unsigned char *)malloc(sizeof (char )*15);
+                        unsigned char * tinyC_userSN = (unsigned char *)malloc(sizeof (char )*15);
+                        unsigned char * tinyC_userSn_sixLast = tinyC_robotSN + 6;//指向机器SN的第六位之后
+                        //发送指令
                         int pa = 0x8004;
-//                        sendTinyCAllOrder(&pa,uvc_diy_communicate,100);
-
-                        sendTinyCAllOrder(robotSN,uvc_diy_communicate,21);
-                        sendTinyCAllOrder(userSn,uvc_diy_communicate,20);
-
+                        //获取 机器的SN 和 用户区的SN
+                        sendTinyCAllOrder(tinyC_robotSN,uvc_diy_communicate,21);
+                        sendTinyCAllOrder(tinyC_userSN,uvc_diy_communicate,20);
+                        //0x8004
                         sendTinyCAllOrder(&pa,uvc_diy_communicate,100);
-    //                    LOGE("========robotSn == %s=========",robotSN);
-    //                    LOGE("========userSn == %s=========",userSn);
-    //                    LOGE("========userSnSixLast == %s=========",userSnSixLast);
-                        dytSn =(char *)DecryptSN(userSn, userSnSixLast);
+//                        LOGE("========tinyC_robotSN == %s=========",tinyC_robotSN);
+//                        LOGE("========tinyC_userSN == %s =========",tinyC_userSN);
+//                        LOGE("========tinyC_userSn_sixLast == %s =========",tinyC_userSn_sixLast);
+                        dytSn =(char *)DecryptSN(tinyC_userSN, tinyC_userSn_sixLast);
     //                    LOGE("==============destr ============= %s", dytSn);
                         dytSnStr = dytSn;
                         dytSnStr = dytSnStr.substr(0, 8);
     //                    LOGE("========robotSn == %s=========",robotSN);
     //                    LOGE("========userSn == %s=========",userSn);
-                        free(robotSN);
-                        free(userSn);
-                        robotSN = NULL;
-                        userSn = NULL;
-                        userSnSixLast = NULL;
+                        free(tinyC_robotSN);
+                        free(tinyC_userSN);
+                        tinyC_robotSN = NULL;
+                        tinyC_userSN = NULL;
+                        tinyC_userSn_sixLast = NULL;
                     }else  if (mVid == 5396 && mPid==1){//S0机芯
 
                         //根据 标识  去设置是否渲染 画面 读取SN号
@@ -991,19 +997,18 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                                    (sizeof(char) << 5)); // ir序列号
                             memcpy((void *) &user_sn, fourLinePara + userArea + 100,
                                    sizeof(char) * sn_length);//序列号
-    //                        LOGE(" ir_sn ======= > %s",machine_sn);
-    //                        LOGE(" sn_char ===== > %s",user_sn);
+//                            LOGE(" ir_sn ======= > %s",machine_sn);
+//                            LOGE(" sn_char ===== > %s",user_sn);
                             //解密之后的数据
                             dytSn =(char *)DecryptSN(user_sn, machine_sn);
-                            LOGE("==============destr ============= %s", dytSn);
+//                            LOGE("==============destr =============%s", dytSn);
                             dytSnStr = dytSn;
                             dytSnStr = dytSnStr.substr(0, 8);
     //                    LOGE("==============ss ============= %s",ss.c_str());
                             //释放用到的指针资源
                             fourLinePara = NULL;
                     }
-
-                    if (!snIsRight){
+                        //读取配置文件的 加密SN
                         FILE *inFile = NULL;
                         inFile = fopen(
                                 "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/configs.txt",
@@ -1025,10 +1030,12 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         }
                         //切割结果
                         std::vector<std::string> split_result = split(fileStore, ";");
-                        LOGE("==================configs.txt split size == %d=========",split_result.size());
+//                        LOGE("==================configs.txt split size == %d=========",split_result.size());
                         //遍历 结果 是否 符合筛选
                         for (int i = 0; i < split_result.size(); i++) {
+//                            LOGE("=============split_result=== %s =====",split_result[i].c_str());
                             string decryptionSplitChild = DecryptionAES(split_result[i]).substr(0,8);
+//                            LOGE("=======dytSnStr =%s=====decryptionSplitChild=%s=======",dytSnStr.c_str(),decryptionSplitChild.c_str());
                             if (dytSnStr == decryptionSplitChild) {
                                 LOGE("=============SN匹配成功========");
                                 snIsRight = snIsRight | 1;
@@ -1037,11 +1044,9 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                                 snIsRight = snIsRight | 0;
                             }
                         }
-
                         inFile = NULL;
                         free(fileStore);
                         fileStore = NULL;
-                    }
                     dytSn = NULL;
                     //分支结束 之前将标识 设置为 false
                     mIsVerifySn = false;
@@ -1053,7 +1058,6 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 }
 
                 tmp_buf=NULL;
-
                 mIsComputed=true;
             }
             pthread_mutex_unlock(&preview_mutex);
@@ -1106,10 +1110,8 @@ void UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_arg
 //        {
 //        LOGE("======================uvc_preview_frame_callback01======================");
 //            unsigned  char * thedata = preview->OutBuffer;
-
             //void *memcpy(void *destin, void *source, unsigned n);从源source中拷贝n个字节到目标destin中
             memcpy(preview->OutBuffer,frameData,(preview->requestWidth)*(preview->requestHeight)*2);
-
 //        LOGE("===================frameSize ===========%s",sizeof(OutBuffer));
             //LOGE("uvc_preview_frame_callback02");
             /* swap the buffers org */

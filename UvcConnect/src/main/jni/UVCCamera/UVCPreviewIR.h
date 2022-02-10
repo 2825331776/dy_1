@@ -92,12 +92,23 @@ private:
 //	char myVerify[40];//存储的SN号
 
 //	Tinyc使用锁 相关变量
-	pthread_mutex_t tinyc_send_order_mutex;
+//	pthread_t tinyC_send_order_thread;
+//	pthread_cond_t tinyC_send_order_sync;
+	pthread_mutex_t tinyC_send_order_mutex;
 	int getTinyCParams(void * returnData, diy func_diy);//获取tinyc 机芯参数。仅获取
 	int sendTinyCOrder(uint32_t* value,diy func_diy);// tinyc 打挡  获取数据 纯标识位 指令
 	int sendTinyCParamsModification(float * value,diy func_diy , uint32_t mark);//tinyc 机芯参数 修改
 	int getTinyCUserData(void * returnData ,diy func_diy,int userMark);//读取用户区数据
-
+	//TinyC 发送指令专用线程
+//    static void *tinyC_sendOrder_thread_func(void *vptr_args);//
+//    void sendTinyCOrder();
+//	uint8_t tinyC_order_request_type;
+//	uint8_t tinyC_order_bRequest;
+//	uint16_t tinyC_order_wValue;
+//	uint16_t tinyC_order_wIndex;
+//	unsigned char *tinyC_order_data;
+//	uint16_t tinyC_order_wLength;
+//	unsigned int tinyC_order_timeout;
 
 	int mPixelFormat;
 	/*****************************录制 拍照相关,不负责具体实现 ********************************/
@@ -150,6 +161,8 @@ private:
 
     float mCbTemper[640*512+10];//回调给Java层的温度数据，大小是不是太大了
     unsigned short detectAvg;
+
+
 
 
 public:
