@@ -40,6 +40,10 @@ import java.io.IOException;
  * using MediaCodec.
  * This class render texture images into recording surface
  * camera from MediaCodec encoder using Open GL|ES
+ * * 将纹理图像编码为 H.264 视频
+ *   * 使用媒体编解码器。
+ *   * 此类将 纹理图像 渲染到 录制的surface
+ *   * 来自使用 Open GL|ES 的 MediaCodec 编码器的摄像头
  */
 public class MediaVideoEncoder extends MediaEncoder implements IVideoEncoder {
 	private static final boolean DEBUG = true;	// TODO set false on release

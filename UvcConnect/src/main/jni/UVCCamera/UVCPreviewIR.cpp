@@ -62,10 +62,10 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh ,FrameImage * frameImage){
 
     mFrameImage = frameImage;
 
-    mIsComputed=true;
+    mIsComputed = true;
     mIsCopyPicture = false;
-    OutPixelFormat=3;
-    mTypeOfPalette=1;
+    OutPixelFormat = 3;
+    mTypeOfPalette = 1;
 
     pthread_cond_init(&preview_sync, NULL);
     pthread_mutex_init(&preview_mutex, NULL);
@@ -276,11 +276,11 @@ int UVCPreviewIR::sendTinyCOrder(uint32_t* value,diy func_diy){
         data[5] = 0x00;
         data[6] = 0x00;
         data[7] = 0x00;
-        ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
+        ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
     }
     if (*value == 32768){//打挡指令 0X8000
         unsigned char data[8] = {0x0d,0xc1,0x00,0x00,0x00,0x00,0x00,0x00};
-        ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
+        ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
     }
     RETURN(ret,int);
 }
@@ -328,8 +328,8 @@ int UVCPreviewIR::sendTinyCParamsModification(float * value,diy func_diy , uint3
 
     if (data[3] != 0x00){//保证修改的 值有数据
         LOGE("========== 修改设置前 ========= ret === %d ==================",ret);
-        ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
-        ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
+        ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
+        ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
         LOGE("========== 修改设置后 ========= ret === %d ==================",ret);
 //		保存设置
         if (ret == 0){
@@ -343,7 +343,7 @@ int UVCPreviewIR::sendTinyCParamsModification(float * value,diy func_diy , uint3
             data[5] = 0x00;
             data[6] = 0x00;
             data[7] = 0x00;
-            ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
+            ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
             LOGE("======== 保存设置 ============ ret === %d ==================",ret);
         }
     }
@@ -369,10 +369,10 @@ int UVCPreviewIR::getTinyCUserData(void * returnData ,diy func_diy,int userMark)
         data[5] = (dwStartAddr&0x000000ff);
         data[6] = (dataLen>>8);
         data[7] = (dataLen&0xff);
-        ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
+        ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
         unsigned char status;
         for(int index = 0;index < 1000;index++){
-            func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
+            uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
             if((status & 0x01) == 0x00){
                 if((status & 0x02) == 0x00){
                     break;
@@ -382,7 +382,7 @@ int UVCPreviewIR::getTinyCUserData(void * returnData ,diy func_diy,int userMark)
                 }
             }
         }
-        ret = func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x1d08,readData, 15,1000);
+        ret = uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x1d08,readData, 15,1000);
         LOGE("==========read Data ================= %s" , readData);
         readData = NULL;
     } else if (userMark == 21){//读取 机器SN
@@ -396,10 +396,10 @@ int UVCPreviewIR::getTinyCUserData(void * returnData ,diy func_diy,int userMark)
         data[5] = 0x10;
         data[6] = 0x00;
         data[7] = 0x10;
-        ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
+        ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
         unsigned char status1;
         for(int index = 0;index < 1000;index++){
-            func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status1, 1,1000);
+            uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status1, 1,1000);
             if((status1 & 0x01) == 0x00){
                 if((status1 & 0x02) == 0x00){
                     break;
@@ -409,7 +409,7 @@ int UVCPreviewIR::getTinyCUserData(void * returnData ,diy func_diy,int userMark)
                 }
             }
         }
-        ret = func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x1d08,flashId, 15,1000);
+        ret = uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x1d08,flashId, 15,1000);
         flashId = NULL;
     }
 
@@ -423,12 +423,12 @@ int UVCPreviewIR::getTinyCParams(void * rdata , diy func_diy){
     unsigned char flashId[2] = {0};
     unsigned char data[8] = {0x14,0x85,0x00,0x03,0x00,0x00,0x00,0x00};
     unsigned char data2[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x02};
-    ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
-    ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
+    ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
+    ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
 
     unsigned char status = 0;
     for(int index = 0;index < 1000;index++){
-        func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
+        uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
         if((status & 0x01) == 0x00){
             if((status & 0x02) == 0x00){
                 break;
@@ -438,7 +438,7 @@ int UVCPreviewIR::getTinyCParams(void * rdata , diy func_diy){
             }
         }
     }
-    ret = func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x1d10,flashId, sizeof(flashId),1000);
+    ret = uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x1d10,flashId, sizeof(flashId),1000);
     *backData = flashId[0];
     backData++;
     *backData = flashId[1];
@@ -448,10 +448,10 @@ int UVCPreviewIR::getTinyCParams(void * rdata , diy func_diy){
     // 获取 反射温度（已成功）
     status = 0;
     data[3] = 0x01;
-    ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
-    ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
+    ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
+    ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
     for(int index = 0;index < 1000;index++){
-        func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
+        uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
         if((status & 0x01) == 0x00){
             if((status & 0x02) == 0x00){
                 break;
@@ -461,7 +461,7 @@ int UVCPreviewIR::getTinyCParams(void * rdata , diy func_diy){
             }
         }
     }
-    ret = func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x1d10,flashId, sizeof(flashId),1000);
+    ret = uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x1d10,flashId, sizeof(flashId),1000);
     backData++;
     *backData = flashId[0];
     backData++;
@@ -472,8 +472,8 @@ int UVCPreviewIR::getTinyCParams(void * rdata , diy func_diy){
     // 获取 大气温度（已成功）
     data[3] = 0x02;
     status = 0;
-    ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
-    ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
+    ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
+    ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
     for(int index = 0;index < 1000;index++){
         func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
         if((status & 0x01) == 0x00){
@@ -485,7 +485,7 @@ int UVCPreviewIR::getTinyCParams(void * rdata , diy func_diy){
             }
         }
     }
-    ret = func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x1d10,flashId, sizeof(flashId),1000);
+    ret = uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x1d10,flashId, sizeof(flashId),1000);
     backData++;
     *backData = flashId[0];
     backData++;
@@ -495,10 +495,10 @@ int UVCPreviewIR::getTinyCParams(void * rdata , diy func_diy){
     // 获取 大气透过率（已成功）
     data[3] = 0x04;
     status = 0;
-    ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
-    ret = func_diy(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
+    ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x9d00,data, sizeof(data),1000);
+    ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d08,data2, sizeof(data2),1000);
     for(int index = 0;index < 1000;index++){
-        func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
+        uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
         if((status & 0x01) == 0x00){
             if((status & 0x02) == 0x00){
                 break;
@@ -508,7 +508,7 @@ int UVCPreviewIR::getTinyCParams(void * rdata , diy func_diy){
             }
         }
     }
-    ret = func_diy(mDeviceHandle,0xc1,0x44,0x0078,0x1d10,flashId, sizeof(flashId),1000);
+    ret = uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x1d10,flashId, sizeof(flashId),1000);
     LOGE("大气透过率 0 ==== %d",flashId[0]);
     LOGE("大气透过率 1 ==== %d",flashId[1]);
     backData++;
