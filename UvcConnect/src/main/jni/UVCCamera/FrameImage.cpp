@@ -618,6 +618,7 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
                               cameraLens,shutterFix,rangeMode);
 
             isNeedFreshAD = true;
+            isNeedWriteTable = false;
         }
         //temperatureData指向mCbTemper的首地址，更改temperatureData也就是更改mCbTemper
         float* temperatureData = mCbTemper;

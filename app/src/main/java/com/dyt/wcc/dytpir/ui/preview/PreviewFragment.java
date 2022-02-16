@@ -172,10 +172,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private void getCameraParams(){//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
 		byte [] tempParams = mUvcCameraHandler.getTemperaturePara(128);
 		cameraParams = ByteUtilsCC.byte2Float(tempParams);
-
-		if (cameraParams != null){
+//		if (cameraParams != null){
 			sp.edit().putFloat(DYConstants.setting_correction,
-					cameraParams.get(DYConstants.setting_correction)!=null?cameraParams.get(DYConstants.setting_correction):0.0f).apply();
+					cameraParams.get(DYConstants.setting_correction) != null ? cameraParams.get(DYConstants.setting_correction) : 0.0f).apply();
 			sp.edit().putFloat(DYConstants.setting_emittance,
 					cameraParams.get(DYConstants.setting_emittance)).apply();
 			sp.edit().putFloat(DYConstants.setting_distance,
@@ -186,7 +185,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					cameraParams.get(DYConstants.setting_environment)!=null?cameraParams.get(DYConstants.setting_environment):0.0f).apply();
 			sp.edit().putFloat(DYConstants.setting_humidity,
 					cameraParams.get(DYConstants.setting_humidity)).apply();
-		}
+//		}
 	}
 
 	/**
@@ -654,9 +653,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
 
 					//					Log.e(TAG, "onCheckedChanged: checked  ==== >  " + isChecked + " ==================" + Arrays.toString(areaData));
+					if (mUvcCameraHandler ==null)return;
 					mUvcCameraHandler.setArea(areaData);
 					mUvcCameraHandler.setAreaCheck(1);
 				}else {//close
+					if (mUvcCameraHandler ==null)return;
 					mUvcCameraHandler.setAreaCheck(0);
 				}
 
@@ -683,6 +684,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onClick (View v) {
 				//打开设置第一步：获取机芯数据。
+				if (mUvcCameraHandler == null)return;
 				if (mUvcCameraHandler.isOpened()){
 					if (mPid == 1 && mVid == 5396){
 						getCameraParams();//
@@ -702,16 +704,18 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				//第二步：将获取的数据 展示在输入框内
 				if (cameraParams != null) {
 					if (mPid == 22592 && mVid == 3034){
-						popSettingBinding.etCameraSettingReflect.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
-						popSettingBinding.etCameraSettingFreeAirTemp.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
+//						popSettingBinding.etCameraSettingReflect.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
+//						popSettingBinding.etCameraSettingFreeAirTemp.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
 						popSettingBinding.etCameraSettingDistance.setEnabled(false);
+					}else if (mPid == 1 && mVid == 5396) {
+						popSettingBinding.etCameraSettingDistance.setEnabled(true);
 					}
 					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(cameraParams.get(DYConstants.setting_emittance)));//发射率 0-1
 					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(cameraParams.get(DYConstants.setting_distance)));//距离 0-5
-					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int)(cameraParams.get(DYConstants.setting_humidity)*100)));//湿度 0-100
+					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_humidity)*100)));//湿度 0-100
 					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(cameraParams.get(DYConstants.setting_correction)));//校正  -20 - 20
-					popSettingBinding.etCameraSettingReflect.setText(String.valueOf((cameraParams.get(DYConstants.setting_reflect))));//反射温度 -10-40
-					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf(cameraParams.get(DYConstants.setting_environment)));//环境温度 -10 -40
+					popSettingBinding.etCameraSettingReflect.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_reflect)*1)));//反射温度 -10-40
+					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf((int)(cameraParams.get(DYConstants.setting_environment)*1)));//环境温度 -10 -40
 					//把值同步到 sp中
 					//					sp.edit().putFloat(DYConstants.setting_emittance,cameraParams.get(DYConstants.setting_emittance)).apply();
 					//发射率
@@ -728,7 +732,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 								v.clearFocus();
 								byte[] iputEm = new byte[4];
 								ByteUtil.putFloat(iputEm,value,0);
-								if (mUvcCameraHandler!= null) {
+								if (mUvcCameraHandler != null) {
 									if (mPid == 1 && mVid == 5396) {
 										mSendCommand.sendFloatCommand(4 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
 												20, 40, 60, 80, 120);
@@ -763,7 +767,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //									else if (mPid == 22592 && mVid == 3034){
 //										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,value,3);
 //									}
-
 									sp.edit().putFloat(DYConstants.setting_distance,value).apply();
 									showToast("距离设置完成");
 								}
@@ -771,14 +774,14 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 							return true;
 						}
 					});
-					//反射温度设置  -20 - 120
+					//反射温度设置  -20 - 120 ℃
 					popSettingBinding.etCameraSettingReflect.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 						@Override
 						public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
 							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
 							if (actionId == EditorInfo.IME_ACTION_DONE){
 								if (TextUtils.isEmpty(v.getText().toString()))return true;
-								float value = inputValue2Temp(Float.parseFloat(v.getText().toString()));//拿到的都是摄氏度
+								float value = inputValue2Temp(Integer.parseInt(v.getText().toString()));//拿到的都是摄氏度
 								if (value > getBorderValue(120.0f) || value < getBorderValue(-20.0f)){//带上 温度单位
 									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(120.0f)+")");
 									return true;
@@ -790,7 +793,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 										mSendCommand.sendFloatCommand(1 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
 												20, 40, 60, 80, 120);
 									} else if (mPid == 22592 && mVid == 3034){
-										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,value,1);
+										Log.e(TAG, "onEditorAction: 反射温度 set value = " + value);
+										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,(int)value,1);
 									}
 									sp.edit().putFloat(DYConstants.setting_reflect,value).apply();
 									showToast("反射温度设置完成");
@@ -829,7 +833,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
 							if (actionId == EditorInfo.IME_ACTION_DONE){
 								if (TextUtils.isEmpty(v.getText().toString()))return true;
-								float value = inputValue2Temp(Float.parseFloat(v.getText().toString()));
+								float value = inputValue2Temp(Integer.parseInt(v.getText().toString()));
 								if (value > getBorderValue(50.0f) || value < getBorderValue(-20.0f)){
 									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(50.0f)+")");
 									return true;
@@ -840,7 +844,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 									if (mPid == 1 && mVid == 5396) {
 										mSendCommand.sendFloatCommand(2 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
 									} else if (mPid == 22592 && mVid == 3034){
-										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,value,2);
+										Log.e(TAG, "onEditorAction: 环境温度 set value = " + value);
+										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,(int)value,2);
 									}
 
 									sp.edit().putFloat(DYConstants.setting_environment,value).apply();
@@ -1447,7 +1452,16 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 				if (allGranted){
-//					onStop();
+					if (mUvcCameraHandler != null){
+						mUvcCameraHandler.release();
+						mUvcCameraHandler = null;
+					}
+					if (stt != null ){stt.release();stt = null;}
+
+
+					if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
+						mViewModel.getMUsbMonitor().getValue().unregister();
+					}
 //					if (mUvcCameraHandler!=null){
 //					}
 					Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
@@ -1461,6 +1475,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	}
 	//拍照 按钮
 	public void toImage(View view){
+		if (mUvcCameraHandler == null)return;
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
 				,Manifest.permission.WRITE_EXTERNAL_STORAGE)
 				.onExplainRequestReason(new ExplainReasonCallback() {
@@ -1481,7 +1496,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 				if (allGranted){//拿到权限 去C++ 绘制 传入文件路径path， 点线矩阵
 					//生成一个当前的图片地址：  然后设置一个标识位，标识正截屏 或者 录像中
-					if (mUvcCameraHandler.isOpened()){
+					if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened()){
 
 						String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
 						if (mUvcCameraHandler.captureStill(picPath))showToast(getResources().getString(R.string.toast_save_path)+picPath );

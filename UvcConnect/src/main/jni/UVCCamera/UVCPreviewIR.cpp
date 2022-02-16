@@ -527,6 +527,8 @@ int UVCPreviewIR::stopPreview() {
     if (LIKELY(b)) {
         mIsCapturing=false;
         mIsRunning = false;
+        memset(user_sn,'0',20);
+        memset(machine_sn,'0',32);
 //        pthread_cond_signal(&capture_sync);
 //        if (pthread_join(capture_thread, NULL) != EXIT_SUCCESS) {
 //        	LOGE("UVCPreviewIR::stopPreview capture thread: pthread_join failed");
@@ -997,11 +999,11 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                                    (sizeof(char) << 5)); // ir序列号
                             memcpy((void *) &user_sn, fourLinePara + userArea + 100,
                                    sizeof(char) * sn_length);//序列号
-//                            LOGE(" ir_sn ======= > %s",machine_sn);
-//                            LOGE(" sn_char ===== > %s",user_sn);
+                            LOGE(" ir_sn ======= > %s",machine_sn);
+                            LOGE(" sn_char ===== > %s",user_sn);
                             //解密之后的数据
                             dytSn =(char *)DecryptSN(user_sn, machine_sn);
-//                            LOGE("==============destr =============%s", dytSn);
+                            LOGE("==============destr =============%s", dytSn);
                             dytSnStr = dytSn;
                             dytSnStr = dytSnStr.substr(0, 8);
     //                    LOGE("==============ss ============= %s",ss.c_str());
@@ -1100,6 +1102,7 @@ void UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_arg
         LOGE("uvc_preview_frame_callback hold_bytes ===> %d < preview->frameBytes  ==== > %d" , hold_bytes, preview->frameBytes);
         return;
     }
+    LOGE("uvc_preview_frame_callback hold_bytes ==normal ===> %d < preview->frameBytes  ==== > %d" , hold_bytes, preview->frameBytes);
 //    char i = frameData[0];
 
 //    LOGE("======================uvc_preview_frame_callback======================");

@@ -48,7 +48,7 @@
 #include "Parameters.h"
 #include "libuvc_internal.h"
 
-#define	LOCAL_DEBUG 0
+#define	LOCAL_DEBUG 1
 
 //**********************************************************************
 //
@@ -351,20 +351,19 @@ int UVCCamera::getByteArrayPicture(uint8_t* frame) {
 }
 
 
-
+/**
+ * S0 机芯获取 机芯的设置参数：反射率、环境温度、反射温度 、距离 、湿度等等
+ * @param para 返回 数据指针
+ * @return
+ */
 int UVCCamera::getByteArrayTemperaturePara(uint8_t* para) {
 	ENTER();
-    LOGE("UVCCamera::getByteArrayTemperaturePara");
+//    LOGE("UVCCamera::getByteArrayTemperaturePara");
 	int result = EXIT_FAILURE;
 	if (mDeviceHandle) {
         if (mPid == 1 && mVid == 5396){
             result=	mPreview->getByteArrayTemperaturePara(para);//吴长城
         }
-//        else if (mPid == 22592 && mVid == 3034){
-//        	//tinyc 获取机芯的参数
-//            result =  internalSetCtrlValue(para,uvc_diy_communicate);
-//        }
-
 	//LOGE("UVCCamera::getByteArrayTemperaturePara:%d,%d,%d,%d,%d,%o",para[1],para[5],para[9],para[13],para[17],para);
 	}
 	RETURN(result, int);
@@ -382,7 +381,6 @@ int UVCCamera::getCameraParams(uint8_t* para){
 		if (mPid == 22592 && mVid == 3034){
         	//tinyc 获取机芯的参数
         	result = (mPreview->sendTinyCAllOrder(para,uvc_diy_communicate,10));
-//            result =  internalSetCtrlValue(para,uvc_diy_communicate);
         }
 	}
 	RETURN(result, int);

@@ -62,8 +62,12 @@ public class MediaVideoEncoder extends MediaEncoder implements IVideoEncoder {
 		super(muxer, listener);
 		if (DEBUG) Log.i(TAG, "MediaVideoEncoder: ");
 		mRenderHandler = RenderHandler1.createHandler(TAG);
-		mWidth = width;
-		mHeight = height;
+//		mWidth = 1680;
+//		mHeight = 1264;
+		mWidth = 1920;
+		mHeight = 1080;
+//		mWidth = width;
+//		mHeight = height;
 	}
 
 	public boolean frameAvailableSoon(final float[] tex_matrix, final Bitmap bitmap) {
@@ -98,9 +102,10 @@ public class MediaVideoEncoder extends MediaEncoder implements IVideoEncoder {
             return;
         }
 		if (DEBUG) Log.i(TAG, "selected codec: " + videoCodecInfo.getName());
-
+		Log.e(TAG, "prepare: mWidth " + mWidth +  " mHeight== " + mHeight);
         final MediaFormat format = MediaFormat.createVideoFormat(MIME_TYPE, mWidth, mHeight);
-        format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);	// API >= 18
+//        format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);	// API >= 18
+		format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);	// API >= 18
         format.setInteger(MediaFormat.KEY_BIT_RATE, calcBitRate());
         format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);
 		//format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 0);//设置全关键帧

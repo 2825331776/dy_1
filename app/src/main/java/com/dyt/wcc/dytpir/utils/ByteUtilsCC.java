@@ -18,6 +18,19 @@ public class ByteUtilsCC {
 
 	private static final String TAG = "ByteUtilsCC";
 
+	public static final String FIX = "Fix";//修正
+	public static final String STR_FIX = "strFix";
+	public static final String REFLECT_TEMP = "Refltmp";//反射温度
+	public static final String STR_REFLECT_TEMP = "strReflectTemp";
+	public static final String AIR_TEMP = "Airtmp";//环境温度
+	public static final String STR_AIR_TEMP = "strAirTemp";
+	public static final String HUMIDITY = "humi";//湿度
+	public static final String STR_HUMIDITY = "strHumidity";
+	public static final String EMISSIVITY = "emiss";//发射率
+	public static final String STR_EMISSIVITY = "strEmissivity";
+	public static final String DISTANCE = "distance";//距离
+	public static final String STR_DISTANCE = "strDistance";
+
 	/**
 	 * @param data byte数据源。1 byte = 8 bits   eg:0000 0000
 	 * @return
@@ -25,12 +38,12 @@ public class ByteUtilsCC {
 	public static Map<String,String> byte2String(Map<String,Float> data){
 		Map<String,String> result =  new HashMap<>();
 		if (data != null ){
-			result.put("strFix",String.valueOf(data.get("Fix")));//修正
-			result.put("strReflectTemp",String.valueOf(data.get("Refltmp")));//反射温度
-			result.put("strAirTemp",String.valueOf(data.get("Airtmp")));//环境温度
-			result.put("strHumidity",String.valueOf(data.get("humi")));//湿度
-			result.put("strEmissivity",String.valueOf(data.get("emiss")));//发射率
-			result.put("strDistance",String.valueOf(data.get("distance")));//距离
+			result.put(STR_FIX,String.valueOf(data.get(FIX)));//修正
+			result.put(STR_REFLECT_TEMP,String.valueOf(data.get(REFLECT_TEMP)));//反射温度
+			result.put(STR_AIR_TEMP,String.valueOf(data.get(AIR_TEMP)));//环境温度
+			result.put(STR_HUMIDITY,String.valueOf(data.get(HUMIDITY)));//湿度
+			result.put(STR_EMISSIVITY,String.valueOf(data.get(EMISSIVITY)));//发射率
+			result.put(STR_DISTANCE,String.valueOf(data.get(DISTANCE)));//距离
 		}
 		return result;
 	}
@@ -73,7 +86,8 @@ public class ByteUtilsCC {
 		numberData |= (data[2]<<8 & 0xff00);
 		params = numberData - 273.15f;
 		DecimalFormat df = new DecimalFormat("##0.00");
-		params = Math.round(params* 100f) / 100f ;
+//		params = Math.round(params* 100f) / 100f ;
+		params = Math.round(params);
 		params = Float.parseFloat(df.format(params));
 //		Log.e(TAG, "反射温度: numberData " +numberData);
 //		Log.e(TAG, "反射温度: params " + params);
@@ -82,7 +96,8 @@ public class ByteUtilsCC {
 		numberData = (short) (data[5] & 0xff);
 		numberData |= (data[4]<<8 & 0xff00);
 		params = numberData - 273.15f;
-		params = Math.round(params* 100f) / 100f ;
+//		params = Math.round(params* 100f) / 100f ;
+		params = Math.round(params);
 		params = Float.parseFloat(df.format(params));
 //		Log.e(TAG, "环境温度: numberData " +numberData);
 //		Log.e(TAG, "环境温度: params " + params);

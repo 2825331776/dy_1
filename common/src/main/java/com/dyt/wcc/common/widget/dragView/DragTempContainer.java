@@ -1157,8 +1157,8 @@ public class DragTempContainer extends RelativeLayout {
 							updateLRTemp(userAddData.get(i).getOtherTemp(),userAddData.get(i).getType());
 						}
 //						if (userAddData.size() == userAddView.size()){
-						Log.e(TAG, "handleMessage: userAddView size = > " + userAddView.size());
-						Log.e(TAG, "handleMessage: userAddData size = > " + userAddData.size());
+//						Log.e(TAG, "handleMessage: userAddView size = > " + userAddView.size());
+//						Log.e(TAG, "handleMessage: userAddData size = > " + userAddData.size());
 							userAddView.get(i).invalidate();
 //						}
 					}

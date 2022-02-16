@@ -466,7 +466,6 @@ public class UVCCamera {
 		return nativeGetByteArrayTemperaturePara(mNativePtr, len);
 	}
 	public byte[] getTinyCCameraParams(int len) {
-//		boolean status = false;
 		return nativeGetCameraParams(mNativePtr, len);
 	}
 	/**
