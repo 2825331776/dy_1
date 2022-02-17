@@ -1,12 +1,15 @@
 package com.dyt.wcc.common.base;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -50,7 +53,10 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
 		return view;
 	}
 
-
+	protected void hideInput(IBinder token){
+		InputMethodManager im = (InputMethodManager) mContext.get().getSystemService(Context.INPUT_METHOD_SERVICE);
+		im.hideSoftInputFromWindow(token, InputMethodManager.HIDE_NOT_ALWAYS);
+	}
 
 	protected void showToast(int resId){
 //		mToast.cancel();

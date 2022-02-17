@@ -742,6 +742,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 									sp.edit().putFloat(DYConstants.setting_emittance,value).apply();
 									showToast("发射率设置完成");
 								}
+								hideInput(v.getWindowToken());
 							}
 							return true;
 						}
@@ -770,6 +771,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 									sp.edit().putFloat(DYConstants.setting_distance,value).apply();
 									showToast("距离设置完成");
 								}
+								hideInput(v.getWindowToken());
 							}
 							return true;
 						}
@@ -799,6 +801,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 									sp.edit().putFloat(DYConstants.setting_reflect,value).apply();
 									showToast("反射温度设置完成");
 								}
+								hideInput(v.getWindowToken());
 							}
 							return true;
 						}
@@ -822,6 +825,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 									sp.edit().putFloat(DYConstants.setting_correction,value).apply();
 									showToast("校正设置完成");
 								}
+								hideInput(v.getWindowToken());
 							}
 							return true;
 						}
@@ -851,6 +855,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 									sp.edit().putFloat(DYConstants.setting_environment,value).apply();
 									showToast("环境温度设置完成");
 								}
+								hideInput(v.getWindowToken());
 							}
 							return true;
 						}
@@ -880,6 +885,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 									sp.edit().putFloat(DYConstants.setting_humidity,fvalue).apply();
 									showToast("湿度设置完成");
 								}
+								hideInput(v.getWindowToken());
 							}
 							return true;
 						}
