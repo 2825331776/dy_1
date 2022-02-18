@@ -194,6 +194,9 @@ class UVCCamera {
 public:
 	UVCCamera();
 	~UVCCamera();
+	//add 吴长城
+	int setVerifySn(int isVerify);
+
 
 	int connect(int vid, int pid, int fd, int busnum, int devaddr, const char *usbfs);
 	int release();

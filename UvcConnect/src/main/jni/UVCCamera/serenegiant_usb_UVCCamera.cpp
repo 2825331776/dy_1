@@ -117,6 +117,15 @@ jint setField_int(JNIEnv *env, jobject java_obj, const char *field_name, jint va
 	return val;
 }
 
+static jint nativeSetVerifySn(JNIEnv *env , jobject thiz ,ID_TYPE id_camera, jint isVerify){
+	int  result = JNI_ERR;
+	UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
+	if (LIKELY(camera)) {
+		result = camera -> setVerifySn(isVerify);
+	}
+	RETURN(result, jint);
+}
+
 static ID_TYPE nativeCreate(JNIEnv *env, jobject thiz) {
 
 	ENTER();
@@ -2313,6 +2322,9 @@ jint registerNativeMethods(JNIEnv* env, const char *class_name, JNINativeMethod 
 }
 
 static JNINativeMethod methods[] = {
+		//add吴长城 nativeSetVerifySn
+		{ "nativeSetVerifySn",					"(JI)I", (void *) nativeSetVerifySn },
+
 	{ "nativeCreate",					"()J", (void *) nativeCreate },
 	{ "nativeDestroy",					"(J)V", (void *) nativeDestroy },
 	//

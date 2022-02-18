@@ -1196,6 +1196,12 @@ public class UVCCamera {
 			nativeStartStopTemp(mNativePtr, 1);
 		}
 	}
+	public void setVerifySn(){
+		if (mCtrlBlock != null) {
+			Log.e(TAG, "setVerifySn");
+			nativeSetVerifySn(mNativePtr, 0);
+		}
+	}
 
 	//added by wupei
 	public void  laWenKuan(float maxPercent, float minPercent,float maxValue, float minValue) {
@@ -1279,9 +1285,8 @@ public class UVCCamera {
 			nativeSetArea(mNativePtr, area);
 		}
 	}
-
-
-
+	//add 吴长城
+	private static final native int nativeSetVerifySn(final long id_camera, int isVerifySn);//校验SN
 	private static final native void nativeSaveFiveSecondsData(final long id_camera,final String externalPath); //长城添加  保存五秒的数据
 	private static final native void nativeSavePicture(final long id_camera,final String picPath);//长城添加  截屏
 

@@ -94,15 +94,30 @@ private:
 //	char myVerify[40];//存储的SN号
 
 //	Tinyc使用锁 相关变量
-//	pthread_t tinyC_send_order_thread;
-//	pthread_cond_t tinyC_send_order_sync;
-	pthread_mutex_t tinyC_send_order_mutex;
+	pthread_t tinyC_send_order_thread; //tinyc发送指令的线程
+	pthread_cond_t tinyC_send_order_sync;//tinyc线程 条件变量
+	pthread_mutex_t tinyC_send_order_mutex;//tinyc线程 互斥量
 	int getTinyCParams(void * returnData, diy func_diy);//获取tinyc 机芯参数。仅获取
 	int sendTinyCOrder(uint32_t* value,diy func_diy);// tinyc 打挡  获取数据 纯标识位 指令
 	int sendTinyCParamsModification(float * value,diy func_diy , uint32_t mark);//tinyc 机芯参数 修改
 	int getTinyCUserData(void * returnData ,diy func_diy,int userMark);//读取用户区数据
+
+	int tinyCControl();
+	int doTinyCOrder();
+	void *tinyC_params;
+	volatile int tinyC_mark;
+	//请求相关参数
+	volatile uint8_t tinyC_request_type;
+	volatile uint8_t tinyC_bRequest;
+	volatile uint16_t tinyC_wValue;
+	volatile uint16_t tinyC_wIndex;
+	volatile uint16_t tinyC_wLength;
+	unsigned char tinyC_data[8];
+	unsigned int tinyC_timeout;
+
+
 	//TinyC 发送指令专用线程
-//    static void *tinyC_sendOrder_thread_func(void *vptr_args);//
+    static void *tinyC_sendOrder_thread_func(void *vptr_args);//
 //    void sendTinyCOrder();
 //	uint8_t tinyC_order_request_type;
 //	uint8_t tinyC_order_bRequest;
@@ -178,8 +193,8 @@ public:
     int startPreview();
     int stopPreview();
 	void setVidPid(int vid ,int pid);
-	void setIsVerifySn();
-	int sendTinyCAllOrder(void * params , diy func_tinyc, int mark);
+	int setIsVerifySn();
+	int sendTinyCAllOrder();
 
 /***************************录制*****************************/
 //	int setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format);//把当前数据回调给Java层

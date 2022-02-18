@@ -486,21 +486,24 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	 */
 	private void initListener(){
 		//测试的 监听器
-//				mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
-//					@Override
-//					public void onClick (View v) {
-//						if (mUvcCameraHandler!= null ){
-//		//					mUvcCameraHandler.stopTemperaturing();
-////								Log.e(TAG, "initView: not null ==========================================" );
-////								int a[] = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
-////								Log.e(TAG, "initView: aa === > " + Arrays.toString(a));
-//
-//						}
-//						//				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isTemperaturing()){
-//		//					mUvcCameraHandler.startTemperaturing();
-//		//				}
-//					}
-//				});
+				mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick (View v) {
+						if (mUvcCameraHandler!= null ){
+		//					mUvcCameraHandler.stopTemperaturing();
+//								Log.e(TAG, "initView: not null ==========================================" );
+//								int a[] = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
+//								Log.e(TAG, "initView: aa === > " + Arrays.toString(a));
+							mUvcCameraHandler.setVerifySn();
+
+
+
+						}
+						//				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isTemperaturing()){
+		//					mUvcCameraHandler.startTemperaturing();
+		//				}
+					}
+				});
 //
 //				mDataBinding.btTest02.setOnClickListener(new View.OnClickListener() {
 //					@Override

@@ -140,6 +140,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
     private static final int MSG_FIXED_TEMP_STRIP = 36;
     private static final int MSG_SAVEDATA_FIVESECONDS = 40;//保存五帧数据
     private static final int MSG_SAVE_PICTURE = 50;//截屏
+    private static final int MSG_SET_VERIFY_SN = 55;//设置是否验证SN
 //    private static final int MSG_ISRECORDAUDIO = 37;//本来在这里新增一个 是否录制音频的开关。后面直接加到了 打开录制开关的参数里面
 
 
@@ -425,6 +426,10 @@ abstract class AbstractUVCCameraHandler extends Handler {
     public void startTemperaturing() {
         checkReleased();
         sendEmptyMessage(MSG_TEMPERATURE_START);
+    }
+    public void setVerifySn() {
+        checkReleased();
+        sendEmptyMessage(MSG_SET_VERIFY_SN);
     }
 
     // 向Tcp发送指令
@@ -764,6 +769,9 @@ abstract class AbstractUVCCameraHandler extends Handler {
                 break;
             case MSG_TEMPERATURE_START:
                 thread.handleStartTemperaturing();
+                break;
+            case MSG_SET_VERIFY_SN:
+                thread.setVerifySn();
                 break;
             case MSG_SET_TEMPRANGE:
                 int range = msg.arg1;
@@ -1731,6 +1739,11 @@ abstract class AbstractUVCCameraHandler extends Handler {
 //            }
             mWeakCameraView.get().setTemperatureCbing(true);
 
+        }
+
+        public void setVerifySn(){
+            if (mUVCCamera == null) return;
+            mUVCCamera.setVerifySn();
         }
 
         public void handleRelayout(int rotate) {
