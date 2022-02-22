@@ -54,8 +54,8 @@ private:
 	//设备类型 vid pid
 	int mVid;
 	int mPid;
-    unsigned char * tinyC_robotSN;
-    unsigned char * tinyC_userSN;
+//    unsigned char * tinyC_robotSN;
+//    unsigned char * tinyC_userSN;
 
 
     ANativeWindow *mPreviewWindow;
@@ -65,6 +65,9 @@ private:
 	float requestBandwidth;
 	int frameWidth, frameHeight;
 	int frameMode;
+
+//	int callbackCount;
+//	unsigned char *CacheBuffer;
 	unsigned char *OutBuffer;//使用完的buffer; 获取到新数据后,与holdBuffer互换。
 	unsigned char *HoldBuffer;// 充满新数据的buffer
 	unsigned char *RgbaOutBuffer;//上一张图幅
@@ -90,8 +93,6 @@ private:
 	int sn_length = 15 ;
 	char machine_sn[32];//设备的SN号
 	char user_sn[20];//用户区的 SN号
-//	string theTag[2] = {"+@;*(\u0018\u0017+","+@;*(\u0018\u00178"};
-//	char myVerify[40];//存储的SN号
 
 //	Tinyc使用锁 相关变量
 	pthread_t tinyC_send_order_thread; //tinyc发送指令的线程
@@ -104,7 +105,7 @@ private:
 
 	int tinyCControl();
 	int doTinyCOrder();
-	void *tinyC_params;
+	void * tinyC_params;
 	volatile int tinyC_mark;
 	//请求相关参数
 	volatile uint8_t tinyC_request_type;
@@ -118,6 +119,7 @@ private:
 
 	//TinyC 发送指令专用线程
     static void *tinyC_sendOrder_thread_func(void *vptr_args);//
+    void signal_tiny_send_order();
 //    void sendTinyCOrder();
 //	uint8_t tinyC_order_request_type;
 //	uint8_t tinyC_order_bRequest;
@@ -194,7 +196,7 @@ public:
     int stopPreview();
 	void setVidPid(int vid ,int pid);
 	int setIsVerifySn();
-	int sendTinyCAllOrder();
+	int sendTinyCAllOrder(void * params , diy func_tinyc, int mark);
 
 /***************************录制*****************************/
 //	int setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format);//把当前数据回调给Java层
@@ -203,6 +205,8 @@ public:
     int savePicture(const char* path);
 
 	void fixedTempStripChange(bool state);
+
+	void setTinySaveCameraParams();
 
 /***************************温度*****************************/
 	int stopTemp();

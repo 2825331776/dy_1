@@ -445,6 +445,22 @@ static void nativeChangePalette(JNIEnv *env, jobject thiz,
 	}
 	EXIT();
 }
+/**
+ * 设置TinyC保存相机参数指令通道。
+ * @param env
+ * @param thiz
+ * @param id_camera
+ */
+static void nativeSetTinySaveCameraParams(JNIEnv *env, jobject thiz,
+                                ID_TYPE id_camera) {
+    ENTER();
+    UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
+    if (LIKELY(camera)) {
+        camera->setTinySaveCameraParams();
+    }
+    EXIT();
+}
+
 
 //nativeSetAreaCheck BY WUPEI
 static void nativeSetAreaCheck(JNIEnv *env, jobject thiz,
@@ -2357,6 +2373,9 @@ static JNINativeMethod methods[] = {
 //    { "nativeStartStopCapture",	"(JI)I", (void *) nativeStartStopCapture },
 
     { "nativeChangePalette",		"(JI)V", (void *) nativeChangePalette },
+
+    {"nativeSetTinySaveCameraParams","(J)V",(void *)nativeSetTinySaveCameraParams},
+
     { "nativeSetAreaCheck",		"(JI)V", (void *) nativeSetAreaCheck },
 	{ "nativeSetArea",		"(J[I)V", (void *) nativeSetArea },
     { "nativeLaWenKuan",		"(JFFFF)V", (void *) nativeLaWenKuan },

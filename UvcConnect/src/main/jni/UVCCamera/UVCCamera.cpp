@@ -388,7 +388,7 @@ int UVCCamera::getCameraParams(uint8_t* para){
 	if (mDeviceHandle) {
 		if (mPid == 22592 && mVid == 3034){
         	//tinyc 获取机芯的参数
-//        	result = (mPreview->sendTinyCAllOrder(para,uvc_diy_communicate,10));
+        	result = (mPreview->sendTinyCAllOrder(para,uvc_diy_communicate,10));
         }
 	}
 	RETURN(result, int);
@@ -452,12 +452,21 @@ int UVCCamera::startCapture() {
 }
  void UVCCamera::changePalette(int typeOfPalette){
  	ENTER();
- 	if (mPreview) {
-// 		mPreview->changePalette(typeOfPalette);
+ 	if (mFrameImage) {
 		mFrameImage->changePalette(typeOfPalette);
  	}
  	EXIT();
  }
+ /**
+  * 保存TinyC 相机参数 指令
+  */
+void UVCCamera::setTinySaveCameraParams(){
+	ENTER();
+	if (mPreview) {
+		mPreview->setTinySaveCameraParams();
+	}
+	EXIT();
+}
 
 void UVCCamera::setAreaCheck(int isAreaCheck){
 	ENTER();
@@ -2482,7 +2491,7 @@ int UVCCamera::sendOrder(float value , int mark) {
     ENTER();
     int ret = UVC_ERROR_IO;
 
-//	ret = (mPreview->sendTinyCAllOrder(&value,uvc_diy_communicate,mark));
+	ret = (mPreview->sendTinyCAllOrder(&value,uvc_diy_communicate,mark));
 
 //    LOGE("====");
 //    unsigned char data[8] = {0x14,0xc5,0x00,0x00,0x00,0x00,0x00,0x00};
@@ -2556,7 +2565,7 @@ int UVCCamera::setZoom(int zoom) {
 		ret = internalSetCtrlValue(mZoom, zoom,uvc_set_zoom_abs);
 	} else if ((mPid == 22592 && mVid == 3034 ) && mPreview!= NULL){
 		LOGE("==========mPid=22592===,= mVid=3034==========");
-//		ret = (mPreview->sendTinyCAllOrder(&zoom,uvc_diy_communicate,100));
+		ret = (mPreview->sendTinyCAllOrder(&zoom,uvc_diy_communicate,100));
 //		ret = internalSetCtrlValue(mZoom,zoom,uvc_diy_communicate);
 	}
 	RETURN(ret, int);

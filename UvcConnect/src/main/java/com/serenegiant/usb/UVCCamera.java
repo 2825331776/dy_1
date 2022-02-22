@@ -1257,6 +1257,13 @@ public class UVCCamera {
 			 */
 		}
 	}
+	public void TinySaveCameraParams(){
+		if (mCtrlBlock != null) {
+			Log.e(TAG, "TinySaveCameraParams");
+			nativeSetTinySaveCameraParams(mNativePtr);
+		}
+	}
+
 	public void setTempRange(int range) {
 		if (mCtrlBlock != null) {
 			Log.e(TAG, "");
@@ -1296,6 +1303,7 @@ public class UVCCamera {
 	private static final native void nativeSetArea(final long id_camera, int[] area);
 	private static final native void nativeSetAreaCheck(final long id_camera, int isAreaChecked);
 	private static final native void nativeChangePalette(final long id_camera, int typeOfPalette);
+	private static final native void nativeSetTinySaveCameraParams(final long id_camera);
 	private static final native void nativeLaWenKuan(final long id_camera, float maxPercent,float minPercent,float maxValue ,float minValue);
 	private static final native void nativeDisWenKuan(final long id_camera);
 	private static final native void nativeFixedTempStripChange(final long id_camera , boolean state );

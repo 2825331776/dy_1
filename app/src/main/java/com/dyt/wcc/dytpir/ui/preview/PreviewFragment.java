@@ -933,6 +933,17 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				popupWindow.setTouchable(true);
 				//第四步：显示控件
 				popupWindow.showAsDropDown(mDataBinding.flPreview,15,-popupWindow.getHeight()-20, Gravity.CENTER);
+				//弹窗消失，TinyC需要执行保存指令。
+				popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+					@Override
+					public void onDismiss () {
+						if (mUvcCameraHandler!= null) {
+							if (mPid == 22592 && mVid == 3034){
+								mUvcCameraHandler.tinySaveCameraParams();
+							}
+						}
+					}
+				});
 
 				popSettingBinding.switchChoiceRecordAudio.setSelectedTab(sp.getInt(DYConstants.RECORD_AUDIO_SETTING,1));
 				popSettingBinding.switchChoiceRecordAudio.setOnSwitchListener(new SwitchMultiButton.OnSwitchListener() {

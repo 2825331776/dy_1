@@ -138,6 +138,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
     private static final int MSG_SHOW_TEMP = 35;
     //长城添加
     private static final int MSG_FIXED_TEMP_STRIP = 36;
+    private static final int MSG_TINY_SAVE_CAMERA_PARAMS = 45;//保存TinyC机芯参数。
     private static final int MSG_SAVEDATA_FIVESECONDS = 40;//保存五帧数据
     private static final int MSG_SAVE_PICTURE = 50;//截屏
     private static final int MSG_SET_VERIFY_SN = 55;//设置是否验证SN
@@ -578,6 +579,11 @@ abstract class AbstractUVCCameraHandler extends Handler {
         message.obj = state;
         sendMessage(message);
     }
+    //保存TinyC 机芯参数 指令
+    public void tinySaveCameraParams() {
+        Message message = Message.obtain();
+        sendEmptyMessage(MSG_TINY_SAVE_CAMERA_PARAMS);
+    }
 
     public void openSystemCamera() {
         sendEmptyMessage(MSG_OPEN_SYS_CAMERA);
@@ -858,6 +864,10 @@ abstract class AbstractUVCCameraHandler extends Handler {
             case MSG_FIXED_TEMP_STRIP://固定温度条
                 boolean state = (boolean) msg.obj;
                 thread.handleFixedTempStrip(state);
+                break;
+
+            case MSG_TINY_SAVE_CAMERA_PARAMS:
+                thread.handleTinySaveCameraParams();
                 break;
             case MSG_OPEN_SYS_CAMERA:
                 thread.handleOpenSysCamera();
@@ -2137,6 +2147,17 @@ abstract class AbstractUVCCameraHandler extends Handler {
                 return;
             }
             mUVCCamera.FixedTempStrip(state);
+        }
+
+        /**
+         * 仅供TinyC 机芯调用
+         * TinyC保存 机芯参数 指令
+         */
+        public void handleTinySaveCameraParams(){
+            if (mUVCCamera == null){
+                return;
+            }
+            mUVCCamera.TinySaveCameraParams();
         }
 
         public void handleChangePalette(int typeOfPalette) {

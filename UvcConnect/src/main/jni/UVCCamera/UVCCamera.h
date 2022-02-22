@@ -377,6 +377,7 @@ void whenShutRefresh() ;
 	int stopCapture();
 	int startCapture();
 	void changePalette(int typeOfPalette);
+	void setTinySaveCameraParams();
 	void setAreaCheck(int isAreaCheck);
 	void setArea(int* area,int lenght);
 	void laWenKuan( float maxPercent,float minPercent,float maxValue ,float minValue);
