@@ -470,7 +470,7 @@ void UVCCamera::setTinySaveCameraParams(){
 
 void UVCCamera::setAreaCheck(int isAreaCheck){
 	ENTER();
-	if (mPreview) {
+	if (mFrameImage) {
 //		mPreview->setAreaCheck(isAreaCheck);
 		mFrameImage->setAreaCheck(isAreaCheck);
 	}
@@ -479,7 +479,7 @@ void UVCCamera::setAreaCheck(int isAreaCheck){
 
 void UVCCamera::setArea(int* area,int lenght){
 	ENTER();
-	if (mPreview) {
+	if (mFrameImage) {
 //		mPreview->setArea(area,lenght);
 		mFrameImage->setArea(area,lenght);
 	}
@@ -491,7 +491,7 @@ void UVCCamera::setArea(int* area,int lenght){
  //added by wupei,la wen kuan
  void UVCCamera::laWenKuan( float maxPercent,float minPercent,float maxValue ,float minValue){
 	 ENTER();
-	 if (mPreview) {
+	 if (mFrameImage) {
 //		 mPreview->laWenKuan(max,min);
 		 mFrameImage->showTempRange(maxPercent,minPercent,maxValue,minValue);
 	 }
@@ -500,7 +500,7 @@ void UVCCamera::setArea(int* area,int lenght){
 
 void UVCCamera::disWenKuan(){
 	ENTER();
-	if (mPreview) {
+	if (mFrameImage) {
 //		mPreview->disWenKuan();
 		mFrameImage->disTempRange();
 	}

@@ -115,18 +115,18 @@ UVCPreviewIR::~UVCPreviewIR() {
 //    pthread_mutex_destroy(&fixed_mutex);
     //LOGE("~UVCPreviewIR() 8");
 
-//    if(OutBuffer!=NULL){
-//        delete[] OutBuffer;
-//    }
-//    if(HoldBuffer!=NULL){
-//        delete[] HoldBuffer;
-//    }
-//    if(RgbaOutBuffer!=NULL){
-//        delete[] RgbaOutBuffer;
-//    }
-//    if(RgbaHoldBuffer!=NULL){
-//        delete[] RgbaHoldBuffer;
-//    }
+    if(OutBuffer!=NULL){
+        delete[] OutBuffer;
+    }
+    if(HoldBuffer!=NULL){
+        delete[] HoldBuffer;
+    }
+    if(RgbaOutBuffer!=NULL){
+        delete[] RgbaOutBuffer;
+    }
+    if(RgbaHoldBuffer!=NULL){
+        delete[] RgbaHoldBuffer;
+    }
 //    free(tinyC_robotSN);
 //    tinyC_robotSN = NULL;
 //    free(tinyC_userSN);

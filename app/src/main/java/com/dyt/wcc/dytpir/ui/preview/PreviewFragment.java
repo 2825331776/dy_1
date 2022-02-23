@@ -202,15 +202,18 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 		if (cameraParams != null){
 			sp.edit().putFloat(DYConstants.setting_correction,
-					cameraParams.get(DYConstants.setting_correction)!=null?cameraParams.get(DYConstants.setting_correction):0.0f).apply();
+					cameraParams.get(DYConstants.setting_correction)!=null?
+							cameraParams.get(DYConstants.setting_correction):0.0f).apply();
 			sp.edit().putFloat(DYConstants.setting_emittance,
 					cameraParams.get(DYConstants.setting_emittance)).apply();
 			sp.edit().putFloat(DYConstants.setting_distance,
 					cameraParams.get(DYConstants.setting_distance)).apply();
 			sp.edit().putFloat(DYConstants.setting_reflect,
-					cameraParams.get(DYConstants.setting_reflect)!=null?cameraParams.get(DYConstants.setting_reflect):0.0f).apply();
+					cameraParams.get(DYConstants.setting_reflect)!=null?
+							cameraParams.get(DYConstants.setting_reflect):0.0f).apply();
 			sp.edit().putFloat(DYConstants.setting_environment,
-					cameraParams.get(DYConstants.setting_environment)!=null?cameraParams.get(DYConstants.setting_environment):0.0f).apply();
+					cameraParams.get(DYConstants.setting_environment)!=null?
+							cameraParams.get(DYConstants.setting_environment):0.0f).apply();
 			sp.edit().putFloat(DYConstants.setting_humidity,
 					cameraParams.get(DYConstants.setting_humidity)).apply();
 		}
@@ -768,9 +771,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 									if (mPid == 1 && mVid == 5396) {
 										mSendCommand.sendShortCommand(5 * 4, bIputDi[0], bIputDi[1], 20, 40, 60);
 									}
-//									else if (mPid == 22592 && mVid == 3034){
-//										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,value,3);
-//									}
 									sp.edit().putFloat(DYConstants.setting_distance,value).apply();
 									showToast("距离设置完成");
 								}
@@ -824,9 +824,14 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 								byte[] iputEm = new byte[4];
 								ByteUtil.putFloat(iputEm,value,0);
 								if (mUvcCameraHandler!= null) {
-									mSendCommand.sendFloatCommand(0 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
-									sp.edit().putFloat(DYConstants.setting_correction,value).apply();
-									showToast("校正设置完成");
+									if (mPid == 1 && mVid == 5396) {
+										mSendCommand.sendFloatCommand(0 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+										sp.edit().putFloat(DYConstants.setting_correction, value).apply();
+										showToast("校正设置完成");
+									}
+									else if (mPid == 22592 && mVid == 3034){//校正 TinyC
+										mUvcCameraHandler.sendOrder();
+									}
 								}
 								hideInput(v.getWindowToken());
 							}
@@ -1092,7 +1097,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			}
 		});
 	}
-
 
 	@Override
 	protected void initView () {
