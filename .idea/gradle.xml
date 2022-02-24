@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/UvcConnect" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/common" />
+            <option value="$PROJECT_DIR$/easyphotos" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

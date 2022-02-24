@@ -105,6 +105,8 @@
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_record.xml" value="0.19895833333333332" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/selector_main_preview_takephoto.xml" value="0.38229166666666664" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/drawable/shape_bg_pop_setting_edit.xml" value="0.3697916666666667" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/activity_gallery.xml" value="0.2265625" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/activity_main.xml" value="0.36614583333333334" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/activity_test.xml" value="0.25" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/fragment_gallery_main.xml" value="0.33" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/app/src/main/res/layout/fragment_preview_main.xml" value="0.33" />
@@ -121,6 +123,10 @@
         <entry key="..\:/androidWorkspace/DYTPIRCamera/common/src/main/res/drawable/ic_define_view_tools_delete.xml" value="0.2921875" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/common/src/main/res/drawable/ic_define_view_tools_other.xml" value="0.2921875" />
         <entry key="..\:/androidWorkspace/DYTPIRCamera/common/src/main/res/drawable/ic_vector_max.xml" value="0.2635416666666667" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/easyphotos/src/main/res/drawable/bg_dialog_album_items_background_easy_photos.xml" value="0.3104166666666667" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/easyphotos/src/main/res/drawable/bg_dialog_loading_easy_photos.xml" value="0.3104166666666667" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/easyphotos/src/main/res/drawable/bg_second_level_menu_easy_photos.xml" value="0.3104166666666667" />
+        <entry key="..\:/androidWorkspace/DYTPIRCamera/easyphotos/src/main/res/layout/activity_easy_photos.xml" value="0.36614583333333334" />
       </map>
     </option>
   </component>

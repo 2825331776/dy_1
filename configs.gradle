@@ -1,7 +1,7 @@
 ext{
     projectVersions = [
             //编译及其构建版本
-            compileSdkV     :28,
+            compileSdkV     :30,
             buildToolsV     :"30.0.3",
             //支持的sdk范围21-29
             minSdkV         :23,

@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dyt.wcc.dytpir">
-
-<!--    <uses-permission android:name="android.permission.MANAGE_DOCUMENTS"/>-->
-
+    <!-- <uses-permission android:name="android.permission.MANAGE_DOCUMENTS"/> -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.CAMERA" />
-<!--    <uses-permission android:name="android.permission.READ_PHONE_STATE" />-->
-<!--    <uses-permission android:name="android.permission.INTERNET"/>-->
-<!--    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>-->
-<!--    <uses-permission android:name="android.permission.WAKE_LOCK"/>-->
-
-<!--    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />-->
-<!--    <uses-permission android:name="android.permission.READ_LOGS" />-->
-
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
+    <!-- <uses-permission android:name="android.permission.INTERNET"/> -->
+    <!-- <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/> -->
+    <!-- <uses-permission android:name="android.permission.WAKE_LOCK"/> -->
+    <!-- <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> -->
+    <!-- <uses-permission android:name="android.permission.READ_LOGS" /> -->
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" /> <!-- Android usb 主机模式 -->
-
-
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <uses-feature
         android:name="android.hardware.usb.host"
         android:required="true" /> <!-- 告诉系统需要的OpenGL ES的版本为 2.0（用于过滤）  true代表是必须的，不写也是代表必须的。false代表非必须 -->
@@ -29,27 +23,27 @@
         android:glEsVersion="0x00020000"
         android:required="true" />
 
-
-
     <application
         android:name=".ui.DYTApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_app_info"
         android:label="@string/app_name"
+        android:resizeableActivity="false"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:resizeableActivity="false"
         android:theme="@style/MyTheme">
-
+        <activity
+            android:name=".ui.gallery.GalleryActivity"
+            android:exported="false" />
         <activity android:name=".ui.TestActivity">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
 
-        <service android:name=".ui.preview.record.MediaProjectionService"
-            />
+        <service android:name=".ui.preview.record.MediaProjectionService" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -60,13 +54,22 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+<!--        <provider-->
+<!--            android:name="androidx.core.content.FileProvider"-->
+<!--            android:authorities="com.huantansheng.easyphotos.demo.fileprovider"-->
+<!--            android:exported="false"-->
+<!--            android:grantUriPermissions="true">-->
+<!--            <meta-data-->
+<!--                android:name="android.support.FILE_PROVIDER_PATHS"-->
+<!--                android:resource="@xml/file_paths_public" />-->
+<!--        </provider>-->
 
         <activity
             android:name=".ui.MainActivity"
             android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
             android:launchMode="singleTop"
-            android:theme="@style/MyTheme"
             android:screenOrientation="sensorLandscape"
+            android:theme="@style/MyTheme"
             android:windowSoftInputMode="adjustPan|adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

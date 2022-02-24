@@ -199,6 +199,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private void getTinyCCameraParams(){//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
 		byte [] tempParams = mUvcCameraHandler.getTinyCCameraParams(10);
 		cameraParams = ByteUtilsCC.tinyCByte2HashMap(tempParams);
+		cameraParams.put(DYConstants.setting_correction,sp.getFloat(DYConstants.setting_correction,0.0f));
 
 		if (cameraParams != null){
 			sp.edit().putFloat(DYConstants.setting_correction,
@@ -291,6 +292,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 				@Override
 				public void run() {
 					if (isDebug)Log.e(TAG, "检测到设备========");
+//					mUvcCameraHandler.release();
 					mViewModel.getMUsbMonitor().getValue().requestPermission(device);
 				}
 			}, 100);
@@ -409,6 +411,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mDataBinding.textureViewPreviewFragment.setFrameBitmap(highTempBt,lowTempBt,centerTempBt,normalPointBt,DensityUtil.dp2px(mContext.get(),30));
 
 		mDataBinding.textureViewPreviewFragment.iniTempBitmap(mTextureViewWidth, mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
+		mDataBinding.textureViewPreviewFragment.setVidPid(mVid,mPid);//设置vid  pid
+		mDataBinding.textureViewPreviewFragment.setTinyCCorrection(sp.getFloat(DYConstants.setting_correction,0.0f));//设置vid  pid
 		mDataBinding.textureViewPreviewFragment.setDragTempContainer(mDataBinding.dragTempContainerPreviewFragment);
 		mDataBinding.customSeekbarPreviewFragment.setmThumbListener(new MyCustomRangeSeekBar.ThumbListener() {
 			@Override
@@ -439,7 +443,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 			@Override
 			public void onMinMove (float maxPercent, float minPercent,float maxValue, float minValue) {
-//				if (isDebug)Log.e(TAG, "onMinMove: 0-100 percent " + maxPercent + " min == > " +  minPercent);
+				if (isDebug)Log.e(TAG, "onMinMove: 0-100 percent " + maxPercent + " min == > " +  minPercent);
 				maxValue = maxValue - sp.getFloat(DYConstants.setting_correction,0.0f);
 				minValue = minValue - sp.getFloat(DYConstants.setting_correction,0.0f);
 				if (isDebug)Log.e(TAG, "onMinMove: value == >" + maxValue + " min == > " +  minValue);
@@ -489,24 +493,35 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	 */
 	private void initListener(){
 		//测试的 监听器
-				mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick (View v) {
-						if (mUvcCameraHandler!= null ){
+		mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick (View v) {
+//				if (mUvcCameraHandler!= null ){
 		//					mUvcCameraHandler.stopTemperaturing();
 //								Log.e(TAG, "initView: not null ==========================================" );
 //								int a[] = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
 //								Log.e(TAG, "initView: aa === > " + Arrays.toString(a));
-							mUvcCameraHandler.setVerifySn();
+//					mUvcCameraHandler.setVerifySn();
+//				}
+//				onStop();
+//				Intent intent = new Intent(getActivity(), GalleryActivity.class);
+//				startActivity(intent);
+//				mUvcCameraHandler.stopTemperaturing();
+//				mUvcCameraHandler.stopPreview();
+//				EasyPhotos.createAlbum(getActivity(), false, false, GlideEngine.getInstance())
+//						//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
+//						.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
+//						.setCount(9)
+//						.setVideo(true)
+//						.setGif(false)
+//						.start(101);
 
 
-
-						}
 						//				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isTemperaturing()){
 		//					mUvcCameraHandler.startTemperaturing();
 		//				}
-					}
-				});
+			}
+		});
 //
 //				mDataBinding.btTest02.setOnClickListener(new View.OnClickListener() {
 //					@Override
@@ -577,7 +592,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					popPaletteChoice.paletteLayoutHeire.setOnClickListener(paletteChoiceListener);
 					popPaletteChoice.paletteLayoutBaire.setOnClickListener(paletteChoiceListener);
 					popPaletteChoice.paletteLayoutLenglan.setOnClickListener(paletteChoiceListener);
-
 					//				showPopWindows(view,20,10,20);
 					allPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 					allPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
@@ -696,6 +710,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 						getCameraParams();//
 					}else if (mPid == 22592 && mVid == 3034){
 						getTinyCCameraParams();//
+
 					}
 				}
 				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_setting,null);
@@ -713,6 +728,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //						popSettingBinding.etCameraSettingReflect.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
 //						popSettingBinding.etCameraSettingFreeAirTemp.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
 						popSettingBinding.etCameraSettingDistance.setEnabled(false);
+						mDataBinding.textureViewPreviewFragment.setTinyCCorrection(sp.getFloat(DYConstants.setting_correction,0.0f));
 					}else if (mPid == 1 && mVid == 5396) {
 						popSettingBinding.etCameraSettingDistance.setEnabled(true);
 					}
@@ -732,7 +748,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 								if (TextUtils.isEmpty(v.getText().toString()))return true;
 								float value = Float.parseFloat(v.getText().toString());
 								if (value > 1 || value < 0){
-									showToast("取值范围为(0-1))");
+									showToast(getString(R.string.toast_range_int,0,1));
 									return true;
 								}
 								v.clearFocus();
@@ -742,11 +758,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 									if (mPid == 1 && mVid == 5396) {
 										mSendCommand.sendFloatCommand(4 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
 												20, 40, 60, 80, 120);
+//										mUvcCameraHandler.startTemperaturing();
 									} else if (mPid == 22592 && mVid == 3034){
 										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,value,3);
 									}
 									sp.edit().putFloat(DYConstants.setting_emittance,value).apply();
-									showToast("发射率设置完成");
+									showToast(R.string.toast_complete_Emittance);
 								}
 								hideInput(v.getWindowToken());
 							}
@@ -762,7 +779,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 								if (TextUtils.isEmpty(v.getText().toString()))return true;
 								int value = Math.round(Float.parseFloat(v.getText().toString()));
 								if (value > 5 || value < 0){
-									showToast("取值范围(0-5)");
+									showToast(getString(R.string.toast_range_int,0,5));
 									return true;
 								}
 								byte[] bIputDi = new byte[4];
@@ -772,7 +789,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 										mSendCommand.sendShortCommand(5 * 4, bIputDi[0], bIputDi[1], 20, 40, 60);
 									}
 									sp.edit().putFloat(DYConstants.setting_distance,value).apply();
-									showToast("距离设置完成");
+									showToast(R.string.toast_complete_Distance);
 								}
 								hideInput(v.getWindowToken());
 							}
@@ -788,7 +805,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 								if (TextUtils.isEmpty(v.getText().toString()))return true;
 								float value = inputValue2Temp(Integer.parseInt(v.getText().toString()));//拿到的都是摄氏度
 								if (value > getBorderValue(120.0f) || value < getBorderValue(-20.0f)){//带上 温度单位
-									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(120.0f)+")");
+									showToast(getString(R.string.toast_range_float,getBorderValue(-20.0f),getBorderValue(120.0f)));
+//									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(120.0f)+")");
 									return true;
 								}
 								byte[] iputEm = new byte[4];
@@ -802,7 +820,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,(int)value,1);
 									}
 									sp.edit().putFloat(DYConstants.setting_reflect,value).apply();
-									showToast("反射温度设置完成");
+									showToast(R.string.toast_complete_Reflect);
 								}
 								hideInput(v.getWindowToken());
 							}
@@ -818,8 +836,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 								if (TextUtils.isEmpty(v.getText().toString()))return true;
 								float value = inputValue2Temp(Float.parseFloat(v.getText().toString()));
 								if (value > getBorderValue(20.0f) || value < getBorderValue(-20.0f)){
-									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(20.0f)+")");
+//									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(20.0f)+")");
+									showToast(getString(R.string.toast_range_float,getBorderValue(-20.0f),getBorderValue(20.0f)));
 									return true;
+
 								}
 								byte[] iputEm = new byte[4];
 								ByteUtil.putFloat(iputEm,value,0);
@@ -827,11 +847,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 									if (mPid == 1 && mVid == 5396) {
 										mSendCommand.sendFloatCommand(0 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
 										sp.edit().putFloat(DYConstants.setting_correction, value).apply();
-										showToast("校正设置完成");
+									} else if (mPid == 22592 && mVid == 3034){//校正 TinyC
+										sp.edit().putFloat(DYConstants.setting_correction, value).apply();
+										mDataBinding.textureViewPreviewFragment.setTinyCCorrection(sp.getFloat(DYConstants.setting_correction,0.0f));
 									}
-									else if (mPid == 22592 && mVid == 3034){//校正 TinyC
-										mUvcCameraHandler.sendOrder();
-									}
+									showToast(R.string.toast_complete_Revise);
 								}
 								hideInput(v.getWindowToken());
 							}
@@ -847,7 +867,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 								if (TextUtils.isEmpty(v.getText().toString()))return true;
 								float value = inputValue2Temp(Integer.parseInt(v.getText().toString()));
 								if (value > getBorderValue(50.0f) || value < getBorderValue(-20.0f)){
-									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(50.0f)+")");
+//									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(50.0f)+")");
+									showToast(getString(R.string.toast_range_float,getBorderValue(-20.0f),getBorderValue(50.0f)));
 									return true;
 								}
 								byte[] iputEm = new byte[4];
@@ -861,7 +882,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 									}
 
 									sp.edit().putFloat(DYConstants.setting_environment,value).apply();
-									showToast("环境温度设置完成");
+									showToast(R.string.toast_complete_FreeAirTemp);
 								}
 								hideInput(v.getWindowToken());
 							}
@@ -877,7 +898,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 								if (TextUtils.isEmpty(v.getText().toString()))return true;
 								int value = Integer.parseInt(v.getText().toString());
 								if (value > 100 || value < 0){
-									showToast("取值范围(0-100)");
+//									showToast("取值范围(0-100)");
+									showToast(getString(R.string.toast_range_int,0,100));
 									return true;
 								}
 								float fvalue = value/100.0f;
@@ -891,7 +913,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,fvalue,4);
 									}
 									sp.edit().putFloat(DYConstants.setting_humidity,fvalue).apply();
-									showToast("湿度设置完成");
+									showToast(R.string.toast_complete_Humidity);
 								}
 								hideInput(v.getWindowToken());
 							}
@@ -943,8 +965,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					@Override
 					public void onDismiss () {
 						if (mUvcCameraHandler!= null) {
+							//TinyC 保存
 							if (mPid == 22592 && mVid == 3034){
 								mUvcCameraHandler.tinySaveCameraParams();
+								//S0 断电保存
+							}if (mPid == 1 && mVid == 5396){
+								setValue(UVCCamera.CTRL_ZOOM_ABS, 0x80ff);
 							}
 						}
 					}

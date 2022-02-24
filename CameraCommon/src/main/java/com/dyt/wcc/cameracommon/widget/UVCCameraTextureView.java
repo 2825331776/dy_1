@@ -325,6 +325,16 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
             mRenderHandler.iniTempBitmap(w, h);
         }
     }
+    public void setVidPid(int vid ,int pid){
+        if (mRenderHandler != null) {
+            mRenderHandler.setVidPid(vid, pid);
+        }
+    }
+    public void setTinyCCorrection(float tinyCorrection){
+        if (mRenderHandler != null) {
+            mRenderHandler.setTinyCCorrection(tinyCorrection);
+        }
+    }
 
 //    public void setBindSeekBar(CustomRangeSeekBar SeekBar) {
 //        if (mRenderHandler != null) {
@@ -625,6 +635,16 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                 mThread.iniTempBitmap(w, h);
             }
         }
+        public void setVidPid(int vid ,int pid){
+            if (mThread != null) {
+                mThread.setVidPid(vid, pid);
+            }
+        }
+        public void setTinyCCorrection(float tinyCorrection){
+            if (mThread != null) {
+                mThread.setTinyCCorrection(tinyCorrection);
+            }
+        }
 
 //        public void setBindSeekBar(CustomRangeSeekBar SeekBar) {
 //            if (mThread != null) {
@@ -778,6 +798,13 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                     dstLowTemp = new Rect();
                 }
             }
+            public void setVidPid(int vid ,int pid){
+               this.mVid = vid;
+               this.mPid = pid;
+            }
+            public void setTinyCCorrection(float tinyCorrection){
+                   this.tinyCorrection = tinyCorrection;
+            }
 
 //            public void setBindSeekBar(CustomRangeSeekBar SeekBar) {
 //                this.mBindSeekBar = SeekBar;
@@ -905,6 +932,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //            private Rect highTempRect, lowTempRect ;//创建一个指定的新矩形的坐标centerTempRect
             private Rect dstHighTemp, dstLowTemp, bounds;//创建一个指定的新矩形的坐标
             private Bitmap icon;
+            private int mVid = 0,mPid = 0;
+            private float tinyCorrection = 0.0f;
             private Canvas bitcanvas;//初始化画布绘制的图像到icon上
 //            private CopyOnWriteArrayList<TouchPoint> mTouchPointLists;
 //            private CopyOnWriteArrayList<TouchLine> mTouchLineLists;
@@ -1043,15 +1072,26 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                 public void onReceiveTemperature(float[] temperature) {
                         // 回调的温度的长度为：256x192  + 10
 //                    Log.e(TAG, "ITemperatureCallback.onReceiveTemperature.temperature[].length ==========="+temperature.length);
-//                    Log.e(TAG, " 取整 temperature[].length ==========="+temperature.length/256);
+//                    Log.e(TAG, " 取整 temperature[].length ===========");
 //                    Log.e(TAG, " 取余 temperature[].length ==========="+temperature.length%256);
                     System.arraycopy(temperature, 0, temperature1, 0, (mSupportHeight) * mSupportWidth + 10);
 //                    if (UnitTemperature == 0) {     //摄氏度
 //                        //Log.e(TAG, "000000000");
 ////                        temperature1 = new float[mSuportHeight*mSuportWidth*4]; 初始化太迟 之前访问会报错
-//
+//                    Log.e(TAG, "onReceiveTemperature:  vid === " + mVid + "  ===== mPid === " + mPid + "====== .tinCorrection " + tinyCorrection );
+                    if (mPid == 22592 && mVid == 3034){
+                        temperature1[3] = temperature[3] + tinyCorrection;
+                        temperature1[6] = temperature[6] + tinyCorrection;
+                        for (int i = 0; i < mSupportHeight*mSupportWidth;i++){
+                            temperature1[10+i] = temperature1[10+i] + tinyCorrection;
+                        }
+                    }else if(mPid == 1 && mVid == 5396){
+
+                    }
                     maxtemperature = temperature[3];
                     mintemperature = temperature[6];
+
+
 //                    } else {        //华氏度
 //                        temperature1[0] = temperature[0] * 1.8f + 32;//中心温度
 //                        temperature1[1] = temperature[1];//MAXX1
@@ -1079,12 +1119,6 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //                        maxtemperature = temperature[3];
 //                        mintemperature = temperature[6];
 //                    } else {
-//                        temperature1[0] = temperature[0] * 1.8f + 32;//中心温度
-//                        temperature1[1] = temperature[1];//MAXX1
-//                        temperature1[2] = temperature[2];//MAXY1
-//                        temperature1[3] = temperature[3] * 1.8f + 32;//最高温
-//                        temperature1[4] = temperature[4];//MINX1
-//                        temperature1[5] = temperature[5];//MIXY1
 //                        for (int i = 6; i < ((mSuportHeight - 4) * mSuportWidth + 10); i++) {
 //                            temperature1[i] = temperature[i] * 1.8f + 32;
 //                        }

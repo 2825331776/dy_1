@@ -55,5 +55,15 @@
     <string name="toast_base_permission_explain">没有读写存储权限，将无法预览页面,拍照，录制等功能。是否授权权限？</string>
     <string name="toast_base_permission_tosetting">没有权限，将无法预览页面,拍照，录制等功能。是否去设置打开？</string>
 
+<!--    取值范围设置 -->
+    <string name="toast_range_int">"取值范围为(%1$d - %2$d)"</string>
+    <string name="toast_range_float">"取值范围为(%1$f - %2$f)"</string>
+    <string name="toast_complete_Emittance">发射率设置完成</string>
+    <string name="toast_complete_Distance">距离设置完成</string>
+    <string name="toast_complete_Reflect">反射温度设置完成</string>
+    <string name="toast_complete_Revise">校正设置完成</string>
+    <string name="toast_complete_FreeAirTemp">环境温度设置完成</string>
+    <string name="toast_complete_Humidity">湿度设置完成</string>
+
     <string name="value_zero">0.0</string>
 </resources>

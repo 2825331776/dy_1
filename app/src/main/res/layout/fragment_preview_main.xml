@@ -215,6 +215,7 @@
         <Button
             android:id="@+id/btTest01"
             android:text="StopTemp"
+            android:visibility="gone"
             app:layout_constraintTop_toTopOf="@id/ll_container_preview_seekbar"
             app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"
             android:layout_width="wrap_content"

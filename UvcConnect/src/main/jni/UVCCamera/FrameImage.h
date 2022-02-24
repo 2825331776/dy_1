@@ -68,6 +68,7 @@ private:
 //	pthread_cond_t  fixed_cond;
 //	float tempData[16384];
 //	pthread_t  fixed_thread;
+    int tinyCorrection = 0;
 
 	int mCurrentAndroidVersion;     //标志是否使用OpenCL加速渲染成图
 	/***********************温度************************************/

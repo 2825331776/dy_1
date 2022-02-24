@@ -323,14 +323,10 @@ public class DragTempContainer extends RelativeLayout {
 		mDataNearByUnit = DensityUtil.dp2px(mContext.get(),5);
 	}
 
-
-
 	@Override
 	protected void onDraw (Canvas canvas) {
 		super.onDraw(canvas);
-
 	}
-
 
 	@Override
 	protected void onLayout (boolean changed, int l, int t, int r, int b) {
@@ -1103,6 +1099,7 @@ public class DragTempContainer extends RelativeLayout {
 			switch (msg.what){
 				case UPDATE_TEMP_DATA:
 				tempSource = (float[]) msg.obj;
+
 				if (tempSource[3] >= valueHighTempAlarm){//判定超温报警是否超过了额定温度，每帧刷新
 					isAboveHighTemp= true;
 				}else {
