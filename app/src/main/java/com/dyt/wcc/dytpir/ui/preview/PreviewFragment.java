@@ -63,6 +63,7 @@ import com.dyt.wcc.dytpir.databinding.PopSettingBinding;
 import com.dyt.wcc.dytpir.databinding.PopTempModeChoiceBinding;
 import com.dyt.wcc.dytpir.ui.DYTApplication;
 import com.dyt.wcc.dytpir.ui.MainActivity;
+import com.dyt.wcc.dytpir.ui.gallery.GalleryActivity;
 import com.dyt.wcc.dytpir.ui.preview.record.MediaProjectionHelper;
 import com.dyt.wcc.dytpir.utils.AssetCopyer;
 import com.dyt.wcc.dytpir.utils.ByteUtilsCC;
@@ -137,6 +138,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		super.onPause();
 		if (isDebug)Log.e(TAG, "onPause: ");
 
+		mDataBinding.textureViewPreviewFragment.onResume();
+
 //		if (mUvcCameraHandler !=null  && mUvcCameraHandler.isRecording()){
 //			mUvcCameraHandler.stopRecording();
 //			mDataBinding.btPreviewLeftRecord.setSelected(false);
@@ -144,25 +147,38 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //		}
 	}
 
+//	private void doReleaseAll(){
+//
+//
+//	}
 	@Override
 	public void onStop () {
 		super.onStop();
 		if (isDebug)Log.e(TAG, "onStop: ");
 
+		if (mUvcCameraHandler!=null){
+			mUvcCameraHandler.stopTemperaturing();
+		}
 //		//停止录像
 //		if (mUvcCameraHandler !=null  && mUvcCameraHandler.isRecording()){
 //			mUvcCameraHandler.stopRecording();
 //			stopTimer();
 //		}
-		if (mUvcCameraHandler != null){
-			mUvcCameraHandler.release();
-			mUvcCameraHandler = null;
-		}
-		if (stt != null ){stt.release();stt = null;}
-
-
-		if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
+		if (Objects.requireNonNull(mViewModel.getMUsbMonitor().getValue()).isRegistered()){
 			mViewModel.getMUsbMonitor().getValue().unregister();
+		}
+
+		//		if (stt != null ){
+		//			stt.release();
+		//			stt = null;
+		//		}
+		if (mDataBinding.textureViewPreviewFragment != null){
+			mDataBinding.textureViewPreviewFragment.onPause();
+		}
+
+		if (mUvcCameraHandler != null){
+			mUvcCameraHandler.close();
+			//			mUvcCameraHandler = null;
 		}
 	}
 
@@ -240,6 +256,15 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 	@Override
 	public void onDestroy () {
+		if (mUvcCameraHandler != null) {
+			mUvcCameraHandler.release();
+			mUvcCameraHandler = null;
+		}
+		if ( mViewModel.getMUsbMonitor().getValue() != null) {
+			mViewModel.getMUsbMonitor().getValue().destroy();
+			mViewModel.getMUsbMonitor().setValue(null);
+		}
+//		mDataBinding.textureViewPreviewFragment = null;
 		super.onDestroy();
 		if (isDebug)Log.e(TAG, "onDestroy: ");
 	}
@@ -252,6 +277,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //		if (mDataBinding.dragTempContainerPreviewFragment.isHighTempAlarmToggle()){
 //			mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
 //		}
+		mDataBinding.textureViewPreviewFragment.destroyDrawingCache();
 		if (mViewModel.getMUsbMonitor().getValue() !=null ){
 			mViewModel.getMUsbMonitor().getValue().destroy();
 		}
@@ -265,10 +291,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //			mUvcCameraHandler.release();
 //			mUvcCameraHandler = null;
 //		}
-
-
-//		mDataBinding.textureViewPreviewFragment.onPause();
-//		stt = null;
 
 //		if (mUvcCameraHandler != null){
 ////			Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
@@ -324,7 +346,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		public void onDettach (UsbDevice device) {
 			//				mUvcCameraHandler.close();
 			if (isDebug)Log.e(TAG, "DD  onDetach: ");
+			onPause();
 			onStop();
+			onDestroy();
+//			android.os.Process.killProcess(android.os.Process.myPid());
+//			System.exit(0);
 		}
 		@Override
 		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
@@ -332,6 +358,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 
 			mVid = 0;
 			mPid = 0;
+			if (mUvcCameraHandler != null) {
+					mUvcCameraHandler.stopTemperaturing();
+				mUvcCameraHandler.close();
+				}
 //			if (mUvcCameraHandler != null){
 //				if (mUvcCameraHandler.isRecording()){
 //					stopTimer();
@@ -373,7 +403,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		}
 		getResources().updateConfiguration(configuration,metrics);
 
-		Log.e(TAG, "onResume:  mViewModel ===  " + (mViewModel == null));
+//		Log.e(TAG, "onResume:  mViewModel ===  " + (mViewModel == null));
 
 		if (!mViewModel.getMUsbMonitor().getValue().isRegistered()
 				&& hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE)){
@@ -504,8 +534,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 //					mUvcCameraHandler.setVerifySn();
 //				}
 //				onStop();
-//				Intent intent = new Intent(getActivity(), GalleryActivity.class);
-//				startActivity(intent);
+				Intent intent = new Intent(getActivity(), GalleryActivity.class);
+				startActivity(intent);
 //				mUvcCameraHandler.stopTemperaturing();
 //				mUvcCameraHandler.stopPreview();
 //				EasyPhotos.createAlbum(getActivity(), false, false, GlideEngine.getInstance())

@@ -315,7 +315,6 @@ abstract class AbstractUVCCameraHandler extends Handler {
     public void close() {
         if (DEBUG) Log.v(TAG, "close:");
         if (isOpened()) {
-//            stopPreview();
             sendEmptyMessage(MSG_CLOSE);
         }
         if (DEBUG) Log.v(TAG, "close:finished");
