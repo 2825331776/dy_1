@@ -4,13 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable
-            name="pf"
-            type="com.dyt.wcc.dytpir.ui.preview.PreviewFragment" />
+<!--        <variable-->
+<!--            name="pf"-->
+<!--            type="com.dyt.wcc.dytpir.ui.preview.PreviewFragment" />-->
 
-        <variable
-            name="previewViewModel"
-            type="com.dyt.wcc.dytpir.ui.preview.PreViewViewModel" />
+<!--        <variable-->
+<!--            name="previewViewModel"-->
+<!--            type="com.dyt.wcc.dytpir.ui.preview.PreViewViewModel" />-->
 
     </data>
 
@@ -109,9 +109,10 @@
             android:layout_height="@dimen/dimen_40dp"
             android:layout_margin="@dimen/dimen_15dp"
             android:background="@drawable/selector_main_preview_clear"
-            android:onClick="@{pf::toClear}"
+
             android:button="@null"
             tools:ignore="ContentDescription"/>
+<!--        android:onClick="@{pf::toClear}"-->
         <!--                拍照-->
         <CheckBox
             android:id="@+id/iv_preview_left_takePhoto"
@@ -122,9 +123,9 @@
             app:layout_constraintBottom_toBottomOf="@id/gl_percent4"
             app:layout_constraintRight_toLeftOf="@id/gl_main_left"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:onClick="@{pf::toImage}"
             android:button="@null"
             android:background="@drawable/selector_main_preview_takephoto"/>
+        <!--            android:onClick="@{pf::toImage}"-->
         <!--           录制-->
         <Button
             android:id="@+id/bt_preview_left_record"
@@ -135,9 +136,10 @@
             android:layout_width="@dimen/dimen_40dp"
             android:layout_height="@dimen/dimen_40dp"
             android:layout_margin="@dimen/dimen_15dp"
-            android:onClick="@{pf::toRecord}"
+
             android:button="@null"
             android:background="@drawable/selector_main_preview_record"/>
+<!--        android:onClick="@{pf::toRecord}"-->
         <!--            相册-->
         <CheckBox
             android:id="@+id/iv_preview_left_gallery"
@@ -150,8 +152,8 @@
             app:layout_constraintTop_toTopOf="@id/gl_percent6"
             app:layout_constraintBottom_toBottomOf="@id/gl_percent6"
             android:background="@drawable/selector_main_preview_gallery"
-            android:button="@null"
-            android:onClick="@{pf::toGallery}"/>
+            android:button="@null"/>
+<!--        android:onClick="@{pf::toGallery}"-->
         <!--左侧 分割线-->
         <TextView
             app:layout_constraintTop_toTopOf="parent"
@@ -176,7 +178,7 @@
                 android:layout_height="match_parent">
 
                 <com.dyt.wcc.cameracommon.widget.UVCCameraTextureView
-                    android:id="@+id/textureView_preview_fragment"
+                    android:id="@+id/textureView_preview_activity"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -197,8 +199,8 @@
 
                 <!--        计时器-->
                 <Chronometer
-                    app:layout_constraintLeft_toLeftOf="@id/textureView_preview_fragment"
-                    app:layout_constraintBottom_toBottomOf="@id/textureView_preview_fragment"
+                    app:layout_constraintLeft_toLeftOf="@id/textureView_preview_activity"
+                    app:layout_constraintBottom_toBottomOf="@id/textureView_preview_activity"
                     android:id="@+id/chronometer_RecordTime_Info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -214,7 +216,7 @@
         <!--        测试按钮-->
         <Button
             android:id="@+id/btTest01"
-            android:text="StopTemp"
+            android:text="hahahahaha"
             app:layout_constraintTop_toTopOf="@id/ll_container_preview_seekbar"
             app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"
             android:layout_width="wrap_content"

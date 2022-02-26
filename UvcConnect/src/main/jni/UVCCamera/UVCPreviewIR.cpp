@@ -606,8 +606,6 @@ int UVCPreviewIR::stopPreview() {
 //            LOGE("UVCPreviewIR::stopPreview preview thread: EXIT_SUCCESS result =  %d" ,*result_preview_join);
             LOGE("UVCPreviewIR::stopPreview preview thread: EXIT_SUCCESS");
         }
-
-
         if(mIsTemperaturing){
             mIsTemperaturing=false;
             if (pthread_join(temperature_thread, NULL) != EXIT_SUCCESS) {

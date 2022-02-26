@@ -1189,8 +1189,6 @@ abstract class AbstractUVCCameraHandler extends Handler {
                     camera.destroy();
                     callOnClose();
                 }
-
-
             }
 //            else {
 //                if (mTcpClient != null) {

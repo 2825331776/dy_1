@@ -2,8 +2,11 @@ package com.dyt.wcc.common.base;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
@@ -26,20 +29,39 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 	protected final String  TAG = this.getClass().getSimpleName();
 
 	protected WeakReference<Context> mContext;
-	protected     T       mDataBinding;//绑定的布局View
-	protected boolean isDebug = true;
+	protected T                      mDataBinding;//绑定的布局View
+	protected boolean                isDebug = true;
+	protected Toast                  mToast;
+
 	@Override
 	protected void onCreate (@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mDataBinding = DataBindingUtil.setContentView(this,bindingLayout());//绑定布局
 
 		mContext = new WeakReference<>(this);
+		mToast = Toast.makeText(mContext.get(),"",Toast.LENGTH_SHORT);
 		initView();
 	}
 	////设置绑定布局
 	protected abstract int bindingLayout();
 	//初始化控件
 	protected abstract void initView();
+
+	protected void showToast(int resId){
+		//		mToast.cancel();
+		mToast.setText(resId);
+		mToast.show();
+	}
+	protected void showToast(String str){
+		//		mToast.cancel();
+		mToast.setText(str);
+		mToast.show();
+	}
+
+	protected void hideInput(IBinder token){
+		InputMethodManager im = (InputMethodManager) mContext.get().getSystemService(Context.INPUT_METHOD_SERVICE);
+		im.hideSoftInputFromWindow(token, InputMethodManager.HIDE_NOT_ALWAYS);
+	}
 
 	@Override
 	public void onBackPressed () {
