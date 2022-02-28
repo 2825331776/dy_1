@@ -151,7 +151,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		}
 		if (mUvcCameraHandler != null){
 			mUvcCameraHandler.release();
-			mUvcCameraHandler.close();
 			mUvcCameraHandler = null;
 		}
 		if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
@@ -499,7 +498,10 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onClick (View v) {
 //				if (mUvcCameraHandler!= null ){
-		//					mUvcCameraHandler.stopTemperaturing();
+//							mUvcCameraHandler.stopTemperaturing();
+				mUvcCameraHandler.close();
+//							mDataBinding.textureViewPreviewFragment.onPause();
+				mViewModel.getMUsbMonitor().getValue().unregister();
 //								Log.e(TAG, "initView: not null ==========================================" );
 //								int a[] = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
 //								Log.e(TAG, "initView: aa === > " + Arrays.toString(a));
@@ -525,21 +527,39 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			}
 		});
 //
-//				mDataBinding.btTest02.setOnClickListener(new View.OnClickListener() {
-//					@Override
-//					public void onClick (View v) {
-////						if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing()){
-////							Log.e(TAG, "onClick: btFresh");
-////							setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
-////							mUvcCameraHandler.whenShutRefresh();
-////						}
-//		//				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isPreviewing()){
-//		//					mUvcCameraHandler.stopTemperaturing();
-//		//					mUvcCameraHandler.stopPreview();
-//		//					mUvcCameraHandler.release();
-//		//				}
-//					}
-//				});
+				mDataBinding.btTest02.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick (View v) {
+//						if (mUvcCameraHandler == null || mUvcCameraHandler.isReleased()){
+//							mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
+//									mDataBinding.textureViewPreviewFragment,1,
+//									384,292,1,null,0);
+//						}
+						if (mDataBinding.textureViewPreviewFragment.getTemperatureCallback() != null){
+//							mDataBinding.textureViewPreviewFragment.onResume();
+//							stt = new Surface(mDataBinding.textureViewPreviewFragment.getSurfaceTexture());
+
+							mViewModel.getMUsbMonitor().setValue(new USBMonitor(mContext.get(),onDeviceConnectListener));
+							mViewModel.getMUsbMonitor().getValue().register();
+
+							mUvcCameraHandler.startPreview(stt);
+
+							//						startPreview();
+						}else {
+							Log.e(TAG, "getTemperatureCallback=============: 11111111");
+						}
+//						startPreview();
+
+					}
+				});
+
+				mDataBinding.btTest03.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick (View v) {
+							mUvcCameraHandler.startTemperaturing();
+							mUvcCameraHandler.whenShutRefresh();
+						}
+					});
 
 		/**
 		 * 超温警告 ， 预览层去绘制框， DragTempContainer 控件去播放声音
@@ -1504,16 +1524,25 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 				if (allGranted){
-					if (mUvcCameraHandler != null){
-						mUvcCameraHandler.release();
-						mUvcCameraHandler = null;
-					}
-					if (stt != null ){stt.release();stt = null;}
-
-
-					if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
-						mViewModel.getMUsbMonitor().getValue().unregister();
-					}
+//					if (mUvcCameraHandler != null){
+//						mUvcCameraHandler.release();
+//						mUvcCameraHandler = null;
+//					}
+//					if (stt != null ){stt.release();stt = null;}
+//
+//
+//					if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
+//						mViewModel.getMUsbMonitor().getValue().unregister();
+//					}
+//					EasyPhotos.createAlbum(mContext.get(), false, false, GlideEngine.getInstance())
+//							//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
+//							.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
+//							.setCount(9)
+//							.setVideo(true)
+//							.setGif(false)
+//							.start(101);
+//					mUvcCameraHandler.close();
+//					mDataBinding.textureViewPreviewFragment.onPause();
 //					if (mUvcCameraHandler!=null){
 //					}
 					Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);

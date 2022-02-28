@@ -145,6 +145,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
 //    private static final int MSG_ISRECORDAUDIO = 37;//本来在这里新增一个 是否录制音频的开关。后面直接加到了 打开录制开关的参数里面
 
 
+
     private final WeakReference<CameraThread> mWeakThread;
     private volatile boolean mReleased;
 
@@ -1184,7 +1185,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
                     mUVCCamera = null;
                 }
                 if (camera != null) {
-                    camera.stopPreview();
+//                    camera.stopPreview();
                     mIsPreviewing = false;
                     camera.destroy();
                     callOnClose();
@@ -1729,10 +1730,12 @@ abstract class AbstractUVCCameraHandler extends Handler {
 
         // 开启温度数据回调
         public void handleStartTemperaturing() {
-            if (DEBUG) Log.v(TAG_THREAD, "handleStartTemperaturing:");
+            if (DEBUG) Log.v(TAG_THREAD, "handleStartTemperaturing:   cameraType === > " + cameraType);
 
             if (cameraType == 1) {//UVCCamera和TCPClient是否已经初始化，没有就返回；是否已经在绘制温度了，是，则返回。
-                if ((mUVCCamera == null) || mIsTemperaturing) return;
+                Log.e(TAG_THREAD, "  mUVCCamera == null:   " + (mUVCCamera == null) +  "  == mIsTemperaturing  === >"   +mIsTemperaturing);
+//                if ((mUVCCamera == null) || mIsTemperaturing) return;
+                if ((mUVCCamera == null)) return;
             }
 //            else {
 //                if ((mTcpClient == null) || mIsTemperaturing) return;

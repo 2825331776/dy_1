@@ -1194,6 +1194,8 @@ public class UVCCamera {
 		if (mCtrlBlock != null) {
 			Log.e(TAG, "startTemp");
 			nativeStartStopTemp(mNativePtr, 1);
+		}else {
+			Log.e(TAG, "don't startTemp , mCtrlBlock == null ");
 		}
 	}
 	public void setVerifySn(){

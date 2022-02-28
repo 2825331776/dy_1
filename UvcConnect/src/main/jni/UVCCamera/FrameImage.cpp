@@ -647,12 +647,10 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
 //        LOGE("max temp   = %f  , min temp = %f",)
         }
 //    pthread_mutex_unlock(&fixed_mutex);
-
         env->DeleteLocalRef(mNCbTemper);
 
         temperatureData=NULL;
         fourLinePara=NULL;
-//    LOGE("do_temperature_callback EXIT();");
 //    EXIT();
     }else if (mPid == 22592 && mVid == 3034){
         //记录十个特征点温度。
@@ -738,7 +736,10 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
 
         env->DeleteLocalRef(mNCbTemper);
     }
+
     orgData=NULL;
+//    LOGE("do_temperature_callback EXIT();");
+//    EXIT();
 }
 
 /***************************************温度结束****************************************/

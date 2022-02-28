@@ -40,25 +40,25 @@ using namespace std;
 
 
 UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh ,FrameImage * frameImage){
-        LOGE("构造函数步骤5");
-            mPreviewWindow = NULL;
+    LOGE("构造函数步骤5");
+    mPreviewWindow = NULL;
 //             mCaptureWindow(NULL),//可以没有
-            mDeviceHandle = devh;
-            requestWidth = DEFAULT_PREVIEW_WIDTH;
-            requestHeight = DEFAULT_PREVIEW_HEIGHT;
-            requestMinFps = DEFAULT_PREVIEW_FPS_MIN;
-            requestMaxFps = DEFAULT_PREVIEW_FPS_MAX;
-            requestMode = DEFAULT_PREVIEW_MODE;
-            requestBandwidth = DEFAULT_BANDWIDTH;
-            frameWidth = DEFAULT_PREVIEW_WIDTH;
-            frameHeight = DEFAULT_PREVIEW_HEIGHT;
-            frameBytes = DEFAULT_PREVIEW_WIDTH * DEFAULT_PREVIEW_HEIGHT * 2;	// YUYV
-            frameMode = 0;
-            previewBytes = DEFAULT_PREVIEW_WIDTH * DEFAULT_PREVIEW_HEIGHT * PREVIEW_PIXEL_BYTES;
-            previewFormat = WINDOW_FORMAT_RGBX_8888;
-            mIsRunning = false;
-            mIsTemperaturing = false;
-            mIsCapturing = false;
+    mDeviceHandle = devh;
+    requestWidth = DEFAULT_PREVIEW_WIDTH;
+    requestHeight = DEFAULT_PREVIEW_HEIGHT;
+    requestMinFps = DEFAULT_PREVIEW_FPS_MIN;
+    requestMaxFps = DEFAULT_PREVIEW_FPS_MAX;
+    requestMode = DEFAULT_PREVIEW_MODE;
+    requestBandwidth = DEFAULT_BANDWIDTH;
+    frameWidth = DEFAULT_PREVIEW_WIDTH;
+    frameHeight = DEFAULT_PREVIEW_HEIGHT;
+    frameBytes = DEFAULT_PREVIEW_WIDTH * DEFAULT_PREVIEW_HEIGHT * 2;	// YUYV
+    frameMode = 0;
+    previewBytes = DEFAULT_PREVIEW_WIDTH * DEFAULT_PREVIEW_HEIGHT * PREVIEW_PIXEL_BYTES;
+    previewFormat = WINDOW_FORMAT_RGBX_8888;
+    mIsRunning = false;
+    mIsTemperaturing = false;
+    mIsCapturing = false;
 
     mFrameImage = frameImage;
 
@@ -111,28 +111,26 @@ UVCPreviewIR::~UVCPreviewIR() {
 
     pthread_cond_destroy(&tinyC_send_order_sync);
     pthread_mutex_destroy(&tinyC_send_order_mutex);
-    tinyC_params = NULL;
 //    pthread_mutex_destroy(&fixed_mutex);
     //LOGE("~UVCPreviewIR() 8");
 
-    if(OutBuffer!=NULL){
-        delete[] OutBuffer;
-    }
-    if(HoldBuffer!=NULL){
-        delete[] HoldBuffer;
-    }
-    if(RgbaOutBuffer!=NULL){
-        delete[] RgbaOutBuffer;
-    }
-    if(RgbaHoldBuffer!=NULL){
-        delete[] RgbaHoldBuffer;
-    }
+//    if(OutBuffer!=NULL){
+//        delete[] OutBuffer;
+//    }
+//    if(HoldBuffer!=NULL){
+//        delete[] HoldBuffer;
+//    }
+//    if(RgbaOutBuffer!=NULL){
+//        delete[] RgbaOutBuffer;
+//    }
+//    if(RgbaHoldBuffer!=NULL){
+//        delete[] RgbaHoldBuffer;
+//    }
 //    free(tinyC_robotSN);
 //    tinyC_robotSN = NULL;
 //    free(tinyC_userSN);
 //    tinyC_userSN = NULL;
 
-        delete[] picOutBuffer;
 //        delete[] picRgbaOutBuffer;
     EXIT();
 }
@@ -218,6 +216,8 @@ int UVCPreviewIR::startPreview() {
         mIsRunning = true;
         //pthread_mutex_lock(&preview_mutex);
         //{
+//        memset(user_sn,'0',20);
+//        memset(machine_sn,'0',32);
         result = pthread_create(&preview_thread, NULL, preview_thread_func, (void *)this);
         pthread_create(&tinyC_send_order_thread,NULL,tinyC_sendOrder_thread_func,(void *)this);
         ////LOGE("STARTPREVIEW RESULT1:%d",result);
@@ -240,6 +240,7 @@ int UVCPreviewIR::startPreview() {
 void UVCPreviewIR::setVidPid(int vid ,int pid){
     mVid = vid;
     mPid = pid;
+
 }
 int UVCPreviewIR::setIsVerifySn(){
     mIsVerifySn = true;
@@ -580,8 +581,6 @@ int UVCPreviewIR::stopPreview() {
     if (LIKELY(b)) {
         mIsCapturing=false;
         mIsRunning = false;
-        memset(user_sn,'0',20);
-        memset(machine_sn,'0',32);
 //        pthread_cond_signal(&capture_sync);
 //        if (pthread_join(capture_thread, NULL) != EXIT_SUCCESS) {
 //        	LOGE("UVCPreviewIR::stopPreview capture thread: pthread_join failed");
@@ -632,20 +631,24 @@ int UVCPreviewIR::stopPreview() {
 //    SAFE_DELETE(HoldBuffer)
 //    SAFE_DELETE(RgbaOutBuffer)
 //    SAFE_DELETE(RgbaHoldBuffer)
+    tinyC_params = NULL;
 
     LOGE("UVCPreviewIR::stopPreview ============== delete begin ");
-//    if(OutBuffer!=NULL){
-//        delete[] OutBuffer;
-//    }
-//    if(HoldBuffer!=NULL){
-//        delete[] HoldBuffer;
-//    }
-//    if(RgbaOutBuffer!=NULL){
-//        delete[] RgbaOutBuffer;
-//    }
-//    if(RgbaHoldBuffer!=NULL){
-//        delete[] RgbaHoldBuffer;
-//    }
+    if(OutBuffer!=NULL){
+        delete[] OutBuffer;
+    }
+    if(HoldBuffer!=NULL){
+        delete[] HoldBuffer;
+    }
+    if(RgbaOutBuffer!= NULL){
+        delete[] RgbaOutBuffer;
+    }
+    if(RgbaHoldBuffer!=NULL){
+        delete[] RgbaHoldBuffer;
+    }
+    if (picOutBuffer != NULL){
+        delete[] picOutBuffer;
+    }
 //    LOGE("UVCPreviewIR::stopPreview ============== delete over ");
     RETURN(0, int);
 }

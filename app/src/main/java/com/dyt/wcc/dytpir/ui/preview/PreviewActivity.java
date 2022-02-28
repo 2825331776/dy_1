@@ -13,7 +13,9 @@ import android.graphics.Paint;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -36,6 +38,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 
+import com.dyt.wcc.cameracommon.encoder.MediaMuxerWrapper;
 import com.dyt.wcc.cameracommon.usbcameracommon.UVCCameraHandler;
 import com.dyt.wcc.cameracommon.utils.ByteUtil;
 import com.dyt.wcc.common.base.BaseActivity;
@@ -77,6 +80,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
@@ -94,7 +98,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private SharedPreferences  sp;
 	private int                mVid , mPid; //设备 vid pid
 
-//	private USBMonitor mUsbMonitor ;
+	private USBMonitor mUsbMonitor ;
 	private     int        mTextureViewWidth,mTextureViewHeight;
 
 	private FrameLayout fl;
@@ -130,11 +134,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	public void onStop () {
 
 		if (isDebug)Log.e(TAG, "onStop: ");
-//		if (mUsbMonitor!=null ){
-//			if (mUsbMonitor.isRegistered()){
-//				mUsbMonitor.unregister();
-//			}
-//		}
+		if (mUsbMonitor!=null ){
+			if (mUsbMonitor.isRegistered()){
+				mUsbMonitor.unregister();
+			}
+		}
 //		if (mUvcCameraHandler!=null){
 //			mUvcCameraHandler.stopTemperaturing();
 //		}
@@ -172,10 +176,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			mUvcCameraHandler.release();
 			mUvcCameraHandler = null;
 		}
-//		if (mUsbMonitor != null) {
-//			mUsbMonitor.destroy();
-//			mUsbMonitor = null;
-//		}
+		if (mUsbMonitor != null) {
+			mUsbMonitor.destroy();
+			mUsbMonitor = null;
+		}
 		if (isDebug)Log.e(TAG, "onDestroy: ");
 		super.onDestroy();
 
@@ -183,9 +187,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	@Override
 	protected void onResume () {
-//		if (!mUsbMonitor.isRegistered()) {
-//			mUsbMonitor.register();
-//		}
+		if (!mUsbMonitor.isRegistered()) {
+			mUsbMonitor.register();
+		}
 		super.onResume();
 	}
 
@@ -198,7 +202,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				@Override
 				public void run() {
 					if (isDebug)Log.e(TAG, "检测到设备========");
-//					mUsbMonitor.requestPermission(device);
+					mUsbMonitor.requestPermission(device);
 				}
 			}, 100);
 		}
@@ -694,57 +698,51 @@ public class SendCommand {
 		});
 
 		//高低中心点温度追踪 弹窗
-		mDataBinding.toggleShowHighLowTemp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
+		mDataBinding.toggleShowHighLowTemp.setOnCheckedChangeListener((buttonView, isChecked) -> {
 //				if (isResumed()){
-					View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_highlowcenter_trace,null);
-					PopHighlowcenterTraceBinding popHighlowcenterTraceBinding = DataBindingUtil.bind(view);
-					assert popHighlowcenterTraceBinding != null;
-					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceHigh.setOnCheckedChangeListener(highLowCenterCheckListener);
-					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceLow.setOnCheckedChangeListener(highLowCenterCheckListener);
-					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceCenter.setOnCheckedChangeListener(highLowCenterCheckListener);
+				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_highlowcenter_trace,null);
+				PopHighlowcenterTraceBinding popHighlowcenterTraceBinding = DataBindingUtil.bind(view);
+				assert popHighlowcenterTraceBinding != null;
+				popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceHigh.setOnCheckedChangeListener(highLowCenterCheckListener);
+				popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceLow.setOnCheckedChangeListener(highLowCenterCheckListener);
+				popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceCenter.setOnCheckedChangeListener(highLowCenterCheckListener);
 
-					int toggleState = mDataBinding.textureViewPreviewActivity.getFeaturePointsControl();
-					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceHigh.setChecked((toggleState & 0x0f00)>0);
-					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceLow.setChecked((toggleState & 0x00f0)>0);
-					popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceCenter.setChecked((toggleState & 0x000f)>0);
+				int toggleState = mDataBinding.textureViewPreviewActivity.getFeaturePointsControl();
+				popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceHigh.setChecked((toggleState & 0x0f00)>0);
+				popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceLow.setChecked((toggleState & 0x00f0)>0);
+				popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceCenter.setChecked((toggleState & 0x000f)>0);
 
-					PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-					PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
-					PLRPopupWindows.setHeight(mDataBinding.llContainerPreviewSeekbar.getHeight());
-					PLRPopupWindows.setWidth(mDataBinding.llContainerPreviewSeekbar.getWidth());
+				PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+				PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
+				PLRPopupWindows.setHeight(mDataBinding.llContainerPreviewSeekbar.getHeight());
+				PLRPopupWindows.setWidth(mDataBinding.llContainerPreviewSeekbar.getWidth());
 
-					PLRPopupWindows.setFocusable(false);
-					PLRPopupWindows.setOutsideTouchable(true);
-					PLRPopupWindows.setTouchable(true);
+				PLRPopupWindows.setFocusable(false);
+				PLRPopupWindows.setOutsideTouchable(true);
+				PLRPopupWindows.setTouchable(true);
 
-					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,0,-mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,0,-mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 
 //				}
-			}
 		});
 
 		//框内细查
-		mDataBinding.toggleAreaCheck.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick (View v) {
-				if (!mDataBinding.toggleAreaCheck.isSelected()){
-					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewActivity.getWidth(),
-							mDataBinding.textureViewPreviewActivity.getHeight());
-					int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
+		mDataBinding.toggleAreaCheck.setOnClickListener(v -> {
+			if (!mDataBinding.toggleAreaCheck.isSelected()){
+				mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewActivity.getWidth(),
+						mDataBinding.textureViewPreviewActivity.getHeight());
+				int [] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
 
-					//					Log.e(TAG, "onCheckedChanged: checked  ==== >  " + isChecked + " ==================" + Arrays.toString(areaData));
-					if (mUvcCameraHandler ==null)return;
-					mUvcCameraHandler.setArea(areaData);
-					mUvcCameraHandler.setAreaCheck(1);
-				}else {//close
-					if (mUvcCameraHandler ==null)return;
-					mUvcCameraHandler.setAreaCheck(0);
-				}
-
-				mDataBinding.toggleAreaCheck.setSelected(!mDataBinding.toggleAreaCheck.isSelected());
+				//					Log.e(TAG, "onCheckedChanged: checked  ==== >  " + isChecked + " ==================" + Arrays.toString(areaData));
+				if (mUvcCameraHandler ==null)return;
+				mUvcCameraHandler.setArea(areaData);
+				mUvcCameraHandler.setAreaCheck(1);
+			}else {//close
+				if (mUvcCameraHandler ==null)return;
+				mUvcCameraHandler.setAreaCheck(0);
 			}
+
+			mDataBinding.toggleAreaCheck.setSelected(!mDataBinding.toggleAreaCheck.isSelected());
 		});
 
 		//固定温度条
@@ -760,6 +758,70 @@ public class SendCommand {
 				if (mUvcCameraHandler!=null)mUvcCameraHandler.fixedTempStripChange(mDataBinding.toggleFixedTempBar.isSelected());
 			}
 		});
+		//清除  按钮
+		mDataBinding.ivPreviewLeftClear.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick (View v) {
+				mDataBinding.dragTempContainerPreviewFragment.clearAll();
+			}
+		});
+		//拍照按钮
+		mDataBinding.ivPreviewLeftTakePhoto.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick (View v) {
+				if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened()){
+					String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
+					if (mUvcCameraHandler.captureStill(picPath))showToast(getResources().getString(R.string.toast_save_path)+picPath );
+					//						if (isDebug)Log.e(TAG, "onResult: java path === "+ picPath);
+				}else {
+					showToast(getResources().getString(R.string.toast_need_connect_camera));
+				}
+			}
+		});
+		//录制 按钮
+		mDataBinding.btPreviewLeftRecord.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick (View v) {
+				if (mUvcCameraHandler != null && mUvcCameraHandler.isTemperaturing() ){//mUvcCameraHandler.isOpened()
+					if (mDataBinding.btPreviewLeftRecord.isSelected() && mUvcCameraHandler.isRecording()){//停止录制
+						stopTimer();
+						mUvcCameraHandler.stopRecording();
+					}else if (!mDataBinding.btPreviewLeftRecord.isSelected() && !mUvcCameraHandler.isRecording()&& mUvcCameraHandler.isPreviewing()){//开始录制
+						startTimer();
+						mUvcCameraHandler.startRecording(sp.getInt(DYConstants.RECORD_AUDIO_SETTING,1));
+					}else {
+						Log.e(TAG, "Record Error: error record state !");
+					}
+					mDataBinding.btPreviewLeftRecord.setSelected(!mDataBinding.btPreviewLeftRecord.isSelected());
+				}else {
+					showToast(getResources().getString(R.string.toast_need_connect_camera));
+				}
+			}
+		});
+		//相册按钮
+		mDataBinding.ivPreviewLeftGallery.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick (View v) {
+				if (mDataBinding.btPreviewLeftRecord.isSelected()){
+					showToast(getResources().getString(R.string.toast_is_recording));
+					return;
+				}else {
+//					mUvcCameraHandler.release();
+					mDataBinding.textureViewPreviewActivity.onPause();
+					//					if (mUvcCameraHandler!=null){
+					//					}
+					EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
+							//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
+							.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
+							.setCount(9)
+							.setVideo(true)
+							.setGif(false)
+							.start(101);
+				}
+
+			}
+		});
+
 
 		//设置弹窗
 		mDataBinding.ivPreviewRightSetting.setOnClickListener(new View.OnClickListener() {
@@ -1407,6 +1469,25 @@ public class SendCommand {
 			mDataBinding.customSeekbarPreviewFragment.setPalette(id);
 			mDataBinding.customSeekbarPreviewFragment.invalidate();//刷新控件
 		}
+	}
+
+	/**
+	 * 开始计时
+	 */
+	private void startTimer(){
+		Log.e(TAG, "startTimer: ");
+		mDataBinding.chronometerRecordTimeInfo.setVisibility(View.VISIBLE);
+		mDataBinding.chronometerRecordTimeInfo.setBase(SystemClock.elapsedRealtime());
+		mDataBinding.chronometerRecordTimeInfo.setFormat("%s");
+		mDataBinding.chronometerRecordTimeInfo.start();
+	}
+	/**
+	 * 停止计时
+	 */
+	private void stopTimer(){
+		Log.e(TAG, "stopTimer: ");
+		mDataBinding.chronometerRecordTimeInfo.stop();
+		mDataBinding.chronometerRecordTimeInfo.setVisibility(View.INVISIBLE);
 	}
 
 	/**
