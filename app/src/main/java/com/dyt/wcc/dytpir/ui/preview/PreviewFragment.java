@@ -330,9 +330,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		@Override
 		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
 			if (isDebug)Log.e(TAG, " DD  onDisconnect: ");
-
+			if (mPid == 22592 && mVid == 3034){
+				mUvcCameraHandler.close();
+			}
 			mVid = 0;
 			mPid = 0;
+
 //			if (mUvcCameraHandler != null){
 //				if (mUvcCameraHandler.isRecording()){
 //					stopTimer();

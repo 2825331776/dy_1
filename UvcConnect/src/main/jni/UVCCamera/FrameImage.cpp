@@ -12,7 +12,7 @@
 using namespace std;
 
 FrameImage::FrameImage(uvc_device_handle_t *devh)  {
-            mPreviewWindow = NULL;
+//            mPreviewWindow = NULL;
             mDeviceHandle = devh;
             requestWidth = DEFAULT_PREVIEW_WIDTH;
             requestHeight = DEFAULT_PREVIEW_HEIGHT;

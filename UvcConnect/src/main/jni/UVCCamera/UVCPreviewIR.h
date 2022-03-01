@@ -54,9 +54,6 @@ private:
 	//设备类型 vid pid
 	int mVid;
 	int mPid;
-//    unsigned char * tinyC_robotSN;
-//    unsigned char * tinyC_userSN;
-
 
     ANativeWindow *mPreviewWindow;
 

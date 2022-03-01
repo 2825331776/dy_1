@@ -33,7 +33,7 @@ typedef uvc_error_t (*convFunc_t)(uvc_frame_t *in, uvc_frame_t *out);
 class FrameImage {
 
 private:
-    ANativeWindow *mPreviewWindow;
+//    ANativeWindow *mPreviewWindow;
     uvc_device_handle_t *mDeviceHandle;
     unsigned char *mBuffer;//显示图像的buffer大小 width*(height-4)*4
 
