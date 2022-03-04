@@ -185,16 +185,6 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
 				mPreview = new UVCPreviewIR(mDeviceHandle,mFrameImage);
 				mPreview->setVidPid(mVid,mPid);
 				mFrameImage->setVidPid(mVid,mPid);
-				//mPreview = new UVCPreview(mDeviceHandle);
-				/*if(vid==5396)//IR device
-				{
-				mPreview = new UVCPreviewIR(mDeviceHandle);
-				}
-				else//Common device
-				{
-				mPreview = new UVCPreviewCommon(mDeviceHandle);
-				}*/
-
 			} else {
 				// open出来なかった時
 				LOGE("could not open camera:err=%d", result);
@@ -297,7 +287,7 @@ char *UVCCamera::getSupportedSize() {
 int UVCCamera::setPreviewSize(int width, int height, int min_fps, int max_fps, int mode, float bandwidth,int currentAndroidVersion) {
 	ENTER();
 	int result = EXIT_FAILURE;
-//    LOGE("will it fail444");
+    LOGE("will it fail444");
 	if (mPreview) {
         LOGE("will it fail5555");
 		result = mPreview->setPreviewSize(width, height, min_fps, max_fps, mode, bandwidth,currentAndroidVersion);

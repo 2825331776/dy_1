@@ -325,30 +325,28 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		public void onDettach (UsbDevice device) {
 			//				mUvcCameraHandler.close();
 			if (isDebug)Log.e(TAG, "DD  onDetach: ");
-			doReleaseAll();
+//			if (mPid == 22592 && mVid == 3034){
+//				if (mUvcCameraHandler != null) {
+//					if (isDebug)Log.e(TAG, "mPid == 22592 && mVid == 3034 DD  onDetach: ");
+////					if (mUvcCameraHandler.getOpenStatus()) {
+////						mUvcCameraHandler.stopPreview();
+////					}
+////					final UVCCamera camera;
+////					camera = uvcCamera;
+////					uvcCamera = null;
+//					SystemClock.sleep(200);
+////					mUvcCameraHandler.destroy();
+//				}
+//			}else{
+				doReleaseAll();
+//			}
+
 		}
 		@Override
 		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
 			if (isDebug)Log.e(TAG, " DD  onDisconnect: ");
-			if (mPid == 22592 && mVid == 3034){
-				mUvcCameraHandler.close();
-			}
 			mVid = 0;
 			mPid = 0;
-
-//			if (mUvcCameraHandler != null){
-//				if (mUvcCameraHandler.isRecording()){
-//					stopTimer();
-//					mDataBinding.ivPreviewLeftGallery.setVisibility(View.VISIBLE);
-//					mUvcCameraHandler.stopRecording();
-//					mDataBinding.btPreviewLeftRecord.setSelected(false);
-//				}
-//				//				mUvcCameraHandler.stopTemperaturing();
-//				//				mUvcCameraHandler.stopPreview();
-//				mUvcCameraHandler.close();
-//				//				mUvcCameraHandler.release();//拔出之时没释放掉这个资源。关闭窗口之时必须释放
-//			}
-
 		}
 		@Override
 		public void onCancel (UsbDevice device) {

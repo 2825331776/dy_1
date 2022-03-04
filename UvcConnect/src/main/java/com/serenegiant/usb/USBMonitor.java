@@ -503,6 +503,7 @@ public final class USBMonitor {
 				processAttach(device);
 			} else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
 				// when device removed
+				Log.e(TAG, "onReceive: + ACTION_USB_DEVICE_DETACHED===============");
 				final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 				if (device != null) {
 					UsbControlBlock ctrlBlock = mCtrlBlocks.remove(device);
@@ -1323,7 +1324,6 @@ public final class USBMonitor {
 		 */
 		public synchronized void close() {
 			if (DEBUG) Log.i(TAG, "UsbControlBlock#close:");
-
 			if (mConnection != null) {
 				final int n = mInterfaces.size();
 				for (int i = 0; i < n; i++) {

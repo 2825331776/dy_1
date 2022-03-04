@@ -948,7 +948,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
 
         /************************/
 
-        private float[] temperatureData = new float[640 * 512 + 10];
+//        private float[] temperatureData = new float[640 * 512 + 10];
 
         /**
          * @param clazz           Class extends AbstractUVCCameraHandler
@@ -991,8 +991,8 @@ abstract class AbstractUVCCameraHandler extends Handler {
 //            loadShutterSound(parent);
             Log.e(TAG, "CameraThread: ================end");
         }
-        private byte[] ByteTemperatureData = new byte[(640 * 512 + 10) * 4];
-        private short[] ShortTemperatureData = new short[640 * 512 + 10];
+//        private byte[] ByteTemperatureData = new byte[(640 * 512 + 10) * 4];
+//        private short[] ShortTemperatureData = new short[640 * 512 + 10];
         private Handler mMySubHandler;
 
         @Override
@@ -1161,10 +1161,10 @@ abstract class AbstractUVCCameraHandler extends Handler {
                     handleStopRecording();
                 }
 
-//                if(mIsTemperaturing){
-//                    mIsTemperaturing=false;
-//                    handleStopTemperaturing();
-//                }
+                if(mIsTemperaturing){
+                    mIsTemperaturing=false;
+                    handleStopTemperaturing();
+                }
                 //mIsTemperaturing disable by wupei
 
 //                if(mIsTemperaturing){
@@ -2234,7 +2234,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
             if ((mUVCCamera == null)) {
                 return;
             }
-            //mUVCCamera.setSigmaR(inputSigmaR);
+//            mUVCCamera.setSigmaR(inputSigmaR);
         }
 
 

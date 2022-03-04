@@ -990,7 +990,7 @@ string DecryptionAES(const string& strSrc) //AES解密
 
 /**
  *
- * @param ctrl
+ * @param ctrl Control block, processed using {uvc_probe_stream_ctrl} or {uvc_get_stream_ctrl_format_size}
  */
 void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
     ENTER();
@@ -1384,11 +1384,7 @@ int UVCPreviewIR::copyToSurface(uint8_t *frameData, ANativeWindow **window) {
             //LOGE("copyToSurface");
             // transfer from frame data to the Surface
             //LOGE("copyToSurface:w:%d,h,%d",w,h);
-//            if (requestHeight ==196){
             mFrameImage->copyFrame(src, dest, w, h, src_step, dest_step);
-//            }else{
-//                mFrameImage->copyFrameTO292(src, dest, w, h, src_step, dest_step);
-//            }
 //            copyFrame(src, dest, w, h, src_step, dest_step);
             src=NULL;
             dest=NULL;
@@ -1411,37 +1407,6 @@ int UVCPreviewIR::copyToSurface(uint8_t *frameData, ANativeWindow **window) {
 /*************************************预览 结束****************************************************/
 
 /***************************************截屏相关  开始**************************************/
-//不同的
-//int UVCPreviewIR::setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format)
-//{
-//    //LOGE("setFrameCallback01");
-//    LOGE("setFrameCallback步骤8");
-//    pthread_mutex_lock(&capture_mutex);
-//    {
-//        mFrameImage->setFrameCallback(env,frame_callback_obj,pixel_format);
-//    }
-//    pthread_mutex_unlock(&capture_mutex);
-//    RETURN(0, int);
-//}
-
-//int UVCPreviewIR::startCapture(){
-//    ENTER();
-//    pthread_mutex_lock(&screenShot_mutex);
-//    {
-//        if (isRunning()&&(!mIsCapturing))
-//        {
-//            //LOGE("startTemp");
-//            mIsCapturing = true;
-//        }
-//    }
-//    pthread_mutex_unlock(&screenShot_mutex);
-//    if(pthread_create(&screenShot_thread, NULL, screenShot_thread_func, (void *)this)==0){
-//        //LOGE("UVCPreviewIR::startCapture capture_thread: pthread_create success");
-//    }else{
-//        //LOGE("UVCPreviewIR::startCapture capture_thread: pthread_create failed");
-//    }
-//    RETURN(0, int);
-//}
 
 int UVCPreviewIR::savePicture(const char *path) {
 //    LOGE("UVCPreviewIR savePicture  pathlength ==   %d" , strlen(path));

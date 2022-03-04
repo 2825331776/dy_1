@@ -88,7 +88,7 @@
             android:name=".ui.MainActivity"
             android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
             android:launchMode="singleTop"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:theme="@style/MyTheme"
             android:windowSoftInputMode="adjustPan|adjustResize|stateHidden">
             <intent-filter>

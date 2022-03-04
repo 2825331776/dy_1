@@ -38,21 +38,13 @@ FrameImage::FrameImage(uvc_device_handle_t *devh)  {
 
               maxThumbAD =0;
               minThumbAD = 0;
-//              pthread_mutex_init(&fixed_mutex,NULL);
-//              pthread_cond_init(&fixed_cond,NULL);
 
              isNeedFreshAD = false;
-
-//              mFrameCallbackObj = NULL;
-//              OutPixelFormat=3;
 }
 
 FrameImage::~FrameImage() {
     ENTER();
-//    pthread_mutex_destroy(&temperature_mutex);
     delete [] mBuffer;
-//    pthread_mutex_destroy(&fixed_mutex);
-//    pthread_cond_destroy(&fixed_cond);
     EXIT();
 }
 
@@ -139,13 +131,8 @@ void FrameImage::showTempRange(float maxPercent,float minPercent,float maxValue 
 //    }
 //    pthread_mutex_unlock(&fixed_mutex);
     LOGE( " isFixedTempStrip   === > %d" , isFixedTempStrip );
-//    if (isFixedTempStrip) {
 ////        //todo 查询最大值滑块的温度 对应的ad值 ；最小值滑块对应的 ad值
-//        maxThumbAD = getDichotomySearch(temperatureTable,16384,&maxThumbValue,1000,16384);
-//        minThumbAD = getDichotomySearch(temperatureTable,16384,&minThumbValue,1000,16384);
-//        roThumb = maxThumbAD - minThumbAD;
-        LOGE(" maxThumbAD =   %d  minThumbAD = %d  roThumb =   %d" , maxThumbAD, minThumbAD ,roThumb);
-//    }
+    LOGE(" maxThumbAD =   %d  minThumbAD = %d  roThumb =   %d" , maxThumbAD, minThumbAD ,roThumb);
     LOGE("temp maxThumbValue = %f , min == %f" ,maxThumbValue,minThumbValue);
 }
 void FrameImage::disTempRange() {//在下一帧图像绘制的时候就不会绘制,是否是拉温宽
@@ -166,11 +153,6 @@ void FrameImage::setArea(int *area, int lenght) {//设置区域检查的区域�
         mCheckArea[i]=*(area + i);
     }
     areasize=lenght;
-//    if (areasize > 0){
-//        setAreaCheck(true);
-//    } else{
-//        setAreaCheck(false);
-//    }
 }
 void FrameImage::setAreaCheck(int isAreaCheck) {//是否设置区域检查
     if(isAreaCheck){
@@ -211,7 +193,6 @@ void FrameImage::getCameraPara(uint8_t *frame){
     userArea=userArea+2;
     memcpy(&distance,fourLinePara+userArea,sizeof(float));//距离
 //    LOGE("<<<<<<<<<<correction==%f Refltmp==%f Airtmp==%f humi==%f emiss==%f distance==%f\n",correction,Refltmp,Airtmp,humi,emiss,distance);
-
     orgData = NULL;
     fourLinePara = NULL;
 }
@@ -275,7 +256,6 @@ void FrameImage::setPreviewSize(int width,int height ,int mode ){
         frameWidth = requestWidth;
         frameHeight = requestHeight;
     }
-
     switch (requestWidth)
         {
             case 384:
@@ -400,26 +380,8 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
     }
 //    LOGE(" === areasize == %d  ", areasize);
 
-
     //框内细查 先绘制灰度图,根据原有的ad值
     if (mIsAreachecked){
-//        //则先绘制灰度图,通过源图幅的 最大最小AD去绘制灰度图
-//        for (int i = 0; i < requestHeight - 4; i++) {
-//            for (int j = 0; j < requestWidth; j++) {
-//                int gray = (int) (255 * (tmp_buf[i * requestWidth + j] - grayMin * 1.0) / grayRo);
-//                if (gray < 0) {
-//                    gray = 0;
-//                }
-//                if (gray > 255) {
-//                    gray = 255;
-//                }
-//                mBuffer[4 * (i * requestWidth + j)] = gray;
-//                mBuffer[4 * (i * requestWidth + j) + 1] = gray;
-//                mBuffer[4 * (i * requestWidth + j) + 2] = gray;
-//                mBuffer[4 * (i * requestWidth + j) + 3] = 1;
-//            }
-//        }
-//        int loopnum=areasize/4;
         if (loopnum > 0){//框内细查 存在添加的框
 //            LOGE(" === heckArea %d   === ", mCheckArea[1]);
             //根据框 拿色板去渲染
