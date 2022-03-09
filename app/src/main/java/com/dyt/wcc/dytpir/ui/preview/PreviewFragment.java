@@ -136,12 +136,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	public void onPause () {
 		super.onPause();
 		if (isDebug)Log.e(TAG, "onPause: ");
-
-//		if (mUvcCameraHandler !=null  && mUvcCameraHandler.isRecording()){
-//			mUvcCameraHandler.stopRecording();
-//			mDataBinding.btPreviewLeftRecord.setSelected(false);
-//			stopTimer();
-//		}
 	}
 
 	private void doReleaseAll(){
@@ -161,12 +155,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	public void onStop () {
 		super.onStop();
 		if (isDebug)Log.e(TAG, "onStop: ");
-
-//		//停止录像
-//		if (mUvcCameraHandler !=null  && mUvcCameraHandler.isRecording()){
-//			mUvcCameraHandler.stopRecording();
-//			stopTimer();
-//		}
 		doReleaseAll();
 	}
 
@@ -176,7 +164,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private void getCameraParams(){//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
 		byte [] tempParams = mUvcCameraHandler.getTemperaturePara(128);
 		cameraParams = ByteUtilsCC.byte2Float(tempParams);
-//		if (cameraParams != null){
 			sp.edit().putFloat(DYConstants.setting_correction,
 					cameraParams.get(DYConstants.setting_correction) != null ? cameraParams.get(DYConstants.setting_correction) : 0.0f).apply();
 			sp.edit().putFloat(DYConstants.setting_emittance,
@@ -189,7 +176,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					cameraParams.get(DYConstants.setting_environment)!=null?cameraParams.get(DYConstants.setting_environment):0.0f).apply();
 			sp.edit().putFloat(DYConstants.setting_humidity,
 					cameraParams.get(DYConstants.setting_humidity)).apply();
-//		}
 	}
 
 	/**
@@ -253,9 +239,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		super.onDestroyView();
 		if (isDebug)Log.e(TAG, "onDestroyView: ");
 
-//		if (mDataBinding.dragTempContainerPreviewFragment.isHighTempAlarmToggle()){
-//			mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
-//		}
 		mDataBinding.textureViewPreviewFragment.destroyDrawingCache();
 		if (mViewModel.getMUsbMonitor().getValue() !=null ){
 			mViewModel.getMUsbMonitor().getValue().destroy();
@@ -265,20 +248,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			MediaProjectionHelper.getInstance().stopMediaRecorder();
 			MediaProjectionHelper.getInstance().stopService(mContext.get());
 		}
-
-//		if (mUvcCameraHandler != null) {
-//			mUvcCameraHandler.release();
-//			mUvcCameraHandler = null;
-//		}
-
-//		if (mUvcCameraHandler != null){
-////			Toast.makeText(mContext.get(),"录制 ", Toast.LENGTH_SHORT).show();
-////			mUvcCameraHandler.stopTemperaturing();
-////			mUvcCameraHandler.stopPreview();
-//			mUvcCameraHandler.release();
-//			mUvcCameraHandler = null;
-//		}
-
 
 	}
 
@@ -325,22 +294,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		public void onDettach (UsbDevice device) {
 			//				mUvcCameraHandler.close();
 			if (isDebug)Log.e(TAG, "DD  onDetach: ");
-//			if (mPid == 22592 && mVid == 3034){
-//				if (mUvcCameraHandler != null) {
-//					if (isDebug)Log.e(TAG, "mPid == 22592 && mVid == 3034 DD  onDetach: ");
-////					if (mUvcCameraHandler.getOpenStatus()) {
-////						mUvcCameraHandler.stopPreview();
-////					}
-////					final UVCCamera camera;
-////					camera = uvcCamera;
-////					uvcCamera = null;
-//					SystemClock.sleep(200);
-////					mUvcCameraHandler.destroy();
-//				}
-//			}else{
 				doReleaseAll();
-//			}
-
 		}
 		@Override
 		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
@@ -402,8 +356,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	 * 打开连接 调用预览图像的设置
 	 */
 	private void startPreview () {
-//				if (isDebug)Log.e(TAG, "startPreview: flPreview  width == " + mDataBinding.flPreview.getMeasuredWidth()
-//						+ " height == " + mDataBinding.flPreview.getMeasuredHeight());
 
 		stt = new Surface(mDataBinding.textureViewPreviewFragment.getSurfaceTexture());
 
@@ -467,7 +419,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		paletteType =1;
 		mUvcCameraHandler.PreparePalette(palettePath,paletteType);
 		mUvcCameraHandler.setAreaCheck(0);
-//		mUvcCameraHandler.setPalette(0);
 
 		//是否进行温度的绘制
 		isTempShow = 0;
@@ -476,92 +427,12 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		mUvcCameraHandler.startPreview(stt);
 		//tinyC 暂时关闭 温度回调功能
 		mUvcCameraHandler.startTemperaturing();//温度回调
-
-
-//		new Handler().postDelayed(new Runnable() {
-//			@Override
-//			public void run () {
-//				if (mUvcCameraHandler!=null && mUvcCameraHandler.isOpened()){
-////					getCameraParams();
-//				}
-//				//清除所有的控件
-////				mDataBinding.dragTempContainerPreviewFragment.clearAll();
-//			}
-//		},3000);
 	}
 
 	/**
 	 * 初始化界面的监听器
 	 */
 	private void initListener(){
-		//测试的 监听器
-		mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick (View v) {
-//				if (mUvcCameraHandler!= null ){
-//							mUvcCameraHandler.stopTemperaturing();
-				mUvcCameraHandler.close();
-//							mDataBinding.textureViewPreviewFragment.onPause();
-				mViewModel.getMUsbMonitor().getValue().unregister();
-//								Log.e(TAG, "initView: not null ==========================================" );
-//								int a[] = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
-//								Log.e(TAG, "initView: aa === > " + Arrays.toString(a));
-//					mUvcCameraHandler.setVerifySn();
-//				}
-//				onStop();
-//				Intent intent = new Intent(getActivity(), GalleryActivity.class);
-//				startActivity(intent);
-//				mUvcCameraHandler.stopTemperaturing();
-//				mUvcCameraHandler.stopPreview();
-//				EasyPhotos.createAlbum(getActivity(), false, false, GlideEngine.getInstance())
-//						//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
-//						.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
-//						.setCount(9)
-//						.setVideo(true)
-//						.setGif(false)
-//						.start(101);
-
-
-						//				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isTemperaturing()){
-		//					mUvcCameraHandler.startTemperaturing();
-		//				}
-			}
-		});
-//
-				mDataBinding.btTest02.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick (View v) {
-//						if (mUvcCameraHandler == null || mUvcCameraHandler.isReleased()){
-//							mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
-//									mDataBinding.textureViewPreviewFragment,1,
-//									384,292,1,null,0);
-//						}
-						if (mDataBinding.textureViewPreviewFragment.getTemperatureCallback() != null){
-//							mDataBinding.textureViewPreviewFragment.onResume();
-//							stt = new Surface(mDataBinding.textureViewPreviewFragment.getSurfaceTexture());
-
-							mViewModel.getMUsbMonitor().setValue(new USBMonitor(mContext.get(),onDeviceConnectListener));
-							mViewModel.getMUsbMonitor().getValue().register();
-
-							mUvcCameraHandler.startPreview(stt);
-
-							//						startPreview();
-						}else {
-							Log.e(TAG, "getTemperatureCallback=============: 11111111");
-						}
-//						startPreview();
-
-					}
-				});
-
-				mDataBinding.btTest03.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick (View v) {
-							mUvcCameraHandler.startTemperaturing();
-							mUvcCameraHandler.whenShutRefresh();
-						}
-					});
-
 		/**
 		 * 超温警告 ， 预览层去绘制框， DragTempContainer 控件去播放声音
 		 */
@@ -1024,19 +895,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 									sp.edit().putInt(DYConstants.LANGUAGE_SETTING,which).apply();
 									popupWindow.dismiss();
 
-//									if (mUvcCameraHandler != null ){
-//										mUvcCameraHandler.close();
-//										mUvcCameraHandler.release();
-//										mUvcCameraHandler = null;
-//										stt.release();
-//										stt = null;
-//									}
-//									if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
-//										mViewModel.getMUsbMonitor().getValue().unregister();
-//										mViewModel.getMUsbMonitor().getValue().destroy();
-//									}
-//									onStop();
-//									onDestroyView();
 									toSetLanguage(which);
 								}
 								dialog.dismiss();
@@ -1052,10 +910,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onClick (View v) {
 				//请求权限
-//				PermissionX.init(PreviewFragment.this).permissions(Manifest.permission.INTERNET).request(new RequestCallback() {
-//					@Override
-//					public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
-//						if (allGranted){
 							View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_company_info,null);
 							PopCompanyInfoBinding popCompanyInfoBinding = DataBindingUtil.bind(view);
 							assert popCompanyInfoBinding != null;
@@ -1074,11 +928,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 											getResources().getString(R.string.contactus_choice_email)));
 								}
 							});
-							//popupWindow.showAsDropDown(mDataBinding.flPreview,15,-popupWindow.getHeight()-20, Gravity.CENTER);
 							showPopWindows(view,30,15,20);
-//						}
-//					}
-//				});
 			}
 		});
 		mDataBinding.dragTempContainerPreviewFragment.setAddChildDataListener(new DragTempContainer.onAddChildDataListener() {
@@ -1385,76 +1235,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	 * 初始化录制的相关方法
 	 */
 	private void initRecord(){
-//		if (isDebug)Log.e(TAG, "initRecord: ");
-//		MediaProjectionHelper.getInstance().setNotificationEngine(new MediaProjectionNotificationEngine() {
-//			@Override
-//			public Notification getNotification () {
-//				String title = getString(R.string.StartRecorderService);
-//				return NotificationHelper.getInstance().createSystem()
-//						.setOngoing(true)// 常驻通知栏
-//						.setTicker(title)
-//						.setContentText(title)
-//						.setDefaults(Notification.DEFAULT_ALL)
-//						.build();
-//			}
-//		});
-//		//录制倒计时方法
-//		MediaProjectionHelper.getInstance().setMediaRecorderCallback(new MediaRecorderCallback() {
-//			@Override
-//			public void onSuccess (File file) {
-//				super.onSuccess(file);
-//				mContext.get().runOnUiThread(new Runnable() {
-//					@Override
-//					public void run () {
-//						Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-//						intent.setData(Uri.fromFile(file));
-//						mContext.get().sendBroadcast(intent);
-//						showToast(getResources().getString(R.string.toast_save_path) + file.getName());
-//					}
-//				});
-//
-//			}
-//			@Override
-//			public void onFail () {
-//				super.onFail();
-//				mContext.get().runOnUiThread(new Runnable() {
-//					@Override
-//					public void run () {
-//						showToast("录制失败");
-//					}
-//				});
-//			}
-//			@Override
-//			public void onStartCounting () {
-//				super.onStartCounting();
-//				//				Log.e(TAG, "onClick: "+mDataBinding.chronometerShowRecordTimeMainInfo.getBase());
-//				mContext.get().runOnUiThread(new Runnable() {
-//					@Override
-//					public void run () {
-//						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.VISIBLE);
-////						mDataBinding.ivPreviewLeftRecord.setChecked(true);
-//						mDataBinding.chronometerRecordTimeInfo.setBase(SystemClock.elapsedRealtime());
-//						mDataBinding.chronometerRecordTimeInfo.setFormat("%s");
-//						mDataBinding.chronometerRecordTimeInfo.start();
-//					}
-//				});
-//
-//			}
-//
-//			@Override
-//			public void onStopCounting () {
-//				super.onStopCounting();
-//				mContext.get().runOnUiThread(new Runnable() {
-//					@Override
-//					public void run () {
-//						mDataBinding.chronometerRecordTimeInfo.stop();
-////						mDataBinding.ivPreviewLeftRecord.setChecked(false);
-//						mDataBinding.chronometerRecordTimeInfo.setVisibility(View.INVISIBLE);
-//					}
-//				});
-//
-//			}
-//		});
 	}
 	//设置画板
 	private void setPalette(int id){
@@ -1525,27 +1305,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 			@Override
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 				if (allGranted){
-//					if (mUvcCameraHandler != null){
-//						mUvcCameraHandler.release();
-//						mUvcCameraHandler = null;
-//					}
-//					if (stt != null ){stt.release();stt = null;}
-//
-//
-//					if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
-//						mViewModel.getMUsbMonitor().getValue().unregister();
-//					}
-//					EasyPhotos.createAlbum(mContext.get(), false, false, GlideEngine.getInstance())
-//							//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
-//							.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
-//							.setCount(9)
-//							.setVideo(true)
-//							.setGif(false)
-//							.start(101);
-//					mUvcCameraHandler.close();
-//					mDataBinding.textureViewPreviewFragment.onPause();
-//					if (mUvcCameraHandler!=null){
-//					}
 					Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
 				}
 			}
@@ -1601,24 +1360,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 		}
 	}
 
-//	public static class Check {
-//		// 两次点击按钮之间的点击间隔不能少于1000毫秒
-//		private static final int MIN_CLICK_DELAY_TIME = 1000;
-//		private static long firstClick;
-//		private static long lastClickTime;
-//
-//		public static boolean isFastClick() {
-//			boolean flag = false;
-//			long curClickTime = System.currentTimeMillis();
-//			if (firstClick==0)firstClick = curClickTime;
-//			lastClickTime = curClickTime;
-//			//最后一次点击 减去 刚开始点击的 大于间隔
-//			if ((lastClickTime - firstClick) >= MIN_CLICK_DELAY_TIME) {
-//				flag = true;
-//			}
-//			return flag;
-//		}
-//	}
 	//录制
 	public void toRecord(View view){
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE

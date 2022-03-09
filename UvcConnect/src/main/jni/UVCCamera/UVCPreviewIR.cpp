@@ -67,8 +67,6 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh ,FrameImage * frameImage){
     OutPixelFormat = 3;
     mTypeOfPalette = 1;
 
-//    tinyC_robotSN = (unsigned char *)malloc(sizeof (char )*15);
-//    tinyC_userSN = (unsigned char *)malloc(sizeof (char )*15);
 
     pthread_cond_init(&preview_sync, NULL);
     pthread_mutex_init(&preview_mutex, NULL);
@@ -84,7 +82,6 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh ,FrameImage * frameImage){
     pthread_cond_init(&tinyC_send_order_sync,NULL);
     pthread_mutex_init(&tinyC_send_order_mutex,NULL);
 
-//    pthread_mutex_init(&fixed_mutex,NULL);
     EXIT();
 
 }
@@ -98,10 +95,6 @@ UVCPreviewIR::~UVCPreviewIR() {
     mPreviewWindow = NULL;
     pthread_mutex_destroy(&preview_mutex);
     pthread_cond_destroy(&preview_sync);
-    //LOGE("~UVCPreviewIR() 1");
-//    if (mCaptureWindow)
-//        ANativeWindow_release(mCaptureWindow);
-//    mCaptureWindow = NULL;
     pthread_mutex_destroy(&screenShot_mutex);
     pthread_cond_destroy(&screenShot_sync);
     pthread_mutex_destroy(&temperature_mutex);//析构函数内释放内存
@@ -111,27 +104,6 @@ UVCPreviewIR::~UVCPreviewIR() {
 
     pthread_cond_destroy(&tinyC_send_order_sync);
     pthread_mutex_destroy(&tinyC_send_order_mutex);
-//    pthread_mutex_destroy(&fixed_mutex);
-    //LOGE("~UVCPreviewIR() 8");
-
-//    if(OutBuffer!=NULL){
-//        delete[] OutBuffer;
-//    }
-//    if(HoldBuffer!=NULL){
-//        delete[] HoldBuffer;
-//    }
-//    if(RgbaOutBuffer!=NULL){
-//        delete[] RgbaOutBuffer;
-//    }
-//    if(RgbaHoldBuffer!=NULL){
-//        delete[] RgbaHoldBuffer;
-//    }
-//    free(tinyC_robotSN);
-//    tinyC_robotSN = NULL;
-//    free(tinyC_userSN);
-//    tinyC_userSN = NULL;
-
-//        delete[] picRgbaOutBuffer;
     EXIT();
 }
 
@@ -215,9 +187,6 @@ int UVCPreviewIR::startPreview() {
     {
         mIsRunning = true;
         //pthread_mutex_lock(&preview_mutex);
-        //{
-//        memset(user_sn,'0',20);
-//        memset(machine_sn,'0',32);
         result = pthread_create(&preview_thread, NULL, preview_thread_func, (void *)this);
         pthread_create(&tinyC_send_order_thread,NULL,tinyC_sendOrder_thread_func,(void *)this);
         ////LOGE("STARTPREVIEW RESULT1:%d",result);
@@ -246,17 +215,6 @@ int UVCPreviewIR::setIsVerifySn(){
     mIsVerifySn = true;
     int result = EXIT_FAILURE;
 
-//    if (isVerifySN()){
-//        pthread_mutex_lock(&tinyC_send_order_mutex);
-//        sendTinyCAllOrder(tinyC_robotSN,uvc_diy_communicate,21);
-//        pthread_mutex_unlock(&tinyC_send_order_mutex);
-//        pthread_mutex_lock(&tinyC_send_order_mutex);
-//        sendTinyCAllOrder(tinyC_userSN,uvc_diy_communicate,20);
-//        pthread_mutex_unlock(&tinyC_send_order_mutex);
-        //0x8004
-//        int pa = 8004;
-//        sendTinyCAllOrder(&pa,uvc_diy_communicate,100);
-//    }
     result = EXIT_SUCCESS;
     RETURN(result, int);
 }
@@ -356,24 +314,14 @@ int UVCPreviewIR::sendTinyCAllOrder(void * params , diy func_tinyc, int mark){
     if (mark == 10){//获去tinyC机芯参数列表
         ret = getTinyCParams(params, func_tinyc);
     }
-    else
-    if (mark == 100){//纯指令， 打挡  切换返回数据流
+    else if (mark == 100){//纯指令， 打挡  切换返回数据流
         LOGE("=========mark == 100======= === %d=======" ,*((int*)params));
         ret = sendTinyCOrder((uint32_t*) params, uvc_diy_communicate);
 //        pthread_cond_signal(&tinyC_send_order_sync);
     }
-        else if ( mark > 0 && mark < 10){//修改tinyC机芯参数
-//            for(int count = 0 ; count< 3;count++){
+    else if ( mark > 0 && mark < 10){//修改tinyC机芯参数
                 ret = sendTinyCParamsModification((float*)(params),func_tinyc,mark);
-//            }
     }
-//        else if (tinyC_mark == 20 || tinyC_mark == 21){//获取 用户区的SN20   和 机器的SN21
-//        LOGE("=========mark == 20 || mark == 21===  %d  ====",tinyC_mark );
-//        pthread_mutex_lock(&tinyC_send_order_mutex);
-//        ret = getTinyCUserData(tinyC_params,uvc_diy_communicate,tinyC_mark);
-//        signal_receive_frame_data();
-////
-//    }
 //    pthread_mutex_unlock(&tinyC_send_order_mutex);
 
     LOGE("=======sendTinyCAllOrder === ret =====**** = %d====" , ret);
@@ -582,9 +530,6 @@ int UVCPreviewIR::stopPreview() {
         mIsCapturing=false;
         mIsRunning = false;
 //        pthread_cond_signal(&capture_sync);
-//        if (pthread_join(capture_thread, NULL) != EXIT_SUCCESS) {
-//        	LOGE("UVCPreviewIR::stopPreview capture thread: pthread_join failed");
-//        }
 
         pthread_cond_signal(&tinyC_send_order_sync);
 //        int *result_preview_join = NULL;
@@ -621,16 +566,8 @@ int UVCPreviewIR::stopPreview() {
         ANativeWindow_release(mPreviewWindow);
         mPreviewWindow = NULL;
     }
-//    delete[] OutBuffer;
-//    delete[] HoldBuffer;
-//    delete[] RgbaOutBuffer;
-//    delete[] RgbaHoldBuffer;
     pthread_mutex_unlock(&preview_mutex);
 
-//    SAFE_DELETE(OutBuffer)
-//    SAFE_DELETE(HoldBuffer)
-//    SAFE_DELETE(RgbaOutBuffer)
-//    SAFE_DELETE(RgbaHoldBuffer)
     tinyC_params = NULL;
 
     LOGE("UVCPreviewIR::stopPreview ============== delete begin ");
@@ -1045,36 +982,8 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
 
                         int ret = UVC_ERROR_IO;
 
-//                        snIsRight = true;
                         unsigned char * tinyUserSn = (unsigned char *)malloc(sizeof (char )*15);
                         unsigned char * tinyRobotSn = (unsigned char *)malloc(sizeof (char )*15);
-//                        setIsVerifySn();
-//                pthread_mutex_lock(&tinyC_send_order_mutex);
-
-//                    tinyC_mark = 100;
-//                    int a = 0x8004;
-//                    tinyC_params = &a;
-
-//                        pthread_mutex_lock(&tinyC_send_order_mutex);
-//
-//                        unsigned char * tinyUserSn = (unsigned char *)malloc(sizeof (char )*15);
-//////                        unsigned char * tinyUserSn = (unsigned char *)malloc(sizeof (char )*15);
-//                        tinyC_params = tinyUserSn;
-//                        tinyC_mark = 20;
-//                        pthread_mutex_unlock(&tinyC_send_order_mutex);
-//                        signal_tiny_send_order();
-//
-////
-//                        pthread_mutex_lock(&tinyC_send_order_mutex);
-//                        unsigned char * tinyRobotSn = (unsigned char *)malloc(sizeof (char )*15);
-//                        tinyC_params = tinyRobotSn;
-//                        tinyC_mark = 21;
-//                        pthread_mutex_unlock(&tinyC_send_order_mutex);
-//                        signal_tiny_send_order();
-
-
-//                pthread_mutex_unlock(&tinyC_send_order_mutex);
-//                pthread_cond_signal(&tinyC_send_order_sync);
                         int dataLen = 15; //获取或读取数据大小
                         unsigned char * readData = (unsigned char *)tinyUserSn;
                         int dwStartAddr = 0x7FF000;// 用户区域首地址
@@ -1255,7 +1164,6 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
             }
             //LOGE("do_preview4");
         }
-        //pthread_cond_signal(&capture_sync);
 #if LOCAL_DEBUG
         LOGI("preview_thread_func:wait for all callbacks complete");
 #endif
@@ -1275,66 +1183,35 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
 void UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_args,size_t hold_bytes)
 {
 //    LOGE("   ======tid= %d  =====pid =  %d",gettid(),getpid());
-    //LOGE("uvc_preview_frame_callback00");
     UVCPreviewIR *preview = reinterpret_cast<UVCPreviewIR *>(vptr_args);
-    //unsigned short* tmp_buf=(unsigned short*)frameData;
-    //LOGE("uvc_preview_frame_callback00  tmp_buf:%d,%d,%d,%d",tmp_buf[384*144*4],tmp_buf[384*144*4+1],tmp_buf[384*144*4+2],tmp_buf[384*144*4+3]);
-    //LOGE("uvc_preview_frame_callback hold_bytes:%d,preview->frameBytes:%d",hold_bytes,preview->frameBytes);
 
     if(UNLIKELY(hold_bytes < preview->frameBytes))//判断hold_bytes 不小于preview.frameBytes则跳转到 后面正常运行     UNLIKELY期待值大几率为false时,等价于if(value)
     {   //有手机两帧才返回一帧的数据。
         LOGE("uvc_preview_frame_callback hold_bytes ===> %d < preview->frameBytes  ==== > %d" , hold_bytes, preview->frameBytes);
 //        unsigned char *headData = preview->CacheBuffer;
-//        if ((preview-> callbackCount + hold_bytes ) < (preview->frameBytes)){
-//            LOGE("=============小于====================");
-//            preview-> callbackCount = hold_bytes;
-//            memcpy(headData,frameData, preview-> callbackCount);
-//            return;
-//        } else if ((preview-> callbackCount + hold_bytes ) == (preview->frameBytes)){
-//            LOGE("=============等于====================");
-//            unsigned char *headPoint = headData + preview->callbackCount;
-//            memcpy(headPoint,frameData,hold_bytes);
-//            memcpy(preview->OutBuffer,headData,preview->frameBytes);
-//            headPoint = NULL;
-//        } else{
-//            LOGE("=============大于====================");
-//            preview-> callbackCount = hold_bytes;
-//            memcpy(headData,frameData,hold_bytes);
-//            return;
-//        }
-//        headData = NULL;
-//
         return;
-
     }
-//    LOGE("uvc_preview_frame_callback hold_bytes ==normal ===> %d < preview->frameBytes  ==== > %d" , hold_bytes, preview->frameBytes);
-//    char i = frameData[0];
-
 //    LOGE("======================uvc_preview_frame_callback======================");
     //preview->isComputed()是否绘制完
     if(LIKELY( preview->isRunning() && preview->isComputed()))
     {
 //        pthread_mutex_lock(&preview->data_callback_mutex);
 //        {
-//        LOGE("======================uvc_preview_frame_callback01======================");
 //            unsigned  char * thedata = preview->OutBuffer;
             //void *memcpy(void *destin, void *source, unsigned n);从源source中拷贝n个字节到目标destin中
             memcpy(preview->OutBuffer,frameData,(preview->requestWidth)*(preview->requestHeight)*2);
 //        LOGE("===================frameSize ===========%s",sizeof(OutBuffer));
-            //LOGE("uvc_preview_frame_callback02");
             /* swap the buffers org */
 //            LOGE("======callback===11111111111111111111111========");
             uint8_t* tmp_buf = NULL;
             tmp_buf = preview->OutBuffer;
             preview->OutBuffer = preview->HoldBuffer;
             preview->HoldBuffer = tmp_buf;
-//            LOGE("======callback===222222222222222222222222222=======");
             tmp_buf=NULL;
             preview->signal_receive_frame_data();
 //        }
 //        pthread_mutex_unlock(&preview->data_callback_mutex);
     }
-    //LOGE("uvc_preview_frame_callback03");
 }
 void UVCPreviewIR::signal_receive_frame_data()
 {
@@ -1638,169 +1515,6 @@ void UVCPreviewIR::savePicDefineData() {
     dShapeInfo.polygonSize = 2;
 
     len += sizeof(dShapeInfo);
-//    LOGE("===D_SHAPE_INFO=========%d",sizeof(dShapeInfo));
-//    LOGE("===D_SHAPE_INFO==此时len=======%d",len);
-
-//    len += (sizeof(D_POINT) * 2);
-//    len += (sizeof(D_LINE) * 3);
-//    len += (sizeof(D_REC) * 2);
-//    len += (sizeof(D_POLYGON) * 2);
-
-//    D_POINT p1;
-//    D_POINT p2;
-//    p1.AD = 1111;
-//    p1.distance[0] = 1;
-//    p1.distance[1] = 1;
-//    p1.emissivity = 11;
-//    p1.point.x = 555;
-//    p1.point.y = 555;
-//    p1.reflexTemp = 0.11;
-//    p1.shapeTyte = 1;
-//    p1.temp = 11;
-//
-//    p2.AD = 2222;
-//    p2.distance[0] = 2;
-//    p2.distance[1] = 2;
-//    p2.emissivity = 22;
-//    p2.point.x = 333;
-//    p2.point.y = 333;
-//    p2.reflexTemp = 0.22;
-//    p2.shapeTyte = 1;
-//    p2.temp = 22;
-
-//    D_LINE l1;
-//    D_LINE l2;
-//    D_LINE l3;
-//
-//    l1.avgTemp = 11;
-//    l1.emissivity = 11;
-//    l1.maxAD = 1111;
-//    l1.maxPoint.x = 11;
-//    l1.maxPoint.y = 11;
-//    l1.maxTemp = 111;
-//    l1.minAD = 111;
-//    l1.minPoint.x = 1;
-//    l1.minPoint.y = 1;
-//    l1.minTemp = 11;
-//    l1.points[0].x = 1;
-//    l1.points[0].y = 1;
-//    l1.points[1].x = 11;
-//    l1.points[1].y = 11;
-//    l1.shapeTyte = 2;
-//    l1.size = 2;
-//
-//    l2.avgTemp = 22;
-//    l2.emissivity = 22;
-//    l2.maxAD = 2222;
-//    l2.maxPoint.x = 22;
-//    l2.maxPoint.y = 22;
-//    l2.maxTemp = 222;
-//    l2.minAD = 222;
-//    l2.minPoint.x = 2;
-//    l2.minPoint.y = 2;
-//    l2.minTemp = 22;
-//    l2.points[0].x = 2;
-//    l2.points[0].y = 2;
-//    l2.points[1].x = 22;
-//    l2.points[1].y = 22;
-//    l2.points[2].x = 222;
-//    l2.points[2].y = 222;
-//    l2.shapeTyte = 2;
-//    l2.size = 3;
-//
-//    l3.avgTemp = 33;
-//    l3.emissivity = 33;
-//    l3.maxAD = 3333;
-//    l3.maxPoint.x = 33;
-//    l3.maxPoint.y = 33;
-//    l3.maxTemp = 333;
-//    l3.minAD = 333;
-//    l3.minPoint.x = 3;
-//    l3.minPoint.y = 3;
-//    l3.minTemp = 33;
-//    l3.points[0].x = 3;
-//    l3.points[0].y = 3;
-//    l3.points[1].x = 33;
-//    l3.points[1].y = 33;
-//    l3.points[2].x = 333;
-//    l3.points[2].y = 333;
-//    l3.points[3].x = 3333;
-//    l3.points[3].y = 3333;
-//    l3.shapeTyte = 2;
-//    l3.size = 4;
-
-//    D_REC r1;
-//    D_REC r2;
-//    r1.avgTemp = 11;
-//    r1.emissivity = 11;
-//    r1.maxAD = 111;
-//    r1.maxPoint.x = 11;
-//    r1.maxPoint.y = 11;
-//    r1.maxTemp = 1111;
-//    r1.minAD = 11;
-//    r1.minPoint.x = 111;
-//    r1.minPoint.y = 111;
-//    r1.minTemp = 111;
-//    r1.points[0].x = 11;
-//    r1.points[0].y = 11;
-//    r1.points[1].x = 111;
-//    r1.points[1].y = 111;
-//    r1.shapeTyte = 3;
-//
-//    r2.avgTemp = 22;
-//    r2.emissivity = 22;
-//    r2.maxAD = 222;
-//    r2.maxPoint.x = 22;
-//    r2.maxPoint.y = 22;
-//    r2.maxTemp = 2222;
-//    r2.minAD = 22;
-//    r2.minPoint.x = 222;
-//    r2.minPoint.y = 222;
-//    r2.minTemp = 222;
-//    r2.points[0].x = 22;
-//    r2.points[0].y = 22;
-//    r2.points[1].x = 222;
-//    r2.points[1].y = 222;
-//    r2.shapeTyte = 3;
-
-//    D_POLYGON dpo1;
-//    D_POLYGON dpo2;
-//    dpo1.avgTemp = 11;
-//    dpo1.emissivity = 11;
-//    dpo1.maxAD = 1111;
-//    dpo1.maxPoint.x = 11;
-//    dpo1.maxPoint.y = 11;
-//    dpo1.maxTemp = 111;
-//    dpo1.minAD = 111;
-//    dpo1.minPoint.x = 1;
-//    dpo1.minPoint.y = 1;
-//    dpo1.minTemp = 11;
-//    dpo1.points[0].x = 1;
-//    dpo1.points[0].y = 1;
-//    dpo1.points[1].x = 11;
-//    dpo1.points[1].y = 11;
-//    dpo1.shapeTyte = 5;
-//    dpo1.size = 2;
-//
-//    dpo2.avgTemp = 22;
-//    dpo2.emissivity = 22;
-//    dpo2.maxAD = 2222;
-//    dpo2.maxPoint.x = 22;
-//    dpo2.maxPoint.y = 22;
-//    dpo2.maxTemp = 222;
-//    dpo2.minAD = 222;
-//    dpo2.minPoint.x = 2;
-//    dpo2.minPoint.y = 2;
-//    dpo2.minTemp = 22;
-//    dpo2.points[0].x = 2;
-//    dpo2.points[0].y = 2;
-//    dpo2.points[1].x = 22;
-//    dpo2.points[1].y = 22;
-//    dpo2.points[2].x = 222;
-//    dpo2.points[2].y = 222;
-//    dpo2.shapeTyte = 5;
-//    dpo2.size = 3;
-
     LOGE("the len ==============   %d ", len);
 
     fileHead.offset = len;//结构体的长度。即偏移量。  用于快速的到ad值位置的偏移量
@@ -1858,53 +1572,9 @@ void UVCPreviewIR::savePicDefineData() {
     memcpy(dataParBuf, &dShapeInfo,cpyLen);
     dataParBuf += cpyLen;
 
-//    cpyLen = sizeof(p1);
-//    memcpy(dataParBuf, &p1, cpyLen);
-//    dataParBuf += cpyLen;
-//    cpyLen = sizeof(p2);
-//    memcpy(dataParBuf, &p2, cpyLen);
-//    dataParBuf += cpyLen;
-//
-//
-//    cpyLen = sizeof(l1);
-//    memcpy(dataParBuf, &l1, cpyLen);
-//    dataParBuf += cpyLen;
-//    cpyLen = sizeof(l2);
-//    memcpy(dataParBuf, &l2, cpyLen);
-//    dataParBuf += cpyLen;
-//    cpyLen = sizeof(l3);
-//    memcpy(dataParBuf, &l3, cpyLen);
-//    dataParBuf += cpyLen;
-//
-//
-//    cpyLen = sizeof(r1);
-//    memcpy(dataParBuf, &r1, cpyLen);
-//    dataParBuf += cpyLen;
-//    cpyLen = sizeof(r1);
-//    memcpy(dataParBuf, &r1, cpyLen);
-//    dataParBuf += cpyLen;
-//
-//
-//    cpyLen = sizeof(dpo1);
-//    memcpy(dataParBuf, &dpo1, cpyLen);
-//    dataParBuf += cpyLen;
-//    cpyLen = sizeof(dpo2);
-//    memcpy(dataParBuf, &dpo2, cpyLen);
-//    dataParBuf += cpyLen;//此时dataParBuf里面塞满了 自定义的结构体数据
-
-
-    //dataLen等于 ad值的长度 即w*h*2(没有减去4)
-    //unsigned char* dataBuf = (unsigned char*)malloc(dataLen);
-//    int val = 0;
     for (int i = 0; i < dataLen;i++) {
-//        if (i !=0 && (i % 256)==0) {
-//            val++;
-//        }
-//        dataParBuf[i] = val;
         dataParBuf[i] = picOutBuffer[i];
     }
-//    memcpy(dataParBuf, picOutBuffer, 256*192*2);
-
     LOGE("====================dataLen===============%d",dataLen);
     LOGE("====================len===============%d",len);
 
@@ -2031,29 +1701,10 @@ void UVCPreviewIR::do_temperature_callback(JNIEnv *env, uint8_t *frameData)
 
 }
 /***************************************温度相关 结束**************************************/
-
-
-
 void UVCPreviewIR::clearDisplay() {//
     ENTER();
 //LOGE("clearDisplay");
     ANativeWindow_Buffer buffer;
-//    pthread_mutex_lock(&capture_mutex);
-//    {
-//        if (LIKELY(mCaptureWindow)) {
-//            if (LIKELY(ANativeWindow_lock(mCaptureWindow, &buffer, NULL) == 0)) {
-//                uint8_t *dest = (uint8_t *)buffer.bits;
-//                const size_t bytes = buffer.width * PREVIEW_PIXEL_BYTES;
-//                const int stride = buffer.stride * PREVIEW_PIXEL_BYTES;
-//                for (int i = 0; i < buffer.height; i++) {
-//                    memset(dest, 0, bytes);
-//                    dest += stride;
-//                }
-//                ANativeWindow_unlockAndPost(mCaptureWindow);
-//            }
-//        }
-//    }
-//    pthread_mutex_unlock(&capture_mutex);
     pthread_mutex_lock(&preview_mutex);
     {
         if (LIKELY(mPreviewWindow)) {
@@ -2080,9 +1731,3 @@ int UVCPreviewIR:: getByteArrayTemperaturePara(uint8_t* para){
     }
     return true;
 }
-
-//void UVCPreviewIR::setCameraLens(int mCameraLens){
-//    ENTER();
-//    cameraLens=mCameraLens;
-//    EXIT();
-//}
