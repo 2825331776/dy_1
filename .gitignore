@@ -1,6 +1,8 @@
 *.iml
 .gradle
 .idea
+/.idea/
+/app/release/
 #/local.properties
 /gradle.properties
 /.idea/caches
@@ -17,4 +19,3 @@
 #local.properties
 gradle.properties
 /UvcConnect/build/
-/.idea/

@@ -4,13 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable
-            name="pf"
-            type="com.dyt.wcc.dytpir.ui.preview.PreviewFragment" />
+<!--        <variable-->
+<!--            name="pf"-->
+<!--            type="com.dyt.wcc.dytpir.ui.preview.PreviewFragment" />-->
 
-        <variable
-            name="previewViewModel"
-            type="com.dyt.wcc.dytpir.ui.preview.PreViewViewModel" />
+<!--        <variable-->
+<!--            name="previewViewModel"-->
+<!--            type="com.dyt.wcc.dytpir.ui.preview.PreViewViewModel" />-->
 
     </data>
 
@@ -109,7 +109,6 @@
                 android:layout_height="@dimen/dimen_40dp"
                 android:layout_margin="@dimen/dimen_15dp"
                 android:background="@drawable/selector_main_preview_clear"
-                android:onClick="@{pf::toClear}"
                 android:button="@null"
                 tools:ignore="ContentDescription"/>
 <!--                拍照-->
@@ -122,7 +121,6 @@
                     app:layout_constraintBottom_toBottomOf="@id/gl_percent4"
                     app:layout_constraintRight_toLeftOf="@id/gl_main_left"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    android:onClick="@{pf::toImage}"
                     android:button="@null"
                     android:background="@drawable/selector_main_preview_takephoto"/>
 <!--           录制-->
@@ -135,7 +133,7 @@
                     android:layout_width="@dimen/dimen_40dp"
                     android:layout_height="@dimen/dimen_40dp"
                     android:layout_margin="@dimen/dimen_15dp"
-                    android:onClick="@{pf::toRecord}"
+                    android:onClick="toRecord"
                     android:button="@null"
                     android:background="@drawable/selector_main_preview_record"/>
 <!--            相册-->
@@ -151,7 +149,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/gl_percent6"
                     android:background="@drawable/selector_main_preview_gallery"
                     android:button="@null"
-                    android:onClick="@{pf::toGallery}"/>
+                    android:onClick="toGallery"/>
 <!--左侧 分割线-->
             <TextView
                 app:layout_constraintTop_toTopOf="parent"
@@ -174,6 +172,31 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
+                <!--测试按钮 小区-->
+                <!--   测试按钮-->
+                <Button
+                    android:id="@+id/btTest01"
+                    android:text="stop"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <!--        打挡-->
+                <Button
+                    android:id="@+id/btTest02"
+                    android:text="start"
+                    app:layout_constraintTop_toBottomOf="@id/btTest01"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <Button
+                    android:id="@+id/btTest03"
+                    android:text="start temp"
+                    app:layout_constraintTop_toBottomOf="@id/btTest02"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
                 <com.dyt.wcc.cameracommon.widget.UVCCameraTextureView
                     android:id="@+id/textureView_preview_fragment"
