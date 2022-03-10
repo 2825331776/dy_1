@@ -27,9 +27,9 @@ ext{
                     // 应用 id
                     applicationId: "com.dyt.wcc.dytpir",
                     // 构建版本号
-                    versionCode  : 3,
+                    versionCode  : 1,
                     // 版本名称
-                    versionName  : "1.0.3",
+                    versionName  : "1.0.1",
             ],
     ]
 
