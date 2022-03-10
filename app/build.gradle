@@ -163,11 +163,11 @@ android {
             // 为版本名添加后缀
 //            versionNameSuffix "-relase"
             // 不开启混淆
-            minifyEnabled true
+            minifyEnabled false
             // 开启ZipAlign优化
-            zipAlignEnabled true
+            zipAlignEnabled false
             // 移除无用的resource文件
-            shrinkResources true
+            shrinkResources false
 
             // 混淆文件位置
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
