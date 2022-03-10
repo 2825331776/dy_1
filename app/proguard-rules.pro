@@ -36,3 +36,6 @@
 #-keep class com.bumptech.glide.load.data.ParcelFileDescriptorRewinder$InternalRewinder {
 #  *** rewind();
 #}
+
+# easyphotos 库的混淆处理
+-keep class com.huantansheng.easyphotos.models.** { *; }

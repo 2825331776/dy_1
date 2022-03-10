@@ -84,6 +84,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -103,8 +105,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 	private SharedPreferences sp;
 	private int mVid , mPid; //设备 vid pid
 
+	private Timer timerEveryTime;
 //	private USBMonitor mUsbMonitor ;
-	private int mTextureViewWidth,mTextureViewHeight;
+	private int   mTextureViewWidth,mTextureViewHeight;
 
 	private FrameLayout fl;
 
@@ -289,6 +292,18 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> {
 					setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
 				}
 			}, 300);
+
+			timerEveryTime = new Timer();
+			timerEveryTime.scheduleAtFixedRate(new TimerTask() {
+				@Override
+				public void run() {
+//					if (isPreviewing) {
+						setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);//每隔一分钟打一次快门
+						if (mUvcCameraHandler!= null)mUvcCameraHandler.whenShutRefresh();
+						Log.e("TAG", "每隔1分钟执行一次操作");
+//					}
+				}
+			}, 500, 60000);
 		}
 		@Override
 		public void onDettach (UsbDevice device) {

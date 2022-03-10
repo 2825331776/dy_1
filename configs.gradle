@@ -13,6 +13,27 @@ ext{
             supportV        :"27.0.0"
     ]
 
+    // 多渠道产品信息
+    envInfo = [
+            web: [
+                    // 应用 id
+                    applicationId: "com.dyt.wcc.dytpir",
+                    // 构建版本号
+                    versionCode  : 1,
+                    // 版本名称
+                    versionName  : "1.0.1",
+            ],
+            phone : [
+                    // 应用 id
+                    applicationId: "com.dyt.wcc.dytpir",
+                    // 构建版本号
+                    versionCode  : 3,
+                    // 版本名称
+                    versionName  : "1.0.3",
+            ],
+    ]
+
+
     //依赖库的版本  common
     def appcompat_version = "1.2.0"
     def material_version = "1.2.1"

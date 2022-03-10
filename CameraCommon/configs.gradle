@@ -1,0 +1,21 @@
+ext{
+//    // 多渠道产品信息
+//    envInfo = [
+//            web: [
+//                    // 应用 id
+//                    applicationId: "com.dyt.wcc.dytpir",
+//                    // 构建版本号
+//                    versionCode  : 1,
+//                    // 版本名称
+//                    versionName  : "1.0.1",
+//            ],
+//            phone : [
+//                    // 应用 id
+//                    applicationId: "com.dyt.wcc.dytpir",
+//                    // 构建版本号
+//                    versionCode  : 3,
+//                    // 版本名称
+//                    versionName  : "1.0.3",
+//            ],
+//    ]
+}

@@ -2,6 +2,15 @@ plugins {
     id 'com.android.application'
 }
 
+//打包时间
+def releasePackageTime() {
+    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("UTC"))
+}
+//获取local.properties的内容
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+
 android {
     def versions = rootProject.ext.projectVersions
 
@@ -17,18 +26,12 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+        // 设置支持的so库架构
         ndk {
-            // 设置支持的SO库架构
             abiFilters 'armeabi-v7a','arm64-v8a','x86_64','x86'
         }
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -37,6 +40,153 @@ android {
     buildFeatures {
         dataBinding true
     }
+
+    //第二种：为了保护签名文件，把它放在local.properties中并在版本库中排除
+    // ，不把这些信息写入到版本库中（注意，此种方式签名文件中不能有中文）
+    signingConfigs {
+        releaseConfig {
+            storeFile file(properties.getProperty("keystroe_storeFile"))
+            storePassword properties.getProperty("keystroe_storePassword")
+            keyAlias properties.getProperty("keystroe_keyAlias")
+            keyPassword properties.getProperty("keystroe_keyPassword")
+        }
+        debugConfig {
+            storeFile file(properties.getProperty("debug_keystroe_storeFile"))
+            storePassword properties.getProperty("debug_keystroe_storePassword")
+            keyAlias properties.getProperty("debug_keystroe_keyAlias")
+            keyPassword properties.getProperty("debug_keystroe_keyPassword")
+        }
+    }
+
+    sourceSets {
+//        main {
+//            jniLibs.srcDirs = ['libs']
+//        }
+        // young 这里新增指定prd环境的资源文件，也就是这里的文件会覆盖 res 的同名文件
+        // 这里的 huawei.res.srcDirs 中的 huawei 是渠道名称
+        // 然后这里指向的资源路径，是渠道特有的资源，总而言之，就是这里的资源会覆盖，正常 res 目录下的资源
+        //放入渠道特有的 资源，需要替换对应的资源时，在 productFlavors 的渠道名称{} 里的 manifestPlaceholders
+        //加上 替换的资源为那个名称
+            web.res.srcDirs = ['src/main/res-huawei']
+            huawei.res.srcDirs = ['src/main/res-huawei']
+            xiaomi.res.srcDirs = ['src/main/res-xiaomi']
+    }
+
+    flavorDimensions "theb"
+    productFlavors {
+//        //开发环境
+        web {
+//              // 每个环境包名不同
+            dimension "theb"
+            applicationId rootProject.ext.envInfo.web.applicationId
+            versionCode rootProject.ext.envInfo.web.versionCode
+            versionName rootProject.ext.envInfo.web.versionName
+            // 动态添加 string.xml 字段；
+            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
+//            resValue "string", "app_name", "web"
+//            resValue "bool", "auto_updates", 'false'
+            // 动态修改 常量 字段
+            buildConfigField "String", "ENVIRONMENT", '"web"'
+            // 修改 AndroidManifest.xml 里渠道变量
+            manifestPlaceholders = [CHANNEL_VALUE: "web"
+                                    ,app_name : "webDD"
+                                    ,app_icon   : "@mipmap/delete_all"]
+        }
+        //华为
+        huawei {
+            // 每个环境包名不同
+            dimension "theb"
+            applicationId rootProject.ext.envInfo.phone.applicationId
+            versionCode rootProject.ext.envInfo.phone.versionCode
+            versionName rootProject.ext.envInfo.phone.versionName
+            // 动态添加 string.xml 字段；
+            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
+//            resValue "string", "app_name", "huawei"
+//            resValue "bool", "auto_updates", 'false'
+            // 动态修改 常量 字段
+            buildConfigField "String", "ENVIRONMENT", '"huawei"'
+            // 修改 AndroidManifest.xml 里渠道变量
+            manifestPlaceholders = [CHANNEL_VALUE: "huawei"
+                                    ,app_name : "huaweiheihei"
+                                    ,app_icon   : "@mipmap/delete_all"]
+        }
+        //小米
+        xiaomi {
+           // 每个环境包名不同
+            dimension "theb"
+            applicationId rootProject.ext.envInfo.phone.applicationId
+            versionCode rootProject.ext.envInfo.phone.versionCode
+            versionName rootProject.ext.envInfo.phone.versionName
+            // 动态添加 string.xml 字段；
+            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
+//            resValue "string", "app_name", "xiaomi"
+//            resValue "bool", "auto_updates", 'false'
+            // 动态修改 常量 字段
+            buildConfigField "String", "ENVIRONMENT", '"xiaomi"'
+            // 修改 AndroidManifest.xml 里渠道变量
+            manifestPlaceholders = [CHANNEL_VALUE: "xiaomi"
+                                    ,app_name : "xiaomihahaha"
+                                    ,app_icon   : "@mipmap/delete_all"]
+        }
+    }
+
+    //移除lint检测的error
+    lintOptions {
+        abortOnError false
+    }
+
+    buildTypes {
+        debug {
+            // 使用config签名
+            signingConfig signingConfigs.debugConfig
+            // debug模式下，显示log
+            buildConfigField("boolean", "LOG_DEBUG", "true")
+
+            //为已经存在的applicationId添加后缀
+//            applicationIdSuffix ".debug"
+            // 为版本名添加后缀
+            versionNameSuffix "-debug"
+            // 不开启混淆
+            minifyEnabled false
+            // 不开启ZipAlign优化
+            zipAlignEnabled false
+            // 不移除无用的resource文件
+            shrinkResources false
+        }
+
+        release {
+            // 使用config签名
+            signingConfig signingConfigs.releaseConfig
+
+            // release模式下，不显示log
+            buildConfigField("boolean", "LOG_DEBUG", "false")
+            // 为版本名添加后缀
+//            versionNameSuffix "-relase"
+            // 不开启混淆
+            minifyEnabled true
+            // 开启ZipAlign优化
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources true
+
+            // 混淆文件位置
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+        }
+        // 批量打包
+        applicationVariants.all { variant ->
+            variant.outputs.all { output ->
+                def outputFile = output.outputFile
+                variant
+                if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                    def fileName = "DytSpectrumOwl"+ "_${variant.flavorName}_${variant.buildType.name}_v${variant.productFlavors[0].versionName}" +
+                            "_b${variant.productFlavors[0].versionCode}_${releasePackageTime()}.apk"
+                    outputFileName = fileName
+                }
+            }
+        }
+    }
+
 }
 
 dependencies {

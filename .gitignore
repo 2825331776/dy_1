@@ -1,7 +1,7 @@
 *.iml
 .gradle
 .idea
-/local.properties
+#/local.properties
 /gradle.properties
 /.idea/caches
 /.idea/libraries
@@ -14,6 +14,7 @@
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+#local.properties
 gradle.properties
 /UvcConnect/build/
+/.idea/

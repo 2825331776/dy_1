@@ -1391,7 +1391,7 @@ void UVCPreviewIR::savePicDefineData() {
 
     irDataPar.pointSize = 2;
     irDataPar.typeAndSize = (1 << 4) | 4;;
-    memset(irDataPar.reserved,0,18);
+    memset(irDataPar.reserved,0,14);
     len += sizeof(irDataPar);
 
     adPicbuffer = NULL;
@@ -1465,7 +1465,7 @@ void UVCPreviewIR::savePicDefineData() {
     D_IMAGE_INFO imageInfo;
     imageInfo.tempUnit = 1;
     imageInfo.lutCode = 10;
-    memset(imageInfo.reserved,0,42);
+    memset(imageInfo.reserved,0,26);
     len += sizeof(imageInfo);
 //    LOGE("===D_IMAGE_INFO=========%d",sizeof(imageInfo));
 
