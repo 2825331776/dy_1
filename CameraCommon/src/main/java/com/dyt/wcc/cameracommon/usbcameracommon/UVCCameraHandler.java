@@ -24,7 +24,6 @@
 package com.dyt.wcc.cameracommon.usbcameracommon;
 
 import android.app.Activity;
-import android.util.Log;
 
 import com.dyt.wcc.cameracommon.widget.UVCCameraTextureView;
 import com.serenegiant.usb.ITemperatureCallback;
@@ -124,7 +123,7 @@ public class UVCCameraHandler extends AbstractUVCCameraHandler {
 	public static final UVCCameraHandler createHandler(
 			final Activity parent, final UVCCameraTextureView cameraView,
 			final int encoderType, final int width, final int height, final int format, final float bandwidthFactor, ITemperatureCallback temperatureCallback, int androidVersion) {
-		Log.e(TAG, "createHandler:  123 === " + System.currentTimeMillis());
+//		Log.e(TAG, "createHandler:  123 === " + System.currentTimeMillis());
 		final CameraThread thread = new CameraThread(UVCCameraHandler.class, parent, cameraView, encoderType, width, height, format, bandwidthFactor,temperatureCallback,androidVersion);
 
 

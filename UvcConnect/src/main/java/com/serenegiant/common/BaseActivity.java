@@ -25,23 +25,22 @@ package com.serenegiant.common;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
-import android.util.Log;
-import android.widget.Toast;
-import com.serenegiant.uvccamera.R;
 
 import com.serenegiant.dialog.MessageDialogFragment;
 import com.serenegiant.utils.BuildCheck;
 import com.serenegiant.utils.HandlerThreadHandler;
 import com.serenegiant.utils.PermissionCheck;
+import com.serenegiant.uvccamera.R;
 
 /**
  * Created by saki on 2016/11/18.
@@ -50,20 +49,20 @@ import com.serenegiant.utils.PermissionCheck;
 public class BaseActivity extends AppCompatActivity
 	implements MessageDialogFragment.MessageDialogListener {
 
-	private static boolean DEBUG = false;	// FIXME 実働時はfalseにセットすること
+	private static boolean DEBUG = false;	// FIXME 实际工作时设置为false
 	private static final String TAG = BaseActivity.class.getSimpleName();
 
-	/** UI操作のためのHandler */
+	/** 负责操作处理UI的 handler */
 	private final Handler mUIHandler = new Handler(Looper.getMainLooper());
 	private final Thread mUiThread = mUIHandler.getLooper().getThread();
-	/** ワーカースレッド上で処理するためのHandler */
+	/** 用于在工作（子）线程上进行的 handler */
 	private Handler mWorkerHandler;
 	private long mWorkerThreadID = -1;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// ワーカースレッドを生成
+		// 创建工作线程
 		if (mWorkerHandler == null) {
 			mWorkerHandler = HandlerThreadHandler.createHandler(TAG);
 			mWorkerThreadID = mWorkerHandler.getLooper().getThread().getId();
@@ -78,7 +77,7 @@ public class BaseActivity extends AppCompatActivity
 
 	@Override
 	protected synchronized void onDestroy() {
-		// ワーカースレッドを破棄
+		// 销毁 工作线程
 		if (mWorkerHandler != null) {
 			try {
 				mWorkerHandler.getLooper().quit();
@@ -92,7 +91,7 @@ public class BaseActivity extends AppCompatActivity
 
 //================================================================================
 	/**
-	 * UIスレッドでRunnableを実行するためのヘルパーメソッド
+	 * 在 UI 线程中运行 Runnable 的辅助方法
 	 * @param task
 	 * @param duration
 	 */
@@ -111,7 +110,7 @@ public class BaseActivity extends AppCompatActivity
 	}
 
 	/**
-	 * UIスレッド上で指定したRunnableが実行待ちしていれば実行待ちを解除する
+	 * 如果 UI 线程上指定的 Runnable 正在等待执行，则取消执行等待。
 	 * @param task
 	 */
 	public final void removeFromUiThread(final Runnable task) {
@@ -120,8 +119,8 @@ public class BaseActivity extends AppCompatActivity
 	}
 
 	/**
-	 * ワーカースレッド上で指定したRunnableを実行する
-	 * 未実行の同じRunnableがあればキャンセルされる(後から指定した方のみ実行される)
+	 * 在工作线程上执行指定的 Runnable
+	 * 如果有相同的Runnable没有被执行，就会被取消（只有后面指定的那个会被执行）
 	 * @param task
 	 * @param delayMillis
 	 */
@@ -142,7 +141,7 @@ public class BaseActivity extends AppCompatActivity
 	}
 
 	/**
-	 * 指定したRunnableをワーカースレッド上で実行予定であればキャンセルする
+	 * 如果安排在工作线程上执行，则取消指定的Runnable
 	 * @param task
 	 */
 	protected final synchronized void removeEvent(final Runnable task) {
@@ -157,7 +156,7 @@ public class BaseActivity extends AppCompatActivity
 //================================================================================
 	private Toast mToast;
 	/**
-	 * Toastでメッセージを表示
+	 * 在 Toast 中查看消息
 	 * @param msg
 	 */
 	protected void showToast(@StringRes final int msg, final Object... args) {
@@ -167,7 +166,7 @@ public class BaseActivity extends AppCompatActivity
 	}
 
 	/**
-	 * Toastが表示されていればキャンセルする
+	 * 如果显示 Toast 则取消
 	 */
 	protected void clearToast() {
 		removeFromUiThread(mShowToastTask);
@@ -213,7 +212,7 @@ public class BaseActivity extends AppCompatActivity
 
 //================================================================================
 	/**
-	 * MessageDialogFragmentメッセージダイアログからのコールバックリスナー
+	 * MessageDialogFragment 来自消息对话框的回调监听器
 	 * @param dialog
 	 * @param requestCode
 	 * @param permissions
@@ -224,27 +223,27 @@ public class BaseActivity extends AppCompatActivity
 	public void onMessageDialogResult(final MessageDialogFragment dialog, final int requestCode, final String[] permissions, final boolean result) {
         Log.e(TAG, "onMessageDialogResult" );
 		if (result) {
-			// メッセージダイアログでOKを押された時はパーミッション要求する
+			// 在消息对话框中按下 OK 时请求权限
 			if (BuildCheck.isMarshmallow()) {
 				requestPermissions(permissions, requestCode);
 				return;
 			}
 		}
-		// メッセージダイアログでキャンセルされた時とAndroid6でない時は自前でチェックして#checkPermissionResultを呼び出す
+		//在消息对话框中取消且不是Android 6时，请自行检查并调用#checkPermissionResult
 		for (final String permission: permissions) {
 			checkPermissionResult(requestCode, permission, PermissionCheck.hasPermission(this, permission));
 		}
 	}
 
 	/**
-	 * パーミッション要求結果を受け取るためのメソッド
+	 * 接收权限请求结果的方法
 	 * @param requestCode
 	 * @param permissions
 	 * @param grantResults
 	 */
 	@Override
 	public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);	// 何もしてないけど一応呼んどく
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);	// 我什么都没做
 		final int n = Math.min(permissions.length, grantResults.length);
 		for (int i = 0; i < n; i++) {
 			checkPermissionResult(requestCode, permissions[i], grantResults[i] == PackageManager.PERMISSION_GRANTED);
@@ -252,14 +251,14 @@ public class BaseActivity extends AppCompatActivity
 	}
 
 	/**
-	 * パーミッション要求の結果をチェック
-	 * ここではパーミッションを取得できなかった時にToastでメッセージ表示するだけ
+	 * 检查权限请求的结果
+	 * 在这里，只是在无法获得权限的情况下，用 Toast 显示一条消息
 	 * @param requestCode
 	 * @param permission
 	 * @param result
 	 */
 	protected void checkPermissionResult(final int requestCode, final String permission, final boolean result) {
-		// パーミッションがないときにはメッセージを表示する
+		// 当您没有权限时显示消息
 		if (!result && (permission != null)) {
 			if (Manifest.permission.RECORD_AUDIO.equals(permission)) {
 				showToast(R.string.permission_audio);
@@ -273,7 +272,7 @@ public class BaseActivity extends AppCompatActivity
 		}
 	}
 
-	// 動的パーミッション要求時の要求コード
+	// 动态权限请求的请求代码
 	protected static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE = 0x12345;
 	protected static final int REQUEST_PERMISSION_AUDIO_RECORDING = 0x234567;
 	protected static final int REQUEST_PERMISSION_NETWORK = 0x345678;
@@ -281,9 +280,6 @@ public class BaseActivity extends AppCompatActivity
 
 
 	/**
-	 * 外部ストレージへの書き込みパーミッションが有るかどうかをチェック
-	 * なければ説明ダイアログを表示する
-	 * @return true 外部ストレージへの書き込みパーミッションが有る
 	 * 检查您是否有外部存储的写权限
 	 * 如果不是，则显示说明对话框。
 	 * @return true 您对外部存储有写权限

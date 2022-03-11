@@ -144,8 +144,6 @@ abstract class AbstractUVCCameraHandler extends Handler {
     private static final int MSG_SET_VERIFY_SN = 55;//设置是否验证SN
 //    private static final int MSG_ISRECORDAUDIO = 37;//本来在这里新增一个 是否录制音频的开关。后面直接加到了 打开录制开关的参数里面
 
-
-
     private final WeakReference<CameraThread> mWeakThread;
     private volatile boolean mReleased;
 
@@ -168,7 +166,6 @@ abstract class AbstractUVCCameraHandler extends Handler {
         final CameraThread thread = mWeakThread.get();
         return thread != null && thread.isCameraOpened();
     }
-
 
     //added by wupei,这个是可以在mainactivity中获取到温度数据的方法
     public byte[] getTemperaturePara(int len) {
@@ -195,7 +192,6 @@ abstract class AbstractUVCCameraHandler extends Handler {
             return para;
         }
     }
-
 
     public int getHighThrow() {
         final CameraThread thread = mWeakThread.get();
@@ -408,9 +404,6 @@ abstract class AbstractUVCCameraHandler extends Handler {
         sendMessage(message);
     }
 
-
-
-
     public void startRecording(int isRecordAudio) {//0 代表打开音频录制，1代表关闭音频录制
         checkReleased();
         Message msg = Message.obtain();
@@ -418,7 +411,6 @@ abstract class AbstractUVCCameraHandler extends Handler {
         msg.obj = isRecordAudio;
         sendMessage(msg);
     }
-
 
     public void stopRecording() {
         sendEmptyMessage(MSG_CAPTURE_STOP);
@@ -468,14 +460,6 @@ abstract class AbstractUVCCameraHandler extends Handler {
         message.arg1 = rotate;
         sendMessage(message);
     }
-
-
-//    public void watermarkOnOff(int isWatermaker) {
-//        Message message = Message.obtain();
-//        message.what = MSG_WATERMARK_ONOFF;
-//        message.arg1 = isWatermaker;
-//        sendMessage(message);
-//    }
 
     public void tempShowOnOff(int isTempShow) {
         Message message = Message.obtain();
@@ -700,7 +684,6 @@ abstract class AbstractUVCCameraHandler extends Handler {
             camera.whenChangeTempPara();
         }
     }
-
 
     //added by wupei to change palette
     public int setPalette(int typeOfPalette) {
@@ -1718,7 +1701,6 @@ abstract class AbstractUVCCameraHandler extends Handler {
 //            codes[4] = Integer.parseInt((code2 + ""), 16);
 //            codes[5] = Integer.parseInt("CC", 16);
 //            mTcpClient.nativeTcpSend(codes);
-//
 //        }
 
         public void handleSetPalette(int paletteCode) {
@@ -2001,12 +1983,12 @@ abstract class AbstractUVCCameraHandler extends Handler {
             Looper.prepare();
             AbstractUVCCameraHandler handler = null;
             try {
-                Log.e(TAG, "run: ============ start");
+                Log.e(TAG, "run: ============ start id"  + getId());
                 //通过 UvcCameraHandler的 UvcCameraHandler(CameraThread cameraThread)构造方法 得到一个UvcCameraHandler的 构造函数对象
                 final Constructor<? extends AbstractUVCCameraHandler> constructor = mHandlerClass.getDeclaredConstructor(CameraThread.class);
                 //通过 子类的 构造函数对象 得到一个父类对象？
                 handler = constructor.newInstance(this);
-                Log.e(TAG, "run: ============ end");
+                Log.e(TAG, "run: ============ end "  + getId());
 
             } catch (final NoSuchMethodException e) {
                 Log.w(TAG, e);
@@ -2236,7 +2218,5 @@ abstract class AbstractUVCCameraHandler extends Handler {
             }
 //            mUVCCamera.setSigmaR(inputSigmaR);
         }
-
-
     }
 }
