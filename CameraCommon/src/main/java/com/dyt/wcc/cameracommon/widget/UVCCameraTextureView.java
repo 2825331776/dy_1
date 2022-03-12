@@ -291,6 +291,12 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
         }
     }
 
+    public void initTempFontSize(float fontSize) {
+        if (mRenderHandler != null) {
+            mRenderHandler.initTempFontSize(fontSize);
+        }
+    }
+
     /**
      * 设置 最高温  最低温 中心点温度 正常点温度 图片 ，及其 每个图片占用的像素大小
      * @param highTemp
@@ -565,11 +571,11 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
             }
         }
 
-//        public void iniTempFontsize(float fontsize) {
-//            if (mThread != null) {
-//                mThread.iniTempFontsize(fontsize);
-//            }
-//        }
+        public void initTempFontSize(float fontsize) {
+            if (mThread != null) {
+                mThread.initTempFontSize(fontsize);
+            }
+        }
 
         public void iniTempBitmap(int w, int h) {
             if (mThread != null) {
@@ -680,9 +686,11 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
             }
 
 
-//            public void iniTempFontsize(float fontsize) {
-//                this.photoPaint.setTextSize(fontsize);
-//            }
+            public void initTempFontSize(float fontsize) {
+                this.photoPaint.setTextSize(fontsize);
+                this.tempTextPaint.setTextSize(fontsize);
+                this.tempTextBgTextPaint.setTextSize(fontsize);
+            }
 
             /**
              * 初始化 OpenGL ES 的画布的宽高 ，并初始化所需要的画笔。
@@ -702,7 +710,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                 this.photoPaint.setColor(Color.WHITE);
 //                this.alarmPaint = new Paint();
                 this.tempTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-                this.tempTextPaint.setTextSize(50);
+//                this.tempTextPaint.setTextSize(50);
                 this.tempTextPaint.setStrokeWidth(5);
                 this.tempTextPaint.setStyle(Paint.Style.FILL);
 
@@ -715,7 +723,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                 this.dottedLinePaint.setColor(Color.BLACK);
 
                 this.tempTextBgTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-                this.tempTextBgTextPaint.setTextSize(50);
+//                this.tempTextBgTextPaint.setTextSize(50);
                 this.tempTextBgTextPaint.setStrokeWidth(5);
                 this.tempTextBgTextPaint.setColor(Color.WHITE);
                 this.tempTextBgTextPaint.setStyle(Paint.Style.STROKE);

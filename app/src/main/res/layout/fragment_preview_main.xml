@@ -7,11 +7,9 @@
 <!--        <variable-->
 <!--            name="pf"-->
 <!--            type="com.dyt.wcc.dytpir.ui.preview.PreviewFragment" />-->
-
 <!--        <variable-->
 <!--            name="previewViewModel"-->
 <!--            type="com.dyt.wcc.dytpir.ui.preview.PreViewViewModel" />-->
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

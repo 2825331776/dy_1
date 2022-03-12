@@ -93,7 +93,6 @@ import java.util.TimerTask;
  * <p>PackagePath: com.dyt.wcc.dytpir.ui.main     </p>
  */
 public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> implements View.OnClickListener {
-//	private PreViewViewModel                   mViewModel;
 	private UVCCameraHandler                   mUvcCameraHandler;
 	private Surface                            stt;
 	private PopupWindow                        PLRPopupWindows;//点线矩形测温弹窗
@@ -251,10 +250,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 			MediaProjectionHelper.getInstance().stopMediaRecorder();
 			MediaProjectionHelper.getInstance().stopService(mContext.get());
 		}
-
 	}
-
-
 
 	private USBMonitor.OnDeviceConnectListener onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
 		@Override
@@ -380,7 +376,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 //		if (isDebug)Log.e(TAG,"height =="+ mTextureViewHeight + " width==" + mTextureViewWidth);
 		mDataBinding.textureViewPreviewFragment.setFrameBitmap(highTempBt,lowTempBt,centerTempBt,normalPointBt,DensityUtil.dp2px(mContext.get(),30));
 
+
 		mDataBinding.textureViewPreviewFragment.iniTempBitmap(mTextureViewWidth, mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
+		mDataBinding.textureViewPreviewFragment.initTempFontSize(mFontSize);
 		mDataBinding.textureViewPreviewFragment.setVidPid(mVid,mPid);//设置vid  pid
 		mDataBinding.textureViewPreviewFragment.setTinyCCorrection(sp.getFloat(DYConstants.setting_correction,0.0f));//设置vid  pid
 		mDataBinding.textureViewPreviewFragment.setDragTempContainer(mDataBinding.dragTempContainerPreviewFragment);

@@ -81,25 +81,21 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Timer;
 
 public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
+	private UVCCameraHandler                   mUvcCameraHandler;
+	private Surface                            stt;
+	private PopupWindow                        PLRPopupWindows;//点线矩形测温弹窗
+	private PopupWindow                        allPopupWindows;
+	//	private View popView;
+	private Map<String ,Float>                 cameraParams ;
+	private SharedPreferences sp;
+	private int mVid , mPid; //设备 vid pid
 
-//	@Override
-//	protected void onCreate (Bundle savedInstanceState) {
-//		super.onCreate(savedInstanceState);
-//		setContentView(R.layout.activity_preview);
-//	}
-	private UVCCameraHandler   mUvcCameraHandler;
-	private Surface            stt;
-	private PopupWindow        PLRPopupWindows;//点线矩形测温弹窗
-	private PopupWindow        allPopupWindows;
-	private View               popView;
-	private Map<String ,Float> cameraParams ;
-	private SharedPreferences  sp;
-	private int                mVid , mPid; //设备 vid pid
-
+	private Timer      timerEveryTime;
 	private USBMonitor mUsbMonitor ;
-	private     int        mTextureViewWidth,mTextureViewHeight;
+	private int        mTextureViewWidth,mTextureViewHeight;
 
 	private FrameLayout fl;
 
@@ -115,13 +111,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	private DisplayMetrics metrics;
 	private Configuration  configuration;
-	private boolean        isFirstRun = false;
-
-//	@Override
-//	protected boolean isInterceptBackPress () {
-//		return false;
-//	}
-
+	private boolean isFirstRun = false;
 
 	@Override
 	protected void onPause () {
