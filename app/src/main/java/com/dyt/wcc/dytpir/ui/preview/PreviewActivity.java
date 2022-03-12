@@ -187,7 +187,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	@Override
 	protected void onResume () {
-		if (!mUsbMonitor.isRegistered()) {
+		if (mUsbMonitor !=null && !mUsbMonitor.isRegistered()) {
 			mUsbMonitor.register();
 		}
 		super.onResume();

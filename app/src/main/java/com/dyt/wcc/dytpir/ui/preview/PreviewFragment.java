@@ -453,102 +453,47 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 				break;
 			case R.id.iv_preview_left_takePhoto://拍照
 				if (mUvcCameraHandler == null)return;
-				PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
-						,Manifest.permission.WRITE_EXTERNAL_STORAGE)
-						.onExplainRequestReason(new ExplainReasonCallback() {
-							@Override
-							public void onExplainReason (@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
-								scope.showRequestReasonDialog(deniedList,getResources().getString(R.string.toast_base_permission_explain),
-										getResources().getString(R.string.confirm),getResources().getString(R.string.cancel));
-							}
-						}).onForwardToSettings(new ForwardToSettingsCallback() {
-					@Override
-					public void onForwardToSettings (@NonNull ForwardScope scope, @NonNull List<String> deniedList) {
-						//这个需要
-						scope.showForwardToSettingsDialog(deniedList,getResources().getString(R.string.toast_base_permission_tosetting),
-								getResources().getString(R.string.confirm),getResources().getString(R.string.cancel));
-					}
-				}).request(new RequestCallback() {
-					@Override
-					public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
-						if (allGranted){//拿到权限 去C++ 绘制 传入文件路径path， 点线矩阵
 							//生成一个当前的图片地址：  然后设置一个标识位，标识正截屏 或者 录像中
-							if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened()){
-
-								String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
-								if (mUvcCameraHandler.captureStill(picPath))showToast(getResources().getString(R.string.toast_save_path)+picPath );
-								//						if (isDebug)Log.e(TAG, "onResult: java path === "+ picPath);
-							}else {
-								showToast(getResources().getString(R.string.toast_need_connect_camera));
-							}
-						}else {
-							showToast(getResources().getString(R.string.toast_dont_have_permission));
-						}
-					}
-				});
+				if ( mUvcCameraHandler.isOpened()){
+					String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
+					if (mUvcCameraHandler.captureStill(picPath))showToast(getResources().getString(R.string.toast_save_path)+picPath );
+				}else {
+					showToast(getResources().getString(R.string.toast_need_connect_camera));
+				}
 				break;
 			case R.id.bt_preview_left_record: // 录制
-				PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE
-						,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO)
-						.onExplainRequestReason(new ExplainReasonCallback() {
-							@Override
-							public void onExplainReason (@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
-								scope.showRequestReasonDialog(deniedList,getResources().getString(R.string.toast_base_permission_explain),
-										getResources().getString(R.string.confirm),getResources().getString(R.string.cancel));
-							}
-						}).onForwardToSettings(new ForwardToSettingsCallback() {
-					@Override
-					public void onForwardToSettings (@NonNull ForwardScope scope, @NonNull List<String> deniedList) {
-						//这个需要
-						scope.showForwardToSettingsDialog(deniedList,getResources().getString(R.string.toast_base_permission_tosetting),
-								getResources().getString(R.string.confirm),getResources().getString(R.string.cancel));
+				/**
+				 * 录制业务逻辑：点击开始录制，判断 是否在录制？ no-> 开始录制，更改录制按钮"结束录制" & 开始计时器
+				 * yes->结束录制。更改录制按钮"录制" （刷新媒体库）& 重置计时器
+				 */
+				if (mUvcCameraHandler != null && mUvcCameraHandler.isTemperaturing() ){//mUvcCameraHandler.isOpened()
+					if (mDataBinding.btPreviewLeftRecord.isSelected() && mUvcCameraHandler.isRecording()){//停止录制
+						stopTimer();
+						mUvcCameraHandler.stopRecording();
+					}else if (!mDataBinding.btPreviewLeftRecord.isSelected() && !mUvcCameraHandler.isRecording()&& mUvcCameraHandler.isPreviewing()){//开始录制
+						startTimer();
+						mUvcCameraHandler.startRecording(sp.getInt(DYConstants.RECORD_AUDIO_SETTING,1));
+					}else {
+						Log.e(TAG, "Record Error: error record state !");
 					}
-				}).request(new RequestCallback() {
-					@Override
-					public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
-						if (allGranted){
-							/**
-							 * 录制业务逻辑：点击开始录制，判断 是否在录制？ no-> 开始录制，更改录制按钮"结束录制" & 开始计时器
-							 * yes->结束录制。更改录制按钮"录制" （刷新媒体库）& 重置计时器
-							 */
-							//					if ( !Check.isFastClick() && mDataBinding.btPreviewLeftRecord.isSelected()){
-							//						showToast("录制时长应大于1S");
-							//						return;
-							//					}
-							if (mUvcCameraHandler != null && mUvcCameraHandler.isTemperaturing() ){//mUvcCameraHandler.isOpened()
-								if (mDataBinding.btPreviewLeftRecord.isSelected() && mUvcCameraHandler.isRecording()){//停止录制
-									stopTimer();
-									mUvcCameraHandler.stopRecording();
-									//							mDataBinding.ivPreviewLeftGallery.setEnabled(true);
-									//							Check.firstClick = 0;
-								}else if (!mDataBinding.btPreviewLeftRecord.isSelected() && !mUvcCameraHandler.isRecording()&& mUvcCameraHandler.isPreviewing()){//开始录制
-									startTimer();
-									mUvcCameraHandler.startRecording(sp.getInt(DYConstants.RECORD_AUDIO_SETTING,1));
-									//							mDataBinding.ivPreviewLeftGallery.setEnabled(false);
-								}else {
-									Log.e(TAG, "Record Error: error record state !");
-								}
-								mDataBinding.btPreviewLeftRecord.setSelected(!mDataBinding.btPreviewLeftRecord.isSelected());
-							}else {
-								showToast(getResources().getString(R.string.toast_need_connect_camera));
-							}
-						}else {
-							showToast(getResources().getString(R.string.toast_dont_have_permission));
-						}
-					}
-				});
-				Log.e(TAG, "toRecord: ");
+					mDataBinding.btPreviewLeftRecord.setSelected(!mDataBinding.btPreviewLeftRecord.isSelected());
+				}else {
+					showToast(getResources().getString(R.string.toast_need_connect_camera));
+				}
+//
+//				Log.e(TAG, "toRecord: ");
 				break;
 			case R.id.iv_preview_left_gallery://跳转相册 出现crash
 				if (mDataBinding.btPreviewLeftRecord.isSelected()){
 					showToast(getResources().getString(R.string.toast_is_recording));
 					return;
 				}
-				if (mUvcCameraHandler !=null && mUvcCameraHandler.isPreviewing()){
+//				if (mUvcCameraHandler !=null && mUvcCameraHandler.isPreviewing()){
 					Navigation.findNavController(mDataBinding.getRoot()).navigate(R.id.action_previewFg_to_galleryFg);
-				}
+//				}else {
+//					showToast(getResources().getString(R.string.toast_need_connect_camera));
+//				}
 				break;
-
 			default:
 				break;
 		}
@@ -558,7 +503,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 	 * 初始化界面的监听器
 	 */
 	private void initListener(){
-
 		mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
@@ -1253,9 +1197,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 //		Log.e(TAG, "initView: before  " +System.currentTimeMillis());
 
 		fl = mDataBinding.flPreview;
-
 //		mDataBinding.setPf(this);
-
 
 //		mViewModel = new ViewModelProvider(getViewModelStore(),
 //				new ViewModelProvider.AndroidViewModelFactory((Application) mContext.get().getApplicationContext())).get(PreViewViewModel.class);
