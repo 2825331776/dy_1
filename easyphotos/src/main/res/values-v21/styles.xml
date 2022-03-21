@@ -13,8 +13,13 @@
 
 
     <style name="EasyPhotosTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/easy_photos_status_bar</item>
-        <item name="android:windowIsTranslucent">false</item>
+<!--        <item name="android:statusBarColor">@color/easy_photos_status_bar</item>-->
+        <item name="android:windowIsTranslucent">true</item>  <!-- 透明背景 -->
+        <item name="android:windowContentOverlay">@null</item>
+        <!-- 隐藏状态栏 -->
+        <item name="android:windowFullscreen">true</item>
+        <!-- 隐藏标题栏 -->
+        <item name="android:windowNoTitle">true</item>
     </style>
 
 </resources>

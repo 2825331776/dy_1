@@ -58,7 +58,6 @@ import com.dyt.wcc.dytpir.databinding.PopPaletteChoiceBinding;
 import com.dyt.wcc.dytpir.databinding.PopSettingBinding;
 import com.dyt.wcc.dytpir.databinding.PopTempModeChoiceBinding;
 import com.dyt.wcc.dytpir.ui.DYTApplication;
-import com.dyt.wcc.dytpir.ui.MainActivity;
 import com.dyt.wcc.dytpir.ui.gallery.GlideEngine;
 import com.dyt.wcc.dytpir.utils.AssetCopyer;
 import com.dyt.wcc.dytpir.utils.ByteUtilsCC;
@@ -73,6 +72,7 @@ import com.permissionx.guolindev.request.ExplainScope;
 import com.permissionx.guolindev.request.ForwardScope;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
+import com.zhihu.matisse.Matisse;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,6 +82,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
+import java.util.TimerTask;
 
 public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private UVCCameraHandler                   mUvcCameraHandler;
@@ -113,11 +114,24 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private Configuration  configuration;
 	private boolean isFirstRun = false;
 
+	private static final int REQUEST_CODE_CHOOSE = 23;
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
+			//mAdapter.setData(Matisse.obtainResult(data), Matisse.obtainPathResult(data));
+			Log.e("OnActivityResult ", String.valueOf(Matisse.obtainOriginalState(data)));
+		}
+	}
 	@Override
 	protected void onPause () {
 		if (isDebug)
 			Log.e(TAG, "onPause: ");
-		mDataBinding.textureViewPreviewActivity.onResume();
+
+		if (mUvcCameraHandler!=null)mUvcCameraHandler.stopTemperaturing();
+
+//		mDataBinding.textureViewPreviewActivity.onResume();
 		super.onPause();
 	}
 	@Override
@@ -129,12 +143,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				mUsbMonitor.unregister();
 			}
 		}
+//		mDataBinding.textureViewPreviewActivity.onPause();
 //		if (mUvcCameraHandler!=null){
 //			mUvcCameraHandler.stopTemperaturing();
 //		}
-		if (mDataBinding.textureViewPreviewActivity != null){
-			mDataBinding.textureViewPreviewActivity.onPause();
-		}
+//		if (mDataBinding.textureViewPreviewActivity != null){
+//			mDataBinding.textureViewPreviewActivity.onPause();
+//		}
 		if (mUvcCameraHandler != null){
 			mUvcCameraHandler.close();
 		}
@@ -144,7 +159,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	@Override
 	protected void onRestart () {
 
-		mDataBinding.textureViewPreviewActivity.onResume();
+//		mDataBinding.textureViewPreviewActivity.onResume();
 		super.onRestart();
 	}
 
@@ -209,6 +224,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			}
 
 			mUvcCameraHandler.open(ctrlBlock);
+//			mDataBinding.textureViewPreviewActivity.onResume();
 			startPreview();
 
 			Handler handler = new Handler();
@@ -218,16 +234,25 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
 				}
 			}, 300);
+
+			timerEveryTime = new Timer();
+			timerEveryTime.scheduleAtFixedRate(new TimerTask() {
+				@Override
+				public void run() {
+					setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);//每隔一分钟打一次快门
+					if (mUvcCameraHandler!= null)mUvcCameraHandler.whenShutRefresh();
+					Log.e("TAG", "每隔60s执行一次操作");
+				}
+			}, 500, 600000);
 		}
 		@Override
 		public void onDettach (UsbDevice device) {
 			//				mUvcCameraHandler.close();
 			if (isDebug)Log.e(TAG, "DD  onDetach: ");
-			onPause();
-			onStop();
-			onDestroy();
-			//			android.os.Process.killProcess(android.os.Process.myPid());
-			//			System.exit(0);
+			runOnUiThread(() -> {
+				onPause();
+				onStop();
+			});
 		}
 		@Override
 		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
@@ -349,7 +374,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		}
 		LanguageUtils.updateLanguage(context, locale);//更新语言参数
 
-		Intent intent = new Intent(context, MainActivity.class);
+		Intent intent = new Intent(context, PreviewActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		context.startActivity(intent);
 		//		android.os.Process.killProcess(android.os.Process.myPid());
@@ -547,7 +572,7 @@ public class SendCommand {
 
 		fl = mDataBinding.flPreview;
 
-//		mUsbMonitor = new USBMonitor(this,onDeviceConnectListener);
+		mUsbMonitor = new USBMonitor(this,onDeviceConnectListener);
 
 //		mDataBinding.setPf(this);
 //		mViewModel = new ViewModelProvider(getViewModelStore(),
@@ -797,9 +822,16 @@ public class SendCommand {
 					return;
 				}else {
 //					mUvcCameraHandler.release();
-					mDataBinding.textureViewPreviewActivity.onPause();
-					//					if (mUvcCameraHandler!=null){
-					//					}
+//					mDataBinding.textureViewPreviewActivity.onPause();
+//					//					if (mUvcCameraHandler!=null){
+//					//					}
+//					EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
+//							//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
+//							.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
+//							.setCount(9)
+//							.setVideo(true)
+//							.setGif(false)
+//							.start(101);
 					EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
 							//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
 							.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
@@ -807,6 +839,18 @@ public class SendCommand {
 							.setVideo(true)
 							.setGif(false)
 							.start(101);
+//
+//					Matisse.from(PreviewActivity.this)
+//							.choose(MimeType.ofAll(), false)
+//							.theme(R.style.Matisse_Dracula)
+//							.countable(false)
+//							.addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
+//							.maxSelectable(9)
+//							.originalEnable(true)
+//							.maxOriginalSize(10)
+//							//.imageEngine(new GlideEngine())
+//							.imageEngine(new PicassoEngine())
+//							.forResult(REQUEST_CODE_CHOOSE);
 				}
 
 			}

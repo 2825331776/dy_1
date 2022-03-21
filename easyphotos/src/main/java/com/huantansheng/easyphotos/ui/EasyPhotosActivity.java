@@ -173,9 +173,9 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
             }
         }
     }
-
+    //findViewById控件
     private void initSomeViews() {
-        mBottomBar = findViewById(R.id.m_bottom_bar);
+        mBottomBar = findViewById(R.id.m_bottom_bar);//底部ActionBar
         permissionView = findViewById(R.id.rl_permissions_view);
         tvPermission = findViewById(R.id.tv_permission);
         rootViewAlbumItems = findViewById(R.id.root_view_album_items);
@@ -183,7 +183,7 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
         if (Setting.isOnlyVideo()) {
             tvTitle.setText(R.string.video_selection_easy_photos);
         }
-        findViewById(R.id.iv_second_menu).setVisibility(Setting.showPuzzleMenu || Setting.showCleanMenu || Setting.showOriginalMenu ? View.VISIBLE : View.GONE);
+//        findViewById(R.id.iv_second_menu).setVisibility(Setting.showPuzzleMenu || Setting.showCleanMenu || Setting.showOriginalMenu ? View.VISIBLE : View.GONE);
         setClick(R.id.iv_back);
     }
 
@@ -746,7 +746,7 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 
         initAlbumItems();
         shouldShowMenuDone();
-        setClick(R.id.iv_album_items, R.id.tv_clear, R.id.iv_second_menu, R.id.tv_puzzle);
+//        setClick(R.id.iv_album_items, R.id.tv_clear, R.id.iv_second_menu, R.id.tv_puzzle);
         setClick(tvAlbumItems, rootViewAlbumItems, tvDone, tvOriginal, tvPreview, ivCamera);
 
     }
@@ -758,6 +758,9 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
         }
     }
 
+    /**
+     * 初始化子相册
+     */
     private void initAlbumItems() {
 
         rvAlbumItems = findViewById(R.id.rv_album_items);
@@ -774,6 +777,10 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
         albumItemsAdapter = new AlbumItemsAdapter(this, albumItemList, 0, this);
         rvAlbumItems.setLayoutManager(new LinearLayoutManager(this));
         rvAlbumItems.setAdapter(albumItemsAdapter);
+
+
+
+//        albumItemList.contains();
     }
 
     @Override
@@ -808,9 +815,11 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
             PreviewActivity.start(EasyPhotosActivity.this, -1, 0);
         } else if (R.id.fab_camera == id) {
             launchCamera(Code.REQUEST_CAMERA);
-        } else if (R.id.iv_second_menu == id) {
-            processSecondMenu();
-        } else if (R.id.tv_puzzle == id) {
+        }
+//        else if (R.id.iv_second_menu == id) {
+//            processSecondMenu();
+//        }
+        else if (R.id.tv_puzzle == id) {
             processSecondMenu();
             PuzzleSelectorActivity.start(this);
         }

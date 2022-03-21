@@ -10,6 +10,10 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
 import android.os.Bundle;
@@ -92,7 +96,7 @@ import java.util.TimerTask;
  * <p>Description：@todo         </p>
  * <p>PackagePath: com.dyt.wcc.dytpir.ui.main     </p>
  */
-public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> implements View.OnClickListener {
+public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> implements View.OnClickListener , SensorEventListener {
 	private UVCCameraHandler                   mUvcCameraHandler;
 	private Surface                            stt;
 	private PopupWindow                        PLRPopupWindows;//点线矩形测温弹窗
@@ -122,6 +126,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 	private Configuration  configuration;
 	private boolean isFirstRun = false;
 
+	private SensorManager mSensorManager;//传感器的 监听器
+	private int rotation ;
+
 	@Override
 	protected boolean isInterceptBackPress () {
 		return false;
@@ -136,6 +143,11 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 	public void onPause () {
 		super.onPause();
 		if (isDebug)Log.e(TAG, "onPause: ");
+
+		if (mSensorManager!=null){
+			mSensorManager.unregisterListener(this);
+		}
+
 	}
 
 	private void doReleaseAll(){
@@ -210,6 +222,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 					cameraParams.get(DYConstants.setting_humidity)).apply();
 		}
 	}
+
 
 	@Override
 	public void onDetach () {
@@ -339,6 +352,9 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 			configuration.setLayoutDirection(Locale.ENGLISH);
 		}
 		getResources().updateConfiguration(configuration,metrics);
+		mSensorManager = (SensorManager) mContext.get().getSystemService(Context.SENSOR_SERVICE);
+
+		mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_GAME);
 
 //		Log.e(TAG, "onResume:  mViewModel ===  " + (mViewModel == null));
 
@@ -496,6 +512,8 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 				break;
 		}
 	}
+
+
 
 	/**
 	 * 初始化界面的监听器
@@ -1103,6 +1121,29 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 	}
 
 	@Override
+	public void onSensorChanged (SensorEvent event) {
+		//rotation: 0（Surface.ROTATION_0---竖屏正向）、1（Surface.ROTATION_90---横屏正向）、2（Surface.ROTATION_180---竖屏反向）、3（Surface.ROTATION_270---横屏反向）
+		if (rotation != ((WindowManager)mContext.get().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation()){
+			rotation  = ((WindowManager)mContext.get().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
+			Log.e(TAG, "onSensorChanged: =======================>" + rotation);
+			Log.e(TAG, "mDataBinding.dragTempContainerPreviewFragment.getRotation():==> "+ mDataBinding.dragTempContainerPreviewFragment.getRotation());
+			if (rotation == Surface.ROTATION_270){
+//				mDataBinding.textureViewPreviewFragment.setRotation(180);
+//				mDataBinding.dragTempContainerPreviewFragment.setRotation(180);
+			}else if (rotation == Surface.ROTATION_90){
+//				mDataBinding.textureViewPreviewFragment.setRotation(0);
+//				mDataBinding.dragTempContainerPreviewFragment.setRotation(0);
+			}
+		}
+
+	}
+
+	@Override
+	public void onAccuracyChanged (Sensor sensor, int accuracy) {
+
+	}
+
+	@Override
 	protected void initView () {
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
 		configuration = getResources().getConfiguration();
@@ -1116,7 +1157,6 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 			//默认不打开音频录制
 			sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING,1).apply();
 		}
-
 		highTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_high);
 		lowTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_low);
 		centerTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_center);

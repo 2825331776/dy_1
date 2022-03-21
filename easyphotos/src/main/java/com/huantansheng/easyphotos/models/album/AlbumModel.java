@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.core.content.PermissionChecker;
 
@@ -338,6 +337,11 @@ public class AlbumModel {
      * @return 专辑项目集
      */
     public ArrayList<AlbumItem> getAlbumItems() {
+//        for (AlbumItem item : album.albumItems){
+//            if (!item.name.contains("DYT")){
+//                album.albumItems.remove(item);
+//            }
+//        }
         return album.albumItems;
     }
 

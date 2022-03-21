@@ -42,18 +42,18 @@
             android:theme="@style/MyTheme"
             android:windowSoftInputMode="adjustPan|adjustResize|stateHidden"
             android:exported="true" >
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
-<!--            <intent-filter>-->
-<!--                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />-->
-<!--            </intent-filter>-->
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
 
-<!--            <meta-data-->
-<!--                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"-->
-<!--                android:resource="@xml/dy_device_filter" />-->
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/dy_device_filter" />
         </activity>
 
         <activity
@@ -79,25 +79,25 @@
         <!-- android:name="android.support.FILE_PROVIDER_PATHS" -->
         <!-- android:resource="@xml/file_paths_public" /> -->
         <!-- </provider> -->
-        <activity
-            android:name=".ui.MainActivity"
-            android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
-            android:launchMode="singleTop"
-            android:screenOrientation="landscape"
-            android:theme="@style/MyTheme"
-            android:windowSoftInputMode="adjustPan|adjustResize|stateHidden">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-            </intent-filter>
+<!--        <activity-->
+<!--            android:name=".ui.MainActivity"-->
+<!--            android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"-->
+<!--            android:launchMode="singleTop"-->
+<!--            android:screenOrientation="landscape"-->
+<!--            android:theme="@style/MyTheme"-->
+<!--            android:windowSoftInputMode="adjustPan|adjustResize|stateHidden">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />-->
+<!--            </intent-filter>-->
 
-            <meta-data
-                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/dy_device_filter" />
-        </activity>
+<!--            <meta-data-->
+<!--                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"-->
+<!--                android:resource="@xml/dy_device_filter" />-->
+<!--        </activity>-->
     </application>
 
 </manifest>

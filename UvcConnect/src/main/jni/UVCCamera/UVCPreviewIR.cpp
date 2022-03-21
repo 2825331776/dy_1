@@ -1230,10 +1230,12 @@ void UVCPreviewIR::signal_tiny_send_order(){
 //绘制每一帧的图像
 void UVCPreviewIR::draw_preview_one(uint8_t *frameData, ANativeWindow **window, convFunc_t convert_func, int pixcelBytes)
 {
-    if (mCurrentAndroidVersion == 0) {
-        RgbaHoldBuffer = mFrameImage->onePreviewData(frameData);
-    }
+
     if (LIKELY(*window)) {
+        if (mCurrentAndroidVersion == 0) {
+            RgbaHoldBuffer = mFrameImage->onePreviewData(frameData);
+        }
+
         copyToSurface(RgbaHoldBuffer, window);
     }
 }

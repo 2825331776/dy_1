@@ -8,7 +8,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_150dp"
+        android:layout_height="@dimen/dimen_180dp"
         android:paddingStart="@dimen/dimen_20dp"
         android:background="@drawable/bg_main_preview_setting_pop">
 
@@ -35,13 +35,24 @@
 <!--        超链接颜色设置-->
 <!--        android:textColorLink="@color/white"-->
         <TextView
-            android:id="@+id/tv_company_website"
-            android:text="@string/CompanyWebsite"
+            android:id="@+id/tv_website"
             app:layout_constraintLeft_toLeftOf="@id/tv_company_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_company_name"
             android:layout_marginTop="@dimen/dimen_5dp"
             android:textSize="@dimen/dimen_16sp"
+            android:textColor="@color/white"
+            android:text="官网地址："
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv_company_website"
+            android:text="@string/CompanyWebsite"
+            app:layout_constraintLeft_toRightOf="@id/tv_website"
+            app:layout_constraintTop_toTopOf="@id/tv_website"
+            app:layout_constraintBottom_toBottomOf="@id/tv_website"
+            android:textSize="@dimen/dimen_16sp"
             android:textColorLink="@color/white"
-            app:layout_constraintTop_toBottomOf="@id/tv_company_name"
             android:autoLink="web"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
@@ -86,6 +97,8 @@
             android:textColor="@color/white"
             android:textIsSelectable="true"
             android:textAllCaps="false"
+            android:autoLink="email"
+            android:textColorLink="@color/white"
             android:textSize="@dimen/dimen_16sp"
             android:layout_marginStart="@dimen/dimen_5dp"
             app:layout_constraintLeft_toRightOf="@id/tv_contactus"
@@ -93,6 +106,18 @@
             app:layout_constraintBottom_toBottomOf="@id/tv_contactus"
             android:layout_width="wrap_content"
             android:layout_height="0dp"/>
+<!--        隐私条款 链接-->
+        <TextView
+            android:text="隐私权政策"
+            android:autoLink="web"
+            android:id="@+id/tv_privacy_policy"
+            app:layout_constraintLeft_toLeftOf="@id/tv_company_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_contactus"
+            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:textSize="@dimen/dimen_16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
  <!--        版本更新-->
         <TextView
@@ -100,7 +125,7 @@
             android:layout_marginTop="@dimen/dimen_10dp"
             android:layout_marginBottom="@dimen/dimen_10dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_contactus"
+            app:layout_constraintTop_toBottomOf="@id/tv_privacy_policy"
             app:layout_constraintLeft_toLeftOf="@id/tv_version_name_info"
             android:text="@string/CheckLatestVersion"
             android:textColor="@color/white"
