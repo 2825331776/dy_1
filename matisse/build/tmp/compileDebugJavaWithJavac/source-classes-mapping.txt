@@ -1,0 +1,123 @@
+com/zhihu/matisse/internal/ui/AlbumPreviewActivity.java
+ com.zhihu.matisse.internal.ui.AlbumPreviewActivity
+com/zhihu/matisse/internal/ui/widget/RoundedRectangleImageView.java
+ com.zhihu.matisse.internal.ui.widget.RoundedRectangleImageView
+com/zhihu/matisse/internal/utils/PhotoMetadataUtils.java
+ com.zhihu.matisse.internal.utils.PhotoMetadataUtils
+com/zhihu/matisse/internal/ui/adapter/AlbumsAdapter.java
+ com.zhihu.matisse.internal.ui.adapter.AlbumsAdapter
+com/zhihu/matisse/internal/ui/adapter/PreviewPagerAdapter.java
+ com.zhihu.matisse.internal.ui.adapter.PreviewPagerAdapter
+ com.zhihu.matisse.internal.ui.adapter.PreviewPagerAdapter$OnPrimaryItemSetListener
+com/zhihu/matisse/internal/utils/MediaStoreCompat.java
+ com.zhihu.matisse.internal.utils.MediaStoreCompat
+com/zhihu/matisse/internal/ui/adapter/RecyclerViewCursorAdapter.java
+ com.zhihu.matisse.internal.ui.adapter.RecyclerViewCursorAdapter
+com/zhihu/matisse/internal/utils/ExifInterfaceCompat.java
+ com.zhihu.matisse.internal.utils.ExifInterfaceCompat
+com/zhihu/matisse/internal/ui/widget/AlbumsSpinner.java
+ com.zhihu.matisse.internal.ui.widget.AlbumsSpinner
+ com.zhihu.matisse.internal.ui.widget.AlbumsSpinner$1
+ com.zhihu.matisse.internal.ui.widget.AlbumsSpinner$2
+com/zhihu/matisse/internal/ui/widget/IncapableDialog.java
+ com.zhihu.matisse.internal.ui.widget.IncapableDialog
+ com.zhihu.matisse.internal.ui.widget.IncapableDialog$1
+com/zhihu/matisse/internal/ui/widget/MediaGridInset.java
+ com.zhihu.matisse.internal.ui.widget.MediaGridInset
+com/zhihu/matisse/filter/GifSizeFilter.java
+ com.zhihu.matisse.filter.GifSizeFilter
+ com.zhihu.matisse.filter.GifSizeFilter$1
+com/zhihu/matisse/internal/entity/Item.java
+ com.zhihu.matisse.internal.entity.Item
+ com.zhihu.matisse.internal.entity.Item$1
+com/zhihu/matisse/listener/OnCheckedListener.java
+ com.zhihu.matisse.listener.OnCheckedListener
+com/zhihu/matisse/SelectionCreator.java
+ com.zhihu.matisse.SelectionCreator
+ com.zhihu.matisse.SelectionCreator$ScreenOrientation
+com/zhihu/matisse/MimeType.java
+ com.zhihu.matisse.MimeType
+com/zhihu/matisse/internal/ui/widget/SquareFrameLayout.java
+ com.zhihu.matisse.internal.ui.widget.SquareFrameLayout
+com/zhihu/matisse/BuildConfig.java
+ com.zhihu.matisse.BuildConfig
+com/zhihu/matisse/filter/Filter.java
+ com.zhihu.matisse.filter.Filter
+com/zhihu/matisse/internal/ui/PreviewItemFragment.java
+ com.zhihu.matisse.internal.ui.PreviewItemFragment
+ com.zhihu.matisse.internal.ui.PreviewItemFragment$1
+ com.zhihu.matisse.internal.ui.PreviewItemFragment$2
+com/zhihu/matisse/engine/ImageEngine.java
+ com.zhihu.matisse.engine.ImageEngine
+com/zhihu/matisse/internal/entity/Album.java
+ com.zhihu.matisse.internal.entity.Album
+ com.zhihu.matisse.internal.entity.Album$1
+com/zhihu/matisse/listener/OnSelectedListener.java
+ com.zhihu.matisse.listener.OnSelectedListener
+com/zhihu/matisse/internal/entity/SelectionSpec.java
+ com.zhihu.matisse.internal.entity.SelectionSpec
+ com.zhihu.matisse.internal.entity.SelectionSpec$1
+ com.zhihu.matisse.internal.entity.SelectionSpec$InstanceHolder
+com/zhihu/matisse/internal/ui/BasePreviewActivity.java
+ com.zhihu.matisse.internal.ui.BasePreviewActivity
+ com.zhihu.matisse.internal.ui.BasePreviewActivity$1
+ com.zhihu.matisse.internal.ui.BasePreviewActivity$2
+com/zhihu/matisse/internal/ui/MediaSelectionFragment.java
+ com.zhihu.matisse.internal.ui.MediaSelectionFragment
+ com.zhihu.matisse.internal.ui.MediaSelectionFragment$SelectionProvider
+com/zhihu/matisse/internal/utils/PathUtils.java
+ com.zhihu.matisse.internal.utils.PathUtils
+com/zhihu/matisse/engine/impl/PicassoEngine.java
+ com.zhihu.matisse.engine.impl.PicassoEngine
+com/zhihu/matisse/internal/utils/UIUtils.java
+ com.zhihu.matisse.internal.utils.UIUtils
+com/zhihu/matisse/internal/utils/Platform.java
+ com.zhihu.matisse.internal.utils.Platform
+com/zhihu/matisse/internal/entity/CaptureStrategy.java
+ com.zhihu.matisse.internal.entity.CaptureStrategy
+com/zhihu/matisse/internal/ui/widget/CheckView.java
+ com.zhihu.matisse.internal.ui.widget.CheckView
+com/zhihu/matisse/Matisse.java
+ com.zhihu.matisse.Matisse
+com/zhihu/matisse/internal/model/AlbumMediaCollection.java
+ com.zhihu.matisse.internal.model.AlbumMediaCollection
+ com.zhihu.matisse.internal.model.AlbumMediaCollection$AlbumMediaCallbacks
+com/zhihu/matisse/engine/impl/GlideEngine.java
+ com.zhihu.matisse.engine.impl.GlideEngine
+com/zhihu/matisse/internal/ui/widget/CheckRadioView.java
+ com.zhihu.matisse.internal.ui.widget.CheckRadioView
+com/zhihu/matisse/listener/OnFragmentInteractionListener.java
+ com.zhihu.matisse.listener.OnFragmentInteractionListener
+com/zhihu/matisse/internal/loader/AlbumLoader.java
+ com.zhihu.matisse.internal.loader.AlbumLoader
+com/zhihu/matisse/internal/ui/widget/MediaGrid.java
+ com.zhihu.matisse.internal.ui.widget.MediaGrid
+ com.zhihu.matisse.internal.ui.widget.MediaGrid$OnMediaGridClickListener
+ com.zhihu.matisse.internal.ui.widget.MediaGrid$PreBindInfo
+com/zhihu/matisse/internal/entity/IncapableCause.java
+ com.zhihu.matisse.internal.entity.IncapableCause
+ com.zhihu.matisse.internal.entity.IncapableCause$Form
+com/zhihu/matisse/internal/ui/SelectedPreviewActivity.java
+ com.zhihu.matisse.internal.ui.SelectedPreviewActivity
+com/zhihu/matisse/internal/loader/AlbumMediaLoader.java
+ com.zhihu.matisse.internal.loader.AlbumMediaLoader
+com/zhihu/matisse/internal/ui/adapter/AlbumMediaAdapter.java
+ com.zhihu.matisse.internal.ui.adapter.AlbumMediaAdapter
+ com.zhihu.matisse.internal.ui.adapter.AlbumMediaAdapter$1
+ com.zhihu.matisse.internal.ui.adapter.AlbumMediaAdapter$CaptureViewHolder
+ com.zhihu.matisse.internal.ui.adapter.AlbumMediaAdapter$CheckStateListener
+ com.zhihu.matisse.internal.ui.adapter.AlbumMediaAdapter$MediaViewHolder
+ com.zhihu.matisse.internal.ui.adapter.AlbumMediaAdapter$OnMediaClickListener
+ com.zhihu.matisse.internal.ui.adapter.AlbumMediaAdapter$OnPhotoCapture
+com/zhihu/matisse/ui/MatisseActivity.java
+ com.zhihu.matisse.ui.MatisseActivity
+ com.zhihu.matisse.ui.MatisseActivity$1
+ com.zhihu.matisse.ui.MatisseActivity$2
+ com.zhihu.matisse.ui.MatisseActivity$Check
+com/zhihu/matisse/internal/model/SelectedItemCollection.java
+ com.zhihu.matisse.internal.model.SelectedItemCollection
+com/zhihu/matisse/internal/model/AlbumCollection.java
+ com.zhihu.matisse.internal.model.AlbumCollection
+ com.zhihu.matisse.internal.model.AlbumCollection$AlbumCallbacks
+com/zhihu/matisse/internal/ui/widget/PreviewViewPager.java
+ com.zhihu.matisse.internal.ui.widget.PreviewViewPager
