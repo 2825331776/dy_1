@@ -300,14 +300,14 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 //            updateSelector();
 //        }
 //        else
-        if (R.id.tv_original == id) {
-            if (!Setting.originalMenuUsable) {
-                Toast.makeText(getApplicationContext(), Setting.originalMenuUnusableHint, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            Setting.selectedOriginal = !Setting.selectedOriginal;
-            processOriginalMenu();
-        }
+//        if (R.id.tv_original == id) {
+//            if (!Setting.originalMenuUsable) {
+//                Toast.makeText(getApplicationContext(), Setting.originalMenuUnusableHint, Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//            Setting.selectedOriginal = !Setting.selectedOriginal;
+//            processOriginalMenu();
+//        }
 //        else if (R.id.tv_done == id) {
 //            if (clickDone) return;
 //            clickDone = true;

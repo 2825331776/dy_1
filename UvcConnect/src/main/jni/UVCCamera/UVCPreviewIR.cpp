@@ -720,6 +720,22 @@ char * UVCPreviewIR::DecryptTag(char * tag){
     strcpy(tag,tagChar);
     return tag;
 }
+/**
+ * 替换函数
+ * @param base
+ * @param baseLength
+ * @param src
+ * @param dst
+ * @return
+ */
+void * charReplace(void * base ,
+                   int baseLength, unsigned char src ,unsigned char dst){
+    unsigned char * base_p = (unsigned char *)base;
+    for (int i = 0; i < baseLength; i++) {
+//        if (())
+    }
+    return base;
+}
 
 
 string replace(string& base, string src, string dst)
@@ -924,7 +940,6 @@ string DecryptionAES(const string& strSrc) //AES解密
     return strDest;
 }
 
-
 /**
  *
  * @param ctrl Control block, processed using {uvc_probe_stream_ctrl} or {uvc_get_stream_ctrl_format_size}
@@ -979,9 +994,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     string dytSnStr;
                     //解码用户区 写入的 用户SN号
                     if (mPid == 22592 && mVid == 3034){//tinyC机芯
-
                         int ret = UVC_ERROR_IO;
-
                         unsigned char * tinyUserSn = (unsigned char *)malloc(sizeof (char )*15);
                         unsigned char * tinyRobotSn = (unsigned char *)malloc(sizeof (char )*15);
                         int dataLen = 15; //获取或读取数据大小
@@ -1057,8 +1070,6 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         tinyC_data[1] = 0x01;
                         ret = uvc_diy_communicate(mDeviceHandle,tinyC_request_type,tinyC_bRequest,tinyC_wValue,tinyC_wIndex,tinyC_data, sizeof(tinyC_data),1000);
 
-
-
                         //获取 机器的SN 和 用户区的SN
 //                        LOGE("========tinyRobotSn == %s=========",tinyRobotSn);
 //                        LOGE("========tinyUserSn == %s =========",tinyUserSn);
@@ -1075,8 +1086,10 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         tinyRobotSn = NULL;
                         free(tinyUserSn);
                         tinyUserSn = NULL;
-
-                    }else  if (mVid == 5396 && mPid==1){//S0机芯
+                        snIsRight = true;
+                    }
+                    else
+                        if (mVid == 5396 && mPid==1){//S0机芯
 
                         //根据 标识  去设置是否渲染 画面 读取SN号
                             unsigned char *fourLinePara = HoldBuffer + ((256 * (192)) << 1);

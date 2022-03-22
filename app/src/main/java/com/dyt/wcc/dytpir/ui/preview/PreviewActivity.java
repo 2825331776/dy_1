@@ -195,6 +195,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		if (mUsbMonitor !=null && !mUsbMonitor.isRegistered()) {
 			mUsbMonitor.register();
 		}
+		if (mUvcCameraHandler !=null && mUvcCameraHandler.isPreviewing())mUvcCameraHandler.startTemperaturing();
 		super.onResume();
 	}
 
@@ -287,6 +288,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 		mDataBinding.textureViewPreviewActivity.iniTempBitmap(mTextureViewWidth, mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
 		mDataBinding.textureViewPreviewActivity.setVidPid(mVid,mPid);//设置vid  pid
+		mDataBinding.textureViewPreviewActivity.initTempFontSize(mFontSize);
 		mDataBinding.textureViewPreviewActivity.setTinyCCorrection(sp.getFloat(DYConstants.setting_correction,0.0f));//设置vid  pid
 		mDataBinding.textureViewPreviewActivity.setDragTempContainer(mDataBinding.dragTempContainerPreviewFragment);
 		mDataBinding.customSeekbarPreviewFragment.setmThumbListener(new MyCustomRangeSeekBar.ThumbListener() {
@@ -349,15 +351,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private int setValue(final int flag, final int value) {//设置机芯参数,调用JNI层
 		return mUvcCameraHandler != null ? mUvcCameraHandler.setValue(flag, value) : 0;
 	}
-
-
 	/**
-	 * 设置语言
+	 * 切换语言
 	 * @param type
 	 */
 	private void toSetLanguage(int type) {//切换语言
 		Locale locale;
-
 		Context context = DYTApplication.getInstance();
 		if (type == 0) {
 			locale = Locale.SIMPLIFIED_CHINESE;
@@ -373,7 +372,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			return;
 		}
 		LanguageUtils.updateLanguage(context, locale);//更新语言参数
-
+//		if (mPid == 22592 && mVid == 3034){
+//			if (mUvcCameraHandler != null && mUvcCameraHandler.isPreviewing()){
+//				mUvcCameraHandler.release();
+//			}
+//		}
 		Intent intent = new Intent(context, PreviewActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		context.startActivity(intent);
@@ -522,6 +525,7 @@ public class SendCommand {
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 				if (allGranted){//基本权限被授予之后才能初始化监听器。
 					mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);//
+					Log.e(TAG, "onResult: mFontSize ==========> " + mFontSize);
 					//					Log.e(TAG, "initView:  ==444444= " + System.currentTimeMillis());
 					AssetCopyer.copyAllAssets(DYTApplication.getInstance(), mContext.get().getExternalFilesDir(null).getAbsolutePath());
 					//		Log.e(TAG,"===========getExternalFilesDir=========="+this.getExternalFilesDir(null).getAbsolutePath());
@@ -551,28 +555,34 @@ public class SendCommand {
 					//		Log.e(TAG, "initView: sp.get Palette_Number = " + sp.getInt(DYConstants.PALETTE_NUMBER,0));
 					mDataBinding.customSeekbarPreviewFragment.setPalette(0);
 
+
+
 					initListener();
 
 					initRecord();
+
+					mDataBinding.dragTempContainerPreviewFragment.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
+					mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING,0));
+
+					//		Log.e(TAG, "initView:  ==111111= " + System.currentTimeMillis());
+					//		mDataBinding.textureViewPreviewFragment.setAspectRatio(256/(float)192);
+					mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
+							mDataBinding.textureViewPreviewActivity,1,
+							384,292,1,null,0);
+					//		Log.e(TAG, "initView: before  " +System.currentTimeMillis());
+
+					fl = mDataBinding.flPreview;
+
+					mUsbMonitor = new USBMonitor(mContext.get(), onDeviceConnectListener);
 				}else {
 					showToast(getResources().getString(R.string.toast_dont_have_permission));
 				}
 			}
 		});
 
-		mDataBinding.dragTempContainerPreviewFragment.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
-		mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING,0));
 
-		//		Log.e(TAG, "initView:  ==111111= " + System.currentTimeMillis());
-		//		mDataBinding.textureViewPreviewFragment.setAspectRatio(256/(float)192);
-		mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
-				mDataBinding.textureViewPreviewActivity,1,
-				384,292,1,null,0);
-		//		Log.e(TAG, "initView: before  " +System.currentTimeMillis());
 
-		fl = mDataBinding.flPreview;
 
-		mUsbMonitor = new USBMonitor(this,onDeviceConnectListener);
 
 //		mDataBinding.setPf(this);
 //		mViewModel = new ViewModelProvider(getViewModelStore(),
@@ -832,10 +842,14 @@ public class SendCommand {
 //							.setVideo(true)
 //							.setGif(false)
 //							.start(101);
+//					ArrayList<String> a = new ArrayList<>();
+//					a.add("DYTCamera");
 					EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
 							//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
 							.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
 							.setCount(9)
+//							.setSelectedPhotos(null)
+//							.setSelectedPhotoPaths(a)
 							.setVideo(true)
 							.setGif(false)
 							.start(101);

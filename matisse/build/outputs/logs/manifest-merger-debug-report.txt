@@ -1,8 +1,8 @@
 -- Merging decision tree log ---
 manifest
-ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:17:1-31:12
-INJECTED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:17:1-31:12
-INJECTED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:17:1-31:12
+ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:17:1-34:12
+INJECTED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:17:1-34:12
+INJECTED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:17:1-34:12
 	package
 		ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:19:5-32
 		INJECTED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml
@@ -18,19 +18,25 @@ ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml
 	android:name
 		ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:22:22-77
 application
-ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:24:5-30:19
+ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:24:5-33:19
 activity#com.zhihu.matisse.ui.MatisseActivity
-ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:25:9-27:20
+ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:25:9-28:20
+	android:screenOrientation
+		ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:26:13-50
 	android:name
 		ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:25:19-70
 activity#com.zhihu.matisse.internal.ui.AlbumPreviewActivity
-ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:28:9-86
+ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:29:9-30:52
+	android:screenOrientation
+		ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:30:13-50
 	android:name
-		ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:28:19-84
+		ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:29:19-84
 activity#com.zhihu.matisse.internal.ui.SelectedPreviewActivity
-ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:29:9-89
+ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:31:9-32:52
+	android:screenOrientation
+		ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:32:13-50
 	android:name
-		ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:29:19-87
+		ADDED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:31:19-87
 uses-sdk
 INJECTED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml

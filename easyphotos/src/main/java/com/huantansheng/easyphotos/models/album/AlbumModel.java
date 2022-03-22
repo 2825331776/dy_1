@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.core.content.PermissionChecker;
 
@@ -249,7 +250,8 @@ public class AlbumModel {
                     int selectSize = Setting.selectedPhotos.size();
                     for (int i = 0; i < selectSize; i++) {
                         Photo selectedPhoto = Setting.selectedPhotos.get(i);
-                        if (path.equals(selectedPhoto.path)) {
+                        if (path.equals(selectedPhoto.path)) {// && path.contains("DYTCamera")
+                            Log.e(TAG, "initAlbum:path ============> " + selectedPhoto.path);
                             imageItem.selectedOriginal = Setting.selectedOriginal;
                             Result.addPhoto(imageItem);
                         }
@@ -261,8 +263,11 @@ public class AlbumModel {
                     // 用第一个图片作为专辑的封面
                     album.addAlbumItem(albumItem_all_name, "", path, uri);
                 }
-                // 把图片全部放进“全部”专辑
-                album.getAlbumItem(albumItem_all_name).addImageItem(imageItem);
+                if (imageItem.path.contains("DYTCamera")){//筛选 自己需要的文件
+                    // 把图片全部放进“全部”专辑
+                    album.getAlbumItem(albumItem_all_name).addImageItem(imageItem);
+                }
+
 
                 if (Setting.showVideo && isVideo && !albumItem_video_name.equals(albumItem_all_name)) {
                     album.addAlbumItem(albumItem_video_name, "", path, uri);

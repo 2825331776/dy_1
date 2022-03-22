@@ -31,17 +31,26 @@
 25-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:22:22-77
 26
 27    <application>
-27-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:24:5-30:19
-28        <activity android:name="com.zhihu.matisse.ui.MatisseActivity" >
-28-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:25:9-27:20
-28-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:25:19-70
-29        </activity>
-30        <activity android:name="com.zhihu.matisse.internal.ui.AlbumPreviewActivity" />
-30-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:28:9-86
-30-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:28:19-84
-31        <activity android:name="com.zhihu.matisse.internal.ui.SelectedPreviewActivity" />
-31-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:29:9-89
-31-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:29:19-87
-32    </application>
-33
-34</manifest>
+27-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:24:5-33:19
+28        <activity
+28-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:25:9-28:20
+29            android:name="com.zhihu.matisse.ui.MatisseActivity"
+29-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:25:19-70
+30            android:screenOrientation="landscape" >
+30-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:26:13-50
+31        </activity>
+32        <activity
+32-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:29:9-30:52
+33            android:name="com.zhihu.matisse.internal.ui.AlbumPreviewActivity"
+33-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:29:19-84
+34            android:screenOrientation="landscape" />
+34-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:30:13-50
+35        <activity
+35-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:31:9-32:52
+36            android:name="com.zhihu.matisse.internal.ui.SelectedPreviewActivity"
+36-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:31:19-87
+37            android:screenOrientation="landscape" />
+37-->D:\androidWorkspace\DYTPIRCamera\matisse\src\main\AndroidManifest.xml:32:13-50
+38    </application>
+39
+40</manifest>
