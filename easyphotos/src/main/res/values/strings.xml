@@ -1,26 +1,26 @@
 <resources>
     <string name="app_name">EasyPhotos</string>
 
-    <string name="selector_folder_all_easy_photos">所有图片</string>
+    <string name="selector_folder_all_easy_photos">All Photos</string>
 
-    <string name="selector_folder_all_video_photo_easy_photos">图片和视频</string>
+    <string name="selector_folder_all_video_photo_easy_photos">Photos and videos</string>
 
-    <string name="selector_folder_video_easy_photos">所有视频</string>
+    <string name="selector_folder_video_easy_photos">All video</string>
 
-    <string name="selector_easy_photos">选择</string>
+    <string name="selector_easy_photos">select</string>
 
     <!--http://stackoverflow.com/questions/17502824/whats-wrong-with-this-format-string-->
-    <string name="selector_action_done_easy_photos">完成(%1$d/%2$d)</string>
+    <string name="selector_action_done_easy_photos">done(%1$d/%2$d)</string>
 
-    <string name="selector_preview_easy_photos">预览</string>
+    <string name="selector_preview_easy_photos">preview</string>
 
-    <string name="selector_reach_max_hint_easy_photos">超出最大选择数</string>
+    <string name="selector_reach_max_hint_easy_photos">Maximum selections exceeded</string>
 
-    <string name="selector_reach_max_image_hint_easy_photos">最多只能选择%d张图片</string>
+    <string name="selector_reach_max_image_hint_easy_photos">You can only select at most %d images</string>
 
-    <string name="selector_reach_max_video_hint_easy_photos">最多只能选择%d个视频</string>
+    <string name="selector_reach_max_video_hint_easy_photos">You can only select at most %d videos</string>
 
-    <string name="selector_single_type_hint_easy_photos">需要选择同种类型的文件</string>
+    <string name="selector_single_type_hint_easy_photos">Need to select files of the same type</string>
 
     <string name="msg_no_camera_easy_photos">无法启动相机！</string>
 
@@ -36,21 +36,21 @@
 
     <string name="empty_easy_photos">清空</string>
 
-    <string name="no_photos_easy_photos">没有符合要求的图片，拍一张吧</string>
+    <string name="no_photos_easy_photos">There is no picture that meets the requirements, take a picture </string>
 
-    <string name="no_videos_easy_photos">没有符合要求的视频</string>
+    <string name="no_videos_easy_photos">No matching videos</string>
 
-    <string name="permissions_again_easy_photos">请点击并允许相关权限</string>
+    <string name="permissions_again_easy_photos">Please click and allow the relevant permissions</string>
 
-    <string name="permissions_die_easy_photos">请点击并在设置中允许相关权限</string>
+    <string name="permissions_die_easy_photos">Please click and allow the relevant permissions in the settings</string>
 
-    <string name="original_easy_photos">原图</string>
+    <string name="original_easy_photos">original image</string>
 
     <string name="preview_current_number_easy_photos">%1$d/%2$d</string>
 
-    <string name="done_easy_photos">完成</string>
+    <string name="done_easy_photos">Finish</string>
 
-    <string name="cancel_easy_photos">取消</string>
+    <string name="cancel_easy_photos">Cancel</string>
 
     <string name="template_easy_photos">模板</string>
 
@@ -62,13 +62,13 @@
 
     <string name="text_sticker_hint_name_easy_photos">自定义</string>
 
-    <string name="picture_selection_easy_photos">图片选择</string>
+    <string name="picture_selection_easy_photos">picture selection</string>
 
-    <string name="video_selection_easy_photos">视频选择</string>
+    <string name="video_selection_easy_photos">Video selection</string>
 
     <string name="puzzle_easy_photos">拼一张</string>
 
-    <string name="select_puzzle_photos">请选择2 \- 9张照片</string>
+    <string name="select_puzzle_photos">Please select 2 \- 9 photos</string>
 
     <string name="gif_easy_photos">动图</string>
 

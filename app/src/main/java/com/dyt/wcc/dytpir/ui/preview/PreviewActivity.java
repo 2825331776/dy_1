@@ -126,8 +126,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	}
 	@Override
 	protected void onPause () {
-		if (isDebug)
-			Log.e(TAG, "onPause: ");
+		if (isDebug)Log.e(TAG, "onPause: ");
 
 		if (mUvcCameraHandler!=null)mUvcCameraHandler.stopTemperaturing();
 
@@ -158,7 +157,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	@Override
 	protected void onRestart () {
-
+		if (isDebug)Log.e(TAG, "onRestart: ");
 //		mDataBinding.textureViewPreviewActivity.onResume();
 		super.onRestart();
 	}
@@ -375,11 +374,17 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 //		if (mPid == 22592 && mVid == 3034){
 //			if (mUvcCameraHandler != null && mUvcCameraHandler.isPreviewing()){
 //				mUvcCameraHandler.release();
+//				mUvcCameraHandler = null;
+//			}
+//			if (mUsbMonitor.isRegistered()){
+//				mUsbMonitor.unregister();
+//				mUsbMonitor = null;
 //			}
 //		}
 		Intent intent = new Intent(context, PreviewActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		context.startActivity(intent);
+//		finish();
 		//		android.os.Process.killProcess(android.os.Process.myPid());
 		//		System.exit(0);
 	}
@@ -599,20 +604,20 @@ public class SendCommand {
 	 */
 	private void initListener(){
 		//测试的 监听器
-		mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick (View v) {
-//				Intent intent = new Intent(PreviewActivity.this, GalleryActivity.class);
-//				startActivity(intent);
-								EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
-										//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
-										.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
-										.setCount(9)
-										.setVideo(true)
-										.setGif(false)
-										.start(101);
-			}
-		});
+//		mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick (View v) {
+////				Intent intent = new Intent(PreviewActivity.this, GalleryActivity.class);
+////				startActivity(intent);
+//								EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
+//										//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
+//										.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
+//										.setCount(9)
+//										.setVideo(true)
+//										.setGif(false)
+//										.start(101);
+//			}
+//		});
 		//
 		//				mDataBinding.btTest02.setOnClickListener(new View.OnClickListener() {
 		//					@Override
@@ -794,7 +799,7 @@ public class SendCommand {
 		mDataBinding.ivPreviewLeftTakePhoto.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-				if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened()){
+				if (mUvcCameraHandler != null && mUvcCameraHandler.isPreviewing()){
 					String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
 					if (mUvcCameraHandler.captureStill(picPath))showToast(getResources().getString(R.string.toast_save_path)+picPath );
 					//						if (isDebug)Log.e(TAG, "onResult: java path === "+ picPath);
@@ -807,7 +812,7 @@ public class SendCommand {
 		mDataBinding.btPreviewLeftRecord.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-				if (mUvcCameraHandler != null && mUvcCameraHandler.isTemperaturing() ){//mUvcCameraHandler.isOpened()
+				if (mUvcCameraHandler != null && mUvcCameraHandler.isPreviewing() ){//mUvcCameraHandler.isOpened()
 					if (mDataBinding.btPreviewLeftRecord.isSelected() && mUvcCameraHandler.isRecording()){//停止录制
 						stopTimer();
 						mUvcCameraHandler.stopRecording();

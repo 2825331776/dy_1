@@ -333,6 +333,7 @@ public class AlbumModel {
      * @return 当前专辑项目的图片集
      */
     public ArrayList<Photo> getCurrAlbumItemPhotos(int currAlbumItemIndex) {
+
         return album.getAlbumItem(currAlbumItemIndex).photos;
     }
 

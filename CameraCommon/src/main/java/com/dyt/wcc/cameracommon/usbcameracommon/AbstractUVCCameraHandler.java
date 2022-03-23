@@ -555,6 +555,10 @@ abstract class AbstractUVCCameraHandler extends Handler {
         checkReleased();
         sendEmptyMessage(MSG_DIS_WENKUAN);
     }
+
+//    public boolean checkSnRight(){
+//
+//    }
     //固定温度条
     public void fixedTempStripChange(boolean state) {
 //        checkReleased();

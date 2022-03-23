@@ -1,14 +1,12 @@
 package com.huantansheng.easyphotos.ui;
 
 import android.Manifest;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -23,8 +21,6 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -74,6 +70,7 @@ import java.util.Locale;
 
 public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsAdapter.OnClickListener, PhotosAdapter.OnClickListener, AdListener, View.OnClickListener {
 
+    private static final String TAG = "EasyPhotosActivity";
     private File mTempImageFile;
 
     private AlbumModel albumModel;
@@ -99,13 +96,15 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 
 //    private ImageView ivCamera;
     private TextView tvTitle;
+    private boolean onlyPic = false;
+    private int functionIndex = 0;
 
     //拼一张
 //    private LinearLayout mSecondMenus;
 
     private RelativeLayout permissionView;
     private TextView tvPermission;
-    private View mBottomBar;
+//    private View mBottomBar;
 
     //功能区按钮：
     private Button btAll, btPic,btVideo,btDelete;
@@ -176,7 +175,7 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
     }
     //findViewById控件
     private void initSomeViews() {
-        mBottomBar = findViewById(R.id.m_bottom_bar);//底部ActionBar
+//        mBottomBar = findViewById(R.id.m_bottom_bar);//底部ActionBar
         permissionView = findViewById(R.id.rl_permissions_view);
         tvPermission = findViewById(R.id.tv_permission);
         rootViewAlbumItems = findViewById(R.id.root_view_album_items);
@@ -787,6 +786,17 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 //        albumItemList.contains();
     }
 
+    private int deletePhoto(Context context, Uri photoUri){
+
+        return 0;
+    }
+
+    private int deleteVideo(Context context ,Uri videoUri){
+
+        return 0;
+    }
+
+
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -801,17 +811,48 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
             done();
         }
         else if (R.id.bt_all_gallery_rightRl == id){
-            Toast.makeText(getApplicationContext(),"all is click",Toast.LENGTH_SHORT).show();
+            Result.removeAll();
+            onlyPic = false;
+            functionIndex = 0;
+            updatePhotos(functionIndex);
+//            Toast.makeText(getApplicationContext(),"all is click",Toast.LENGTH_SHORT).show();
         }
         else if (R.id.bt_pic_gallery_rightRl == id){
-            Toast.makeText(getApplicationContext(),"pic is click",Toast.LENGTH_SHORT).show();
+            Result.removeAll();
+            onlyPic = true;
+            functionIndex = 0;
+            updatePhotos(functionIndex);
+//            Toast.makeText(getApplicationContext(),"pic is click",Toast.LENGTH_SHORT).show();
         }
         else if (R.id.bt_video_gallery_rightRl == id){
-            Toast.makeText(getApplicationContext(),"video is click",Toast.LENGTH_SHORT).show();
+            Result.removeAll();
+            onlyPic = false;
+            functionIndex = 1;
+            updatePhotos(functionIndex);
+//            Toast.makeText(getApplicationContext(),"video is click",Toast.LENGTH_SHORT).show();
         }
-        else if (R.id.bt_delete_gallery_rightRl == id){
-            Toast.makeText(getApplicationContext(),"delete is click 已选中数量 ： " + Result.photos.size(),Toast.LENGTH_SHORT).show();
+        else if (R.id.bt_delete_gallery_rightRl == id){//删除
+            if (!(Result.photos.size()>0)){
+                return;
+            }
+           for (int i = 0 ; i < Result.photos.size();i++){
+                if (Result.photos.get(i).name.contains("png") || Result.photos.get(i).name.contains("jpg")){
+                    Log.e(TAG, "onClick: "+ " endwith png jpg");
+                    int res = getContentResolver().delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            MediaStore.Images.Media.DATA + "=?",
+                            new String[]{Result.photos.get(i).path});
+                } else {
+                    Log.e(TAG, "onClick: "+ " mp4 ");
+                   int  res = getContentResolver().delete(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                            MediaStore.Video.Media.DATA + "=?",
+                            new String[]{Result.photos.get(i).path});
+                }
+           }
+            hasPermissions();
+            updatePhotos(currAlbumItemIndex);
+            Result.removeAll();
         }
+
 //        else if (R.id.tv_clear == id) {
 //            if (Result.isEmpty()) {
 //                processSecondMenu();
@@ -933,9 +974,9 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 //    }
 
     private void showAlbumItems(boolean isShow) {
-        if (null == setShow) {
-            newAnimators();
-        }
+//        if (null == setShow) {
+//            newAnimators();
+//        }
         if (isShow) {
             rootViewAlbumItems.setVisibility(View.VISIBLE);
             setShow.start();
@@ -945,37 +986,37 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 
     }
 
-    private void newAnimators() {
-        newHideAnim();
-        newShowAnim();
-    }
+//    private void newAnimators() {
+//        newHideAnim();
+//        newShowAnim();
+//    }
 
-    private void newShowAnim() {
-        ObjectAnimator translationShow = ObjectAnimator.ofFloat(rvAlbumItems, "translationY",
-                mBottomBar.getTop(), 0);
-        ObjectAnimator alphaShow = ObjectAnimator.ofFloat(rootViewAlbumItems, "alpha", 0.0f, 1.0f);
-        translationShow.setDuration(300);
-        setShow = new AnimatorSet();
-        setShow.setInterpolator(new AccelerateDecelerateInterpolator());
-        setShow.play(translationShow).with(alphaShow);
-    }
+//    private void newShowAnim() {
+//        ObjectAnimator translationShow = ObjectAnimator.ofFloat(rvAlbumItems, "translationY",
+//                mBottomBar.getTop(), 0);
+//        ObjectAnimator alphaShow = ObjectAnimator.ofFloat(rootViewAlbumItems, "alpha", 0.0f, 1.0f);
+//        translationShow.setDuration(300);
+//        setShow = new AnimatorSet();
+//        setShow.setInterpolator(new AccelerateDecelerateInterpolator());
+//        setShow.play(translationShow).with(alphaShow);
+//    }
 
-    private void newHideAnim() {
-        ObjectAnimator translationHide = ObjectAnimator.ofFloat(rvAlbumItems, "translationY", 0,
-                mBottomBar.getTop());
-        ObjectAnimator alphaHide = ObjectAnimator.ofFloat(rootViewAlbumItems, "alpha", 1.0f, 0.0f);
-        translationHide.setDuration(200);
-        setHide = new AnimatorSet();
-        setHide.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                rootViewAlbumItems.setVisibility(View.GONE);
-            }
-        });
-        setHide.setInterpolator(new AccelerateInterpolator());
-        setHide.play(translationHide).with(alphaHide);
-    }
+//    private void newHideAnim() {
+//        ObjectAnimator translationHide = ObjectAnimator.ofFloat(rvAlbumItems, "translationY", 0,
+//                mBottomBar.getTop());
+//        ObjectAnimator alphaHide = ObjectAnimator.ofFloat(rootViewAlbumItems, "alpha", 1.0f, 0.0f);
+//        translationHide.setDuration(200);
+//        setHide = new AnimatorSet();
+//        setHide.addListener(new AnimatorListenerAdapter() {
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                super.onAnimationEnd(animation);
+//                rootViewAlbumItems.setVisibility(View.GONE);
+//            }
+//        });
+//        setHide.setInterpolator(new AccelerateInterpolator());
+//        setHide.play(translationHide).with(alphaHide);
+//    }
 
     @Override
     public void onAlbumItemClick(int position, int realPosition) {
@@ -987,7 +1028,19 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
     private void updatePhotos(int currAlbumItemIndex) {
         this.currAlbumItemIndex = currAlbumItemIndex;
         photoList.clear();
-        photoList.addAll(albumModel.getCurrAlbumItemPhotos(currAlbumItemIndex));
+        ArrayList<Photo> dataList = new ArrayList<>();
+        for (Photo photo : albumModel.getCurrAlbumItemPhotos(currAlbumItemIndex)){
+            if (photo.path.contains("DYTCamera")){
+                if (onlyPic){
+                    if ((photo.name).contains("png") || (photo.name).contains("jpg")){
+                        dataList.add(photo);
+                    }
+                }else {
+                    dataList.add(photo);
+                }
+            }
+        }
+        photoList.addAll(dataList);
         int index = 0;
         if (Setting.hasPhotosAd()) {
             photoList.add(index, Setting.photosAdView);

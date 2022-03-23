@@ -931,8 +931,8 @@ public final class USBMonitor {
 			}
 			if ((manager != null) && manager.hasPermission(device)) {
 				final UsbDeviceConnection connection = manager.openDevice(device);
+				if (connection != null){
 				final byte[] desc = connection.getRawDescriptors();
-				if (desc != null){
 					if (TextUtils.isEmpty(info.usb_version)) {
 						info.usb_version = String.format("%x.%02x", ((int)desc[3] & 0xff), ((int)desc[2] & 0xff));
 					}

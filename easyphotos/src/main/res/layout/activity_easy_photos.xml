@@ -19,7 +19,7 @@
         <View
             android:id="@+id/m_tool_bar"
             android:layout_width="0dp"
-            android:layout_height="@dimen/toolbar_size_easy_photos"
+            android:layout_height="@dimen/dimen_40dp"
             android:background="#FF071132"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -168,6 +168,7 @@
             android:id="@+id/m_bottom_bar"
             android:layout_width="0dp"
             android:layout_height="42dp"
+            android:visibility="gone"
             android:background="#FF071132"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
