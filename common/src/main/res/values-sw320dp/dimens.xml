@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<dimen name="base_dp">320dp</dimen>
+<dimen name="common_margin">@dimen/dimen_15dp</dimen>
 <dimen name="dimen_0dp">0.00dp</dimen>
 <dimen name="dimen_1dp">0.89dp</dimen>
 <dimen name="dimen_2dp">1.78dp</dimen>
@@ -362,4 +362,48 @@
 <dimen name="dimen_358dp">318.22dp</dimen>
 <dimen name="dimen_359dp">319.11dp</dimen>
 <dimen name="dimen_360dp">320.00dp</dimen>
+<dimen name="dimen_365dp">324.44dp</dimen>
+<dimen name="dimen_370dp">328.89dp</dimen>
+<dimen name="dimen_400dp">355.56dp</dimen>
+<dimen name="dimen_410dp">364.44dp</dimen>
+<dimen name="dimen_422dp">375.11dp</dimen>
+<dimen name="dimen_472dp">419.56dp</dimen>
+<dimen name="dimen_500dp">444.44dp</dimen>
+<dimen name="dimen_600dp">533.33dp</dimen>
+<dimen name="dimen_720dp">640.00dp</dimen>
+<dimen name="dimen_6sp">5.33sp</dimen>
+<dimen name="dimen_7sp">6.22sp</dimen>
+<dimen name="dimen_8sp">7.11sp</dimen>
+<dimen name="dimen_9sp">8.00sp</dimen>
+<dimen name="dimen_10sp">8.89sp</dimen>
+<dimen name="dimen_11sp">9.78sp</dimen>
+<dimen name="dimen_12sp">10.67sp</dimen>
+<dimen name="dimen_13sp">11.56sp</dimen>
+<dimen name="dimen_14sp">12.44sp</dimen>
+<dimen name="dimen_15sp">13.33sp</dimen>
+<dimen name="dimen_16sp">14.22sp</dimen>
+<dimen name="dimen_17sp">15.11sp</dimen>
+<dimen name="dimen_18sp">16.00sp</dimen>
+<dimen name="dimen_19sp">16.89sp</dimen>
+<dimen name="dimen_20sp">17.78sp</dimen>
+<dimen name="dimen_21sp">18.67sp</dimen>
+<dimen name="dimen_22sp">19.56sp</dimen>
+<dimen name="dimen_23sp">20.44sp</dimen>
+<dimen name="dimen_24sp">21.33sp</dimen>
+<dimen name="dimen_25sp">22.22sp</dimen>
+<dimen name="dimen_26sp">23.11sp</dimen>
+<dimen name="dimen_27sp">24.00sp</dimen>
+<dimen name="dimen_28sp">24.89sp</dimen>
+<dimen name="dimen_29sp">25.78sp</dimen>
+<dimen name="dimen_30sp">26.67sp</dimen>
+<dimen name="dimen_32sp">28.44sp</dimen>
+<dimen name="dimen_34sp">30.22sp</dimen>
+<dimen name="dimen_36sp">32.00sp</dimen>
+<dimen name="dimen_38sp">33.78sp</dimen>
+<dimen name="dimen_40sp">35.56sp</dimen>
+<dimen name="dimen_42sp">37.33sp</dimen>
+<dimen name="dimen_44sp">39.11sp</dimen>
+<dimen name="dimen_46sp">40.89sp</dimen>
+<dimen name="dimen_48sp">42.67sp</dimen>
+<dimen name="dimen_50sp">44.44sp</dimen>
 </resources>

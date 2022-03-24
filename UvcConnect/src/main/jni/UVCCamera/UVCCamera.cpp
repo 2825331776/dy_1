@@ -215,7 +215,7 @@ int UVCCamera::release() {
 		// 丢弃状态回调对象
 		//丢弃预览对象
 		LOGE("UVCCamera::release() 0");
-		SAFE_DELETE(mFrameImage);
+//		SAFE_DELETE(mFrameImage);
 		SAFE_DELETE(mPreview);
 		LOGE("UVCCamera::release() 1");
 		// 相机close

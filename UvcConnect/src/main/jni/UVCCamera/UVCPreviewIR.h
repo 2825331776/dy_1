@@ -86,7 +86,8 @@ private:
 //	//SN 校验
 	volatile bool mIsVerifySn = true; // 是否去刷新 SN
 	inline const bool isVerifySN() const;
-	bool snIsRight = false;//是否显示画面的标识
+	volatile bool snIsRight = false;//是否显示画面的标识
+	inline const bool isSnRight() const;
 	int sn_length = 15 ;
 	char machine_sn[32];//设备的SN号
 	char user_sn[20];//用户区的 SN号
@@ -194,6 +195,7 @@ public:
 	void setVidPid(int vid ,int pid);
 	int setIsVerifySn();
 	int sendTinyCAllOrder(void * params , diy func_tinyc, int mark);
+	int checkSnRight();
 
 /***************************录制*****************************/
 //	int setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format);//把当前数据回调给Java层

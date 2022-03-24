@@ -22,8 +22,10 @@ public class FontUtils {
 			return 24;
 		} else if (screenWidth <= 1024) {    // 大于 800X1280
 			return 28;
-		} else {
+		} else if (screenWidth <= 1280){ // 大于 1280的宽
 			return 44;
+		}else {
+			return 50;
 		}
 	}
 }

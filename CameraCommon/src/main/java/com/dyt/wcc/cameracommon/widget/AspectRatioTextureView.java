@@ -25,7 +25,6 @@ package com.dyt.wcc.cameracommon.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.TextureView;
 
 import com.serenegiant.widget.IAspectRatioView;
@@ -55,7 +54,7 @@ public class AspectRatioTextureView extends TextureView	// API >= 14
 
 	public AspectRatioTextureView(final Context context, final AttributeSet attrs, final int defStyle) {
 		super(context, attrs, defStyle);
-		Log.e(TAG, "AspectRatioTextureView: "+ System.currentTimeMillis());
+//		Log.e(TAG, "AspectRatioTextureView: "+ System.currentTimeMillis());
 	}
 
 	@Override

@@ -27,13 +27,14 @@
 
 
         <TextView
-            android:textColor="@color/white"
-            android:layout_centerInParent="true"
             android:id="@+id/tv_tittle"
-            android:text="@string/MediaBrowser"
-            android:gravity="center"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/MediaBrowser"
+            android:textSize="@dimen/dimen_15sp"
+            android:textColor="@color/white" />
 
         <ImageView
             android:id="@+id/iv_more_gallery"

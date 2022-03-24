@@ -58,7 +58,6 @@ import com.dyt.wcc.dytpir.databinding.PopPaletteChoiceBinding;
 import com.dyt.wcc.dytpir.databinding.PopSettingBinding;
 import com.dyt.wcc.dytpir.databinding.PopTempModeChoiceBinding;
 import com.dyt.wcc.dytpir.ui.DYTApplication;
-import com.dyt.wcc.dytpir.ui.MainActivity;
 import com.dyt.wcc.dytpir.ui.gallery.GlideEngine;
 import com.dyt.wcc.dytpir.utils.AssetCopyer;
 import com.dyt.wcc.dytpir.utils.ByteUtilsCC;
@@ -73,6 +72,7 @@ import com.permissionx.guolindev.request.ExplainScope;
 import com.permissionx.guolindev.request.ForwardScope;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
+import com.zhihu.matisse.Matisse;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -81,25 +81,22 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
+	private UVCCameraHandler                   mUvcCameraHandler;
+	private Surface                            stt;
+	private PopupWindow                        PLRPopupWindows;//点线矩形测温弹窗
+	private PopupWindow                        allPopupWindows;
+	//	private View popView;
+	private Map<String ,Float>                 cameraParams ;
+	private SharedPreferences sp;
+	private int mVid , mPid; //设备 vid pid
 
-//	@Override
-//	protected void onCreate (Bundle savedInstanceState) {
-//		super.onCreate(savedInstanceState);
-//		setContentView(R.layout.activity_preview);
-//	}
-	private UVCCameraHandler   mUvcCameraHandler;
-	private Surface            stt;
-	private PopupWindow        PLRPopupWindows;//点线矩形测温弹窗
-	private PopupWindow        allPopupWindows;
-	private View               popView;
-	private Map<String ,Float> cameraParams ;
-	private SharedPreferences  sp;
-	private int                mVid , mPid; //设备 vid pid
-
+	private Timer      timerEveryTime;
 	private USBMonitor mUsbMonitor ;
-	private     int        mTextureViewWidth,mTextureViewHeight;
+	private int        mTextureViewWidth,mTextureViewHeight;
 
 	private FrameLayout fl;
 
@@ -115,19 +112,28 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	private DisplayMetrics metrics;
 	private Configuration  configuration;
-	private boolean        isFirstRun = false;
+	private boolean isFirstRun = false;
 
-//	@Override
-//	protected boolean isInterceptBackPress () {
-//		return false;
-//	}
-
+	private static final int REQUEST_CODE_CHOOSE = 23;
 
 	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
+			//mAdapter.setData(Matisse.obtainResult(data), Matisse.obtainPathResult(data));
+			Log.e("OnActivityResult ", String.valueOf(Matisse.obtainOriginalState(data)));
+		}
+	}
+	@Override
 	protected void onPause () {
-		if (isDebug)
-			Log.e(TAG, "onPause: ");
-		mDataBinding.textureViewPreviewActivity.onResume();
+		if (isDebug)Log.e(TAG, "onPause: ");
+
+		if (mUvcCameraHandler!=null)mUvcCameraHandler.stopTemperaturing();
+		//解决去图库 拔出机芯闪退 2022年3月24日11:03:49
+//		if (mUvcCameraHandler!=null){
+//			mUvcCameraHandler.stopPreview();
+//		}
+//		mDataBinding.textureViewPreviewActivity.onResume();
 		super.onPause();
 	}
 	@Override
@@ -139,12 +145,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				mUsbMonitor.unregister();
 			}
 		}
+//		mDataBinding.textureViewPreviewActivity.onPause();
 //		if (mUvcCameraHandler!=null){
 //			mUvcCameraHandler.stopTemperaturing();
 //		}
-		if (mDataBinding.textureViewPreviewActivity != null){
-			mDataBinding.textureViewPreviewActivity.onPause();
-		}
+//		if (mDataBinding.textureViewPreviewActivity != null){
+//			mDataBinding.textureViewPreviewActivity.onPause();
+//		}
 		if (mUvcCameraHandler != null){
 			mUvcCameraHandler.close();
 		}
@@ -153,8 +160,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	@Override
 	protected void onRestart () {
-
-		mDataBinding.textureViewPreviewActivity.onResume();
+		if (isDebug)Log.e(TAG, "onRestart: ");
+//		mDataBinding.textureViewPreviewActivity.onResume();
 		super.onRestart();
 	}
 
@@ -187,9 +194,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	@Override
 	protected void onResume () {
-		if (!mUsbMonitor.isRegistered()) {
+		if (mUsbMonitor !=null && !mUsbMonitor.isRegistered()) {
 			mUsbMonitor.register();
 		}
+		if (mUvcCameraHandler !=null && mUvcCameraHandler.isPreviewing())mUvcCameraHandler.startTemperaturing();
 		super.onResume();
 	}
 
@@ -219,6 +227,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			}
 
 			mUvcCameraHandler.open(ctrlBlock);
+//			mDataBinding.textureViewPreviewActivity.onResume();
 			startPreview();
 
 			Handler handler = new Handler();
@@ -228,27 +237,51 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
 				}
 			}, 300);
+
+			timerEveryTime = new Timer();
+			timerEveryTime.scheduleAtFixedRate(new TimerTask() {
+				@Override
+				public void run() {
+					setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);//每隔一分钟打一次快门
+					if (mUvcCameraHandler!= null)mUvcCameraHandler.whenShutRefresh();
+					Log.e("TAG", "每隔60s执行一次操作");
+				}
+			}, 500, 600000);
 		}
 		@Override
 		public void onDettach (UsbDevice device) {
 			//				mUvcCameraHandler.close();
 			if (isDebug)Log.e(TAG, "DD  onDetach: ");
-			onPause();
-			onStop();
-			onDestroy();
-			//			android.os.Process.killProcess(android.os.Process.myPid());
-			//			System.exit(0);
+			runOnUiThread(() -> {
+				onPause();
+				onStop();
+			});
 		}
 		@Override
 		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
 			if (isDebug)Log.e(TAG, " DD  onDisconnect: ");
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run () {
+					mDataBinding.toggleAreaCheck.setSelected(false);
+					mDataBinding.toggleHighTempAlarm.setSelected(false);
 
+					mDataBinding.customSeekbarPreviewFragment.setWidgetMode(0);
+					mDataBinding.customSeekbarPreviewFragment.invalidate();
+					mDataBinding.toggleFixedTempBar.setSelected(false);
+					if (mUvcCameraHandler!=null){
+						mUvcCameraHandler.disWenKuan();
+						mUvcCameraHandler.fixedTempStripChange(false);
+					}
+				}
+			});
 			mVid = 0;
 			mPid = 0;
 			if (mUvcCameraHandler != null) {
 				mUvcCameraHandler.stopTemperaturing();
 				mUvcCameraHandler.close();
 			}
+
 
 		}
 		@Override
@@ -272,6 +305,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 		mDataBinding.textureViewPreviewActivity.iniTempBitmap(mTextureViewWidth, mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
 		mDataBinding.textureViewPreviewActivity.setVidPid(mVid,mPid);//设置vid  pid
+		mDataBinding.textureViewPreviewActivity.initTempFontSize(mFontSize);
 		mDataBinding.textureViewPreviewActivity.setTinyCCorrection(sp.getFloat(DYConstants.setting_correction,0.0f));//设置vid  pid
 		mDataBinding.textureViewPreviewActivity.setDragTempContainer(mDataBinding.dragTempContainerPreviewFragment);
 		mDataBinding.customSeekbarPreviewFragment.setmThumbListener(new MyCustomRangeSeekBar.ThumbListener() {
@@ -334,15 +368,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private int setValue(final int flag, final int value) {//设置机芯参数,调用JNI层
 		return mUvcCameraHandler != null ? mUvcCameraHandler.setValue(flag, value) : 0;
 	}
-
-
 	/**
-	 * 设置语言
+	 * 切换语言
 	 * @param type
 	 */
 	private void toSetLanguage(int type) {//切换语言
 		Locale locale;
-
 		Context context = DYTApplication.getInstance();
 		if (type == 0) {
 			locale = Locale.SIMPLIFIED_CHINESE;
@@ -358,10 +389,20 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			return;
 		}
 		LanguageUtils.updateLanguage(context, locale);//更新语言参数
-
-		Intent intent = new Intent(context, MainActivity.class);
+//		if (mPid == 22592 && mVid == 3034){
+//			if (mUvcCameraHandler != null && mUvcCameraHandler.isPreviewing()){
+//				mUvcCameraHandler.release();
+//				mUvcCameraHandler = null;
+//			}
+//			if (mUsbMonitor.isRegistered()){
+//				mUsbMonitor.unregister();
+//				mUsbMonitor = null;
+//			}
+//		}
+		Intent intent = new Intent(context, PreviewActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		context.startActivity(intent);
+//		finish();
 		//		android.os.Process.killProcess(android.os.Process.myPid());
 		//		System.exit(0);
 	}
@@ -507,6 +548,7 @@ public class SendCommand {
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 				if (allGranted){//基本权限被授予之后才能初始化监听器。
 					mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);//
+					Log.e(TAG, "onResult: mFontSize ==========> " + mFontSize);
 					//					Log.e(TAG, "initView:  ==444444= " + System.currentTimeMillis());
 					AssetCopyer.copyAllAssets(DYTApplication.getInstance(), mContext.get().getExternalFilesDir(null).getAbsolutePath());
 					//		Log.e(TAG,"===========getExternalFilesDir=========="+this.getExternalFilesDir(null).getAbsolutePath());
@@ -536,28 +578,34 @@ public class SendCommand {
 					//		Log.e(TAG, "initView: sp.get Palette_Number = " + sp.getInt(DYConstants.PALETTE_NUMBER,0));
 					mDataBinding.customSeekbarPreviewFragment.setPalette(0);
 
+
+
 					initListener();
 
 					initRecord();
+
+					mDataBinding.dragTempContainerPreviewFragment.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
+					mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING,0));
+
+					//		Log.e(TAG, "initView:  ==111111= " + System.currentTimeMillis());
+					//		mDataBinding.textureViewPreviewFragment.setAspectRatio(256/(float)192);
+					mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
+							mDataBinding.textureViewPreviewActivity,1,
+							384,292,1,null,0);
+					//		Log.e(TAG, "initView: before  " +System.currentTimeMillis());
+
+					fl = mDataBinding.flPreview;
+
+					mUsbMonitor = new USBMonitor(mContext.get(), onDeviceConnectListener);
 				}else {
 					showToast(getResources().getString(R.string.toast_dont_have_permission));
 				}
 			}
 		});
 
-		mDataBinding.dragTempContainerPreviewFragment.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
-		mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING,0));
 
-		//		Log.e(TAG, "initView:  ==111111= " + System.currentTimeMillis());
-		//		mDataBinding.textureViewPreviewFragment.setAspectRatio(256/(float)192);
-		mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
-				mDataBinding.textureViewPreviewActivity,1,
-				384,292,1,null,0);
-		//		Log.e(TAG, "initView: before  " +System.currentTimeMillis());
 
-		fl = mDataBinding.flPreview;
 
-//		mUsbMonitor = new USBMonitor(this,onDeviceConnectListener);
 
 //		mDataBinding.setPf(this);
 //		mViewModel = new ViewModelProvider(getViewModelStore(),
@@ -574,20 +622,20 @@ public class SendCommand {
 	 */
 	private void initListener(){
 		//测试的 监听器
-		mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick (View v) {
-//				Intent intent = new Intent(PreviewActivity.this, GalleryActivity.class);
-//				startActivity(intent);
-								EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
-										//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
-										.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
-										.setCount(9)
-										.setVideo(true)
-										.setGif(false)
-										.start(101);
-			}
-		});
+//		mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick (View v) {
+////				Intent intent = new Intent(PreviewActivity.this, GalleryActivity.class);
+////				startActivity(intent);
+//								EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
+//										//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
+//										.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
+//										.setCount(9)
+//										.setVideo(true)
+//										.setGif(false)
+//										.start(101);
+//			}
+//		});
 		//
 		//				mDataBinding.btTest02.setOnClickListener(new View.OnClickListener() {
 		//					@Override
@@ -769,7 +817,7 @@ public class SendCommand {
 		mDataBinding.ivPreviewLeftTakePhoto.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-				if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened()){
+				if (mUvcCameraHandler != null && mUvcCameraHandler.isPreviewing()){
 					String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
 					if (mUvcCameraHandler.captureStill(picPath))showToast(getResources().getString(R.string.toast_save_path)+picPath );
 					//						if (isDebug)Log.e(TAG, "onResult: java path === "+ picPath);
@@ -782,7 +830,7 @@ public class SendCommand {
 		mDataBinding.btPreviewLeftRecord.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-				if (mUvcCameraHandler != null && mUvcCameraHandler.isTemperaturing() ){//mUvcCameraHandler.isOpened()
+				if (mUvcCameraHandler != null && mUvcCameraHandler.isPreviewing() ){//mUvcCameraHandler.isOpened()
 					if (mDataBinding.btPreviewLeftRecord.isSelected() && mUvcCameraHandler.isRecording()){//停止录制
 						stopTimer();
 						mUvcCameraHandler.stopRecording();
@@ -806,17 +854,41 @@ public class SendCommand {
 					showToast(getResources().getString(R.string.toast_is_recording));
 					return;
 				}else {
-//					mUvcCameraHandler.release();
-					mDataBinding.textureViewPreviewActivity.onPause();
-					//					if (mUvcCameraHandler!=null){
-					//					}
+					mUvcCameraHandler.close();
+					mUsbMonitor.unregister();
+//					mDataBinding.textureViewPreviewActivity.onPause();
+//					//					if (mUvcCameraHandler!=null){
+//					//					}
+//					EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
+//							//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
+//							.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
+//							.setCount(9)
+//							.setVideo(true)
+//							.setGif(false)
+//							.start(101);
+//					ArrayList<String> a = new ArrayList<>();
+//					a.add("DYTCamera");
 					EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
 							//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
 							.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
 							.setCount(9)
+//							.setSelectedPhotos(null)
+//							.setSelectedPhotoPaths(a)
 							.setVideo(true)
 							.setGif(false)
 							.start(101);
+//
+//					Matisse.from(PreviewActivity.this)
+//							.choose(MimeType.ofAll(), false)
+//							.theme(R.style.Matisse_Dracula)
+//							.countable(false)
+//							.addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
+//							.maxSelectable(9)
+//							.originalEnable(true)
+//							.maxOriginalSize(10)
+//							//.imageEngine(new GlideEngine())
+//							.imageEngine(new PicassoEngine())
+//							.forResult(REQUEST_CODE_CHOOSE);
 				}
 
 			}
@@ -1497,4 +1569,12 @@ public class SendCommand {
 
 	}
 
+	@Override
+	public void onBackPressed () {
+//
+		if (PLRPopupWindows!= null && PLRPopupWindows.isShowing())PLRPopupWindows.dismiss();
+		if (allPopupWindows!= null && allPopupWindows.isShowing())allPopupWindows.dismiss();
+		super.onBackPressed();
+		Log.e(TAG, "onBackPressed: ");
+	}
 }
