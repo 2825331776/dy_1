@@ -65,5 +65,7 @@
     <string name="toast_complete_FreeAirTemp">环境温度设置完成</string>
     <string name="toast_complete_Humidity">湿度设置完成</string>
 
+    <string name="preview_hint_not_connect">请插入设备并打开OTG功能</string>
+
     <string name="value_zero">0.0</string>
 </resources>

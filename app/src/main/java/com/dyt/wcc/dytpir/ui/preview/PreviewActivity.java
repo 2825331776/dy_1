@@ -265,6 +265,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				public void run () {
 					mDataBinding.toggleAreaCheck.setSelected(false);
 					mDataBinding.toggleHighTempAlarm.setSelected(false);
+					mDataBinding.tvPreviewHint.setVisibility(View.VISIBLE);
+					mDataBinding.tvPreviewHint.bringToFront();
+
+					//刷新背景
+//					mDataBinding.textureViewPreviewActivity.
 
 					mDataBinding.customSeekbarPreviewFragment.setWidgetMode(0);
 					mDataBinding.customSeekbarPreviewFragment.invalidate();
@@ -281,8 +286,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				mUvcCameraHandler.stopTemperaturing();
 				mUvcCameraHandler.close();
 			}
-
-
 		}
 		@Override
 		public void onCancel (UsbDevice device) {
@@ -363,6 +366,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mUvcCameraHandler.startPreview(stt);
 		//tinyC 暂时关闭 温度回调功能
 		mUvcCameraHandler.startTemperaturing();//温度回调
+		mDataBinding.tvPreviewHint.setVisibility(View.INVISIBLE);
 	}
 
 	private int setValue(final int flag, final int value) {//设置机芯参数,调用JNI层

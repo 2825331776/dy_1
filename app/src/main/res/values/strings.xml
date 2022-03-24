@@ -67,6 +67,8 @@
     <string name="toast_complete_FreeAirTemp">Ambient temperature setting complete</string>
     <string name="toast_complete_Humidity">Humidity setting complete</string>
 
+    <string name="preview_hint_not_connect">Please plug in the device and turn on the OTG function</string>
+
 
     <string name="value_zero">0.0</string>
 </resources>
