@@ -19,6 +19,7 @@
             android:name=".ui.EasyPhotosActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="sensorLandscape"
+            android:launchMode="singleTop"
             android:theme="@style/EasyPhotosTheme" />
         <activity
             android:name=".ui.PreviewActivity"

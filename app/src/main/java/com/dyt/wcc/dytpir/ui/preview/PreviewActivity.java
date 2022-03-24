@@ -129,7 +129,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		if (isDebug)Log.e(TAG, "onPause: ");
 
 		if (mUvcCameraHandler!=null)mUvcCameraHandler.stopTemperaturing();
-
+		//解决去图库 拔出机芯闪退 2022年3月24日11:03:49
+//		if (mUvcCameraHandler!=null){
+//			mUvcCameraHandler.stopPreview();
+//		}
 //		mDataBinding.textureViewPreviewActivity.onResume();
 		super.onPause();
 	}
@@ -257,13 +260,28 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		@Override
 		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
 			if (isDebug)Log.e(TAG, " DD  onDisconnect: ");
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run () {
+					mDataBinding.toggleAreaCheck.setSelected(false);
+					mDataBinding.toggleHighTempAlarm.setSelected(false);
 
+					mDataBinding.customSeekbarPreviewFragment.setWidgetMode(0);
+					mDataBinding.customSeekbarPreviewFragment.invalidate();
+					mDataBinding.toggleFixedTempBar.setSelected(false);
+					if (mUvcCameraHandler!=null){
+						mUvcCameraHandler.disWenKuan();
+						mUvcCameraHandler.fixedTempStripChange(false);
+					}
+				}
+			});
 			mVid = 0;
 			mPid = 0;
 			if (mUvcCameraHandler != null) {
 				mUvcCameraHandler.stopTemperaturing();
 				mUvcCameraHandler.close();
 			}
+
 
 		}
 		@Override
@@ -836,7 +854,8 @@ public class SendCommand {
 					showToast(getResources().getString(R.string.toast_is_recording));
 					return;
 				}else {
-//					mUvcCameraHandler.release();
+					mUvcCameraHandler.close();
+					mUsbMonitor.unregister();
 //					mDataBinding.textureViewPreviewActivity.onPause();
 //					//					if (mUvcCameraHandler!=null){
 //					//					}
@@ -1550,4 +1569,12 @@ public class SendCommand {
 
 	}
 
+	@Override
+	public void onBackPressed () {
+//
+		if (PLRPopupWindows!= null && PLRPopupWindows.isShowing())PLRPopupWindows.dismiss();
+		if (allPopupWindows!= null && allPopupWindows.isShowing())allPopupWindows.dismiss();
+		super.onBackPressed();
+		Log.e(TAG, "onBackPressed: ");
+	}
 }
