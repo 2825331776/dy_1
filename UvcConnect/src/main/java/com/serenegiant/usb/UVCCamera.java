@@ -1205,6 +1205,15 @@ public class UVCCamera {
 		}
 	}
 
+	//2022年3月24日16:10:35 吴长城 sn是否正确 并在预览中
+	public boolean snRightIsPreviewing(){
+		if (mCtrlBlock != null) {
+			Log.e(TAG, "snRightIsPreviewing");
+			return nativeSnRightIsPreviewing(mNativePtr);
+		}
+		return false;
+	}
+
 	//added by wupei
 	public void  laWenKuan(float maxPercent, float minPercent,float maxValue, float minValue) {
 		if (mCtrlBlock != null) {
@@ -1294,6 +1303,8 @@ public class UVCCamera {
 			nativeSetArea(mNativePtr, area);
 		}
 	}
+	//2022年3月24日16:10:35 吴长城 sn是否正确 并在预览中
+	private static final native boolean nativeSnRightIsPreviewing(final long id_camera);
 	//add 吴长城
 	private static final native int nativeSetVerifySn(final long id_camera, int isVerifySn);//校验SN
 	private static final native void nativeSaveFiveSecondsData(final long id_camera,final String externalPath); //长城添加  保存五秒的数据

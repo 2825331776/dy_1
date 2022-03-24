@@ -351,7 +351,7 @@ int UVCPreviewIR::sendTinyCAllOrder(void * params , diy func_tinyc, int mark){
  * 检查sn号是否是对的，对的代表出图了
  * @return
  */
-int UVCPreviewIR::checkSnRight(){
+bool UVCPreviewIR::snRightIsPreviewing(){
     return isSnRight();
 }
 

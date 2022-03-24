@@ -117,6 +117,16 @@ jint setField_int(JNIEnv *env, jobject java_obj, const char *field_name, jint va
 	return val;
 }
 
+//2022年3月24日16:10:35 吴长城 sn是否正确,并是否预览中
+static jboolean nativeSnRightIsPreviewing(JNIEnv *env , jobject thiz ,ID_TYPE id_camera){
+	bool result = JNI_ERR;
+	UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
+	if (LIKELY(camera)) {
+		result = camera -> snRightIsPreviewing();
+	}
+	RETURN(result,jboolean);
+}
+
 static jint nativeSetVerifySn(JNIEnv *env , jobject thiz ,ID_TYPE id_camera, jint isVerify){
 	int  result = JNI_ERR;
 	UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
@@ -2338,8 +2348,11 @@ jint registerNativeMethods(JNIEnv* env, const char *class_name, JNINativeMethod 
 }
 
 static JNINativeMethod methods[] = {
-		//add吴长城 nativeSetVerifySn
-		{ "nativeSetVerifySn",					"(JI)I", (void *) nativeSetVerifySn },
+	////2022年3月24日16:10:35 吴长城 sn是否正确 并在预览中
+	{"nativeSnRightIsPreviewing","(J)Z",(void*)nativeSnRightIsPreviewing},
+
+	////add吴长城 nativeSetVerifySn
+	{ "nativeSetVerifySn",					"(JI)I", (void *) nativeSetVerifySn },
 
 	{ "nativeCreate",					"()J", (void *) nativeCreate },
 	{ "nativeDestroy",					"(J)V", (void *) nativeDestroy },

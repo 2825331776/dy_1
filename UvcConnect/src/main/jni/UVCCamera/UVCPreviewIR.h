@@ -195,7 +195,7 @@ public:
 	void setVidPid(int vid ,int pid);
 	int setIsVerifySn();
 	int sendTinyCAllOrder(void * params , diy func_tinyc, int mark);
-	int checkSnRight();
+	bool snRightIsPreviewing();
 
 /***************************录制*****************************/
 //	int setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format);//把当前数据回调给Java层

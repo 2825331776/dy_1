@@ -817,7 +817,7 @@ public class SendCommand {
 		mDataBinding.ivPreviewLeftTakePhoto.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-				if (mUvcCameraHandler != null && mUvcCameraHandler.isPreviewing()){
+				if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()){
 					String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
 					if (mUvcCameraHandler.captureStill(picPath))showToast(getResources().getString(R.string.toast_save_path)+picPath );
 					//						if (isDebug)Log.e(TAG, "onResult: java path === "+ picPath);
@@ -830,7 +830,7 @@ public class SendCommand {
 		mDataBinding.btPreviewLeftRecord.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-				if (mUvcCameraHandler != null && mUvcCameraHandler.isPreviewing() ){//mUvcCameraHandler.isOpened()
+				if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()){//mUvcCameraHandler.isOpened()
 					if (mDataBinding.btPreviewLeftRecord.isSelected() && mUvcCameraHandler.isRecording()){//停止录制
 						stopTimer();
 						mUvcCameraHandler.stopRecording();

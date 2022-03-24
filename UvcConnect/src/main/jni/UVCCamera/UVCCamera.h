@@ -352,7 +352,10 @@ void whenShutRefresh() ;
 	int updateZoomLimit(int &min, int &max, int &def);
 	int setZoom(int zoom);
 	int getZoom();
-	
+
+	//2022年3月24日16:10:35 吴长城 sn是否正确 并在预览中
+	bool snRightIsPreviewing();
+
 	int updateZoomRelLimit(int &min, int &max, int &def);
 	int setZoomRel(int zoom);
 	int getZoomRel();

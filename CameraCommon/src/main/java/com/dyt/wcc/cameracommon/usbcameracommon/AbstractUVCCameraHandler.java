@@ -193,6 +193,15 @@ abstract class AbstractUVCCameraHandler extends Handler {
         }
     }
 
+    //2022年3月24日16:10:35 吴长城 sn是否正确 并在预览中
+    public boolean snRightIsPreviewing(){
+        final CameraThread thread = mWeakThread.get();
+        if ((thread != null) && (thread.mUVCCamera) != null) {
+            return thread.mUVCCamera.snRightIsPreviewing();
+        }
+        return false;
+    }
+
     public int getHighThrow() {
         final CameraThread thread = mWeakThread.get();
         if ((thread != null) && (thread.mUVCCamera) != null) {

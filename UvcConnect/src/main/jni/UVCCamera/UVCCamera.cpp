@@ -2545,6 +2545,17 @@ int UVCCamera::sendOrder(float value , int mark) {
     RETURN(ret, int);
 }
 
+/**
+ * sn是否正确 并在预览中
+ * @return
+ */
+bool UVCCamera::snRightIsPreviewing(){
+	LOGE("==========================snRightIsPreviewing==================================");
+	if (mPreview){
+		return mPreview->snRightIsPreviewing();
+	}
+	return false;
+}
 
 // ズーム(abs)を設定  设置缩放ABS
 int UVCCamera::setZoom(int zoom) {
