@@ -27,4 +27,7 @@
 
     <color name="max_temp_text_color_red">#FFFF0000</color>
 
+    <color name="bg_preview_otg_connect">#00000000</color>
+    <color name="bg_preview_otg_unconnect">#FF071132</color>
+
 </resources>

@@ -32,9 +32,9 @@
 
     <string name="selector_image_type_error_easy_photos">不支持此图片格式</string>
 
-    <string name="edit_easy_photos">编辑</string>
+    <string name="edit_easy_photos">edit</string>
 
-    <string name="empty_easy_photos">清空</string>
+    <string name="empty_easy_photos">empty</string>
 
     <string name="no_photos_easy_photos">There is no picture that meets the requirements, take a picture </string>
 
@@ -58,21 +58,21 @@
 
     <string name="text_sticker_date_easy_photos">日期</string>
 
-    <string name="text_sticker_hint_easy_photos">双击编辑</string>
+    <string name="text_sticker_hint_easy_photos">Double click to edit</string>
 
-    <string name="text_sticker_hint_name_easy_photos">自定义</string>
+    <string name="text_sticker_hint_name_easy_photos">customize</string>
 
-    <string name="picture_selection_easy_photos">picture selection</string>
+    <string name="picture_selection_easy_photos">Gallery</string>
 
     <string name="video_selection_easy_photos">Video selection</string>
 
-    <string name="puzzle_easy_photos">拼一张</string>
+    <string name="puzzle_easy_photos">spell one</string>
 
     <string name="select_puzzle_photos">Please select 2 \- 9 photos</string>
 
-    <string name="gif_easy_photos">动图</string>
+    <string name="gif_easy_photos">GIF</string>
 
-    <string name="video_easy_photos">视频</string>
+    <string name="video_easy_photos">video</string>
 
 
 </resources>

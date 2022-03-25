@@ -744,18 +744,19 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 					if (mPid == 22592 && mVid == 3034){
 //						popSettingBinding.etCameraSettingReflect.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
 //						popSettingBinding.etCameraSettingFreeAirTemp.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
-						popSettingBinding.etCameraSettingDistance.setEnabled(false);
+//						popSettingBinding.etCameraSettingDistance.setEnabled(false);
 						mDataBinding.textureViewPreviewFragment.setTinyCCorrection(sp.getFloat(DYConstants.setting_correction,0.0f));
 					}else if (mPid == 1 && mVid == 5396) {
-						popSettingBinding.etCameraSettingDistance.setEnabled(true);
+//						popSettingBinding.etCameraSettingDistance.setEnabled(true);
 					}
 					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(cameraParams.get(DYConstants.setting_emittance)));//发射率 0-1
-					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(cameraParams.get(DYConstants.setting_distance)));//距离 0-5
+//					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(cameraParams.get(DYConstants.setting_distance)));//距离 0-5
 					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_humidity)*100)));//湿度 0-100
 					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(cameraParams.get(DYConstants.setting_correction)));//校正  -20 - 20
 					popSettingBinding.etCameraSettingReflect.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_reflect)*1)));//反射温度 -10-40
 					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf((int)(cameraParams.get(DYConstants.setting_environment)*1)));//环境温度 -10 -40
 					//把值同步到 sp中
+
 					//					sp.edit().putFloat(DYConstants.setting_emittance,cameraParams.get(DYConstants.setting_emittance)).apply();
 					//发射率
 					popSettingBinding.etCameraSettingEmittance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -788,31 +789,31 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 						}
 					});
 					//距离设置
-					popSettingBinding.etCameraSettingDistance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-						@Override
-						public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
-							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
-							if (actionId == EditorInfo.IME_ACTION_DONE){
-								if (TextUtils.isEmpty(v.getText().toString()))return true;
-								int value = Math.round(Float.parseFloat(v.getText().toString()));
-								if (value > 5 || value < 0){
-									showToast(getString(R.string.toast_range_int,0,5));
-									return true;
-								}
-								byte[] bIputDi = new byte[4];
-								ByteUtil.putInt(bIputDi,value,0);
-								if (mUvcCameraHandler!= null) {
-									if (mPid == 1 && mVid == 5396) {
-										mSendCommand.sendShortCommand(5 * 4, bIputDi[0], bIputDi[1], 20, 40, 60);
-									}
-									sp.edit().putFloat(DYConstants.setting_distance,value).apply();
-									showToast(R.string.toast_complete_Distance);
-								}
-								hideInput(v.getWindowToken());
-							}
-							return true;
-						}
-					});
+//					popSettingBinding.etCameraSettingDistance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//						@Override
+//						public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
+//							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+//							if (actionId == EditorInfo.IME_ACTION_DONE){
+//								if (TextUtils.isEmpty(v.getText().toString()))return true;
+//								int value = Math.round(Float.parseFloat(v.getText().toString()));
+//								if (value > 5 || value < 0){
+//									showToast(getString(R.string.toast_range_int,0,5));
+//									return true;
+//								}
+//								byte[] bIputDi = new byte[4];
+//								ByteUtil.putInt(bIputDi,value,0);
+//								if (mUvcCameraHandler!= null) {
+//									if (mPid == 1 && mVid == 5396) {
+//										mSendCommand.sendShortCommand(5 * 4, bIputDi[0], bIputDi[1], 20, 40, 60);
+//									}
+//									sp.edit().putFloat(DYConstants.setting_distance,value).apply();
+//									showToast(R.string.toast_complete_Distance);
+//								}
+//								hideInput(v.getWindowToken());
+//							}
+//							return true;
+//						}
+//					});
 					//反射温度设置  -20 - 120 ℃
 					popSettingBinding.etCameraSettingReflect.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 						@Override
@@ -939,7 +940,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 					});
 				}else {//未连接机芯
 					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(sp.getFloat(DYConstants.setting_emittance,0)));//发射率 0-1
-					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(sp.getFloat(DYConstants.setting_distance,0)));//距离 0-5
+//					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(sp.getFloat(DYConstants.setting_distance,0)));//距离 0-5
 					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int)(sp.getFloat(DYConstants.setting_humidity,0)*100)));//湿度 0-100
 					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(sp.getFloat(DYConstants.setting_correction,0)));//修正 -3 -3
 					popSettingBinding.etCameraSettingReflect.setText(String.valueOf(sp.getFloat(DYConstants.setting_reflect,0)));//反射温度 -10-40

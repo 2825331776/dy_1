@@ -411,7 +411,7 @@ int UVCPreviewIR::sendTinyCParamsModification(float * value,diy func_diy , uint3
     }
     if(mark == 3 ){         //发射率
         LOGE("=================== 发射率===============%f======" ,(*value));
-        int val = (int )(*value * 128);
+        int val = (int )round(*value * 128);
         data[3] = 0x03; //0x01 = 反射温度；0x02 = 大气温度；0x04 = 大气透过率；0x05=高低温度段
         data[6] = (val >> 8);
         data[7] = (val & 0xff);
@@ -419,7 +419,7 @@ int UVCPreviewIR::sendTinyCParamsModification(float * value,diy func_diy , uint3
     }
     if(mark == 4 ){         //大气透过率
         LOGE("=================== 大气透过率===============%f======" ,(*value));
-        int val = (int )(*value * 128);
+        int val = (int )round(*value * 128);
         data[3] = 0x04; //0x01 = 反射温度；0x02 = 大气温度；0x04 = 大气透过率；0x05=高低温度段
         data[6] = (val >> 8);
         data[7] = (val & 0xff);

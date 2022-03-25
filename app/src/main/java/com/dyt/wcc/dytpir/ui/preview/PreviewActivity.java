@@ -253,6 +253,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			//				mUvcCameraHandler.close();
 			if (isDebug)Log.e(TAG, "DD  onDetach: ");
 			runOnUiThread(() -> {
+				mDataBinding.dragTempContainerPreviewFragment.setBackgroundColor(getColor(R.color.bg_preview_otg_unconnect));
+				mDataBinding.dragTempContainerPreviewFragment.setConnect(false);
+				mDataBinding.dragTempContainerPreviewFragment.invalidate();
 				onPause();
 				onStop();
 			});
@@ -265,9 +268,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				public void run () {
 					mDataBinding.toggleAreaCheck.setSelected(false);
 					mDataBinding.toggleHighTempAlarm.setSelected(false);
-					mDataBinding.tvPreviewHint.setVisibility(View.VISIBLE);
-					mDataBinding.tvPreviewHint.bringToFront();
-
+//					mDataBinding.tvPreviewHint.setVisibility(View.VISIBLE);
+//					mDataBinding.tvPreviewHint.bringToFront();
 					//刷新背景
 //					mDataBinding.textureViewPreviewActivity.
 
@@ -366,7 +368,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mUvcCameraHandler.startPreview(stt);
 		//tinyC 暂时关闭 温度回调功能
 		mUvcCameraHandler.startTemperaturing();//温度回调
-		mDataBinding.tvPreviewHint.setVisibility(View.INVISIBLE);
+//		mDataBinding.tvPreviewHint.setVisibility(View.INVISIBLE);
+
+		mDataBinding.dragTempContainerPreviewFragment.setBackgroundColor(getColor(R.color.bg_preview_otg_connect));
+		mDataBinding.dragTempContainerPreviewFragment.setConnect(true);
+		mDataBinding.dragTempContainerPreviewFragment.invalidate();
 	}
 
 	private int setValue(final int flag, final int value) {//设置机芯参数,调用JNI层
@@ -626,11 +632,11 @@ public class SendCommand {
 	 */
 	private void initListener(){
 		//测试的 监听器
-//		mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick (View v) {
-////				Intent intent = new Intent(PreviewActivity.this, GalleryActivity.class);
-////				startActivity(intent);
+		mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick (View v) {
+//				Intent intent = new Intent(PreviewActivity.this, GalleryActivity.class);
+//				startActivity(intent);
 //								EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
 //										//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
 //										.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
@@ -638,8 +644,9 @@ public class SendCommand {
 //										.setVideo(true)
 //										.setGif(false)
 //										.start(101);
-//			}
-//		});
+				mDataBinding.dragTempContainerPreviewFragment.setBackgroundColor(getColor(R.color.white));
+			}
+		});
 		//
 		//				mDataBinding.btTest02.setOnClickListener(new View.OnClickListener() {
 		//					@Override
@@ -924,22 +931,70 @@ public class SendCommand {
 				assert popSettingBinding != null;
 				//第二步：将获取的数据 展示在输入框内
 				if (cameraParams != null) {
-					if (mPid == 22592 && mVid == 3034){
-						//						popSettingBinding.etCameraSettingReflect.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
-						//						popSettingBinding.etCameraSettingFreeAirTemp.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
-						popSettingBinding.etCameraSettingDistance.setEnabled(false);
-						mDataBinding.textureViewPreviewActivity.setTinyCCorrection(sp.getFloat(DYConstants.setting_correction,0.0f));
-					}else if (mPid == 1 && mVid == 5396) {
-						popSettingBinding.etCameraSettingDistance.setEnabled(true);
-					}
+//					if (mPid == 22592 && mVid == 3034){
+////						popSettingBinding.etCameraSettingDistance.setEnabled(false);
+////						popSettingBinding.etCameraSettingDistance.setTextColor(getColor(R.color.album_item_name_easy_photos));
+//						mDataBinding.textureViewPreviewActivity.setTinyCCorrection(sp.getFloat(DYConstants.setting_correction,0.0f));
+//					}else if (mPid == 1 && mVid == 5396) {
+////						popSettingBinding.etCameraSettingDistance.setEnabled(true);
+////						popSettingBinding.etCameraSettingDistance.setTextColor(getColor(R.color.white));
+//
+//					}
 					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(cameraParams.get(DYConstants.setting_emittance)));//发射率 0-1
-					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(cameraParams.get(DYConstants.setting_distance)));//距离 0-5
+//					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(cameraParams.get(DYConstants.setting_distance)));//距离 0-5
 					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_humidity)*100)));//湿度 0-100
 					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(cameraParams.get(DYConstants.setting_correction)));//校正  -20 - 20
 					popSettingBinding.etCameraSettingReflect.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_reflect)*1)));//反射温度 -10-40
 					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf((int)(cameraParams.get(DYConstants.setting_environment)*1)));//环境温度 -10 -40
 					//把值同步到 sp中
 					//					sp.edit().putFloat(DYConstants.setting_emittance,cameraParams.get(DYConstants.setting_emittance)).apply();
+					popSettingBinding.btSettingReset.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick (View v) {
+//							sp.edit().putFloat(DYConstants.setting_correction, 0.0f).apply();
+//							sp.edit().putFloat(DYConstants.setting_reflect, 25.0f).apply();
+//							sp.edit().putFloat(DYConstants.setting_environment, 25.0f).apply();
+//							sp.edit().putFloat(DYConstants.setting_emittance, 0.98f).apply();
+//							sp.edit().putFloat(DYConstants.setting_humidity, 0.5f).apply();
+
+							popSettingBinding.etCameraSettingReflect.setText("25");
+							popSettingBinding.etCameraSettingRevise.setText("0.0");
+							popSettingBinding.etCameraSettingEmittance.setText("0.98");
+							popSettingBinding.etCameraSettingFreeAirTemp.setText("25");
+							popSettingBinding.etCameraSettingHumidity.setText("0.5");
+
+
+
+//							if (mPid == 1 && mVid == 5396) {//S0机芯
+//								//发射率
+//								byte[] iputEm = new byte[4];
+//								ByteUtil.putFloat(iputEm,0.98f,0);
+//								mSendCommand.sendFloatCommand(4 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
+//										20, 40, 60, 80, 120);
+//								//反射温度
+//								ByteUtil.putFloat(iputEm,25.0f,0);
+//								mSendCommand.sendFloatCommand(1 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
+//										20, 40, 60, 80, 120);
+//								//校正
+//								ByteUtil.putFloat(iputEm,0.0f,0);
+//								mSendCommand.sendFloatCommand(0 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+//								//环境温度
+//								ByteUtil.putFloat(iputEm,25.0f,0);
+//								mSendCommand.sendFloatCommand(2 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+//								//湿度
+//								ByteUtil.putFloat(iputEm,0.5f,0);
+//								mSendCommand.sendFloatCommand(3 * 4, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
+//										20, 40, 60, 80, 120);
+//							} else if (mPid == 22592 && mVid == 3034){ //tinyC
+//								mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,0.98f,3);
+//								mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,25.0f,1);
+//								mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,25.0f,2);
+//								mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,0.5f,4);
+//								mDataBinding.textureViewPreviewActivity.setTinyCCorrection(sp.getFloat(DYConstants.setting_correction,0.0f));
+//							}
+						}
+					});
+
 					//发射率
 					popSettingBinding.etCameraSettingEmittance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 						@Override
@@ -971,31 +1026,31 @@ public class SendCommand {
 						}
 					});
 					//距离设置
-					popSettingBinding.etCameraSettingDistance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-						@Override
-						public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
-							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
-							if (actionId == EditorInfo.IME_ACTION_DONE){
-								if (TextUtils.isEmpty(v.getText().toString()))return true;
-								int value = Math.round(Float.parseFloat(v.getText().toString()));
-								if (value > 5 || value < 0){
-									showToast(getString(R.string.toast_range_int,0,5));
-									return true;
-								}
-								byte[] bIputDi = new byte[4];
-								ByteUtil.putInt(bIputDi,value,0);
-								if (mUvcCameraHandler!= null) {
-									if (mPid == 1 && mVid == 5396) {
-										mSendCommand.sendShortCommand(5 * 4, bIputDi[0], bIputDi[1], 20, 40, 60);
-									}
-									sp.edit().putFloat(DYConstants.setting_distance,value).apply();
-									showToast(R.string.toast_complete_Distance);
-								}
-								hideInput(v.getWindowToken());
-							}
-							return true;
-						}
-					});
+//					popSettingBinding.etCameraSettingDistance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//						@Override
+//						public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
+//							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+//							if (actionId == EditorInfo.IME_ACTION_DONE){
+//								if (TextUtils.isEmpty(v.getText().toString()))return true;
+//								int value = Math.round(Float.parseFloat(v.getText().toString()));
+//								if (value > 5 || value < 0){
+//									showToast(getString(R.string.toast_range_int,0,5));
+//									return true;
+//								}
+//								byte[] bIputDi = new byte[4];
+//								ByteUtil.putInt(bIputDi,value,0);
+//								if (mUvcCameraHandler!= null) {
+//									if (mPid == 1 && mVid == 5396) {
+//										mSendCommand.sendShortCommand(5 * 4, bIputDi[0], bIputDi[1], 20, 40, 60);
+//									}
+//									sp.edit().putFloat(DYConstants.setting_distance,value).apply();
+//									showToast(R.string.toast_complete_Distance);
+//								}
+//								hideInput(v.getWindowToken());
+//							}
+//							return true;
+//						}
+//					});
 					//反射温度设置  -20 - 120 ℃
 					popSettingBinding.etCameraSettingReflect.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 						@Override
@@ -1122,7 +1177,7 @@ public class SendCommand {
 					});
 				}else {//未连接机芯
 					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(sp.getFloat(DYConstants.setting_emittance,0)));//发射率 0-1
-					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(sp.getFloat(DYConstants.setting_distance,0)));//距离 0-5
+//					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(sp.getFloat(DYConstants.setting_distance,0)));//距离 0-5
 					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int)(sp.getFloat(DYConstants.setting_humidity,0)*100)));//湿度 0-100
 					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(sp.getFloat(DYConstants.setting_correction,0)));//修正 -3 -3
 					popSettingBinding.etCameraSettingReflect.setText(String.valueOf(sp.getFloat(DYConstants.setting_reflect,0)));//反射温度 -10-40
@@ -1253,9 +1308,6 @@ public class SendCommand {
 				});
 				//popupWindow.showAsDropDown(mDataBinding.flPreview,15,-popupWindow.getHeight()-20, Gravity.CENTER);
 				showPopWindows(view,30,15,20);
-				//						}
-				//					}
-				//				});
 			}
 		});
 		mDataBinding.dragTempContainerPreviewFragment.setAddChildDataListener(new DragTempContainer.onAddChildDataListener() {

@@ -208,12 +208,19 @@
                 android:layout_width="0dp"
                 android:layout_height="@dimen/dimen_20dp" />
 
-<!--            <TextView-->
-<!--                android:id="@+id/tv3"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/tv_camera_setting"-->
-<!--                android:background="@color/bg_cutoff_rule"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="@dimen/dimen_1dp" />-->
+            <Button
+                android:id="@+id/bt_setting_reset"
+                app:layout_constraintTop_toTopOf="@id/tv_camera_setting"
+                app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting"
+                app:layout_constraintRight_toLeftOf="@id/gl_setting_content"
+                android:gravity="center"
+                android:text="@string/SettingCameraParams_Reset"
+                android:textSize="@dimen/dimen_16sp"
+                android:background="@drawable/bg_setting_language_toggle"
+                android:textColor="@color/black"
+                android:singleLine="true"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"/>
 
 <!--发射率-->
             <TextView
@@ -322,60 +329,60 @@
 
 
 <!--            距离-->
-            <TextView
-                android:id="@+id/tv_camera_setting_distance"
-                app:layout_constraintLeft_toLeftOf="@id/gl_setting_title"
-                app:layout_constraintTop_toBottomOf="@id/tv_camera_setting_humidity"
-                android:layout_marginTop="@dimen/dimen_10dp"
-                android:textColor="@color/white"
-                android:text="@string/SettingCameraParams_Distance"
-                android:singleLine="true"
-                android:textSize="@dimen/dimen_16sp"
-                android:gravity="center"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_20dp"/>
-<!--            距离单位-->
-            <TextView
-                android:id="@+id/tv_camera_setting_humidity_unit"
-                android:text="(m)"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                android:gravity="center"
-                android:layout_marginStart="@dimen/dimen_2dp"
-                app:layout_constraintLeft_toRightOf="@id/tv_camera_setting_distance"
-                app:layout_constraintTop_toTopOf="@id/tv_camera_setting_distance"
-                app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_distance"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"/>
-            <!--            距离范围-->
-            <TextView
-                android:id="@+id/tv_camera_setting_distance_range"
-                android:text="(0–5) "
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textSize="@dimen/dimen_16sp"
-                app:layout_constraintRight_toLeftOf="@id/et_camera_setting_distance"
-                app:layout_constraintTop_toTopOf="@id/et_camera_setting_distance"
-                app:layout_constraintBottom_toBottomOf="@id/et_camera_setting_distance"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"/>
-            <EditText
-                android:id="@+id/et_camera_setting_distance"
-                app:layout_constraintTop_toTopOf="@id/tv_camera_setting_distance"
-                app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_distance"
-                app:layout_constraintRight_toLeftOf="@id/gl_setting_content"
-                android:layout_marginStart="@dimen/dimen_10dp"
-                android:gravity="center"
-                android:text="@string/value_zero"
-                android:textColorHint="@color/white"
-                android:textColor="@color/white"
-                android:textSize="@dimen/dimen_16sp"
-                android:inputType="number"
-                android:imeOptions="actionDone"
-                android:background="@drawable/shape_bg_pop_setting_edit"
-                android:singleLine="true"
-                android:layout_width="@dimen/dimen_55dp"
-                android:layout_height="0dp"/>
+<!--            <TextView-->
+<!--                android:id="@+id/tv_camera_setting_distance"-->
+<!--                app:layout_constraintLeft_toLeftOf="@id/gl_setting_title"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/tv_camera_setting_humidity"-->
+<!--                android:layout_marginTop="@dimen/dimen_10dp"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:text="@string/SettingCameraParams_Distance"-->
+<!--                android:singleLine="true"-->
+<!--                android:textSize="@dimen/dimen_16sp"-->
+<!--                android:gravity="center"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="@dimen/dimen_20dp"/>-->
+<!--&lt;!&ndash;            距离单位&ndash;&gt;-->
+<!--            <TextView-->
+<!--                android:id="@+id/tv_camera_setting_humidity_unit"-->
+<!--                android:text="(m)"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:textSize="16sp"-->
+<!--                android:gravity="center"-->
+<!--                android:layout_marginStart="@dimen/dimen_2dp"-->
+<!--                app:layout_constraintLeft_toRightOf="@id/tv_camera_setting_distance"-->
+<!--                app:layout_constraintTop_toTopOf="@id/tv_camera_setting_distance"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_distance"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="0dp"/>-->
+<!--            &lt;!&ndash;            距离范围&ndash;&gt;-->
+<!--            <TextView-->
+<!--                android:id="@+id/tv_camera_setting_distance_range"-->
+<!--                android:text="(0–5) "-->
+<!--                android:gravity="center"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:textSize="@dimen/dimen_16sp"-->
+<!--                app:layout_constraintRight_toLeftOf="@id/et_camera_setting_distance"-->
+<!--                app:layout_constraintTop_toTopOf="@id/et_camera_setting_distance"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/et_camera_setting_distance"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="0dp"/>-->
+<!--            <EditText-->
+<!--                android:id="@+id/et_camera_setting_distance"-->
+<!--                app:layout_constraintTop_toTopOf="@id/tv_camera_setting_distance"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_distance"-->
+<!--                app:layout_constraintRight_toLeftOf="@id/gl_setting_content"-->
+<!--                android:layout_marginStart="@dimen/dimen_10dp"-->
+<!--                android:gravity="center"-->
+<!--                android:text="@string/value_zero"-->
+<!--                android:textColorHint="@color/white"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:textSize="@dimen/dimen_16sp"-->
+<!--                android:inputType="number"-->
+<!--                android:imeOptions="actionDone"-->
+<!--                android:background="@drawable/shape_bg_pop_setting_edit"-->
+<!--                android:singleLine="true"-->
+<!--                android:layout_width="@dimen/dimen_55dp"-->
+<!--                android:layout_height="0dp"/>-->
 
 <!--            <ImageButton-->
 <!--                android:id="@+id/ib_camera_setting_distance"-->
@@ -390,7 +397,7 @@
             <TextView
                 android:id="@+id/tv_camera_setting_revise"
                 app:layout_constraintLeft_toLeftOf="@id/gl_setting_title"
-                app:layout_constraintTop_toBottomOf="@id/tv_camera_setting_distance"
+                app:layout_constraintTop_toBottomOf="@id/tv_camera_setting_humidity"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:textColor="@color/white"
                 android:text="@string/SettingCameraParams_Revise"

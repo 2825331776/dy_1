@@ -328,7 +328,8 @@ unsigned char* FrameImage::onePreviewData(uint8_t* frameData) {
     }
     if (mVid == 5396 && mPid==1){
         int amountPixels1 = requestWidth*(requestHeight-4);
-        amountPixels1 = amountPixels1 + 4;//倒数第四行的 第四位
+//        amountPixels0 = amountPixels1 + 1;//机芯温度AD ，下降15打挡
+        amountPixels1 = amountPixels1 + 4;//倒数第四行的 第四位 最大AD
         max = tmp_buf[amountPixels1];
         amountPixels1 = amountPixels1 + 3;//倒数第四行的 第七位
         min = tmp_buf[amountPixels1];

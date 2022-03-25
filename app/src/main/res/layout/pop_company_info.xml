@@ -41,7 +41,7 @@
             android:layout_marginTop="@dimen/dimen_5dp"
             android:textSize="@dimen/dimen_16sp"
             android:textColor="@color/white"
-            android:text="官网地址："
+            android:text="@string/CompanyWebsite_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 

@@ -4,10 +4,11 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.RectF;
+import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -49,6 +50,7 @@ public class DragTempContainer extends RelativeLayout {
 	private static final boolean isDebug = true;
 	private static final String TAG = "MyDragContainer";
 	private boolean isControlItem = false;//是否是操作子View
+	private boolean isConnect = false;
 
 //	private CopyOnWriteArrayList<MyMoveWidget>                 highLowTempLists;//高温 最低温，中心点温度 集合
 //	private MyMoveWidget selectChild;
@@ -101,23 +103,36 @@ public class DragTempContainer extends RelativeLayout {
 	 */
 	public static String []tempSuffixList = new String[]{"℃","℉","K"};
 
+	//绘制OTG提示文字
+	private TextPaint    testPaint;
+	private int          OTGTextLength = 0;
+	private Rect         OTGRect;
+//	private StaticLayout staticLayout ;
 
-	private Paint testPaint;
-	private RectF rectFHighTempAlarm;
-	private float valueHighTempAlarm = 0.0f;//设置最高温数值
-	private boolean isAboveHighTemp = false;//是否超温
-	private boolean highTempAlarmToggle = false;
-	private int alarmCountDown = 0;
+	private float        valueHighTempAlarm = 0.0f;//设置最高温数值
+	private boolean      isAboveHighTemp = false;//是否超温
+	private boolean      highTempAlarmToggle = false;
+	private int          alarmCountDown = 0;
 	private MyMoveWidget operateChild = null;
-	private int frameCount = 0;
-	private MediaPlayer audioPlayer;
-	private long lastAboveTime = 0;
+	private int          frameCount = 0;
+	private MediaPlayer  audioPlayer;
+	private long         lastAboveTime = 0;
 
 
 //	protected void setBitMap(Bitmap point,Bitmap max , Bitmap min){
 //		pointBt = point;maxTempBt = max;minTempBt = min;
 //		invalidate();
 //	}
+
+
+	public boolean isConnect () {
+		return isConnect;
+	}
+
+	public void setConnect (boolean connect) {
+		isConnect = connect;
+	}
+
 	//实时刷新本地的温度数据
 	public void upDateTemp (float[] date){
 		Message message = Message.obtain();
@@ -231,7 +246,6 @@ public class DragTempContainer extends RelativeLayout {
 			audioPlayer.release();
 			audioPlayer = null;
 		}
-
 	}
 
 //	private OnUserCRUDListener onUserCRUDListener;
@@ -298,10 +312,20 @@ public class DragTempContainer extends RelativeLayout {
 
 	private void initAttrs(){
 
-		testPaint = new Paint();
+		testPaint = new TextPaint();
+		testPaint.setTextSize(DensityUtil.dp2px(mContext.get(),getResources().getDimension(R.dimen.dimen_6sp)));
 		testPaint.setStyle(Paint.Style.STROKE);
-		testPaint.setStrokeWidth(DensityUtil.dp2px(mContext.get(),3));
-		testPaint.setColor(getResources().getColor(R.color.max_temp_text_color_red));
+//		testPaint.setStrokeWidth(DensityUtil.dp2px(mContext.get(),getResources().getDimension(R.dimen.dimen_3dp)));
+		testPaint.setColor(getResources().getColor(R.color.white));
+		OTGRect = new Rect();
+		testPaint.getTextBounds(getResources().getString(R.string.preview_hint_not_connect),
+				0,getResources().getString(R.string.preview_hint_not_connect).length(),OTGRect);
+		OTGTextLength = OTGRect.width();
+//		staticLayout = new StaticLayout(getResources().getString(R.string.preview_hint_not_connect),testPaint,
+//				screenWidth/2, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, true);
+		Log.e(TAG, "initAttrs: ==== screenWidth "+ screenWidth);
+//		staticLayout = StaticLayout.Builder.obtain(getResources().getString(R.string.preview_hint_not_connect),
+//				0,getResources().getString(R.string.preview_hint_not_connect).length(),testPaint,OTGTextLength/4).build();
 
 	}
 	private void initView(){
@@ -325,6 +349,29 @@ public class DragTempContainer extends RelativeLayout {
 
 	@Override
 	protected void onDraw (Canvas canvas) {
+		if (!isConnect){
+//			canvas.save();
+//			canvas.translate(0, 0);
+//			staticLayout.draw(canvas);
+//			canvas.restore();
+//			if ((screenWidth - OTGTextLength)/2.0f >0){
+				canvas.drawText(mContext.get().getString(R.string.preview_hint_not_connect),
+						(screenWidth - OTGTextLength)/2.0f,screenHeight/2.0f,testPaint);
+//			}else {
+//
+//				String s1 = mContext.get().getString(R.string.preview_hint_not_connect).substring(0,mContext.get().getString(R.string.preview_hint_not_connect).length()/2);
+//				String s2 = mContext.get().getString(R.string.preview_hint_not_connect).substring(mContext.get().getString(R.string.preview_hint_not_connect).length()/2);
+//				if (OTGTextLength <= 0){
+//					testPaint.getTextBounds(s1,0,s1.length(),OTGRect);
+//					OTGTextLength = OTGRect.width();
+//				}
+//				canvas.drawText(s1,
+//					(screenWidth - OTGTextLength)/2.0f,screenHeight/2.0f,testPaint);
+//				canvas.drawText(s2,
+//						(screenWidth - OTGTextLength)/2.0f,screenHeight/2.0f + OTGRect.height(),testPaint);
+//			}
+
+		}
 		super.onDraw(canvas);
 	}
 

@@ -176,19 +176,19 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-<!--                提示语句-->
-                <TextView
-                    android:id="@+id/tv_preview_hint"
-                    android:textColorHint="@color/white"
-                    android:textSize="@dimen/dimen_24sp"
-                    android:background="@color/black"
-                    android:hint="@string/preview_hint_not_connect"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+<!--                OTG提示语句-->
+<!--                <TextView-->
+<!--                    android:id="@+id/tv_preview_hint"-->
+<!--                    android:textColorHint="@color/white"-->
+<!--                    android:textSize="@dimen/dimen_16sp"-->
+<!--                    android:background="@color/black"-->
+<!--                    android:hint="@string/preview_hint_not_connect"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintLeft_toLeftOf="parent"-->
+<!--                    app:layout_constraintRight_toRightOf="parent"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"/>-->
 
                 <com.dyt.wcc.cameracommon.widget.UVCCameraTextureView
                     android:id="@+id/textureView_preview_activity"
@@ -229,11 +229,10 @@
         <!--        测试按钮-->
         <Button
             android:id="@+id/btTest01"
-            android:text="hahahahaha"
+            android:text="TEST01"
             app:layout_constraintTop_toTopOf="@id/ll_container_preview_seekbar"
             app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"
             android:layout_width="wrap_content"
-            android:visibility="gone"
             android:layout_height="wrap_content"/>
         <!--        打挡-->
         <!--        <Button-->

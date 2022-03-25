@@ -2,4 +2,6 @@
 <resources>
     <string name="turn_on">ON</string>
     <string name="turn_off">OFF</string>
+
+    <string name="preview_hint_not_connect">Please plug in the device and open the OTG function</string>
 </resources>
