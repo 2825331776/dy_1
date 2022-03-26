@@ -313,7 +313,7 @@ public class DragTempContainer extends RelativeLayout {
 	private void initAttrs(){
 
 		testPaint = new TextPaint();
-		testPaint.setTextSize(DensityUtil.dp2px(mContext.get(),getResources().getDimension(R.dimen.dimen_6sp)));
+		testPaint.setTextSize(DensityUtil.dp2px(mContext.get(),12));
 		testPaint.setStyle(Paint.Style.STROKE);
 //		testPaint.setStrokeWidth(DensityUtil.dp2px(mContext.get(),getResources().getDimension(R.dimen.dimen_3dp)));
 		testPaint.setColor(getResources().getColor(R.color.white));
@@ -322,11 +322,11 @@ public class DragTempContainer extends RelativeLayout {
 				0,getResources().getString(R.string.preview_hint_not_connect).length(),OTGRect);
 		OTGTextLength = OTGRect.width();
 //		staticLayout = new StaticLayout(getResources().getString(R.string.preview_hint_not_connect),testPaint,
-//				screenWidth/2, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, true);
+//				screenWidth/2, Layout.Alignment.ALIGN_CENTER, 1.0F, 0.0F, true);
 		Log.e(TAG, "initAttrs: ==== screenWidth "+ screenWidth);
 //		staticLayout = StaticLayout.Builder.obtain(getResources().getString(R.string.preview_hint_not_connect),
-//				0,getResources().getString(R.string.preview_hint_not_connect).length(),testPaint,OTGTextLength/4).build();
-
+//				0,getResources().getString(R.string.preview_hint_not_connect).length(),testPaint,(OTGTextLength + 50)/2)
+//				.setAlignment(Layout.Alignment.ALIGN_CENTER).build();
 	}
 	private void initView(){
 		drawTempMode = -1;
@@ -351,7 +351,7 @@ public class DragTempContainer extends RelativeLayout {
 	protected void onDraw (Canvas canvas) {
 		if (!isConnect){
 //			canvas.save();
-//			canvas.translate(0, 0);
+//			canvas.translate(screenWidth/2.0f - OTGTextLength/4.0f, screenHeight/2.0f + testPaint.ascent()*2);
 //			staticLayout.draw(canvas);
 //			canvas.restore();
 //			if ((screenWidth - OTGTextLength)/2.0f >0){

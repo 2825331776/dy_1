@@ -64,7 +64,7 @@ public class MediaVideoEncoder extends MediaEncoder implements IVideoEncoder {
 		mRenderHandler = RenderHandler1.createHandler(TAG);
 //		mWidth = 1680;
 //		mHeight = 1264;
-		mWidth = 1920;
+		mWidth = 1440;
 		mHeight = 1080;
 //		mWidth = width;
 //		mHeight = height;

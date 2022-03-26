@@ -97,6 +97,7 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 //    private ImageView ivCamera;
     private TextView tvTitle;
     private boolean onlyPic = false;
+    private boolean onlyVideo = false;
     private int functionIndex = 0;
 
     //拼一张
@@ -813,6 +814,7 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
         else if (R.id.bt_all_gallery_rightRl == id){
             Result.removeAll();
             onlyPic = false;
+            onlyVideo = false;
             functionIndex = 0;
             updatePhotos(functionIndex);
 //            Toast.makeText(getApplicationContext(),"all is click",Toast.LENGTH_SHORT).show();
@@ -820,6 +822,7 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
         else if (R.id.bt_pic_gallery_rightRl == id){
             Result.removeAll();
             onlyPic = true;
+            onlyVideo = false;
             functionIndex = 0;
             updatePhotos(functionIndex);
 //            Toast.makeText(getApplicationContext(),"pic is click",Toast.LENGTH_SHORT).show();
@@ -827,7 +830,8 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
         else if (R.id.bt_video_gallery_rightRl == id){
             Result.removeAll();
             onlyPic = false;
-            functionIndex = 1;
+            onlyVideo = true;
+//            functionIndex = 1;
             updatePhotos(functionIndex);
 //            Toast.makeText(getApplicationContext(),"video is click",Toast.LENGTH_SHORT).show();
         }
@@ -1033,6 +1037,10 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
             if (photo.path.contains("DYTCamera")){
                 if (onlyPic){
                     if ((photo.name).contains("png") || (photo.name).contains("jpg")){
+                        dataList.add(photo);
+                    }
+                }else if (onlyVideo){
+                    if ((photo.name).contains("mp4")){
                         dataList.add(photo);
                     }
                 }else {

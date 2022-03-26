@@ -916,8 +916,7 @@ public class SendCommand {
 					if (mPid == 1 && mVid == 5396){
 						getCameraParams();//
 					}else if (mPid == 22592 && mVid == 3034){
-						getTinyCCameraParams();//
-
+						getTinyCCameraParams();
 					}
 				}
 				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_setting,null);
