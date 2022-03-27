@@ -373,6 +373,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mDataBinding.dragTempContainerPreviewFragment.setBackgroundColor(getColor(R.color.bg_preview_otg_connect));
 		mDataBinding.dragTempContainerPreviewFragment.setConnect(true);
 		mDataBinding.dragTempContainerPreviewFragment.invalidate();
+
+		//2022年3月27日12:58:52 吴长城  添加预览的高、低、中心温度
+		mDataBinding.textureViewPreviewActivity.openFeaturePoints(0);
+		mDataBinding.textureViewPreviewActivity.openFeaturePoints(1);
+		mDataBinding.textureViewPreviewActivity.openFeaturePoints(2);
 	}
 
 	private int setValue(final int flag, final int value) {//设置机芯参数,调用JNI层
@@ -911,7 +916,8 @@ public class SendCommand {
 			@Override
 			public void onClick (View v) {
 				//打开设置第一步：获取机芯数据。
-				if (mUvcCameraHandler == null)return;
+				if (mUvcCameraHandler == null )return;
+				if (!mUvcCameraHandler.snRightIsPreviewing()){showToast("正在打开设备中...");return;}
 				if (mUvcCameraHandler.isOpened()){
 					if (mPid == 1 && mVid == 5396){
 						getCameraParams();//

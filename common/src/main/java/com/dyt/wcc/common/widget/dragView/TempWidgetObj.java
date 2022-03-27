@@ -25,12 +25,32 @@ public class TempWidgetObj {
 	private List<Bitmap> toolsPicsBp;//工具栏图片集合
 	private int          toolsNumber;
 
+	//高温 低温 开关
+	private boolean highTempToggle = false;
+	private boolean lowTempToggle  = false;
+
 	private PointTempWidget pointTemp;
 	private OtherTempWidget otherTemp;
 	public TempWidgetObj (){
 		if (toolsPicsBp == null) {
 			toolsPicsBp = new ArrayList<>();
 		}
+	}
+
+	public boolean isHighTempToggle () {
+		return highTempToggle;
+	}
+
+	public void setHighTempToggle (boolean highTempToggle) {
+		this.highTempToggle = highTempToggle;
+	}
+
+	public boolean isLowTempToggle () {
+		return lowTempToggle;
+	}
+
+	public void setLowTempToggle (boolean lowTempToggle) {
+		this.lowTempToggle = lowTempToggle;
 	}
 
 	public int getTempTextSize () {
