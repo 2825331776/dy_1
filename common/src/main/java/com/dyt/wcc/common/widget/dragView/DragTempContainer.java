@@ -118,6 +118,10 @@ public class DragTempContainer extends RelativeLayout {
 	private MediaPlayer  audioPlayer;
 	private long         lastAboveTime = 0;
 
+	//屏幕宽度的三分之二
+	private int partScreenWidth = 0 ;
+
+
 
 //	protected void setBitMap(Bitmap point,Bitmap max , Bitmap min){
 //		pointBt = point;maxTempBt = max;minTempBt = min;
@@ -311,9 +315,8 @@ public class DragTempContainer extends RelativeLayout {
 	}
 
 	private void initAttrs(){
-
 		testPaint = new TextPaint();
-		testPaint.setTextSize(DensityUtil.dp2px(mContext.get(),12));
+		testPaint.setTextSize(DensityUtil.sp2px(mContext.get(),16));
 		testPaint.setStyle(Paint.Style.STROKE);
 //		testPaint.setStrokeWidth(DensityUtil.dp2px(mContext.get(),getResources().getDimension(R.dimen.dimen_3dp)));
 		testPaint.setColor(getResources().getColor(R.color.white));
@@ -321,42 +324,60 @@ public class DragTempContainer extends RelativeLayout {
 		testPaint.getTextBounds(getResources().getString(R.string.preview_hint_not_connect),
 				0,getResources().getString(R.string.preview_hint_not_connect).length(),OTGRect);
 		OTGTextLength = OTGRect.width();
-//		staticLayout = new StaticLayout(getResources().getString(R.string.preview_hint_not_connect),testPaint,
-//				screenWidth/2, Layout.Alignment.ALIGN_CENTER, 1.0F, 0.0F, true);
 		Log.e(TAG, "initAttrs: ==== screenWidth "+ screenWidth);
-//		staticLayout = StaticLayout.Builder.obtain(getResources().getString(R.string.preview_hint_not_connect),
-//				0,getResources().getString(R.string.preview_hint_not_connect).length(),testPaint,(OTGTextLength + 50)/2)
-//				.setAlignment(Layout.Alignment.ALIGN_CENTER).build();
 	}
 	private void initView(){
 		drawTempMode = -1;
-//		userAdd = new CopyOnWriteArrayList<>();
 		userAddData = new CopyOnWriteArrayList<>();
 		userAddView = new CopyOnWriteArrayList<>();//初始化 子view 集合
 		tempSource = new float[256*196+10];
 		minAddWidgetWidth = minAddWidgetHeight = DensityUtil.dp2px(mContext.get(),70);//最小为50个dp
+//		int width = getResources().getDisplayMetrics().heightPixels;
+//		Log.e(TAG, "initView: ================width ==========" + width);
 
 //		pointBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorgreen);
 //		minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorblue);
 //		maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorred);
-		//init MediaPlayer
-//		if (audioPlayer == null){
-//			audioPlayer = MediaPlayer.create(mContext.get(),R.raw.a2_ding);
-//			audioPlayer.setLooping(true);
-//		}
 		mDataNearByUnit = DensityUtil.dp2px(mContext.get(),5);
+	}
+
+	/**
+	 * @param canvas 画布
+	 * @param str    绘制内容
+	 * @param heigth 每一行的高度
+	 */
+	private void lineFeed(Canvas canvas, String str, int heigth) {
+		int lineWidth = partScreenWidth;
+		//计算当前宽度(width)能显示多少个汉字
+		int subIndex = testPaint.breakText(str, 0, str.length(), true, lineWidth, null);
+		//截取可以显示的汉字
+		String mytext = str.substring(0, subIndex);
+		canvas.drawText(mytext, screenWidth/3.0f, heigth, testPaint);
+		//计算剩下的汉字
+		String ss = str.substring(subIndex, str.length());
+		if (ss.length() > 0) {
+			lineFeed(canvas, ss, heigth + (int)testPaint.getTextSize() + 10);
+		}
 	}
 
 	@Override
 	protected void onDraw (Canvas canvas) {
 		if (!isConnect){
+			if (partScreenWidth <= 0){
+				partScreenWidth = screenWidth/2;
+			}
+			lineFeed(canvas,mContext.get().getString(R.string.preview_hint_not_connect),screenHeight/2-(int)testPaint.getTextSize());
+//			//截取可以显示的汉字
+//			String mytext = mContext.get().getString(R.string.preview_hint_not_connect).substring(0, subIndex);
+//			canvas.drawText(mytext, 0, heigth, textPaint);
 //			canvas.save();
 //			canvas.translate(screenWidth/2.0f - OTGTextLength/4.0f, screenHeight/2.0f + testPaint.ascent()*2);
 //			staticLayout.draw(canvas);
 //			canvas.restore();
 //			if ((screenWidth - OTGTextLength)/2.0f >0){
-				canvas.drawText(mContext.get().getString(R.string.preview_hint_not_connect),
-						(screenWidth - OTGTextLength)/2.0f,screenHeight/2.0f,testPaint);
+//			testPaint.breakText()
+//				canvas.drawText(mContext.get().getString(R.string.preview_hint_not_connect),
+//						(screenWidth - OTGTextLength)/2.0f,screenHeight/2.0f,testPaint);
 //			}else {
 //
 //				String s1 = mContext.get().getString(R.string.preview_hint_not_connect).substring(0,mContext.get().getString(R.string.preview_hint_not_connect).length()/2);

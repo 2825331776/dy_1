@@ -92,6 +92,10 @@ private:
 	char machine_sn[32];//设备的SN号
 	char user_sn[20];//用户区的 SN号
 
+	unsigned char dytTinyCSn [15];
+	unsigned char TinyUserSN[15];
+	unsigned char TinyRobotSn[15];
+
 //	Tinyc使用锁 相关变量
 	pthread_t tinyC_send_order_thread; //tinyc发送指令的线程
 	pthread_cond_t tinyC_send_order_sync;//tinyc线程 条件变量
@@ -154,7 +158,7 @@ private:
 	void clearDisplay();
 	int copyToSurface(uint8_t *frameData, ANativeWindow **window);
 	//SN 相关 ，sn 用户区 SN, ir_sn 设备sn
-	void * DecryptSN(void * sn, void * ir_sn);
+	void * DecryptSN(void * sn, void * ir_sn,void *returnData);
 //	string replace(string& base, string src, string dst);
 	//加密 标识符
 	char * EncryptTag(char * tag);
@@ -178,9 +182,6 @@ private:
 
     float mCbTemper[640*512+10];//回调给Java层的温度数据，大小是不是太大了
     unsigned short detectAvg;
-
-
-
 
 public:
     UVCPreviewIR();

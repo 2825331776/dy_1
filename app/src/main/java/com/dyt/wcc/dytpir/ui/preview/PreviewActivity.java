@@ -300,7 +300,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private void startPreview () {
 		//				if (isDebug)Log.e(TAG, "startPreview: flPreview  width == " + mDataBinding.flPreview.getMeasuredWidth()
 		//						+ " height == " + mDataBinding.flPreview.getMeasuredHeight());
-
 		stt = new Surface(mDataBinding.textureViewPreviewActivity.getSurfaceTexture());
 
 		mTextureViewWidth = mDataBinding.textureViewPreviewActivity.getWidth();
@@ -592,9 +591,6 @@ public class SendCommand {
 					mDataBinding.customSeekbarPreviewFragment.setmProgressBarSelectBgList(bitmaps);
 					//		Log.e(TAG, "initView: sp.get Palette_Number = " + sp.getInt(DYConstants.PALETTE_NUMBER,0));
 					mDataBinding.customSeekbarPreviewFragment.setPalette(0);
-
-
-
 					initListener();
 
 					initRecord();
@@ -619,17 +615,11 @@ public class SendCommand {
 		});
 
 
-
-
-
 //		mDataBinding.setPf(this);
 //		mViewModel = new ViewModelProvider(getViewModelStore(),
 //				new ViewModelProvider.AndroidViewModelFactory((Application) mContext.get().getApplicationContext())).get(PreViewViewModel.class);
-
 //		mViewModel.setDeviceConnectListener(onDeviceConnectListener);
-
 //		mDataBinding.setPreviewViewModel(mViewModel);
-
 	}
 
 	/**
@@ -637,38 +627,13 @@ public class SendCommand {
 	 */
 	private void initListener(){
 		//测试的 监听器
-		mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick (View v) {
-//				Intent intent = new Intent(PreviewActivity.this, GalleryActivity.class);
-//				startActivity(intent);
-//								EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
-//										//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
-//										.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
-//										.setCount(9)
-//										.setVideo(true)
-//										.setGif(false)
-//										.start(101);
-				mDataBinding.dragTempContainerPreviewFragment.setBackgroundColor(getColor(R.color.white));
-			}
-		});
+//		mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick (View v) {
+//				mDataBinding.dragTempContainerPreviewFragment.setBackgroundColor(getColor(R.color.white));
+//			}
+//		});
 		//
-		//				mDataBinding.btTest02.setOnClickListener(new View.OnClickListener() {
-		//					@Override
-		//					public void onClick (View v) {
-		////						if (mUvcCameraHandler!= null && mUvcCameraHandler.isPreviewing()){
-		////							Log.e(TAG, "onClick: btFresh");
-		////							setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
-		////							mUvcCameraHandler.whenShutRefresh();
-		////						}
-		//		//				else if (mUvcCameraHandler !=null && !mUvcCameraHandler.isPreviewing()){
-		//		//					mUvcCameraHandler.stopTemperaturing();
-		//		//					mUvcCameraHandler.stopPreview();
-		//		//					mUvcCameraHandler.release();
-		//		//				}
-		//					}
-		//				});
-
 		/**
 		 * 超温警告 ， 预览层去绘制框， DragTempContainer 控件去播放声音
 		 */
@@ -866,47 +831,21 @@ public class SendCommand {
 		mDataBinding.ivPreviewLeftGallery.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
+				if (!mUvcCameraHandler.snRightIsPreviewing()){
+					return;}
 				if (mDataBinding.btPreviewLeftRecord.isSelected()){
 					showToast(getResources().getString(R.string.toast_is_recording));
 					return;
 				}else {
 					mUvcCameraHandler.close();
 					mUsbMonitor.unregister();
-//					mDataBinding.textureViewPreviewActivity.onPause();
-//					//					if (mUvcCameraHandler!=null){
-//					//					}
-//					EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
-//							//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
-//							.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
-//							.setCount(9)
-//							.setVideo(true)
-//							.setGif(false)
-//							.start(101);
-//					ArrayList<String> a = new ArrayList<>();
-//					a.add("DYTCamera");
 					EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
-							//				.setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
 							.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
-							.setCount(9)
-//							.setSelectedPhotos(null)
-//							.setSelectedPhotoPaths(a)
+							.setCount(10000)
 							.setVideo(true)
 							.setGif(false)
 							.start(101);
-//
-//					Matisse.from(PreviewActivity.this)
-//							.choose(MimeType.ofAll(), false)
-//							.theme(R.style.Matisse_Dracula)
-//							.countable(false)
-//							.addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
-//							.maxSelectable(9)
-//							.originalEnable(true)
-//							.maxOriginalSize(10)
-//							//.imageEngine(new GlideEngine())
-//							.imageEngine(new PicassoEngine())
-//							.forResult(REQUEST_CODE_CHOOSE);
 				}
-
 			}
 		});
 
@@ -917,7 +856,9 @@ public class SendCommand {
 			public void onClick (View v) {
 				//打开设置第一步：获取机芯数据。
 				if (mUvcCameraHandler == null )return;
-				if (!mUvcCameraHandler.snRightIsPreviewing()){showToast("正在打开设备中...");return;}
+				if (!mUvcCameraHandler.snRightIsPreviewing()){
+//					showToast("正在打开设备中...");
+					return;}
 				if (mUvcCameraHandler.isOpened()){
 					if (mPid == 1 && mVid == 5396){
 						getCameraParams();//
@@ -1140,7 +1081,7 @@ public class SendCommand {
 										Log.e(TAG, "onEditorAction: 环境温度 set value = " + value);
 										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,(int)value,2);
 									}
-
+									popSettingBinding.etCameraSettingFreeAirTemp.setText(String.format(Locale.US,"%f", value));
 									sp.edit().putFloat(DYConstants.setting_environment,value).apply();
 									showToast(R.string.toast_complete_FreeAirTemp);
 								}
@@ -1172,6 +1113,7 @@ public class SendCommand {
 									} else if (mPid == 22592 && mVid == 3034){
 										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,fvalue,4);
 									}
+									popSettingBinding.etCameraSettingHumidity.setText(String.format(Locale.US,"%d", value));
 									sp.edit().putFloat(DYConstants.setting_humidity,fvalue).apply();
 									showToast(R.string.toast_complete_Humidity);
 								}
@@ -1261,19 +1203,6 @@ public class SendCommand {
 									sp.edit().putInt(DYConstants.LANGUAGE_SETTING,which).apply();
 									popupWindow.dismiss();
 
-//									if (mUvcCameraHandler != null ){
-//										mUvcCameraHandler.close();
-//										mUvcCameraHandler.release();
-//										mUvcCameraHandler = null;
-//										stt.release();
-//										stt = null;
-//									}
-//									if (mViewModel.getMUsbMonitor().getValue().isRegistered()){
-//										mViewModel.getMUsbMonitor().getValue().unregister();
-//										mViewModel.getMUsbMonitor().getValue().destroy();
-//									}
-									//									onStop();
-									//									onDestroyView();
 									toSetLanguage(which);
 								}
 								dialog.dismiss();

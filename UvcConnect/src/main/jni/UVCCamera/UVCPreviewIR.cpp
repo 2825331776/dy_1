@@ -856,15 +856,15 @@ std::vector<std::string> split(std::string str, std::string pattern)
 }
 
 // 解密用户区 SN
-// <param name="sn">用户sn</param>
-// <param name="ir_sn">设备sn</param>
-// <returns></returns>
-void *  UVCPreviewIR::DecryptSN(void * userSn, void * robotSn){
+/*
+ * @param userSn  用户区SN数组 指针数组
+ * @param robotSn  机器SN后六位 指针数组
+ * @param returnData 返回的 指针数组
+ * @return
+ */
+void *  UVCPreviewIR::DecryptSN(void * userSn, void * robotSn,void * returnData){
     unsigned char * sn = (unsigned char*)userSn;
     unsigned char * ir_sn = (unsigned char*)robotSn;
-    //string str = ir_sn.Replace("JD", "");
-//    LOGE(" DecryptSN userSn ======= >%s============ > ",sn);
-//    LOGE(" DecryptSN robotSn ===== >%s",ir_sn);
     for (int i = 0; i < 15; i++) {
         if (*ir_sn == '\0'){
             *ir_sn = '0';
@@ -874,24 +874,18 @@ void *  UVCPreviewIR::DecryptSN(void * userSn, void * robotSn){
     unsigned char* ir_sn_h = (unsigned char*)robotSn + 2;
     unsigned char* ir_sn_24 = new unsigned char[4];
     mempcpy(ir_sn_24,ir_sn_h,4);
-//    string s = (char *)ir_sn;
-//    s = replace(s,"\0", "0");
-//    LOGE(" DecryptSN =====步骤一 ===== >s==== %s" , s.c_str());
-//    string str = s.substr(2,4);
-//    LOGE(" DecryptSN =====步骤一 ===== > str === >  %s" , str.c_str());
-//    int sn_sum = strtol(str.c_str(),NULL,0) % 127;
-//    int sn_sum=  atoi(str.c_str())%127;
+//    LOGE("=============ir_sn_h ====> %s",ir_sn_h);
+//    LOGE("=============ir_sn_24 ====> %s",ir_sn_24);
     int  sn_sum = atoi((char *)ir_sn_24)%127;
-    ir_sn_h = NULL;
-    delete [] ir_sn_24;
 //    LOGE("======取值：========》%d", atoi(str.c_str()));
     char strs[sn_length];
 //    for (int i = 0; i < strlen(sn); i++) {
 //        LOGE(" >>>DecryptSN sn ======= > %d",(int)sn[i]);
 //    }
     mempcpy(strs,sn,15);
-    int strs_len = strlen(strs);
-//    LOGE(" DecryptSN =====步骤四222 ===== > %d", strlen(strs));
+//    int strs_len = strlen(strs);
+    int strs_len = 15;
+//    LOGE(" DecryptSN =====步骤四222 ===== > %d", strs_len);
     //strcpy(strs,sn);
 //    for (int i = 0; i < strs_len; i++) {
 //        LOGE(" DecryptSN sn ======= > %d",(int)strs[i]);
@@ -917,7 +911,6 @@ void *  UVCPreviewIR::DecryptSN(void * userSn, void * robotSn){
         strs[i] = strs[7 + i];
         strs[7 + i] = a;
     }
-//    LOGE(" DecryptSN =====步骤四 ===== >");
 //    LOGE(" DecryptSN =====步骤四 ===== > %d", strs_len);
     for (int i = 0; i < 7; i += 3)
     {
@@ -943,20 +936,15 @@ void *  UVCPreviewIR::DecryptSN(void * userSn, void * robotSn){
 //    for (int index = 0 ; index < 15; index ++) {
 //        LOGE(" DecryptSN =====步骤五 ==strs=== >%s" ,strs);
 //    }
-//    strcpy(sn,strs);
-    mempcpy(sn,strs,15);
-    char * returnSn ;
-    returnSn= (char *)(sn + 15);
-    *returnSn = 0;
-//    LOGE("===== returnSn ========== %s ========" ,returnSn);
+    mempcpy(returnData,strs,15);
+
+    ir_sn_h = NULL;
+    delete [] ir_sn_24;
+    ir_sn_24 = NULL;
 
     sn = NULL;
     ir_sn = NULL;
-    returnSn = NULL;
-//    for (int i = 0; i < strs_len; i++) {
-//        LOGE(" DecryptSN sn ======= > %d",(int)sn[i]);
-//    }
-    return userSn;
+    return returnData;
 }
 
 //DYTCA10D DYTCA10Q DYTCA10L
@@ -1032,6 +1020,7 @@ string DecryptionAES(const string& strSrc) //AES解密
 //    szDataIn = NULL;
 //    szDataOut = NULL;
     string strDest(szDataOut);
+//    mempcpy(szDataOut,returnData,15);
     delete[] szDataIn;
     delete[] szDataOut;
     return strDest;
@@ -1070,9 +1059,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     mIsCopyPicture = false;
                     signal_save_picture_thread();
                 }
-
                 uint8_t *tmp_buf=NULL;
-                //if(OutPixelFormat==3)//RGBA 32bit输出
                 mIsComputed=false;
                 //S0机芯 获取机芯的参数，环境温度  反射率 等等 用于 温度对照表。
                 if (mPid == 1 && mVid == 5396){
@@ -1085,17 +1072,18 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 //初始时outbuffer里面没有数据了，数据给holdbuffer，自己指向原来holdbuffer分配的内存首地址
                 //char强转成short类型 长度由requestWidth*requestHeight*2 变成requestWidth*requestHeight
 //                unsigned short* orgData=(unsigned short*)HoldBuffer;// char a数组[1,2] 经过强转short可能变成513(256*2+1)，或258(256*1+2)。
-
                 if (isVerifySN()) {
-                    unsigned char *dytSn;
-                    unsigned char *dytSnStr = new unsigned char [8];
+                    unsigned char *dytSn = dytTinyCSn;
                     //解码用户区 写入的 用户SN号
+                    unsigned char * tinyUserSn = TinyUserSN;
+                    unsigned char * tinyRobotSn = TinyRobotSn;
+                    unsigned char * tinyC_UserSn_sixLast = TinyRobotSn + 6;//指向机器SN的第六位之后
+                    unsigned char * readData = TinyUserSN;
+                    unsigned char * flashId = TinyRobotSn;
+
                     if (mPid == 22592 && mVid == 3034){//tinyC机芯
                         int ret = UVC_ERROR_IO;
-                        unsigned char * tinyUserSn = new unsigned char [15];
-                        unsigned char * tinyRobotSn = new unsigned char [15];
                         int dataLen = 15; //获取或读取数据大小
-                        unsigned char * readData = (unsigned char *)tinyUserSn;
                         int dwStartAddr = 0x7FF000;// 用户区域首地址
                         unsigned char data[8] = {0};
                         data[0] = 0x01;
@@ -1119,12 +1107,8 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             }
                         }
                         ret = uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x1d08,readData, 15,1000);
-
-                        LOGE("===================readData>>>>>>>>>%s<<<<<<<<<<<<<<<============",readData);
-                        readData = NULL;
-
-
-                        unsigned char * flashId = (unsigned char *)tinyRobotSn;
+                        *(readData+15) = '\0';
+                        LOGE("===================readData>>>>>>>>>%s<<<<<<<<<<<<<<<============",TinyUserSN);
                         unsigned char data2[8] = {0};
                         data2[0] = 0x05;
                         data2[1] = 0x84;
@@ -1148,8 +1132,8 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             }
                         }
                         ret = uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x1d08,flashId, 15,1000);
-                        LOGE("===================flashId>>>>>>>>>%s<<<<<<<<<<<<<<<============" , flashId);
-                        flashId = NULL;
+                        LOGE("===================flashId>>>>>>>>>%s<<<<<<<<<<<<<<<============" , TinyRobotSn);
+                        *(flashId+15) = '\0';
 
                         tinyC_request_type = 0x41;
                         tinyC_bRequest = 0x45;
@@ -1166,128 +1150,68 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         tinyC_data[0] = 0x0a;
                         tinyC_data[1] = 0x01;
                         ret = uvc_diy_communicate(mDeviceHandle,tinyC_request_type,tinyC_bRequest,tinyC_wValue,tinyC_wIndex,tinyC_data, sizeof(tinyC_data),1000);
-
 //                        pthread_mutex_lock(&tinyC_send_order_mutex);
                         //获取 机器的SN 和 用户区的SN
-//                        LOGE("========tinyRobotSn == %s=========",tinyRobotSn);
-//                        LOGE("========tinyUserSn == %s =========",tinyUserSn);
-                        unsigned char * tinyC_UserSn_sixLast = tinyRobotSn + 6;//指向机器SN的第六位之后
-                        LOGE("========tinyC_RobotSn_sixLast == %s =========",tinyC_UserSn_sixLast);
-                        dytSn =(unsigned char *)DecryptSN(tinyUserSn, tinyC_UserSn_sixLast);
-                        LOGE("==============destr ============= %s", dytSn);
-//                        pthread_mutex_unlock(&tinyC_send_order_mutex);
-//                        dytSnStr = dytSn;
-//                        dytSnStr = dytSnStr.substr(0, 8);
-//                        mempcpy(dytSnStr,dytSn,8);
-//    //                    LOGE("========robotSn == %s=========",robotSN);
-//    //                    LOGE("========userSn == %s=========",userSn);
-                        tinyC_UserSn_sixLast = NULL;
-                        delete [] tinyRobotSn;
-                        tinyRobotSn = NULL;
-                        delete [] tinyUserSn;
-                        tinyUserSn = NULL;
+//                        LOGE("========tinyC_RobotSn_sixLast == %s =========",tinyC_UserSn_sixLast);
+                        DecryptSN(TinyUserSN, tinyC_UserSn_sixLast,dytSn);
+                        *(dytSn+15) = '\0';
 //                        snIsRight = true;
-
-//***************************************************
-//                        unsigned char * robotSN = (unsigned char *)malloc(sizeof (char )*15);
-//                        unsigned char * userSn = (unsigned char *)malloc(sizeof (char )*15);
-//                        unsigned char * robotSN_h = robotSN;
-//                        unsigned char * userSn_h = userSn;
-//                        unsigned char * userSnSixLast = robotSN_h + 6;
-//                        int pa = 0x8004;
-////                        sendTinyCAllOrder(&pa,uvc_diy_communicate,100);
-//
-//                        sendTinyCAllOrder(robotSN_h,uvc_diy_communicate,21);
-//                        sendTinyCAllOrder(userSn_h,uvc_diy_communicate,20);
-//
-//                        sendTinyCAllOrder(&pa,uvc_diy_communicate,100);
-//                        //                    LOGE("========robotSn == %s=========",robotSN);
-//                        //                    LOGE("========userSn == %s=========",userSn);
-//                        //                    LOGE("========userSnSixLast == %s=========",userSnSixLast);
-//                        if (*userSn!=' ' && *userSnSixLast != ' '){
-//                            LOGE("=============robotSn ===================");
-//                            dytSn =(char *)DecryptSN(userSn, userSnSixLast);
-//                            //                    LOGE("==============destr ============= %s", dytSn);
-//                            dytSnStr = dytSn;
-//                            dytSnStr = dytSnStr.substr(0, 8);
-//                        } else{
-//                            LOGE("========robotSn == NUNUNUNUNUNUNU=========");
-//                        }
-//
-//                        //                    LOGE("========robotSn == %s=========",robotSN);
-//                        //                    LOGE("========userSn == %s=========",userSn);
-//                        free(robotSN);
-//                        free(userSn);
-//                        robotSN = NULL;
-//                        userSn = NULL;
-//                        robotSN_h = NULL;
-//                        userSn_h = NULL;
-//                        userSnSixLast = NULL;
-
                     }
-                    else
-                        if (mVid == 5396 && mPid==1){//S0机芯
-
+                    else if (mVid == 5396 && mPid==1)//S0机芯
+                    {
                         //根据 标识  去设置是否渲染 画面 读取SN号
-                            unsigned char *fourLinePara = HoldBuffer + ((256 * (192)) << 1);
-                            int amountPixels = (256 << 1);
+                        unsigned char *fourLinePara = HoldBuffer + ((256 * (192)) << 1);
+                        int amountPixels = (256 << 1);
 
-                            int userArea = amountPixels + (127 << 1);
-                            memcpy((void *) &machine_sn, fourLinePara + amountPixels + (32 << 1),
-                                   (sizeof(char) << 5)); // ir序列号
-                            memcpy((void *) &user_sn, fourLinePara + userArea + 100,
-                                   sizeof(char) * sn_length);//序列号
-                            LOGE(" ir_sn ======= > %s",machine_sn);
-                            LOGE(" sn_char ===== > %s",user_sn);
-                            //解密之后的数据
-                            dytSn =(unsigned char *)DecryptSN(user_sn, machine_sn);
-                            LOGE("==============destr =============%s", dytSn);
-//                            dytSnStr = dytSn;
-//                            dytSnStr = dytSnStr.substr(0, 8);
-
-    //                    LOGE("==============ss ============= %s",ss.c_str());
-                            //释放用到的指针资源
-                            fourLinePara = NULL;
+                        int userArea = amountPixels + (127 << 1);
+                        memcpy((void *) &machine_sn, fourLinePara + amountPixels + (32 << 1),(sizeof(char) << 5)); // ir序列号
+                        memcpy((void *) &user_sn, fourLinePara + userArea + 100,sizeof(char) * sn_length);//序列号
+                        LOGE(" ir_sn ======= > %s",machine_sn);
+                        LOGE(" sn_char ===== > %s",user_sn);
+                        //解密之后的数据
+                        (unsigned char *)DecryptSN(user_sn, machine_sn,dytSn);
+                        *(dytSn+15) = '\0';
+                        // LOGE("==============destr =============%s", dytSn);
+                        //释放用到的指针资源
+                        fourLinePara = NULL;
                     }
-                    if (dytSn!= NULL){
-                        mempcpy(dytSnStr,dytSn,8);
-                    }
-                        //读取配置文件的 加密SN
-                        FILE *inFile = NULL;
-                        inFile = fopen(
-                                "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/configs.txt",
+                    //读取配置文件的 加密SN
+                    FILE *inFile = NULL;
+                    inFile = fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/configs.txt",
                                 "a+");
-                        //存储文件流数据 的指针
-                        char *fileStore;
-                        //读取文件流 字符
-                        if (inFile) {
-                            //获取文件长度
-                            fseek(inFile, 0, SEEK_END);
-                            int length = ftell(inFile);
-                            rewind(inFile);
-                            //指针 分配内存
-                            fileStore = (char *) malloc(length);
-    //                        LOGE("sssss======File length =======> %d",length);
-                            if (fread(fileStore, length, 1, inFile) != length) {
-                            }
-                            fclose(inFile);
+                    //存储文件流数据 的指针
+                    char *fileStore;
+                    //读取文件流 字符
+                    if (inFile) {
+                        //获取文件长度
+                        fseek(inFile, 0, SEEK_END);
+                        int length = ftell(inFile);
+                        rewind(inFile);
+                        //指针 分配内存
+                        fileStore = (char *) malloc(length);
+                        //    LOGE("sssss======File length =======> %d",length);
+                        if (fread(fileStore, length, 1, inFile) != length) {
                         }
-                        //切割结果
-                        std::vector<std::string> split_result = split(fileStore, ";");
-                        LOGE("==================configs.txt split size == %d=========",split_result.size());
-                        //遍历 结果 是否 符合筛选
-                        for (int i = 0; i < split_result.size(); i++) {
-//                            LOGE("=============split_result=== %s =====",split_result[i].c_str());
-                            string decryptionSplitChild = DecryptionAES(split_result[i]).substr(0,8);
-//                            LOGE("=======dytSnStr =%s=====decryptionSplitChild=%s=======",dytSnStr.c_str(),decryptionSplitChild.c_str());
-//                            unsigned char* decryptionChild = decryptionSplitChild.c_str();
-                            unsigned char * decryptionChild = new unsigned char [8];
+                        fclose(inFile);
+                    }
+                    //切割结果
+                    std::vector<std::string> split_result = split(fileStore, ";");
+                    int splitSize = split_result.size();
+                    LOGE("==================configs.txt split size == %d=========",splitSize);
 
-                            strncpy((char*)decryptionChild,decryptionSplitChild.c_str(),8);
-                            unsigned char * decryptionChild_h = decryptionChild;
+                    //遍历 结果 是否 符合筛选
+                    for (int i = 0; i < splitSize; i++) {
+//                       LOGE("=============split_result=== %s =====",split_result[i].c_str());
+                         string decryptionSplitChild = DecryptionAES(split_result[i]).substr(0,8);
+                         LOGE("============decryptionSplitChild=%s=======",decryptionSplitChild.c_str());
+////                       unsigned char* decryptionChild = decryptionSplitChild.c_str();
+                         unsigned char * decryptionChild = new unsigned char [8];
+//
+                         strncpy((char*)decryptionChild,decryptionSplitChild.c_str(),8);
+                          unsigned char * decryptionChild_h = decryptionChild;
                             bool flag = true;
                             for (int j = 0; j < 8; j++) {
-                                if (decryptionChild_h[j] != dytSnStr[j]){
+                                if (decryptionChild_h[j] != dytTinyCSn[j]){
                                     flag = flag & false;
                                 }
                             }
@@ -1301,15 +1225,17 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             delete []decryptionChild;
                             decryptionChild = NULL;
                             decryptionChild_h = NULL;
-                        }
-//                        snIsRight = true;
+                    }
+                    readData = NULL;
+                    flashId = NULL;
+                    tinyC_UserSn_sixLast = NULL;
+                    tinyRobotSn = NULL;
+                    tinyUserSn = NULL;
 
-                        inFile = NULL;
-                        free(fileStore);
-                        fileStore = NULL;
-                        dytSn = NULL;
-                        delete [] dytSnStr;
-                        dytSnStr = NULL;
+                    inFile = NULL;
+                    free(fileStore);
+                    fileStore = NULL;
+                    dytSn = NULL;
                     //分支结束 之前将标识 设置为 false
                     if (snIsRight){
                         mIsVerifySn = false;}
@@ -1317,12 +1243,10 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         mIsVerifySn = true;
                     }
                 }
-
                 //判断完了之后去 渲染成图
                 if (snIsRight){//s0 的 sn 是否符合规定。
                     draw_preview_one(HoldBuffer, &mPreviewWindow, NULL, 4);
                 }
-
                 tmp_buf=NULL;
                 mIsComputed=true;
             }

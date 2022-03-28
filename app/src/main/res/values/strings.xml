@@ -1,6 +1,6 @@
 <resources>
     <string name="CompanyName">Shenzhen Dianyang Technology Co., Ltd.</string>
-    <string name="CompanyWebsite_info">URL: </string>
+    <string name="CompanyWebsite_info">WebSite: </string>
     <string name="CompanyWebsite">www.dyt-ir.com</string>
     <string name="app_name">DytSpectrumOwl</string>
     <string name="Gallery">Gallery</string>
@@ -23,10 +23,10 @@
     <string name="confirm">OK</string>
 
     <string name="CheckLatestVersion">Check the latest version</string>
-    <string name="VersionName">Version : </string>
-    <string name="contactUs">Contact us : </string>
+    <string name="VersionName">Version: </string>
+    <string name="contactUs">Contact us: </string>
     <string name="ContactEmail">service@dianytech.com</string>
-    <string name="contactus_email_head">mailto:</string>
+    <string name="contactus_email_head">mailto: </string>
     <string name="contactus_choice_email">usable email App lists：</string>
 
     <!--录制-->
@@ -44,7 +44,7 @@
     <string name="SettingCameraParams_Revise">Temperature Adjustment </string>
     <string name="SettingCameraParams_FreeAirTemp">Ambient Temperature </string>
     <string name="SettingCameraParams_Humidity">Humidity (%)</string>
-    <string name="SettingCameraParams_Reset">Reset</string>
+    <string name="SettingCameraParams_Reset">Default</string>
 
     <string name="setting_language_chinese">Chinese</string>
     <string name="setting_language_english">English</string>
