@@ -4,7 +4,7 @@ plugins {
 
 //打包时间
 def releasePackageTime() {
-    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("UTC"))
+    return new Date().format("yyyyMMddhhmmss", TimeZone.getTimeZone("UTC"))
 }
 //获取local.properties的内容
 Properties properties = new Properties()
@@ -97,8 +97,8 @@ android {
             // 每个环境包名不同
             dimension "theb"
             applicationId rootProject.ext.envInfo.phone.applicationId
-            versionCode rootProject.ext.envInfo.phone.versionCode
-            versionName rootProject.ext.envInfo.phone.versionName
+            versionCode rootProject.ext.projectVersions.VCode
+            versionName rootProject.ext.projectVersions.VName
             // 动态添加 string.xml 字段；
             // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
 //            resValue "string", "app_name", "huawei"
@@ -115,8 +115,8 @@ android {
            // 每个环境包名不同
             dimension "theb"
             applicationId rootProject.ext.envInfo.phone.applicationId
-            versionCode rootProject.ext.envInfo.phone.versionCode
-            versionName rootProject.ext.envInfo.phone.versionName
+            versionCode rootProject.ext.projectVersions.VCode
+            versionName rootProject.ext.projectVersions.VName
             // 动态添加 string.xml 字段；
             // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
 //            resValue "string", "app_name", "xiaomi"
@@ -206,6 +206,9 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
 
     implementation "com.github.bumptech.glide:okhttp3-integration:4.12.0"
+
+    //okhttp
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
 
 
 

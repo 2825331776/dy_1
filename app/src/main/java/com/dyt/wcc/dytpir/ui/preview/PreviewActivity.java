@@ -544,7 +544,7 @@ public class SendCommand {
 		mSendCommand = new SendCommand();
 
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE
-				,Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO)
+				,Manifest.permission.INTERNET,Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO)
 				.onExplainRequestReason(new ExplainReasonCallback() {
 					@Override
 					public void onExplainReason (@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
@@ -909,8 +909,6 @@ public class SendCommand {
 							popSettingBinding.etCameraSettingFreeAirTemp.setText("25");
 							popSettingBinding.etCameraSettingHumidity.setText("0.5");
 
-
-
 //							if (mPid == 1 && mVid == 5396) {//S0机芯
 //								//发射率
 //								byte[] iputEm = new byte[4];
@@ -1228,6 +1226,31 @@ public class SendCommand {
 				//							popCompanyInfoBinding.tvCheckVersion.setOnClickListener(chartModeCheckListener);
 				popCompanyInfoBinding.tvVersionName.setText(""+ LanguageUtils.getVersionName(mContext.get()));
 				popCompanyInfoBinding.tvContactusEmail.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+				popCompanyInfoBinding.tvCheckVersion.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick (View v) {
+						if (isDebug)Log.i(TAG, "onClick: ================== tvCheckVersion");
+						if (isDebug)Log.e(TAG, "onClick: ======="+ mContext.get().getExternalFilesDir(null).getAbsolutePath());
+
+//						new Thread(new Runnable() {
+//							@Override
+//							public void run () {
+//								try {
+//									String url = "http://114.115.130.132:8080/dytfile/downloadGET?fileName=Software/H2/H2_1.0.3";
+//									OkHttpClient client = new OkHttpClient();
+//									Request request = new Request.Builder().url(url).get().build();
+//
+//									Response response = client.newCall(request).execute();
+//									byte[] responseByte = response.body().bytes();
+//									if (isDebug)Log.e(TAG, "======== responseBytes ======= " + responseByte.length);
+//								}catch (IOException e){
+//									e.printStackTrace();
+//								}
+//							}
+//						}).start();
+					}
+				});
+
 				popCompanyInfoBinding.tvContactusEmail.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick (View v) {
@@ -1244,6 +1267,7 @@ public class SendCommand {
 				showPopWindows(view,30,15,20);
 			}
 		});
+		//
 		mDataBinding.dragTempContainerPreviewFragment.setAddChildDataListener(new DragTempContainer.onAddChildDataListener() {
 			@Override
 			public void onIsEventActionMove (DrawLineRecHint hint) {
