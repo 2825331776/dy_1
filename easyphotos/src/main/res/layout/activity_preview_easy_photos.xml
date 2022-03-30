@@ -4,6 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/easy_photos_bg_primary">
+    <TextView
+        android:text="123"
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <com.huantansheng.easyphotos.ui.widget.PreviewRecyclerView
         android:id="@+id/rv_photos"
