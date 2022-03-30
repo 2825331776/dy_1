@@ -812,6 +812,7 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
             done();
         }
         else if (R.id.bt_all_gallery_rightRl == id){
+            tvTitle.setText(R.string.MediaBrowser);
             Result.removeAll();
             onlyPic = false;
             onlyVideo = false;
@@ -820,6 +821,7 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 //            Toast.makeText(getApplicationContext(),"all is click",Toast.LENGTH_SHORT).show();
         }
         else if (R.id.bt_pic_gallery_rightRl == id){
+            tvTitle.setText(R.string.MediaBrowser_pic);
             Result.removeAll();
             onlyPic = true;
             onlyVideo = false;
@@ -828,6 +830,7 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 //            Toast.makeText(getApplicationContext(),"pic is click",Toast.LENGTH_SHORT).show();
         }
         else if (R.id.bt_video_gallery_rightRl == id){
+            tvTitle.setText(R.string.MediaBrowser_video);
             Result.removeAll();
             onlyPic = false;
             onlyVideo = true;

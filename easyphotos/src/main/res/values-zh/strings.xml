@@ -74,5 +74,13 @@
 
     <string name="video_easy_photos">视频</string>
 
+<!--*********************************************-->
+    <string name="MediaBrowser">图库</string>
+
+    <string name="MediaBrowser_all">全部</string>
+    <string name="MediaBrowser_pic">图片</string>
+    <string name="MediaBrowser_video">视频</string>
+    <string name="MediaBrowser_delete">删除</string>
+
 
 </resources>

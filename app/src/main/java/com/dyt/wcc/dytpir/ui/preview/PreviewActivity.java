@@ -627,12 +627,17 @@ public class SendCommand {
 	 */
 	private void initListener(){
 		//测试的 监听器
-//		mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick (View v) {
-//				mDataBinding.dragTempContainerPreviewFragment.setBackgroundColor(getColor(R.color.white));
-//			}
-//		});
+		mDataBinding.btTest01.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick (View v) {
+//				Button bt = null;
+//				bt.setText("111");
+
+//				byte [] a1 = new byte[5];
+//				Log.e(TAG, "onClick: "+a1[10]);
+
+			}
+		});
 		//
 		/**
 		 * 超温警告 ， 预览层去绘制框， DragTempContainer 控件去播放声音
@@ -757,6 +762,11 @@ public class SendCommand {
 
 		//框内细查
 		mDataBinding.toggleAreaCheck.setOnClickListener(v -> {
+			if (mDataBinding.toggleFixedTempBar.isSelected()){
+				mDataBinding.toggleFixedTempBar.setSelected(false);
+				mDataBinding.customSeekbarPreviewFragment.setWidgetMode(0);
+				if (mUvcCameraHandler!=null)mUvcCameraHandler.disWenKuan();
+			}
 			if (!mDataBinding.toggleAreaCheck.isSelected()){
 				mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewActivity.getWidth(),
 						mDataBinding.textureViewPreviewActivity.getHeight());
@@ -770,7 +780,6 @@ public class SendCommand {
 				if (mUvcCameraHandler ==null)return;
 				mUvcCameraHandler.setAreaCheck(0);
 			}
-
 			mDataBinding.toggleAreaCheck.setSelected(!mDataBinding.toggleAreaCheck.isSelected());
 		});
 
@@ -778,6 +787,12 @@ public class SendCommand {
 		mDataBinding.toggleFixedTempBar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
+				if (mDataBinding.toggleAreaCheck.isSelected()){
+					mDataBinding.toggleAreaCheck.setSelected(false);
+
+					if (mUvcCameraHandler ==null)return;
+					mUvcCameraHandler.setAreaCheck(0);
+				}
 				mDataBinding.toggleFixedTempBar.setSelected(!mDataBinding.toggleFixedTempBar.isSelected());
 				if (mDataBinding.toggleFixedTempBar.isSelected()){
 					mDataBinding.customSeekbarPreviewFragment.setWidgetMode(1);
@@ -1231,17 +1246,74 @@ public class SendCommand {
 					public void onClick (View v) {
 						if (isDebug)Log.i(TAG, "onClick: ================== tvCheckVersion");
 						if (isDebug)Log.e(TAG, "onClick: ======="+ mContext.get().getExternalFilesDir(null).getAbsolutePath());
+						//点击链接，下载ZIP
+						//下载完成之后回调方法，保存文件，之后读取该文件夹下的zip文件。解压，安装apk，之后删除apk zip 文件
+						//File Name： H2_1.0.3
+
+//						Callback callback = new Callback() {
+//							@Override
+//							public void onFailure (@NonNull Call call, @NonNull IOException e) {
+//							}
+//							@Override
+//							public void onResponse (@NonNull Call call, @NonNull Response response) throws IOException {
+//							}
+//						};
+
 
 //						new Thread(new Runnable() {
 //							@Override
 //							public void run () {
 //								try {
+//									String path = mContext.get().getExternalFilesDir(null).getAbsolutePath() + File.separator + "dadadidi.zip";
+
 //									String url = "http://114.115.130.132:8080/dytfile/downloadGET?fileName=Software/H2/H2_1.0.3";
 //									OkHttpClient client = new OkHttpClient();
 //									Request request = new Request.Builder().url(url).get().build();
-//
 //									Response response = client.newCall(request).execute();
 //									byte[] responseByte = response.body().bytes();
+//
+//									FileOutputStream fops = new FileOutputStream(path);
+//									InputStream inputStream = new ByteArrayInputStream(responseByte);
+//									ZipOutputStream zops = new ZipOutputStream(fops);
+//									if (zops.)
+
+//									fops.write(responseByte,0,responseByte.length);
+//										fops.close();
+//									ZipFile zipFile = new ZipFile(path);
+//									Enumeration<?> entries = zipFile.entries();
+//									ZipEntry entry = null;
+//
+//									while (entries.hasMoreElements()) {
+//										entry = ((ZipEntry) entries.nextElement());
+//										String entryName = entry.getName();
+//										if (entryName.contains("../")) {
+//											Log.e("ZipUtils", "it's dangerous!");//防止被利用漏洞恶意修改文件
+////											return files;
+//										}
+////										if (!unzipChildFile(destDir, files, zip, entry)) return files;
+//									}
+
+//									path  = mContext.get().getExternalFilesDir(null).getAbsolutePath()+File.separator+ entry.getName();
+//									File file = new File(path);
+//									file.mkdirs();
+//
+//									InputStream in = null;
+//									OutputStream out = null;
+//
+//									in = new BufferedInputStream(zipFile.getInputStream(entry));
+//									out = new BufferedOutputStream(new FileOutputStream(path));
+//									byte[] buffer = new byte[1024];
+//									int len;
+//									while ((len = in.read(buffer)) != -1) {
+//										out.write(buffer, 0, len);
+//									}
+//									in.close();
+//									out.close();
+//									zipFile.getInputStream()
+//										zops.close();
+
+//									ZipInputStream zipInputStream  = new ZipInputStream(inputStream);
+//									zipInputStream.
 //									if (isDebug)Log.e(TAG, "======== responseBytes ======= " + responseByte.length);
 //								}catch (IOException e){
 //									e.printStackTrace();
