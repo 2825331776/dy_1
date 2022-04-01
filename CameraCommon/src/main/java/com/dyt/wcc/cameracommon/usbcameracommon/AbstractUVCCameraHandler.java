@@ -1763,7 +1763,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
 
         public void handleTempShowOnOff(boolean isTempShow) {
             Log.e(TAG, "handleTempShowOnOff isTempShow: " + isTempShow);
-            mWeakCameraView.get().tempShowOnOff(isTempShow);
+           if (mWeakCameraView.get()!=null)mWeakCameraView.get().tempShowOnOff(isTempShow);
         }
 
         public void handleOpenSysCamera() {
@@ -1967,7 +1967,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
         /**
          * prepare and load shutter sound for still image capturing
          */
-        @SuppressWarnings("deprecation")
+//        @SuppressWarnings("deprecation")
 //        private void loadShutterSound(final Context context) {
 //            // get system stream type using reflection
 //            int streamType;

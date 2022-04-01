@@ -18,22 +18,25 @@ public class DYConstants {
 	public static final String PIC_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()
 			+ File.separator+"DYTCamera";
 
-
 	public static final String [] languageArray = new String []{"中文", "English"};
 	public static final String [] tempUnit = new String[]{"℃","℉","K"};
 	//设置界面六个设置的值：保存在本地的sp  当中的都是 摄氏度
 	//发射率
 	public static final String setting_emittance = "setting_emittance";
+	public static final int SETTING_EMITTANCE_INT = 0;
 	//距离
 	public static final String setting_distance = "setting_distance";
 	//湿度
 	public static final String setting_humidity = "setting_humidity";
+	public static final int SETTING_HUMIDITY_INT = 0;
 	//修正
 	public static final String setting_correction = "setting_correction";
 	//反射温度
 	public static final String setting_reflect = "setting_reflect";
+	public static final int SETTING_REFLECT_INT = 0;
 	//环境温度
 	public static final String setting_environment = "setting_environment";
+	public static final int SETTING_ENVIRONMENT_INT = 0;
 
 	public static final int CAMERA_DATA_MODE_8004 = 0x8004;
 	public static final int CAMERA_DATA_MODE_8005 = 0x8005;
@@ -53,6 +56,7 @@ public class DYConstants {
 	public static final String FIRST_RUN = "first_run";//是否第一次打开应用， 第一打开时，int 值为 0.以后为1
 
 	public static final String [] paletteArrays = new String[]{"1.dat","2.dat","3.dat","4.dat","5.dat","6.dat"};
+
 
 
 }

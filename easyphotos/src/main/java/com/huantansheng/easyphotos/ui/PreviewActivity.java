@@ -11,13 +11,14 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
@@ -90,6 +91,8 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 //    private FrameLayout flFragment;
 //    private PreviewFragment previewFragment;
     private int statusColor;
+
+    private ImageView ivBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -224,13 +227,21 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 
 //        mToolBar = (FrameLayout) findViewById(R.id.m_top_bar_layout);
         if (!SystemUtils.getInstance().hasNavigationBar(this)) {
-            FrameLayout mRootView = (FrameLayout) findViewById(R.id.m_root_view);
+            ConstraintLayout mRootView = (ConstraintLayout) findViewById(R.id.m_root_view);
             mRootView.setFitsSystemWindows(true);
 //            mToolBar.setPadding(0, SystemUtils.getInstance().getStatusBarHeight(this), 0, 0);
             if (ColorUtils.isWhiteColor(statusColor)) {
                 SystemUtils.getInstance().setStatusDark(this, true);
             }
         }
+        ivBack = findViewById(R.id.iv_preview_back);
+        ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View v) {
+//                Toast.makeText(PreviewActivity.this, "ivBack click", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
 //        mBottomBar = (RelativeLayout) findViewById(R.id.m_bottom_bar);
 //        ivSelector = (ImageView) findViewById(R.id.iv_selector);
 //        tvNumber = (TextView) findViewById(R.id.tv_number);

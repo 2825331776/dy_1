@@ -174,6 +174,7 @@ public class AlbumModel {
                 String path = cursor.getString(1);
                 String name = cursor.getString(2);
                 long dateTime = cursor.getLong(3);
+//                Log.e(TAG, "initAlbum: dateTime============= " + dateTime);
                 String type = cursor.getString(4);
                 long size = cursor.getLong(5);
                 long duration = 0;

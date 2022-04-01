@@ -115,7 +115,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 
     @Override
     public void onPause() {
-        if (DEBUG) Log.v(TAG, "onPause:");
+        if (DEBUG) Log.e(TAG, "onPause:");
         if (mRenderHandler != null) {
             mRenderHandler.release();
             mRenderHandler = null;
@@ -356,7 +356,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 //    }
 
     public void tempShowOnOff(boolean isTempShow) {
-        mRenderHandler.tempshowOnOff(isTempShow);
+        if (mRenderHandler!=null) mRenderHandler.tempshowOnOff(isTempShow);
     }
     public void setDrawHint(DrawLineRecHint hint){
         mRenderHandler.setDrawHint(hint);

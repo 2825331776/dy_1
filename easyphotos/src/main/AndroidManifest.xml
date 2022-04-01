@@ -18,25 +18,25 @@
         <activity
             android:name=".ui.EasyPhotosActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:launchMode="singleTop"
             android:theme="@style/EasyPhotosTheme" />
         <activity
             android:name=".ui.PreviewActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:theme="@style/EasyPhotosTheme" />
         <activity
             android:name=".ui.PuzzleActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:theme="@style/EasyPhotosTheme"
             android:windowSoftInputMode="adjustPan" />
 
         <activity
             android:name=".ui.PuzzleSelectorActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:theme="@style/EasyPhotosTheme" />
     </application>
 </manifest>

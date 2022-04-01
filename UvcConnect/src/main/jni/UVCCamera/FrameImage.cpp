@@ -165,7 +165,7 @@ void FrameImage::setAreaCheck(int isAreaCheck) {//是否设置区域检查
 void FrameImage::getCameraPara(uint8_t *frame){
     unsigned short* orgData=(unsigned short*)frame;// char a数组[1,2] 经过强转short可能变成513(256*2+1)，或258(256*1+2)。
 
-    unsigned short* fourLinePara=orgData+requestWidth*(requestHeight-4);//后四行参数
+        unsigned short* fourLinePara=orgData+requestWidth*(requestHeight-4);//后四行参数
 //    LOGE("cpyPara  amountPixels:%d ",amountPixels);
     memcpy(&shutTemper,fourLinePara+amountPixels+1,sizeof(unsigned short));
 //    LOGE("cpyPara  shutTemper:%d ",shutTemper);

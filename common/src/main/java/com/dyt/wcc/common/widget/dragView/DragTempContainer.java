@@ -296,12 +296,10 @@ public class DragTempContainer extends RelativeLayout {
 		 * @param position 被点击工具栏的 坐标（从0开始）
 		 */
 		void onChildToolsClick(TempWidgetObj childObj, int position);
-
 		/**
 		 * 数据源中  矩形的数量发生变化回调
 		 */
 		void onRectChangedListener();
-
 		/**
 		 * 清除所有数据源 回调
 		 */
@@ -318,12 +316,8 @@ public class DragTempContainer extends RelativeLayout {
 		testPaint = new TextPaint();
 		testPaint.setTextSize(DensityUtil.sp2px(mContext.get(),16));
 		testPaint.setStyle(Paint.Style.STROKE);
-//		testPaint.setStrokeWidth(DensityUtil.dp2px(mContext.get(),getResources().getDimension(R.dimen.dimen_3dp)));
 		testPaint.setColor(getResources().getColor(R.color.white));
 		OTGRect = new Rect();
-		testPaint.getTextBounds(getResources().getString(R.string.preview_hint_not_connect),
-				0,getResources().getString(R.string.preview_hint_not_connect).length(),OTGRect);
-		OTGTextLength = OTGRect.width();
 		Log.e(TAG, "initAttrs: ==== screenWidth "+ screenWidth);
 	}
 	private void initView(){
@@ -332,12 +326,6 @@ public class DragTempContainer extends RelativeLayout {
 		userAddView = new CopyOnWriteArrayList<>();//初始化 子view 集合
 		tempSource = new float[256*196+10];
 		minAddWidgetWidth = minAddWidgetHeight = DensityUtil.dp2px(mContext.get(),70);//最小为50个dp
-//		int width = getResources().getDisplayMetrics().heightPixels;
-//		Log.e(TAG, "initView: ================width ==========" + width);
-
-//		pointBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorgreen);
-//		minTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorblue);
-//		maxTempBt = BitmapFactory.decodeResource(getResources(),R.mipmap.cursorred);
 		mDataNearByUnit = DensityUtil.dp2px(mContext.get(),5);
 	}
 
@@ -352,7 +340,11 @@ public class DragTempContainer extends RelativeLayout {
 		int subIndex = testPaint.breakText(str, 0, str.length(), true, lineWidth, null);
 		//截取可以显示的汉字
 		String mytext = str.substring(0, subIndex);
-		canvas.drawText(mytext, screenWidth/3.0f, heigth, testPaint);
+
+		testPaint.getTextBounds(mytext,0,mytext.length(),OTGRect);
+		OTGTextLength = OTGRect.width();
+
+		canvas.drawText(mytext, (screenWidth - OTGTextLength)/2.0f, heigth, testPaint);
 		//计算剩下的汉字
 		String ss = str.substring(subIndex, str.length());
 		if (ss.length() > 0) {
@@ -366,32 +358,7 @@ public class DragTempContainer extends RelativeLayout {
 			if (partScreenWidth <= 0){
 				partScreenWidth = screenWidth/2;
 			}
-			lineFeed(canvas,mContext.get().getString(R.string.preview_hint_not_connect),screenHeight/2-(int)testPaint.getTextSize());
-//			//截取可以显示的汉字
-//			String mytext = mContext.get().getString(R.string.preview_hint_not_connect).substring(0, subIndex);
-//			canvas.drawText(mytext, 0, heigth, textPaint);
-//			canvas.save();
-//			canvas.translate(screenWidth/2.0f - OTGTextLength/4.0f, screenHeight/2.0f + testPaint.ascent()*2);
-//			staticLayout.draw(canvas);
-//			canvas.restore();
-//			if ((screenWidth - OTGTextLength)/2.0f >0){
-//			testPaint.breakText()
-//				canvas.drawText(mContext.get().getString(R.string.preview_hint_not_connect),
-//						(screenWidth - OTGTextLength)/2.0f,screenHeight/2.0f,testPaint);
-//			}else {
-//
-//				String s1 = mContext.get().getString(R.string.preview_hint_not_connect).substring(0,mContext.get().getString(R.string.preview_hint_not_connect).length()/2);
-//				String s2 = mContext.get().getString(R.string.preview_hint_not_connect).substring(mContext.get().getString(R.string.preview_hint_not_connect).length()/2);
-//				if (OTGTextLength <= 0){
-//					testPaint.getTextBounds(s1,0,s1.length(),OTGRect);
-//					OTGTextLength = OTGRect.width();
-//				}
-//				canvas.drawText(s1,
-//					(screenWidth - OTGTextLength)/2.0f,screenHeight/2.0f,testPaint);
-//				canvas.drawText(s2,
-//						(screenWidth - OTGTextLength)/2.0f,screenHeight/2.0f + OTGRect.height(),testPaint);
-//			}
-
+			lineFeed(canvas,mContext.get().getString(R.string.preview_hint_not_connect),screenHeight/2-(int)testPaint.descent());
 		}
 		super.onDraw(canvas);
 	}

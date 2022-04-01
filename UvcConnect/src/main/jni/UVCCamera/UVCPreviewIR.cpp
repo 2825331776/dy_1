@@ -89,6 +89,7 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh ,FrameImage * frameImage){
 UVCPreviewIR::~UVCPreviewIR() {
 
     ENTER();
+    SAFE_DELETE(mFrameImage);
     mFrameImage = NULL;
     if (mPreviewWindow)
         ANativeWindow_release(mPreviewWindow);
@@ -1260,9 +1261,11 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
             //LOGE("do_preview4");
         }
 #if LOCAL_DEBUG
-        LOGI("preview_thread_func:wait for all callbacks complete");
+        LOGE("preview_thread_func:wait for all callbacks complete");
 #endif
-        uvc_stop_streaming(mDeviceHandle);
+        if (mDeviceHandle){
+            uvc_stop_streaming(mDeviceHandle);
+        }
 #if LOCAL_DEBUG
         LOGI("Streaming finished");
 #endif

@@ -145,6 +145,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				mUsbMonitor.unregister();
 			}
 		}
+//		if (mDataBinding.textureViewPreviewActivity!=null)
 //		mDataBinding.textureViewPreviewActivity.onPause();
 //		if (mUvcCameraHandler!=null){
 //			mUvcCameraHandler.stopTemperaturing();
@@ -194,6 +195,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	@Override
 	protected void onResume () {
+		if (isDebug)Log.e(TAG, "onResume: ");
 		if (mUsbMonitor !=null && !mUsbMonitor.isRegistered()) {
 			mUsbMonitor.register();
 		}
@@ -421,46 +423,58 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		//		System.exit(0);
 	}
 
-//修改机芯参数
+
+
+
+//修改S0机芯参数
 public class SendCommand {
 	int psitionAndValue0 = 0, psitionAndValue1 = 0, psitionAndValue2 = 0, psitionAndValue3 = 0;
-	public void sendFloatCommand(int position, byte value0, byte value1, byte value2, byte value3, int interval0, int interval1, int interval2, int interval3, int interval4) {
+	int result = -1;
+
+	public int sendFloatCommand(int position, byte value0, byte value1, byte value2, byte value3,
+	                             int interval0, int interval1, int interval2, int interval3, int interval4) {
 		psitionAndValue0 = (position << 8) | (0x000000ff & value0);
 		Handler handler0 = new Handler();
-		handler0.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0);
-			}
-		}, interval0);
-		psitionAndValue1 = ((position + 1) << 8) | (0x000000ff & value1);
-		handler0.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue1);
-			}
-		}, interval1);
-		psitionAndValue2 = ((position + 2) << 8) | (0x000000ff & value2);
-		handler0.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue2);
-			}
-		}, interval2);
-		psitionAndValue3 = ((position + 3) << 8) | (0x000000ff & value3);
 
 		handler0.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue3);
+				result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0);
+			}
+		}, interval0);
+
+		psitionAndValue1 = ((position + 1) << 8) | (0x000000ff & value1);
+		handler0.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue1);
+			}
+		}, interval1);
+
+		psitionAndValue2 = ((position + 2) << 8) | (0x000000ff & value2);
+		handler0.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue2);
+			}
+		}, interval2);
+
+		psitionAndValue3 = ((position + 3) << 8) | (0x000000ff & value3);
+		handler0.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue3);
 			}
 		}, interval3);
+
 		handler0.postDelayed(new Runnable() {
 			@Override
 			public void run() {
 				mUvcCameraHandler.whenShutRefresh();
 			}
 		}, interval4);
+
+		return result;
 	}
 
 	private void whenChangeTempPara() {
@@ -846,8 +860,7 @@ public class SendCommand {
 		mDataBinding.ivPreviewLeftGallery.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-				if (!mUvcCameraHandler.snRightIsPreviewing()){
-					return;}
+				if (!mUvcCameraHandler.snRightIsPreviewing()){return;}
 				if (mDataBinding.btPreviewLeftRecord.isSelected()){
 					showToast(getResources().getString(R.string.toast_is_recording));
 					return;
@@ -856,7 +869,7 @@ public class SendCommand {
 					mUsbMonitor.unregister();
 					EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
 							.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider")
-							.setCount(10000)
+							.setCount(1000)
 							.setVideo(true)
 							.setGif(false)
 							.start(101);
@@ -909,7 +922,7 @@ public class SendCommand {
 					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf((int)(cameraParams.get(DYConstants.setting_environment)*1)));//环境温度 -10 -40
 					//把值同步到 sp中
 					//					sp.edit().putFloat(DYConstants.setting_emittance,cameraParams.get(DYConstants.setting_emittance)).apply();
-					popSettingBinding.btSettingReset.setOnClickListener(new View.OnClickListener() {
+					popSettingBinding.btSettingDefault.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick (View v) {
 //							sp.edit().putFloat(DYConstants.setting_correction, 0.0f).apply();
@@ -1540,6 +1553,29 @@ public class SendCommand {
 					cameraParams.get(DYConstants.setting_humidity)).apply();
 		}
 	}
+
+	/**
+	 *
+	 * @param value
+	 * @param position
+	 * @return
+	 */
+	public int sendS0Order (float value, int position ){
+		int result = -1;
+		byte[] iputEm = new byte[4];
+		ByteUtil.putFloat(iputEm,value,0);
+		if (mSendCommand !=null && mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()){
+//			switch (position){
+//				case 0:
+//
+//					break;
+//			}
+			result = mSendCommand.sendFloatCommand(position, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
+					20, 40, 60, 80, 120);
+		}
+		return result;
+	}
+
 	/**
 	 *显示pop弹窗
 	 * @param view

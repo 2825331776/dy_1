@@ -67,6 +67,7 @@ UVCCamera::UVCCamera()
 	mStatusCallback(NULL),
 	mButtonCallback(NULL),
 	mPreview(NULL),
+	mFrameImage(NULL),
 	mCtrlSupports(0),
 	mPUSupports(0) {
 
