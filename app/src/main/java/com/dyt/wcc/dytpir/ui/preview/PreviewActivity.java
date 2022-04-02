@@ -116,6 +116,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	private static final int REQUEST_CODE_CHOOSE = 23;
 
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -673,7 +674,6 @@ public class SendCommand {
 						public void onSetComplete (float setValue) {
 							//							if (isDebug)Log.e(TAG, "onSetComplete: " + "confirm value = == > " + setValue  );
 							mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(setValue);
-
 							mDataBinding.textureViewPreviewActivity.startTempAlarm(setValue);
 							sp.edit().putFloat("overTemp",setValue).apply();
 						}
