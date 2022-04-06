@@ -651,8 +651,8 @@ abstract class AbstractUVCCameraHandler extends Handler {
                 camera.setContrast(value);
                 return camera.getContrast();
             } else if (flag == UVCCamera.CTRL_ZOOM_ABS) {
-                camera.setZoom(value);
-                return 1;
+                return camera.setZoom(value);
+//                return 1;
             }
         }
         return 100;
@@ -667,15 +667,16 @@ abstract class AbstractUVCCameraHandler extends Handler {
      */
     public int sendOrder(final int flag, final float value, final int mark ){
         checkReleased();
+        int result = -1;
         final CameraThread thread = mWeakThread.get();
         final UVCCamera camera = (thread != null ? thread.mUVCCamera : null);
         if (camera != null){
             if (flag == UVCCamera.CTRL_ZOOM_ABS){
-                camera.sendOrder(value ,mark);
-                return 1;
+                result = camera.sendOrder(value ,mark);
+                return result;
             }
         }
-        return -1;
+        return result;
     }
 
 

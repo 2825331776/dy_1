@@ -930,26 +930,30 @@ public class UVCCamera {
      * this may not work well with some combination of camera and device
      * @param zoom [%]
      */
-	public synchronized void setZoom(final int zoom) {
+	public synchronized int setZoom(final int zoom) {
+
+		int result = -1;
     	if (mNativePtr != 0) {
  		   //final float range = Math.abs(mZoomMax - mZoomMin);
  		  // if (range > 0) {
  			//   final int z = (int)(zoom / 100.f * range) + mZoomMin;
 // 			   Log.d(TAG, "setZoom:zoom=" + zoom + " ,value=" + z);
- 			  //
-			nativeSetZoom(mNativePtr, zoom);
+		    result = nativeSetZoom(mNativePtr, zoom);
  		  // }
     	}
+    	return result;
     }
 
 	/**
 	 * 发送具体数值到JNI层
 	 * @param zoom
 	 */
-	public synchronized void sendOrder(final float zoom , final  int mark) {
+	public synchronized int sendOrder(final float zoom , final  int mark) {
+		int result = -1;
 		if (mNativePtr != 0) {
-			nativeSendOrder(mNativePtr, zoom ,mark);
+			result = nativeSendOrder(mNativePtr, zoom ,mark);
 		}
+		return  result;
 	}
 //	public synchronized void sendOrder(final int zoom) {
 //		if (mNativePtr != 0) {

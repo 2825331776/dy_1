@@ -665,7 +665,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
             public void stopTempAlarm(){     //关闭高温警告
 //                Log.e(TAG,"====================关闭高温警告=============== " );
                 isOverTempAlarm = false;
-                mAlarmTemp = 1000.0f;
+                mAlarmTemp = 10000.0f;
                 alarmCount = 0;
             }
             /**

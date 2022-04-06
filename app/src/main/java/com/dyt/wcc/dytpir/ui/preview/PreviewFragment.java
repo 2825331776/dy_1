@@ -575,7 +575,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 						@Override
 						public void onSetComplete (float setValue) {
 //							if (isDebug)Log.e(TAG, "onSetComplete: " + "confirm value = == > " + setValue  );
-							mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(setValue);
+//							mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(setValue);
 
 							mDataBinding.textureViewPreviewFragment.startTempAlarm(setValue);
 							sp.edit().putFloat("overTemp",setValue).apply();
@@ -590,7 +590,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 					dialog.show();
 				}else {
 					mDataBinding.textureViewPreviewFragment.stopTempAlarm();
-					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
+//					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
 				}
 			}
 		});
