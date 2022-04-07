@@ -2482,7 +2482,6 @@ int UVCCamera::updateZoomLimit(int &min, int &max, int &def) {
 int UVCCamera::sendOrder(float value , int mark) {
     ENTER();
     int ret = UVC_ERROR_IO;
-
 	ret = (mPreview->sendTinyCAllOrder(&value,uvc_diy_communicate,mark));
 
 //    LOGE("====");
@@ -2556,6 +2555,48 @@ bool UVCCamera::snRightIsPreviewing(){
 		return mPreview->snRightIsPreviewing();
 	}
 	return false;
+}
+
+//2022年4月7日11:53:52 吴长城 测试发送JNI指令
+bool UVCCamera::javaSendJniOrder(){
+	LOGE("==========================javaSendJniOrder==================================");
+//	if (mPreview){
+//		return mPreview->snRightIsPreviewing();
+//	}
+	if ((mPid == 22592 && mVid == 3034 ) && mPreview!= NULL){
+		bool ret = false;
+		unsigned char reData[2] = {0};
+		int val = 0x02;
+		unsigned char data[8] = {0x0d,0x8b,0x00,0x00,0x00,0x00,0x00,0x02};
+		ret = uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d00,data, sizeof(data),1000);
+//		unsigned char status = 0;
+//		for(int index = 0;index < 1000;index++){
+//			uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x0200,&status, 1,1000);
+//			if((status & 0x01) == 0x00){
+//				if((status & 0x02) == 0x00){
+//					break;
+//				}else if((status & 0xFC) != 0x00){
+//					LOGE("===========================return ==========================");
+//					RETURN(-1,int);
+//				}
+//			}
+//		}
+		ret = uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x1d08,reData, sizeof(reData),1000);
+		unsigned char reData2[2] = {0};
+		reData2[1] = reData[0];
+		reData2[0] = reData[1];
+		unsigned short * dd = (unsigned short *)reData2;
+		LOGE("================================ javaSendJniOrder=======aaa====== %d======" ,*dd);
+		LOGE("================================ javaSendJniOrder=======00===== %d======" ,reData[0]);
+		LOGE("================================ javaSendJniOrder=======11===== %d======" ,reData[1]);
+		dd = NULL;
+
+		return ret;
+	}
+	else {
+		return false;
+	}
+
 }
 
 // ズーム(abs)を設定  设置缩放ABS

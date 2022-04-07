@@ -355,6 +355,8 @@ void whenShutRefresh() ;
 
 	//2022年3月24日16:10:35 吴长城 sn是否正确 并在预览中
 	bool snRightIsPreviewing();
+	//2022年4月7日11:53:52 吴长城 测试发送JNI指令
+	bool javaSendJniOrder();
 
 	int updateZoomRelLimit(int &min, int &max, int &def);
 	int setZoomRel(int zoom);

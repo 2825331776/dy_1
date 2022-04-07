@@ -1195,16 +1195,17 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         }
                         fclose(inFile);
                     }
+//                    LOGE("==================configs.txt split size == %d=========");
                     //切割结果
                     std::vector<std::string> split_result = split(fileStore, ";");
                     int splitSize = split_result.size();
-                    LOGE("==================configs.txt split size == %d=========",splitSize);
+//                    LOGE("==================configs.txt split size == %d=========",splitSize);
 
                     //遍历 结果 是否 符合筛选
                     for (int i = 0; i < splitSize; i++) {
 //                       LOGE("=============split_result=== %s =====",split_result[i].c_str());
                          string decryptionSplitChild = DecryptionAES(split_result[i]).substr(0,8);
-                         LOGE("============decryptionSplitChild=%s=======",decryptionSplitChild.c_str());
+//                         LOGE("============decryptionSplitChild=%s=======",decryptionSplitChild.c_str());
 ////                       unsigned char* decryptionChild = decryptionSplitChild.c_str();
                          unsigned char * decryptionChild = new unsigned char [8];
 //
@@ -1220,7 +1221,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                                 LOGE("=============SN匹配成功========");
                                 snIsRight = snIsRight | 1;
                             } else {
-                                LOGE("==============SN匹配不成功========");
+//                                LOGE("==============SN匹配不成功========");
                                 snIsRight = snIsRight | 0;
                             }
                             delete []decryptionChild;

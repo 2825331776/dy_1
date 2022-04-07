@@ -49,6 +49,7 @@ import com.dyt.wcc.cameracommon.encoder.MediaVideoBufferEncoder;
 import com.dyt.wcc.cameracommon.encoder.MediaVideoEncoder;
 import com.dyt.wcc.cameracommon.utils.ByteUtil;
 import com.dyt.wcc.cameracommon.widget.UVCCameraTextureView;
+import com.dyt.wcc.common.BuildConfig;
 import com.dyt.wcc.common.base.BaseApplication;
 import com.serenegiant.usb.IFrameCallback;
 import com.serenegiant.usb.ITemperatureCallback;
@@ -198,6 +199,16 @@ abstract class AbstractUVCCameraHandler extends Handler {
         final CameraThread thread = mWeakThread.get();
         if ((thread != null) && (thread.mUVCCamera) != null) {
             return thread.mUVCCamera.snRightIsPreviewing();
+        }
+        return false;
+    }
+
+    //2022年4月7日11:53:52 吴长城 测试发送JNI指令
+    public boolean javaSendJniOrder(){
+        if (BuildConfig.DEBUG)Log.e(TAG, "javaSendJniOrder: ");
+        final CameraThread thread = mWeakThread.get();
+        if ((thread != null) && (thread.mUVCCamera) != null) {
+            return thread.mUVCCamera.javaSendJniOrder();
         }
         return false;
     }

@@ -1117,17 +1117,41 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 
             private Boolean isT3 = BaseApplication.deviceName.contentEquals("T3") || BaseApplication.deviceName.contentEquals("DL13") || BaseApplication.deviceName.contentEquals("DV");
 
+            //更新点的温度
+            private float updatePointTemp(float x , float y){
+                //数据源上的坐标
+                int index =  (10 + (int)(y * heightRatio) * 256 + (int)(x * widthRatio));
+                return temperature1[index];
+            }
+
             public void DrawControl()
             {
 //                Log.e(TAG,"DrawControl id =============="+calendar.get(Calendar.SECOND));
 
-                isAlarm = isOverTempAlarm && (mAlarmTemp < maxtemperature);
 //                isAlarmRing = isHighTempAlarm && (mMarkAlarmTemp < maxtemperature);
 
 //                mBindSeekBar.Update(maxtemperature,mintemperature);//更新seekbar
+
+                isAlarm = false;
                 if (mDragTempContainer!= null && temperature1 !=null){
                     mDragTempContainer.upDateTemp(temperature1);
+                    if (mDragTempContainer.getUserAddData().size() > 0){
+                        for (int i = 0 ; i < mDragTempContainer.getUserAddData().size(); i++){
+                            if (mDragTempContainer.getUserAddData().get(i).getType() == 1){
+                                isAlarm = isAlarm | (updatePointTemp(mDragTempContainer.getUserAddData().get(i).getPointTemp().getStartPointX(),
+                                        mDragTempContainer.getUserAddData().get(i).getPointTemp().getStartPointY()) > mAlarmTemp);
+                            }else {
+                                isAlarm = isAlarm | (temperature1[(int) ((mDragTempContainer.getUserAddData().get(i).getOtherTemp().getMaxTempX() * widthRatio) +
+                                        ((mDragTempContainer.getUserAddData().get(i).getOtherTemp().getMaxTempY() * heightRatio) * 256) + 10)] > mAlarmTemp);
+                            }
+                        }
+                    }else {
+                        isAlarm = isAlarm | (mAlarmTemp < maxtemperature);
+                    }
+                }else {
+                    isAlarm = false;
                 }
+                isAlarm = isAlarm && isOverTempAlarm;
             }
 
             /**

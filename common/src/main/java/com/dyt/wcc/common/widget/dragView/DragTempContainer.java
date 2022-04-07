@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextPaint;
@@ -108,13 +109,13 @@ public class DragTempContainer extends RelativeLayout {
 	private Rect         OTGRect;
 //	private StaticLayout staticLayout ;
 
-//	private float        valueHighTempAlarm = 0.0f;//设置最高温数值
-//	private boolean      isAboveHighTemp = false;//是否超温
-//	private boolean      highTempAlarmToggle = false;
-//	private int          alarmCountDown = 0;
+	private float        valueHighTempAlarm = 0.0f;//设置最高温数值
+	private boolean      isAboveHighTemp = false;//是否超温
+	private boolean      highTempAlarmToggle = false;
+	private int          alarmCountDown = 0;
 	private MyMoveWidget operateChild = null;
 	private int          frameCount = 0;
-//	private MediaPlayer  audioPlayer;
+	private MediaPlayer  audioPlayer;
 	private long         lastAboveTime = 0;
 
 	//屏幕宽度的三分之二
@@ -206,9 +207,9 @@ public class DragTempContainer extends RelativeLayout {
 	}
 
 
-//	public void setHighTempAlarmToggle (boolean highTempAlarmToggle) {
-//		this.highTempAlarmToggle = highTempAlarmToggle;
-//	}
+	public void setHighTempAlarmToggle (boolean highTempAlarmToggle) {
+		this.highTempAlarmToggle = highTempAlarmToggle;
+	}
 
 	/**
 	 * 超温报警 数据源是摄氏度.传入的带温度单位的数值。
@@ -216,40 +217,40 @@ public class DragTempContainer extends RelativeLayout {
 	 * <p>温度超过，并且开启高温警告。如果超温 则开始倒计时 绘制。 每间隔0.5s 绘制警告框。0.5S时间不绘制</p>
 	 * <p>如果关闭，则停止绘制，倒计时也停止。 如果未超温则 不绘制。</p>
 	 *
-//	 * @param thresholdTemp 带了模式 的温度。 需要转换成摄氏度
+	 * @param thresholdTemp 带了模式 的温度。 需要转换成摄氏度
 	 */
-//	public void openHighTempAlarm(float thresholdTemp){
-//		highTempAlarmToggle = true;
-////		Log.e(TAG, "openHighTempAlarm:  {$valueHighTempAlarm  }  " + valueHighTempAlarm );
-////		if (tempSuffixMode == 0){//0摄氏度， 1华氏度， 2开氏度
-//			valueHighTempAlarm = getFormatFloat(thresholdTemp);
-////		}
-////		if (tempSuffixMode == 1){
-////			valueHighTempAlarm = getFormatFloat((thresholdTemp - 32) / 1.8f);
-////		}
-////		if (tempSuffixMode == 2){
-////			valueHighTempAlarm = getFormatFloat((thresholdTemp - 273.15f));
-////		}
-//		if (audioPlayer == null){
-//			audioPlayer = MediaPlayer.create(mContext.get(),R.raw.a2_ding);
+	public void openHighTempAlarm(float thresholdTemp){
+		highTempAlarmToggle = true;
+//		Log.e(TAG, "openHighTempAlarm:  {$valueHighTempAlarm  }  " + valueHighTempAlarm );
+//		if (tempSuffixMode == 0){//0摄氏度， 1华氏度， 2开氏度
+			valueHighTempAlarm = getFormatFloat(thresholdTemp);
 //		}
-//		if (audioPlayer != null){
-//			audioPlayer.setLooping(true);
+//		if (tempSuffixMode == 1){
+//			valueHighTempAlarm = getFormatFloat((thresholdTemp - 32) / 1.8f);
 //		}
+//		if (tempSuffixMode == 2){
+//			valueHighTempAlarm = getFormatFloat((thresholdTemp - 273.15f));
+//		}
+		if (audioPlayer == null){
+			audioPlayer = MediaPlayer.create(mContext.get(),R.raw.a2_ding);
+		}
+		if (audioPlayer != null){
+			audioPlayer.setLooping(true);
+		}
 //
 //		Log.e(TAG, "openHighTempAlarm:  {$valueHighTempAlarm  }  " + valueHighTempAlarm );
-//	}
-//	public void closeHighTempAlarm(){
-//		highTempAlarmToggle = false;
-//		invalidate();
-//
-//		if (audioPlayer != null){
-////			audioPlayer.set
-//			audioPlayer.stop();
-//			audioPlayer.release();
-//			audioPlayer = null;
-//		}
-//	}
+	}
+	public void closeHighTempAlarm(){
+		highTempAlarmToggle = false;
+		invalidate();
+
+		if (audioPlayer != null){
+//			audioPlayer.set
+			audioPlayer.stop();
+			audioPlayer.release();
+			audioPlayer = null;
+		}
+	}
 
 //	private OnUserCRUDListener onUserCRUDListener;
 //
@@ -1132,26 +1133,49 @@ public class DragTempContainer extends RelativeLayout {
 		public boolean handleMessage (@NonNull Message msg) {
 			switch (msg.what){
 				case UPDATE_TEMP_DATA:
-				tempSource = (float[]) msg.obj;
-
-//				if (tempSource[3] >= valueHighTempAlarm){//判定超温报警是否超过了额定温度，每帧刷新
-//					isAboveHighTemp= true;
-//				}else {
-//					isAboveHighTemp = false;
-//				}
-//				//超温警告 打开了开关，并且超温了。没帧刷新数据
-//				if (isAboveHighTemp && highTempAlarmToggle){
-//					lastAboveTime = System.currentTimeMillis();//最后一次播放的时间
-//					if (audioPlayer != null && !audioPlayer.isPlaying()){
-//						audioPlayer.start();
-//					}
-////					Log.e(TAG, "handleMessage: " + audioPlayer.isPlaying());
-//				}else {//一段时间（X）后停止音乐的播放，如果音乐是在播放，则停止。
-//					if (((System.currentTimeMillis() - lastAboveTime)/1000) > 3
-//							&& audioPlayer != null && audioPlayer.isPlaying()){//时间可以更改
-//						audioPlayer.pause();
-//					}
-//				}
+					tempSource = (float[]) msg.obj;
+					// 刷新 底层绘制 数据源
+					if (userAddData.size()!= 0){
+						for (int i = 0 ; i < userAddData.size(); i++){
+							//todo 更新每一个的 温度信息。
+							if (userAddData.get(i).getType()==1){//点
+								float temp = updatePointTemp(userAddData.get(i).getPointTemp().getStartPointX(),userAddData.get(i).getPointTemp().getStartPointY());
+								userAddData.get(i).getPointTemp().setTemp(getTempStrByMode(temp));
+							}else {//线及其矩形
+								updateLRTemp(userAddData.get(i).getOtherTemp(),userAddData.get(i).getType());
+							}
+								userAddView.get(i).invalidate();
+							}
+						}
+					isAboveHighTemp = false;
+				//先判断添加的view是否超温 ， 否则判断全局是否超温
+					if (userAddData.size() > 0){
+						for (int i = 0 ; i < userAddData.size(); i++){
+							if (userAddData.get(i).getType() == 1){
+								isAboveHighTemp = isAboveHighTemp | (updatePointTemp(userAddData.get(i).getPointTemp().getStartPointX(),
+										userAddData.get(i).getPointTemp().getStartPointY()) > valueHighTempAlarm);
+							}else {
+								isAboveHighTemp = isAboveHighTemp | (tempSource[(int) ((userAddData.get(i).getOtherTemp().getMaxTempX() * WRatio) +
+									((userAddData.get(i).getOtherTemp().getMaxTempY() * HRatio) * 256) + 10)] > valueHighTempAlarm);
+							}
+						}
+					}else {
+						//判定超温报警是否超过了额定温度，每帧刷新
+						isAboveHighTemp = tempSource[3] >= valueHighTempAlarm;
+					}
+				//超温警告 打开了开关，并且超温了。没帧刷新数据
+				if (isAboveHighTemp && highTempAlarmToggle){
+					lastAboveTime = System.currentTimeMillis();//最后一次播放的时间
+					if (audioPlayer != null && !audioPlayer.isPlaying()){
+						audioPlayer.start();
+					}
+//					Log.e(TAG, "handleMessage: " + audioPlayer.isPlaying());
+				}else {//一段时间（X）后停止音乐的播放，如果音乐是在播放，则停止。
+					if (((System.currentTimeMillis() - lastAboveTime)/1000) > 3
+							&& audioPlayer != null && audioPlayer.isPlaying()){//时间可以更改
+						audioPlayer.pause();
+					}
+				}
 //				invalidate();//重新绘制
 
 				if (mSeekBar!=null){//更新滑动温度条
@@ -1177,23 +1201,7 @@ public class DragTempContainer extends RelativeLayout {
 //						myMoveWidget.invalidate();
 //					}
 //				}
-					// 刷新 底层绘制 数据源
-				if (userAddData.size()!= 0){
-					for (int i = 0 ; i < userAddData.size(); i++){
-						//todo 更新每一个的 温度信息。
-						if (userAddData.get(i).getType()==1){//点
-							float temp = updatePointTemp(userAddData.get(i).getPointTemp().getStartPointX(),userAddData.get(i).getPointTemp().getStartPointY());
-							userAddData.get(i).getPointTemp().setTemp(getTempStrByMode(temp));
-						}else {//线及其矩形
-							updateLRTemp(userAddData.get(i).getOtherTemp(),userAddData.get(i).getType());
-						}
-//						if (userAddData.size() == userAddView.size()){
-//						Log.e(TAG, "handleMessage: userAddView size = > " + userAddView.size());
-//						Log.e(TAG, "handleMessage: userAddData size = > " + userAddData.size());
-							userAddView.get(i).invalidate();
-//						}
-					}
-				}
+
 				//刷新已选 子View的数据
 //					if (selectChild != null){
 //						if (selectChildData.getType() ==1){
