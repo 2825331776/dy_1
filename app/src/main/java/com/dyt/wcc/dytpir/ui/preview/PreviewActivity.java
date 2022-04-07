@@ -709,6 +709,7 @@ public class SendCommand {
 			public void onClick (View v) {
 //				Button bt = null;
 //				bt.setText("111");
+				mUvcCameraHandler.javaSendJniOrder();
 
 //				byte [] a1 = new byte[5];
 //				Log.e(TAG, "onClick: "+a1[10]);
@@ -734,7 +735,7 @@ public class SendCommand {
 						@Override
 						public void onSetComplete (float setValue) {
 							//							if (isDebug)Log.e(TAG, "onSetComplete: " + "confirm value = == > " + setValue  );
-//							mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(setValue);
+							mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(setValue);
 							mDataBinding.textureViewPreviewActivity.startTempAlarm(setValue);
 							sp.edit().putFloat("overTemp",setValue).apply();
 						}
@@ -748,7 +749,7 @@ public class SendCommand {
 					dialog.show();
 				}else {
 					mDataBinding.textureViewPreviewActivity.stopTempAlarm();
-//					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
+					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
 				}
 			}
 		});
@@ -877,11 +878,41 @@ public class SendCommand {
 				if (mUvcCameraHandler!=null)mUvcCameraHandler.fixedTempStripChange(mDataBinding.toggleFixedTempBar.isSelected());
 			}
 		});
-		//清除  按钮
-		mDataBinding.ivPreviewLeftClear.setOnClickListener(new View.OnClickListener() {
+
+		//重置  按钮
+		mDataBinding.ivPreviewLeftReset.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-				mDataBinding.dragTempContainerPreviewFragment.clearAll();
+				if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()){
+					//重置色板
+					setPalette(0);
+					//重置绘制界面
+					mDataBinding.dragTempContainerPreviewFragment.clearAll();
+					//关闭框内细查
+					if (mDataBinding.toggleAreaCheck.isSelected()){
+						mDataBinding.toggleAreaCheck.setSelected(false);
+						mUvcCameraHandler.setAreaCheck(0);
+					}
+					//关闭 超温警告
+					mDataBinding.toggleHighTempAlarm.setSelected(false);
+					mDataBinding.textureViewPreviewActivity.stopTempAlarm();
+					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
+					//关闭 固定温度条
+					if (mDataBinding.toggleFixedTempBar.isSelected()){
+						mDataBinding.toggleFixedTempBar.setSelected(false);
+						mDataBinding.customSeekbarPreviewFragment.setWidgetMode(0);
+						mUvcCameraHandler.disWenKuan();
+						mUvcCameraHandler.fixedTempStripChange(mDataBinding.toggleFixedTempBar.isSelected());
+					}
+					//打开高低中心测温
+					mDataBinding.textureViewPreviewActivity.openFeaturePoints(0);
+					mDataBinding.textureViewPreviewActivity.openFeaturePoints(1);
+					mDataBinding.textureViewPreviewActivity.openFeaturePoints(2);
+
+					//打挡  并 刷新温度对照表
+					setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
+					mUvcCameraHandler.whenShutRefresh();
+				}
 			}
 		});
 		//拍照按钮
