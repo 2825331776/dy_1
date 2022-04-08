@@ -157,7 +157,6 @@ android {
         release {
             // 使用config签名
             signingConfig signingConfigs.releaseConfig
-
             // release模式下，不显示log
             buildConfigField("boolean", "LOG_DEBUG", "false")
             // 为版本名添加后缀

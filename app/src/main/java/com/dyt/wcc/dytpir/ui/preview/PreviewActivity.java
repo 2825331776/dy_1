@@ -142,7 +142,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	public void onStop () {
 
 		if (isDebug)Log.e(TAG, "onStop: ");
-		if (mUsbMonitor!=null ){
+		if (mUsbMonitor != null ){
 			if (mUsbMonitor.isRegistered()){
 				mUsbMonitor.unregister();
 			}
@@ -198,7 +198,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	@Override
 	protected void onResume () {
 		if (isDebug)Log.e(TAG, "onResume: ");
-		if (mUsbMonitor !=null && !mUsbMonitor.isRegistered()) {
+		if (mUsbMonitor != null && !mUsbMonitor.isRegistered()) {
 			mUsbMonitor.register();
 		}
 		if (mUvcCameraHandler !=null && mUvcCameraHandler.isPreviewing())mUvcCameraHandler.startTemperaturing();
@@ -214,7 +214,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				@Override
 				public void run() {
 					if (isDebug)Log.e(TAG, "检测到设备========");
-					mUsbMonitor.requestPermission(device);
+					if (mUsbMonitor != null)mUsbMonitor.requestPermission(device);
 				}
 			}, 100);
 		}
