@@ -189,6 +189,10 @@ android {
 }
 
 dependencies {
+
+    //2022年4月8日15:21:31 导入TinyC 的SDK库 arr
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+
     //依赖于Common  作为Lib
     implementation project(path: ':common')
 

@@ -12,10 +12,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -35,6 +37,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
 
 import com.dyt.wcc.cameracommon.encoder.MediaMuxerWrapper;
@@ -73,6 +76,8 @@ import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 import com.zhihu.matisse.Matisse;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,6 +87,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private UVCCameraHandler                   mUvcCameraHandler;
@@ -117,6 +126,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	// 重置参数 返回值
 	private int defaultSettingReturn = -1;
 
+	//2022年4月8日15:24:14  TinyC 读取TAU（等效大气透过率）
+	private byte[] tau_data;
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -386,6 +397,49 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private int setValue(final int flag, final int value) {//设置机芯参数,调用JNI层
 		return mUvcCameraHandler != null ? mUvcCameraHandler.setValue(flag, value) : 0;
 	}
+
+	private static final int REQUEST_CODE_UNKNOWN_APP = 10085;
+
+	private void installApk(String path) {
+		File file = new File(path);
+		if (file.exists()) {
+			Intent installApkIntent = new Intent();
+			installApkIntent.setAction(Intent.ACTION_VIEW);
+			installApkIntent.addCategory(Intent.CATEGORY_DEFAULT);
+			installApkIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			//适配8.0需要有权限
+
+//			Log.e(TAG, "installApk:  +Build.VERSION.SDK_INT  " + Build.VERSION.SDK_INT);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+				boolean hasInstallPermission = getPackageManager().canRequestPackageInstalls();
+//				Log.e(TAG, "installApk:  +  " + hasInstallPermission);
+				if (hasInstallPermission) {
+					//安装应用
+					installApkIntent.setDataAndType(FileProvider.getUriForFile(getApplicationContext(),getPackageName() + ".FileProvider", file), "application/vnd.android.package-archive");
+					installApkIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+					if (getPackageManager().queryIntentActivities(installApkIntent, 0).size() > 0) {
+						startActivity(installApkIntent);
+					}
+				} else {
+					//跳转至“安装未知应用”权限界面，引导用户开启权限
+					Uri selfPackageUri = Uri.parse("package:" + this.getPackageName());
+					Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, selfPackageUri);
+					startActivityForResult(intent, REQUEST_CODE_UNKNOWN_APP);
+				}
+			} else {
+				if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+					installApkIntent.setDataAndType(FileProvider.getUriForFile(getApplicationContext(), getPackageName() + ".FileProvider", file), "application/vnd.android.package-archive");
+					installApkIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+				} else {
+					installApkIntent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+				}
+				if (getPackageManager().queryIntentActivities(installApkIntent, 0).size() > 0) {
+					startActivity(installApkIntent);
+				}
+			}
+		}
+	}
+
 
 	/**
 	 * 设置机芯参数 为默认值
@@ -699,6 +753,18 @@ public class SendCommand {
 //		mDataBinding.setPreviewViewModel(mViewModel);
 	}
 
+	public static char[] toChar(byte[] b) {
+		if (b == null) {
+			return null;
+		} else {
+			char[] c = new char[b.length / 2];
+			int i = 0;
+			for(int var3 = 0; i < b.length; c[var3++] = (char)((b[i++] & 255) + ((b[i++] & 255) << 8))) {
+			}
+			return c;
+		}
+	}
+
 	/**
 	 * 初始化界面的监听器
 	 */
@@ -709,10 +775,40 @@ public class SendCommand {
 			public void onClick (View v) {
 //				Button bt = null;
 //				bt.setText("111");
-				mUvcCameraHandler.javaSendJniOrder();
-
-//				byte [] a1 = new byte[5];
-//				Log.e(TAG, "onClick: "+a1[10]);
+//				new Thread(new Runnable() {
+//					@Override
+//					public void run() {
+//						AssetManager am = getAssets();
+//						InputStream is;
+//						try {
+//							is = am.open("tau_H.bin");
+//							int lenth = is.available();
+//							tau_data = new byte[lenth];
+//							if (is.read(tau_data) != lenth) {
+//								Log.d(TAG, "read file fail ");
+//							}
+//							Log.d(TAG, "read file lenth " + lenth);
+//						} catch (IOException e) {
+//							e.printStackTrace();
+//						}
+//						char[] the_data = toChar(tau_data);
+//						Log.e(TAG, "run: the_data =======> " + the_data.length);
+//						float hum = 1;
+//						float oldTemp = 35;
+//						float distance = 0.25f;
+//						char []tagArray = new char[2];
+//						Libirtemp.read_tau(the_data,hum,oldTemp,distance,tagArray);
+//						for (char a : tagArray){
+//							Log.e(TAG, "run:  a = > "+ (int)a);
+//						}
+//						runOnUiThread(new Runnable() {
+//							@Override
+//							public void run() {
+//								Toast.makeText(PreviewActivity.this, "read nuc success" + tau_data.length, Toast.LENGTH_SHORT).show();
+//							}
+//						});
+//					}
+//				}).start();
 
 			}
 		});
@@ -1345,25 +1441,30 @@ public class SendCommand {
 //						};
 
 
-//						new Thread(new Runnable() {
-//							@Override
-//							public void run () {
-//								try {
-//									String path = mContext.get().getExternalFilesDir(null).getAbsolutePath() + File.separator + "dadadidi.zip";
+						new Thread(new Runnable() {
+							@Override
+							public void run () {
+								try {
 
-//									String url = "http://114.115.130.132:8080/dytfile/downloadGET?fileName=Software/H2/H2_1.0.3";
-//									OkHttpClient client = new OkHttpClient();
-//									Request request = new Request.Builder().url(url).get().build();
-//									Response response = client.newCall(request).execute();
-//									byte[] responseByte = response.body().bytes();
+//									String path_info = "http://114.115.130.132:8080/dytfile/getVersion?objPath=files/Apks/";
+
+//								String path = "DytSpectrumOwl_huawei_release_v1.0.4_b3_20220409021210.apk";
+									String path = mContext.get().getExternalFilesDir(null).getAbsolutePath() + File.separator + "DytSpectrumOwl_huawei_release_v1.0.4_b3_20220409021210.apk";
+									String url = "http://114.115.130.132:8080/dytfile/downloadGET?fileName=Apks/DytSpectrumOwl_huawei_release_v1.0.4_b3_20220409021210";
+									OkHttpClient client = new OkHttpClient();
+									Request request = new Request.Builder().url(url).get().build();
+									Response response = client.newCall(request).execute();
+									byte[] responseByte = response.body().bytes();
 //
-//									FileOutputStream fops = new FileOutputStream(path);
-//									InputStream inputStream = new ByteArrayInputStream(responseByte);
-//									ZipOutputStream zops = new ZipOutputStream(fops);
-//									if (zops.)
+									FileOutputStream fops = new FileOutputStream(path);
+////									InputStream inputStream = new ByteArrayInputStream(responseByte);
+////									ZipOutputStream zops = new ZipOutputStream(fops);
+////									if (zops.)
+//
+									fops.write(responseByte,0,responseByte.length);
+									fops.close();
 
-//									fops.write(responseByte,0,responseByte.length);
-//										fops.close();
+
 //									ZipFile zipFile = new ZipFile(path);
 //									Enumeration<?> entries = zipFile.entries();
 //									ZipEntry entry = null;
@@ -1399,12 +1500,17 @@ public class SendCommand {
 
 //									ZipInputStream zipInputStream  = new ZipInputStream(inputStream);
 //									zipInputStream.
-//									if (isDebug)Log.e(TAG, "======== responseBytes ======= " + responseByte.length);
-//								}catch (IOException e){
-//									e.printStackTrace();
-//								}
-//							}
-//						}).start();
+									if (isDebug)Log.e(TAG, "======== responseBytes ======= " + responseByte.length);
+
+									installApk(path);
+
+
+
+								}catch (IOException e){
+									e.printStackTrace();
+								}
+							}
+						}).start();
 					}
 				});
 
