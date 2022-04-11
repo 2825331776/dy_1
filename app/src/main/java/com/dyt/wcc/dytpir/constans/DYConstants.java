@@ -56,7 +56,7 @@ public class DYConstants {
 	public static final String LANGUAGE_SETTING = "language_setting";//语言设置
 	public static final String TEMP_UNIT_SETTING = "temp_unit";//温度单位
 
-	public static final String LOCALE_LANGUAGE = "locale_language";
+//	public static final String LOCALE_LANGUAGE = "locale_language";
 	public static final String SPTAG = "Main";
 
 	public static final String SP_NAME = "DYT_IR_SP";
@@ -66,5 +66,7 @@ public class DYConstants {
 	public static final String [] paletteArrays = new String[]{"1.dat","2.dat","3.dat","4.dat","5.dat","6.dat"};
 
 
+	public static final String UPDATE_CHECK_INFO = "http://114.115.130.132:8080/dytfile/getVersion?objPath=files/Apks/H2/";
+	public static final String UPDATE_DOWNLOAD_API = "http://114.115.130.132:8080/dytfile/downloadGET?fileName=Apks/H2/DytSpectrumOwl_huawei_release_v1.0.4_b3_20220409021210";
 
 }

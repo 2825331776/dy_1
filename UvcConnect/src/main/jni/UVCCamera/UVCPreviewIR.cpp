@@ -719,7 +719,7 @@ int UVCPreviewIR::prepare_preview(uvc_stream_ctrl_t *ctrl) {
     ENTER();
     //此处初始化要mode判断 生成
 //    CacheBuffer = new unsigned char[requestWidth*(requestHeight)*2];
-    OutBuffer=new unsigned char[requestWidth*(requestHeight)*2];//分配内存：为啥要*2 在draw_preview_one中会赋值给 unsigned short 类型
+    OutBuffer=new unsigned char[requestWidth*(requestHeight)*2];//分配内存：要*2 在draw_preview_one中会赋值给 unsigned short 类型
     HoldBuffer=new unsigned char[requestWidth*(requestHeight)*2];
     if (mPid == 1 && mVid == 5396){
         RgbaOutBuffer=new unsigned char[requestWidth*(requestHeight-4)*4];
@@ -1064,7 +1064,9 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 mIsComputed=false;
                 //S0机芯 获取机芯的参数，环境温度  反射率 等等 用于 温度对照表。
                 if (mPid == 1 && mVid == 5396){
-                    mFrameImage->getCameraPara(HoldBuffer);
+                    if (mFrameImage){
+                        mFrameImage->getCameraPara(HoldBuffer);
+                    }
                 }
                 // swap the buffers rgba
                 tmp_buf =RgbaOutBuffer;
@@ -1160,6 +1162,20 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     }
                     else if (mVid == 5396 && mPid==1)//S0机芯
                     {
+                        //***********************S0机芯 384*288 分辨率 读取SN号**********************
+                        //if(is_getSN){
+//                        BYTE * fourLinPara = pDataGet + ((WIDTH * HEIGHT) << 1);
+//                        int amountPixels = (WIDTH << 1) ;
+//                        if(WIDTH > 256){
+//                             amountPixels = ((WIDTH * 3) << 1);
+//                        }
+//                         int userAread = amountPixels + (127 << 1) ;
+//                        memcpy((void *) &machine_sn, fourLinePara + amountPixels + (32 << 1),(sizeof(char) << 5)); // ir序列号
+//                        memcpy((void *) &user_sn, fourLinePara + userArea + 100,sizeof(char) * sn_length);//序列号
+//                          is_getSN = false;
+//                      }
+                        //*************************************************************************
+
                         //根据 标识  去设置是否渲染 画面 读取SN号
                         unsigned char *fourLinePara = HoldBuffer + ((256 * (192)) << 1);
                         int amountPixels = (256 << 1);
@@ -1221,7 +1237,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                                 LOGE("=============SN匹配成功========");
                                 snIsRight = snIsRight | 1;
                             } else {
-//                                LOGE("==============SN匹配不成功========");
+                                LOGE("==============SN匹配不成功========");
                                 snIsRight = snIsRight | 0;
                             }
                             delete []decryptionChild;

@@ -94,7 +94,7 @@ public class LanguageUtils {
      */
     private static String getPrefAppLocaleLanguage() {
         SharedPreferences sp = DYTApplication.getInstance().getSharedPreferences(DYConstants.SPTAG, Context.MODE_PRIVATE);
-        return sp.getString(DYConstants.LOCALE_LANGUAGE, "");
+        return sp.getString(DYConstants.LANGUAGE_SETTING, "");
    }
 
     /**
@@ -132,7 +132,7 @@ public class LanguageUtils {
     public static void saveAppLocaleLanguage(String language) {
         SharedPreferences sp = DYTApplication.getInstance().getSharedPreferences(DYConstants.SPTAG, Context.MODE_PRIVATE);
         SharedPreferences.Editor edit = sp.edit();
-        edit.putString(DYConstants.LOCALE_LANGUAGE, language);
+        edit.putString(DYConstants.LANGUAGE_SETTING, language);
         edit.apply();
     }
 

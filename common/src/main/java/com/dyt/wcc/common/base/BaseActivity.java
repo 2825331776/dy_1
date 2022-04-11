@@ -1,6 +1,7 @@
 package com.dyt.wcc.common.base;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.MotionEvent;
@@ -87,5 +88,23 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 			}
 		}
 		return super.dispatchTouchEvent(ev);
+	}
+
+
+	@Override
+	protected void attachBaseContext (Context newBase) {
+//		mContext = newBase;
+		super.attachBaseContext(newBase);
+	}
+
+	@Override
+	public void applyOverrideConfiguration(Configuration overrideConfiguration) {
+		// 兼容androidX在部分手机切换语言失败问题
+		if (overrideConfiguration != null) {
+			int uiMode = overrideConfiguration.uiMode;
+			overrideConfiguration.setTo(getBaseContext().getResources().getConfiguration());
+			overrideConfiguration.uiMode = uiMode;
+		}
+		super.applyOverrideConfiguration(overrideConfiguration);
 	}
 }
