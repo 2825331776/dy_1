@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -67,8 +69,11 @@ import com.dyt.wcc.dytpir.utils.AssetCopyer;
 import com.dyt.wcc.dytpir.utils.ByteUtilsCC;
 import com.dyt.wcc.dytpir.utils.CreateBitmap;
 import com.dyt.wcc.dytpir.utils.LanguageUtils;
+import com.dyt.wcc.dytpir.utils.TinyCUtils;
 import com.huantansheng.easyphotos.EasyPhotos;
-import com.huantansheng.easyphotos.ui.dialog.LoadingDialog;
+import com.king.app.dialog.AppDialog;
+import com.king.app.updater.AppUpdater;
+import com.king.app.updater.http.OkHttpManager;
 import com.permissionx.guolindev.PermissionX;
 import com.permissionx.guolindev.callback.ExplainReasonCallback;
 import com.permissionx.guolindev.callback.ForwardToSettingsCallback;
@@ -80,11 +85,10 @@ import com.serenegiant.usb.UVCCamera;
 import com.zhihu.matisse.Matisse;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -124,8 +128,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	private DisplayMetrics metrics;
 	private Configuration  configuration;
-	private String locale_language;
-	private int language = -1 ;//语言的 索引下标
+	private String         locale_language;
+	private int            language   = -1;//语言的 索引下标
 	private boolean        isFirstRun = false;
 
 	private static final int REQUEST_CODE_CHOOSE  = 23;
@@ -134,6 +138,52 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	//2022年4月8日15:24:14  TinyC 读取TAU（等效大气透过率）
 	private byte[] tau_data;
+
+	//更新工具类对象
+	private AppUpdater      mAppUpdater;
+	private int             maxIndex = 0;
+	private List<UpdateObj> updateObjList;
+
+	private static final int     MSG_CHECK_UPDATE = 1;
+	private              Handler mHandler         = new Handler(new Handler.Callback() {
+		@Override
+		public boolean handleMessage (@NonNull Message msg) {
+			switch (msg.what) {
+				case MSG_CHECK_UPDATE:
+					updateObjList = (List<UpdateObj>) msg.obj;
+
+					View view = LayoutInflater.from(mContext.get()).inflate(R.layout.dialog_custom, null);
+					TextView tvTitle = view.findViewById(R.id.tvTitle);
+					tvTitle.setText(String.format(getString(R.string.pop_version) + " %s->%s", BuildConfig.VERSION_NAME, updateObjList.get(maxIndex).getAppVersionName()));
+					TextView tvContent = view.findViewById(R.id.tvContent);
+					tvContent.setVisibility(View.GONE);
+					//					tvContent.setText("1、新增某某功能、\n2、修改某某问题、\n3、优化某某BUG、");
+					View btnCancel = view.findViewById(R.id.btnCancel);
+					btnCancel.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick (View v) {
+							AppDialog.INSTANCE.dismissDialog();
+						}
+					});
+					View btnConfirm = view.findViewById(R.id.btnConfirm);
+					btnConfirm.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick (View v) {
+							showToast(getString(R.string.toast_downloading_background));
+							mAppUpdater = new AppUpdater.Builder().setUrl(DYConstants.UPDATE_DOWNLOAD_API + updateObjList.get(maxIndex).getPackageName())
+									//                        .setApkMD5("3df5b1c1d2bbd01b4a7ddb3f2722ccca")//支持MD5校验，如果缓存APK的MD5与此MD5相同，则直接取本地缓存安装，推荐使用MD5校验的方式
+									.setVersionCode(updateObjList.get(maxIndex).getAppVersionCode())//支持versionCode校验，设置versionCode之后，新版本versionCode相同的apk只下载一次,优先取本地缓存,推荐使用MD5校验的方式
+									.setFilename(updateObjList.get(maxIndex).getPackageName() + ".apk").setVibrate(true).build(mContext.get());
+							mAppUpdater.setHttpManager(OkHttpManager.getInstance()).start();
+							AppDialog.INSTANCE.dismissDialog();
+						}
+					});
+					AppDialog.INSTANCE.showDialog(mContext.get(), view, 0.5f);
+					break;
+			}
+			return false;
+		}
+	});
 
 	@Override
 	protected void onActivityResult (int requestCode, int resultCode, Intent data) {
@@ -149,7 +199,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		if (isDebug)
 			Log.e(TAG, "onPause: ");
 
-		if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()){
+		if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()) {
 			mUvcCameraHandler.stopTemperaturing();
 			if (BuildConfig.DEBUG)
 				Log.e(TAG, "onPause: 停止温度回调");
@@ -232,17 +282,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		if (mUsbMonitor != null && !mUsbMonitor.isRegistered()) {
 			mUsbMonitor.register();
 		}
-//		if (mUvcCameraHandler != null && mUvcCameraHandler.isPreviewing()){
-//			Log.e(TAG, "onResume: 开启温度回调");
-//			mUvcCameraHandler.startTemperaturing();
-//		}
 
 		language = sp.getInt(DYConstants.LANGUAGE_SETTING, -1);
 		switch (language) {
 			case -1:
 				if (locale_language.equals("zh")) {
 					sp.edit().putInt(DYConstants.LANGUAGE_SETTING, 0).apply();
-				} else  {
+				} else {
 					sp.edit().putInt(DYConstants.LANGUAGE_SETTING, 1).apply();
 				}
 				break;
@@ -307,7 +353,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);//每隔一分钟打一次快门
 					if (mUvcCameraHandler != null)
 						mUvcCameraHandler.whenShutRefresh();
-					Log.e(TAG, "每隔60s执行一次操作");
+					if (isDebug)Log.e(TAG, "每隔60s执行一次操作");
 				}
 			}, 500, 600000);
 		}
@@ -338,6 +384,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					mDataBinding.toggleHighTempAlarm.setSelected(false);
 
 					mDataBinding.customSeekbarPreviewFragment.setWidgetMode(0);
+					mDataBinding.customSeekbarPreviewFragment.setPalette(0);
 					mDataBinding.customSeekbarPreviewFragment.invalidate();
 					mDataBinding.toggleFixedTempBar.setSelected(false);
 					if (mUvcCameraHandler != null) {
@@ -501,7 +548,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					startActivity(installApkIntent);
 				}
 			}
-//			file.delete();
+			//			file.delete();
 		}
 	}
 
@@ -595,7 +642,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			return;
 		}
 		if (LanguageUtils.isSimpleLanguage(context, locale)) {
-			Toast.makeText(context, "选择的语言和当前语言相同", Toast.LENGTH_SHORT).show();
+			showToast(R.string.toast_select_same_language);
 			return;
 		}
 		LanguageUtils.updateLanguage(context, locale);//更新语言参数
@@ -720,13 +767,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		metrics = getResources().getDisplayMetrics();
 
 		locale_language = Locale.getDefault().getLanguage();
-		Log.e(TAG, "initView: ===============locale_language==============" + locale_language);
+		//		if(isDebug)Log.e(TAG, "initView: ===============locale_language==============" + locale_language);
 		language = sp.getInt(DYConstants.LANGUAGE_SETTING, -1);
 		switch (language) {
 			case -1:
 				if (locale_language.equals("zh")) {
 					sp.edit().putInt(DYConstants.LANGUAGE_SETTING, 0).apply();
-				} else  {
+				} else {
 					sp.edit().putInt(DYConstants.LANGUAGE_SETTING, 1).apply();
 				}
 				break;
@@ -742,12 +789,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				configuration.setLayoutDirection(Locale.ENGLISH);
 				getResources().updateConfiguration(configuration, metrics);
 				break;
-//			case 2:
-//				sp.edit().putInt(DYConstants.LANGUAGE_SETTING, 2).commit();
-//				configuration.locale = new Locale("ru", "RU");
-//				getResources().updateConfiguration(configuration, metrics);
-//				Log.e(TAG, "Language2:" + language);
-//				break;
+			//			case 2:
+			//				sp.edit().putInt(DYConstants.LANGUAGE_SETTING, 2).commit();
+			//				configuration.locale = new Locale("ru", "RU");
+			//				getResources().updateConfiguration(configuration, metrics);
+			//				Log.e(TAG, "Language2:" + language);
+			//				break;
 		}
 
 		if (sp.getInt(DYConstants.FIRST_RUN, 1) == 0) {
@@ -769,7 +816,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		screenHeight = dm.heightPixels;
 		mSendCommand = new SendCommand();
 
-		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.INTERNET, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO).onExplainRequestReason(new ExplainReasonCallback() {
+		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO).onExplainRequestReason(new ExplainReasonCallback() {
 			@Override
 			public void onExplainReason (@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
 				scope.showRequestReasonDialog(deniedList, getResources().getString(R.string.toast_base_permission_explain), getResources().getString(R.string.confirm), getResources().getString(R.string.cancel));
@@ -784,7 +831,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 				if (allGranted) {//基本权限被授予之后才能初始化监听器。
 					mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);//
-					Log.e(TAG, "onResult: mFontSize ==========> " + mFontSize);
+//					if (isDebug)Log.e(TAG, "onResult: mFontSize ==========> " + mFontSize);
 					//					Log.e(TAG, "initView:  ==444444= " + System.currentTimeMillis());
 					AssetCopyer.copyAllAssets(DYTApplication.getInstance(), mContext.get().getExternalFilesDir(null).getAbsolutePath());
 					//		Log.e(TAG,"===========getExternalFilesDir=========="+this.getExternalFilesDir(null).getAbsolutePath());
@@ -801,7 +848,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-
 					List<Bitmap> bitmaps = new ArrayList<>();
 					bitmaps.add(tiehong);
 					bitmaps.add(caihong);
@@ -820,10 +866,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					mDataBinding.dragTempContainerPreviewFragment.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
 					mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0));
 
-					//		Log.e(TAG, "initView:  ==111111= " + System.currentTimeMillis());
-					//		mDataBinding.textureViewPreviewFragment.setAspectRatio(256/(float)192);
 					mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null, 0);
-					//		Log.e(TAG, "initView: before  " +System.currentTimeMillis());
 
 					fl = mDataBinding.flPreview;
 
@@ -833,24 +876,17 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				}
 			}
 		});
-
-
-		//		mDataBinding.setPf(this);
-		//		mViewModel = new ViewModelProvider(getViewModelStore(),
-		//				new ViewModelProvider.AndroidViewModelFactory((Application) mContext.get().getApplicationContext())).get(PreViewViewModel.class);
-		//		mViewModel.setDeviceConnectListener(onDeviceConnectListener);
-		//		mDataBinding.setPreviewViewModel(mViewModel);
 	}
 
 	public static char[] toChar (byte[] b) {
 		if (b == null) {
 			return null;
 		} else {
-			char[] c = new char[b.length / 2];
+			char[] returnData = new char[b.length / 2];
 			int i = 0;
-			for (int var3 = 0; i < b.length; c[var3++] = (char) ((b[i++] & 255) + ((b[i++] & 255) << 8))) {
+			for (int var3 = 0; i < b.length; returnData[var3++] = (char) ((b[i++] & 255) + ((b[i++] & 255) << 8))) {
 			}
-			return c;
+			return returnData;
 		}
 	}
 
@@ -863,49 +899,54 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			@Override
 			public void onClick (View v) {
 				//************************检测当前语言设置********************************
-				if (isDebug){
-					Log.e(TAG, "onClick: " + Locale.getDefault().getLanguage());
-					Log.e(TAG, "onClick: " + sp.getInt(DYConstants.LANGUAGE_SETTING,8));
-				}
-
+				//				if (isDebug){
+				//					Log.e(TAG, "onClick: " + Locale.getDefault().getLanguage());
+				//					Log.e(TAG, "onClick: " + sp.getInt(DYConstants.LANGUAGE_SETTING,8));
+				//				}
 
 				//*****************************************************************
 				//				Button bt = null;
 				//				bt.setText("111");
-				//				new Thread(new Runnable() {
-				//					@Override
-				//					public void run() {
-				//						AssetManager am = getAssets();
-				//						InputStream is;
-				//						try {
-				//							is = am.open("tau_H.bin");
-				//							int lenth = is.available();
-				//							tau_data = new byte[lenth];
-				//							if (is.read(tau_data) != lenth) {
-				//								Log.d(TAG, "read file fail ");
-				//							}
-				//							Log.d(TAG, "read file lenth " + lenth);
-				//						} catch (IOException e) {
-				//							e.printStackTrace();
-				//						}
-				//						char[] the_data = toChar(tau_data);
-				//						Log.e(TAG, "run: the_data =======> " + the_data.length);
-				//						float hum = 1;
-				//						float oldTemp = 35;
-				//						float distance = 0.25f;
-				//						char []tagArray = new char[2];
-				//						Libirtemp.read_tau(the_data,hum,oldTemp,distance,tagArray);
-				//						for (char a : tagArray){
-				//							Log.e(TAG, "run:  a = > "+ (int)a);
-				//						}
-				//						runOnUiThread(new Runnable() {
-				//							@Override
-				//							public void run() {
-				//								Toast.makeText(PreviewActivity.this, "read nuc success" + tau_data.length, Toast.LENGTH_SHORT).show();
-				//							}
-				//						});
-				//					}
-				//				}).start();
+				new Thread(new Runnable() {
+					@Override
+					public void run () {
+						AssetManager am = getAssets();
+						InputStream is;
+						try {
+							is = am.open("tau_H.bin");
+							int length = is.available();
+							tau_data = new byte[length];
+							if (is.read(tau_data) != length) {
+								Log.d(TAG, "read file fail ");
+							}
+							Log.d(TAG, "read file lenth " + length);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+//						for (byte data : tau_data) {
+//							Log.i(TAG, "run: tau_data => " + data);
+//						}
+						char[] the_data = toChar(tau_data);
+
+//						char [] data = "tau_H.bin".toCharArray();
+//						Log.e(TAG, "run: the_data =======> " + Arrays.toString(the_data));
+						float hum = 1;
+						float oldTemp = 25;
+						float distance = 0.25f;
+						char[] tagArray = new char[1];
+						float value = TinyCUtils.getLUT( oldTemp, hum, distance, the_data, tagArray);
+						Log.e(TAG, "run: ======value" +value);
+//						for (char a : tagArray) {
+//							Log.e(TAG, "run:  a = > " + (int) a);
+//						}
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run () {
+								Toast.makeText(PreviewActivity.this, "read nuc success" + tau_data.length, Toast.LENGTH_SHORT).show();
+							}
+						});
+					}
+				}).start();
 
 			}
 		});
@@ -1140,7 +1181,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						startTimer();
 						mUvcCameraHandler.startRecording(sp.getInt(DYConstants.RECORD_AUDIO_SETTING, 1));
 					} else {
-						Log.e(TAG, "Record Error: error record state !");
+						//						if (isDebug)Log.e(TAG, "Record Error: error record state !");
 					}
 					mDataBinding.btPreviewLeftRecord.setSelected(!mDataBinding.btPreviewLeftRecord.isSelected());
 				} else {
@@ -1197,6 +1238,74 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				popSettingBinding.tvCameraSettingReviseUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
 				popSettingBinding.tvCameraSettingReflectUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
 				popSettingBinding.tvCameraSettingFreeAirTempUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
+
+				popSettingBinding.tvCheckVersion.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick (View v) {
+						//点击之后 立即wifi 或者 移动数据 是否打开，给提示。  连接超时 也给提示
+						//下载完成之后回调方法，保存文件，之后读取该文件夹下的zip文件。解压，安装apk，之后删除apk zip 文件
+						//读取 更新info 的接口，获取信息，分割之后校验，是否存在更新。  如果存在，一个提示版本窗口，
+						// (先检查本地是否存在同名文件，有则跳过下载直接安装)
+						// 否则确认之后则去下载地址去下载，然后安装
+						OkHttpClient client = new OkHttpClient();
+						new Thread(new Runnable() {
+							@Override
+							public void run () {
+								Request request = new Request.Builder().url(DYConstants.UPDATE_CHECK_INFO).get().build();
+								try {
+									Response response = client.newCall(request).execute();
+									byte[] responseByte = response.body().bytes();
+									String checkAPIData = new String(responseByte, StandardCharsets.UTF_8);
+									//									if (isDebug)Log.i(TAG, "run:responseByte ==========>  " + checkAPIData);
+									//分割 checkAPIData 得到具体信息
+									String[] AppVersionNameList = checkAPIData.split(";");//切割
+									updateObjList = new ArrayList<>(AppVersionNameList.length);
+									//去掉apk
+									for (int i = 0; i < AppVersionNameList.length; i++) {
+										UpdateObj updateObj = new UpdateObj();
+										AppVersionNameList[i] = AppVersionNameList[i].replace(".apk", "");
+										updateObj.setPackageName(AppVersionNameList[i]);
+										updateObjList.add(updateObj);
+									}
+									//									if (isDebug)Log.i(TAG, "run: =====AppVersionNameList====" + Arrays.toString(AppVersionNameList));
+									String[] AppVersionCodeList = new String[AppVersionNameList.length];//保存app 版本号
+									//筛选最大 VersionCode 的index
+									int maxCode = 0;
+									int currentVersionCode = 0;
+									for (int i = 0; i < AppVersionNameList.length; i++) {
+										AppVersionCodeList[i] = AppVersionNameList[i].split("_b")[1].split("_")[0];
+										currentVersionCode = Integer.parseInt(AppVersionCodeList[i]);
+
+										updateObjList.get(i).setAppVersionCode(currentVersionCode);
+										updateObjList.get(i).setAppVersionName(AppVersionNameList[i].split("_v")[1].split("_b")[0]);
+
+										if (maxCode == 0) {
+											maxCode = currentVersionCode;
+											maxIndex = 0;
+										}
+										if (maxCode < currentVersionCode) {
+											maxCode = currentVersionCode;
+											maxIndex = i;
+										}
+									}
+									//									if (isDebug)Log.i(TAG, "run: 最大的 VersionCode 为： " + maxCode + " codeIndex = " + maxIndex + " 完成版本为： " + AppVersionNameList[maxIndex]);
+									//									if (isDebug)Log.i(TAG, "run: ======AppVersionCodeList===" + Arrays.toString(AppVersionCodeList));
+									int thisVersionCode = mContext.get().getPackageManager().getPackageInfo(mContext.get().getPackageName(), 0).versionCode;
+									//									if (isDebug)Log.i(TAG, "run: versionName === 》" + thisVersionCode);
+									//判断是否需要更新
+									if (thisVersionCode < updateObjList.get(maxIndex).getAppVersionCode()) {
+										Message message = mHandler.obtainMessage();
+										message.what = MSG_CHECK_UPDATE;
+										message.obj = updateObjList;
+										mHandler.sendMessage(message);
+									}
+								} catch (IOException | PackageManager.NameNotFoundException e) {
+									e.printStackTrace();
+								}
+							}
+						}).start();
+					}
+				});
 				//第二步：将获取的数据 展示在输入框内
 				if (cameraParams != null) {
 					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(cameraParams.get(DYConstants.setting_emittance)));//发射率 0-1
@@ -1486,7 +1595,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					@Override
 					public void onSwitch (int position, String tabText) {
 						sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING, position).apply();
-						Log.e(TAG, "onSwitch: " + "=============================");
+						//						if (isDebug)Log.e(TAG, "onSwitch: " + "=============================");
 					}
 				});
 
@@ -1521,169 +1630,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			@Override
 			public void onClick (View v) {
 				//请求权限
-				//				PermissionX.init(PreviewFragment.this).permissions(Manifest.permission.INTERNET).request(new RequestCallback() {
-				//					@Override
-				//					public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
-				//						if (allGranted){
 				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_company_info, null);
 				PopCompanyInfoBinding popCompanyInfoBinding = DataBindingUtil.bind(view);
 				assert popCompanyInfoBinding != null;
-				//							popCompanyInfoBinding.tvCheckVersion.setOnClickListener(chartModeCheckListener);
-				popCompanyInfoBinding.tvVersionName.setText("" + LanguageUtils.getVersionName(mContext.get()));
+				popCompanyInfoBinding.tvVersionName.setText(String.format("%s", LanguageUtils.getVersionName(mContext.get())));
 				popCompanyInfoBinding.tvContactusEmail.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
-				LoadingDialog loadingDialog = LoadingDialog.get(mContext.get());
-				popCompanyInfoBinding.tvCheckVersion.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick (View v) {
-						loadingDialog.show();
-						//						if (isDebug)Log.i(TAG, "onClick: ================== tvCheckVersion");
-						//						if (isDebug)Log.e(TAG, "onClick: ======="+ mContext.get().getExternalFilesDir(null).getAbsolutePath());
-						//点击之后 立即wifi 或者 移动数据 是否打开，给提示。  连接超时 也给提示
-						//下载完成之后回调方法，保存文件，之后读取该文件夹下的zip文件。解压，安装apk，之后删除apk zip 文件
-						//读取 更新info 的接口，获取信息，分割之后校验，是否存在更新。  如果存在，一个提示版本窗口，
-						// (先检查本地是否存在同名文件，有则跳过下载直接安装)
-						// 否则确认之后则去下载地址去下载，然后安装
-						//
-						OkHttpClient client = new OkHttpClient();
-						String updateApkFileName = "";//更新apk的文件名
-						boolean needUpdate = true;//是否需要更新
-						boolean needDownload = true;//是否需要下载
-
-						new Thread(new Runnable() {
-							@Override
-							public void run () {
-								Request request = new Request.Builder().url(DYConstants.UPDATE_CHECK_INFO).get().build();
-								String installPath ;//安装路径
-								try {
-									Response response = client.newCall(request).execute();
-									byte[] responseByte = response.body().bytes();
-									String checkAPIData =  new String(responseByte, StandardCharsets.UTF_8);
-									Log.e(TAG, "run:responseByte ==========>  " + checkAPIData);
-									//分割 checkAPIData 得到具体信息
-
-									//通过校验 得到是否需要更新，
-									if (needUpdate){
-										//需要更新，检查本地是否存在 需要包名的
-										showToast("need update");
-										installPath =  mContext.get().getExternalFilesDir(null).getAbsolutePath() + File.separator
-												+ "DytSpectrumOwl_huawei_release_v1.0.4_b3_20220409021210.apk";
-
-										String versionName = mContext.get().getPackageManager().getPackageInfo(mContext.get().getPackageName(),0).versionName;
-										Log.e(TAG, "run: versionName === 》" + versionName);
-
-										//本地是否存在同名文件：否
-										if (needDownload){
-											Request updateRequest = new Request.Builder().url(DYConstants.UPDATE_DOWNLOAD_API).get().build();
-											Response updateResponse = client.newCall(updateRequest).execute();
-											byte[] updateResponseByte = updateResponse.body().bytes();
-
-											FileOutputStream fops = new FileOutputStream(installPath);
-											fops.write(updateResponseByte,0,updateResponseByte.length);
-											fops.close();
-										}else {//存在同名文件
-										}
-										installApk(installPath);
-
-									}else {
-										showToast("need't update");
-									}
-									//									String updateCheckInfoPath =  mContext.get().getExternalFilesDir(null).getAbsolutePath() + File.separator + "updateInfo.txt";
-									//									FileOutputStream fops = new FileOutputStream(updateCheckInfoPath);
-									//
-									//									fops.write(responseByte,0,responseByte.length);
-									//									fops.close();
-//									Thread.sleep(1000);
-
-									runOnUiThread(new Runnable() {
-										@Override
-										public void run () {
-											loadingDialog.dismiss();
-										}
-									});
-
-								} catch (IOException | PackageManager.NameNotFoundException e) {
-									e.printStackTrace();
-								}
-							}
-						}).start();
-
-
-//						new Thread(new Runnable() {
-//							@Override
-//							public void run () {
-//								try {
-
-									//									String path_info = "http://114.115.130.132:8080/dytfile/getVersion?objPath=files/Apks/";
-
-									//								String path = "DytSpectrumOwl_huawei_release_v1.0.4_b3_20220409021210.apk";
-									//									String path = mContext.get().getExternalFilesDir(null).getAbsolutePath() + File.separator + "DytSpectrumOwl_huawei_release_v1.0.4_b3_20220409021210.apk";
-									//									String url = "http://114.115.130.132:8080/dytfile/downloadGET?fileName=Apks/DytSpectrumOwl_huawei_release_v1.0.4_b3_20220409021210";
-									//									OkHttpClient client = new OkHttpClient();
-									//									Request request = new Request.Builder().url(url).get().build();
-									//									Response response = client.newCall(request).execute();
-									//									byte[] responseByte = response.body().bytes();
-									////
-									//									FileOutputStream fops = new FileOutputStream(path);
-									//////									InputStream inputStream = new ByteArrayInputStream(responseByte);
-									//////									ZipOutputStream zops = new ZipOutputStream(fops);
-									//////									if (zops.)
-									////
-									//									fops.write(responseByte,0,responseByte.length);
-									//									fops.close();
-
-
-//									Thread.sleep(3000);
-
-									//									ZipFile zipFile = new ZipFile(path);
-									//									Enumeration<?> entries = zipFile.entries();
-									//									ZipEntry entry = null;
-									//
-									//									while (entries.hasMoreElements()) {
-									//										entry = ((ZipEntry) entries.nextElement());
-									//										String entryName = entry.getName();
-									//										if (entryName.contains("../")) {
-									//											Log.e("ZipUtils", "it's dangerous!");//防止被利用漏洞恶意修改文件
-									////											return files;
-									//										}
-									////										if (!unzipChildFile(destDir, files, zip, entry)) return files;
-									//									}
-
-									//									path  = mContext.get().getExternalFilesDir(null).getAbsolutePath()+File.separator+ entry.getName();
-									//									File file = new File(path);
-									//									file.mkdirs();
-									//
-									//									InputStream in = null;
-									//									OutputStream out = null;
-									//
-									//									in = new BufferedInputStream(zipFile.getInputStream(entry));
-									//									out = new BufferedOutputStream(new FileOutputStream(path));
-									//									byte[] buffer = new byte[1024];
-									//									int len;
-									//									while ((len = in.read(buffer)) != -1) {
-									//										out.write(buffer, 0, len);
-									//									}
-									//									in.close();
-									//									out.close();
-									//									zipFile.getInputStream()
-									//										zops.close();
-
-									//									ZipInputStream zipInputStream  = new ZipInputStream(inputStream);
-									//									zipInputStream.
-									//									if (isDebug)Log.e(TAG, "======== responseBytes ======= " + responseByte.length);
-									//
-									//									installApk(path);
-
-
-
-
-//								} catch (InterruptedException e) {
-//									e.printStackTrace();
-//								}
-//							}
-//						});
-					}
-				});
-
 				popCompanyInfoBinding.tvContactusEmail.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick (View v) {
@@ -1717,14 +1668,14 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mDataBinding.dragTempContainerPreviewFragment.setChildToolsClickListener(new DragTempContainer.OnChildToolsClickListener() {
 			@Override
 			public void onChildToolsClick (TempWidgetObj child, int position) {
-				Log.e(TAG, "onChildToolsClick: ======preview tools position == > " + position);
+				//				if (isDebug)Log.e(TAG, "onChildToolsClick: ======preview tools position == > " + position);
 				if (position == 0) {
 					mDataBinding.dragTempContainerPreviewFragment.deleteChildView(child);
 					//底层重新设置 矩形框的 数据
 					if (child.getType() == 3) {
 						//						mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
 						int[] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
-						Log.e(TAG, "onChildToolsClick: ======setArea data  == >" + Arrays.toString(areaData));
+						//						if (isDebug)Log.e(TAG, "onChildToolsClick: ======setArea data  == >" + Arrays.toString(areaData));
 						if (areaData != null) {
 						} else {
 							areaData = new int[0];
@@ -1732,8 +1683,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						mUvcCameraHandler.setArea(areaData);
 					}
 				} else {
-					if (isDebug)
-						Log.e(TAG, "onChildToolsClick: " + position);
+					//					if (isDebug)
+					//						if (isDebug)Log.e(TAG, "onChildToolsClick: " + position);
 					if (isDebug)
 						showToast("click position ");
 
@@ -1742,7 +1693,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 			@Override
 			public void onRectChangedListener () {//移动框框之后刷新C层控件的设置
-				Log.e(TAG, "onRectChangedListener:  ===== ");
+				//				if (isDebug)Log.e(TAG, "onRectChangedListener:  ===== ");
 				if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened()) {
 					//					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
 					int[] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
@@ -2024,7 +1975,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	 * 初始化录制的相关方法
 	 */
 	private void initRecord () {
-
 	}
 
 	@Override

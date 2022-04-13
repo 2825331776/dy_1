@@ -56,7 +56,6 @@ public class DYConstants {
 	public static final String LANGUAGE_SETTING = "language_setting";//语言设置
 	public static final String TEMP_UNIT_SETTING = "temp_unit";//温度单位
 
-//	public static final String LOCALE_LANGUAGE = "locale_language";
 	public static final String SPTAG = "Main";
 
 	public static final String SP_NAME = "DYT_IR_SP";
@@ -65,8 +64,15 @@ public class DYConstants {
 
 	public static final String [] paletteArrays = new String[]{"1.dat","2.dat","3.dat","4.dat","5.dat","6.dat"};
 
-
+	//下载更新api
 	public static final String UPDATE_CHECK_INFO = "http://114.115.130.132:8080/dytfile/getVersion?objPath=files/Apks/H2/";
-	public static final String UPDATE_DOWNLOAD_API = "http://114.115.130.132:8080/dytfile/downloadGET?fileName=Apks/H2/DytSpectrumOwl_huawei_release_v1.0.4_b3_20220409021210";
+	public static final String UPDATE_DOWNLOAD_API = "http://114.115.130.132:8080/dytfile/downloadGET?fileName=Apks/H2/";
 
+	// tinyc 机芯的 距离点64个， 大气温度 温度点14个 ，湿度 等级4个
+	public static final float [] TINYC_DISTANCE = {0.25f, 0.30f, 0.35f, 0.40f, 0.45f, 0.50f, 0.55f, 0.60f, 0.65f, 0.70f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.00f, 1.05f,
+			1.10f, 1.15f, 1.20f, 1.30f, 1.40f, 1.50f, 1.60f, 1.70f, 1.80f, 1.90f, 2.00f, 2.20f, 2.40f, 2.60f, 2.80f, 3.00f, 3.20f,
+			3.40f, 3.60f, 3.80f, 4.00f, 4.50f, 5.00f, 5.50f, 6.00f, 6.50f, 7.00f, 7.50f, 8.00f, 9.00f, 10.00f, 11.00f, 12.00f,
+			13.00f, 14.00f, 16.00f, 18.00f, 20.00f, 22.00f, 24.00f, 26.00f, 28.00f, 30.00f, 35.00f, 40.00f, 45.00f, 50.00f};
+	public static final float [] TINYC_AIR_TEMP_POINT = {-5,0,5,10,15,20,25,30,35,40,45,50,55,55};
+	public static final float [] TINYC_HUMIDITY_LEVEL = {0,1,2,3};
 }

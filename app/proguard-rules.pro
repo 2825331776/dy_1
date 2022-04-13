@@ -143,3 +143,23 @@
 # easyphotos 库的混淆处理
 -keep class com.huantansheng.easyphotos.models.** { *; }
 
+#更新 混淆
+-dontwarn com.king.app.updater.**
+-keep class com.king.app.updater.**{ *;}
+-keep class * extends com.king.app.updater.**{ *;}
+-keep class * implements com.king.app.updater.**{ *;}
+-keepattributes InnerClasses
+
+-keep class * implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator *;
+}
+
+#更新弹窗 混淆
+-dontwarn com.king.app.dialog.**
+-keep class com.king.app.dialog.**{ *;}
+
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+

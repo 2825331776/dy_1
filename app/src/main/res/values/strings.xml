@@ -21,13 +21,14 @@
     <string name="AlarmTempInput">Input</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">OK</string>
-
-    <string name="CheckLatestVersion">Check the latest version</string>
+    <!--关于页面-->
+    <string name="check_updates">Check for updates</string>
     <string name="VersionName">Version: </string>
     <string name="contactUs">Contact us: </string>
     <string name="ContactEmail">service@dianytech.com</string>
     <string name="contactus_email_head">mailto: </string>
     <string name="contactus_choice_email">usable email App lists：</string>
+    <string name="pop_about_privacy_policy">privacy policy</string>
 
     <!--录制-->
     <string name="StartRecorderService">StartRecorderService</string>
@@ -56,8 +57,8 @@
     <string name="toast_base_permission_explain">Without read-write storage permission, you will not be able to preview the page,
         take pictures, record and other functions. Whether to authorize？</string>
     <string name="toast_base_permission_tosetting">Without permission, you will not be able to preview the page,
-        take pictures, record and other functions.
-        Do you want to set it on?</string>
+        take pictures, record and other functions.Do you want to set it on?</string>
+    <string name="toast_select_same_language">The selected language is the same as the current language.</string>
 
     <!--    取值范围设置 -->
     <string name="toast_range_int">"The value range is (%1$d - %2$d)"</string>
@@ -70,7 +71,10 @@
     <string name="toast_complete_Humidity">Humidity setting complete</string>
 
 
-
-
+<!--    更新操作-->
+    <string name="toast_downloading_background">Downloading in the background...</string>
+    <string name="pop_version">Version:</string>
+    <string name="pop_update_now">Update now</string>
+    <string name="pop_ignore">Ignore</string>
     <string name="value_zero">0.0</string>
 </resources>

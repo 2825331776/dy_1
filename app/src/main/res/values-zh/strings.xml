@@ -16,13 +16,14 @@
     <string name="AlarmTempInput">输入</string>
     <string name="cancel">取消</string>
     <string name="confirm">确定</string>
-
-    <string name="CheckLatestVersion">检查最新版本</string>
+<!--关于页面-->
+    <string name="check_updates">检查更新</string>
     <string name="VersionName">版本号:</string>
     <string name="contactUs">联系我们:</string>
     <string name="ContactEmail">service@dianytech.com</string>
     <string name="contactus_email_head">mailto:</string>
     <string name="contactus_choice_email">可用邮件应用列表：</string>
+    <string name="pop_about_privacy_policy">隐私权政策</string>
 
     <!--录制-->
     <string name="StartRecorderService">启动录制服务</string>
@@ -51,6 +52,7 @@
     <string name="toast_dont_have_permission">没授予对应权限</string>
     <string name="toast_base_permission_explain">没有读写存储权限，将无法预览页面,拍照，录制等功能。是否授权权限？</string>
     <string name="toast_base_permission_tosetting">没有权限，将无法预览页面,拍照，录制等功能。是否去设置打开？</string>
+    <string name="toast_select_same_language">选择的语言和当前语言相同</string>
 
 <!--    取值范围设置 -->
     <string name="toast_range_int">"取值范围为(%1$d - %2$d)"</string>
@@ -62,7 +64,10 @@
     <string name="toast_complete_FreeAirTemp">环境温度设置完成</string>
     <string name="toast_complete_Humidity">湿度设置完成</string>
 
-
-
+    <!--    更新操作-->
+    <string name="toast_downloading_background">正在下载中…</string>
+    <string name="pop_version">版本:</string>
+    <string name="pop_update_now">立即更新</string>
+    <string name="pop_ignore">忽略</string>
     <string name="value_zero">0.0</string>
 </resources>

@@ -622,10 +622,23 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData){
         jfloatArray mNCbTemper= env->NewFloatArray(requestWidth* requestHeight+10);
         jfloat * returnTempData = (jfloat *) env->GetFloatArrayElements(mNCbTemper,0);
         jfloat * controlTemp = returnTempData;
-        //读取中心点温度 .centerData 中心点指针，centerTemp 中心点指针AD值转成的温度
-        unsigned short* centerData=(unsigned short *)frameData;
-        centerData = centerData + (requestWidth * requestHeight)/2;
-        centerTemp = (*centerData)/64.0f - 273.15f;
+        //读取中心点温度 .centerData 中心点指针，centerTemp 中心点指针AD值转成的温度 ,四个点温度的均值。
+        unsigned short* centerData = (unsigned short *)frameData;
+//        LOGE(" =============TINYC ======requestWidth * requestHeight ======== %d" ,requestWidth * requestHeight);
+        int centerAllADSum = 0 ;
+        //顶部两个
+        centerData = centerData + (requestWidth * (requestHeight/2-1)) + requestWidth/2;
+        centerAllADSum += (*centerData);
+        centerData++;
+        centerAllADSum += (*centerData);
+        //底部两个点
+        centerData+= (requestWidth - 1);
+        centerAllADSum += (*centerData);
+        centerData++;
+        centerAllADSum += (*centerData);
+
+        centerTemp = (centerAllADSum/4.0f)/64.0f - 273.15f;
+//        LOGE(" =============TINYC ======centerTemp ======== %f" ,centerTemp);
         *controlTemp = centerTemp;
 //        LOGE("========= orgData[100] ======== %d ===============" , orgData[100]);
         controlTemp = returnTempData;

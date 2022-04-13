@@ -93,7 +93,7 @@ private:
 	char user_sn[20];//用户区的 SN号
 
 	unsigned char dytTinyCSn [15];
-	unsigned char TinyUserSN[15];
+	unsigned char TinyUserSN[16];
 	unsigned char TinyRobotSn[15];
 
 //	Tinyc使用锁 相关变量

@@ -866,19 +866,23 @@ std::vector<std::string> split(std::string str, std::string pattern)
 void *  UVCPreviewIR::DecryptSN(void * userSn, void * robotSn,void * returnData){
     unsigned char * sn = (unsigned char*)userSn;
     unsigned char * ir_sn = (unsigned char*)robotSn;
-    for (int i = 0; i < 15; i++) {
-        if (*ir_sn == '\0'){
-            *ir_sn = '0';
-        }
-        ir_sn++;
-    }
+    LOGE("==========用户区：==sn ====> %s",sn);
+    LOGE("==========机  器：===ir_sn ====> %s",ir_sn);
+//    for (int i = 0; i < 15; i++) {
+//        if (*ir_sn == '\0'){
+//            *ir_sn = '0';
+//        }
+//        ir_sn++;
+//    }
     unsigned char* ir_sn_h = (unsigned char*)robotSn + 2;
-    unsigned char* ir_sn_24 = new unsigned char[4];
-    mempcpy(ir_sn_24,ir_sn_h,4);
-//    LOGE("=============ir_sn_h ====> %s",ir_sn_h);
+//    unsigned char* ir_sn_24 = new unsigned char[4];
+//    mempcpy(ir_sn_24,ir_sn_h,4);
+    LOGE("=============ir_sn_h ====> %s",ir_sn_h);
 //    LOGE("=============ir_sn_24 ====> %s",ir_sn_24);
-    int  sn_sum = atoi((char *)ir_sn_24)%127;
-//    LOGE("======取值：========》%d", atoi(str.c_str()));
+
+//    int  sn_sum = atoi((char *)ir_sn_24)%127;
+    int  sn_sum = atoi((char *)ir_sn_h)%127;
+    LOGE("======sn_sum========》%d", sn_sum);
     char strs[sn_length];
 //    for (int i = 0; i < strlen(sn); i++) {
 //        LOGE(" >>>DecryptSN sn ======= > %d",(int)sn[i]);
@@ -940,8 +944,8 @@ void *  UVCPreviewIR::DecryptSN(void * userSn, void * robotSn,void * returnData)
     mempcpy(returnData,strs,15);
 
     ir_sn_h = NULL;
-    delete [] ir_sn_24;
-    ir_sn_24 = NULL;
+//    delete [] ir_sn_24;
+//    ir_sn_24 = NULL;
 
     sn = NULL;
     ir_sn = NULL;
@@ -1110,8 +1114,8 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             }
                         }
                         ret = uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x1d08,readData, 15,1000);
-                        *(readData+15) = '\0';
-                        LOGE("===================readData>>>>>>>>>%s<<<<<<<<<<<<<<<============",TinyUserSN);
+                        *(tinyUserSn+15) = '\0';
+//                        LOGE("===================readData>>>>>>>>>%s<<<<<<<<<<<<<<<============",TinyUserSN);
                         unsigned char data2[8] = {0};
                         data2[0] = 0x05;
                         data2[1] = 0x84;
@@ -1135,8 +1139,8 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             }
                         }
                         ret = uvc_diy_communicate(mDeviceHandle,0xc1,0x44,0x0078,0x1d08,flashId, 15,1000);
-                        LOGE("===================flashId>>>>>>>>>%s<<<<<<<<<<<<<<<============" , TinyRobotSn);
-                        *(flashId+15) = '\0';
+//                        LOGE("===================flashId>>>>>>>>>%s<<<<<<<<<<<<<<<============" , TinyRobotSn);
+                        *(tinyRobotSn+15) = '\0';
 
                         tinyC_request_type = 0x41;
                         tinyC_bRequest = 0x45;
@@ -1156,9 +1160,11 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
 //                        pthread_mutex_lock(&tinyC_send_order_mutex);
                         //获取 机器的SN 和 用户区的SN
 //                        LOGE("========tinyC_RobotSn_sixLast == %s =========",tinyC_UserSn_sixLast);
-                        DecryptSN(TinyUserSN, tinyC_UserSn_sixLast,dytSn);
+//                        *(tinyUserSn+15) = '\0';
+                        DecryptSN(TinyUserSN,tinyC_UserSn_sixLast,dytSn);
                         *(dytSn+15) = '\0';
 //                        snIsRight = true;
+
                     }
                     else if (mVid == 5396 && mPid==1)//S0机芯
                     {
@@ -1183,8 +1189,8 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         int userArea = amountPixels + (127 << 1);
                         memcpy((void *) &machine_sn, fourLinePara + amountPixels + (32 << 1),(sizeof(char) << 5)); // ir序列号
                         memcpy((void *) &user_sn, fourLinePara + userArea + 100,sizeof(char) * sn_length);//序列号
-                        LOGE(" ir_sn ======= > %s",machine_sn);
-                        LOGE(" sn_char ===== > %s",user_sn);
+//                        LOGE(" ir_sn ======= > %s",machine_sn);
+//                        LOGE(" sn_char ===== > %s",user_sn);
                         //解密之后的数据
                         (unsigned char *)DecryptSN(user_sn, machine_sn,dytSn);
                         *(dytSn+15) = '\0';
@@ -1211,7 +1217,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         }
                         fclose(inFile);
                     }
-//                    LOGE("==================configs.txt split size == %d=========");
+                    LOGE("==============%s==============",dytTinyCSn);
                     //切割结果
                     std::vector<std::string> split_result = split(fileStore, ";");
                     int splitSize = split_result.size();

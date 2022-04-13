@@ -1226,6 +1226,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                                }
                                //线测温模式绘制
                                if (tempWidgetObj.getType() ==2 ){
+                                   linePaint.setColor(Color.WHITE);
                                    bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
                                            tempWidgetObj.getOtherTemp().getEndPointX(),tempWidgetObj.getOtherTemp().getEndPointY(),linePaint);
                                    bitcanvas.drawLine(tempWidgetObj.getOtherTemp().getStartPointX(),tempWidgetObj.getOtherTemp().getStartPointY(),
@@ -1254,7 +1255,6 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                                         bpRectF.bottom = tempWidgetObj.getOtherTemp().getMinTempY() + mBitmapRectSize / 2.0f;
                                         bitcanvas.drawBitmap(lowTempBt,null,bpRectF,photoPaint);
                                     }
-
                                }
                                //矩形测温模式绘制
                                if (tempWidgetObj.getType() == 3 ){
@@ -1298,11 +1298,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                                        bpRectF.bottom = tempWidgetObj.getOtherTemp().getMinTempY() + mBitmapRectSize / 2.0f;
                                        bitcanvas.drawBitmap(lowTempBt,null,bpRectF,photoPaint);
                                    }
-
                                    //                               bitcanvas.drawBitmap(highTempBt,tempWidgetObj.getOtherTemp().getMaxTempX()-19,tempWidgetObj.getOtherTemp().getMaxTempY()-19,photoPaint);
                                    //                               bitcanvas.drawBitmap(lowTempBt,tempWidgetObj.getOtherTemp().getMinTempX()-19,tempWidgetObj.getOtherTemp().getMinTempY()-19,photoPaint);
-
-
                                }
                            }
                        }

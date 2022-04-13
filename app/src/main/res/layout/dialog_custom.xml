@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dimen_200dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_margin="@dimen/dimen_20dp"
+    android:background="@drawable/app_dialog_bg"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/dimen_6dp"
+        android:lines="1"
+        android:textColor="@color/black"
+        android:textSize="@dimen/dimen_16sp" />
+    <TextView
+        android:id="@+id/tvContent"
+        android:textColor="@color/black"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dimen_16dp"
+        android:lineSpacingMultiplier="1" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dimen_20dp"
+        android:layout_marginTop="@dimen/dimen_10dp"
+        android:layout_marginRight="@dimen/dimen_20dp"
+        android:layout_marginBottom="@dimen/dimen_10dp"
+        android:gravity="center_horizontal">
+        <TextView
+            android:id="@+id/btnConfirm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/dimen_10dp"
+            android:paddingBottom="@dimen/dimen_10dp"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:text="@string/pop_update_now"
+            android:textSize="@dimen/dimen_16sp"
+            android:textColor="@color/white"
+            android:background="@drawable/btn_confirm_selector"/>
+        <TextView
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_2dp"
+            android:paddingTop="@dimen/dimen_10dp"
+            android:paddingBottom="@dimen/dimen_10dp"
+            android:paddingLeft="@dimen/dimen_16dp"
+            android:paddingRight="@dimen/dimen_16dp"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:text="@string/pop_ignore"
+            android:textSize="@dimen/dimen_16sp"
+            android:textColor="@color/btn_cancel_color_selector" />
+    </LinearLayout>
+
+</LinearLayout>
