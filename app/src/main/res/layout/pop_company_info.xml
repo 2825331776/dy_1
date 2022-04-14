@@ -3,12 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_180dp"
+        android:layout_height="@dimen/dimen_150dp"
         android:paddingStart="@dimen/dimen_20dp"
         android:paddingEnd="@dimen/dimen_20dp"
         android:background="@drawable/bg_main_preview_setting_pop">
@@ -39,7 +38,7 @@
             android:id="@+id/tv_website"
             app:layout_constraintLeft_toLeftOf="@id/tv_company_name"
             app:layout_constraintTop_toBottomOf="@id/tv_company_name"
-            android:layout_marginTop="@dimen/dimen_5dp"
+            android:layout_marginTop="@dimen/dimen_10dp"
             android:textSize="@dimen/dimen_16sp"
             android:textColor="@color/white"
             android:text="@string/CompanyWebsite_info"
@@ -59,27 +58,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 <!--版本号-->
-        <TextView
-            android:id="@+id/tv_version_name_info"
-            app:layout_constraintTop_toBottomOf="@id/tv_company_website"
-            app:layout_constraintStart_toStartOf="@id/tv_company_name"
-            android:text="@string/VersionName"
-            android:textSize="@dimen/dimen_16sp"
-            android:layout_marginTop="@dimen/dimen_10dp"
-            android:textColor="@color/white"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tv_version_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/tv_version_name_info"
-            app:layout_constraintBottom_toBottomOf="@id/tv_version_name_info"
-            app:layout_constraintLeft_toRightOf="@id/tv_version_name_info"
-            android:text="@string/value_zero"
-            android:textSize="@dimen/dimen_16sp"
-            android:layout_marginStart="@dimen/dimen_5dp"
-            android:textColor="@color/white"/>
+<!--        <TextView-->
+<!--            android:id="@+id/tv_version_name_info"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/tv_company_website"-->
+<!--            app:layout_constraintStart_toStartOf="@id/tv_company_name"-->
+<!--            android:text="@string/VersionName"-->
+<!--            android:textSize="@dimen/dimen_16sp"-->
+<!--            android:layout_marginTop="@dimen/dimen_10dp"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content" />-->
+<!--        <TextView-->
+<!--            android:id="@+id/tv_version_name"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintTop_toTopOf="@id/tv_version_name_info"-->
+<!--            app:layout_constraintBottom_toBottomOf="@id/tv_version_name_info"-->
+<!--            app:layout_constraintLeft_toRightOf="@id/tv_version_name_info"-->
+<!--            android:text="@string/value_zero"-->
+<!--            android:textSize="@dimen/dimen_16sp"-->
+<!--            android:layout_marginStart="@dimen/dimen_5dp"-->
+<!--            android:textColor="@color/white"/>-->
 <!--        联系我们-->
         <TextView
             android:id="@+id/tv_contactus"
@@ -89,8 +88,8 @@
             android:textSize="@dimen/dimen_16sp"
             android:layout_marginTop="@dimen/dimen_10dp"
             android:layout_marginBottom="@dimen/dimen_10dp"
-            app:layout_constraintLeft_toLeftOf="@id/tv_version_name_info"
-            app:layout_constraintTop_toBottomOf="@id/tv_version_name"
+            app:layout_constraintLeft_toLeftOf="@id/tv_website"
+            app:layout_constraintTop_toBottomOf="@id/tv_website"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <TextView

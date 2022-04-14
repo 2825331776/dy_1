@@ -1,75 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-<!--        <variable-->
-<!--            name="pf"-->
-<!--            type="com.dyt.wcc.dytpir.ui.preview.PreviewFragment" />-->
+        <!--        <variable-->
+        <!--            name="pf"-->
+        <!--            type="com.dyt.wcc.dytpir.ui.preview.PreviewFragment" />-->
 
-<!--        <variable-->
-<!--            name="previewViewModel"-->
-<!--            type="com.dyt.wcc.dytpir.ui.preview.PreViewViewModel" />-->
+        <!--        <variable-->
+        <!--            name="previewViewModel"-->
+        <!--            type="com.dyt.wcc.dytpir.ui.preview.PreViewViewModel" />-->
 
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:gravity="center"
-        android:background="@color/bg_preview_right"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/bg_preview_right"
+        android:gravity="center">
         <!--横向引导线-->
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/gl_percent1"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.125"/>
+            app:layout_constraintGuide_percent="0.125" />
+
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/gl_percent2"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.275"/>
+            app:layout_constraintGuide_percent="0.275" />
+
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/gl_percent3"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.425"/>
+            app:layout_constraintGuide_percent="0.425" />
+
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/gl_percent4"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.575"/>
+            app:layout_constraintGuide_percent="0.575" />
+
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/gl_percent5"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.725"/>
+            app:layout_constraintGuide_percent="0.725" />
+
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/gl_percent6"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.875"/>
+            app:layout_constraintGuide_percent="0.875" />
         <!--        纵向 引导线-->
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/gl_main_left"
             android:layout_width="@dimen/dimen_1dp"
             android:layout_height="0dp"
-            app:layout_constraintGuide_begin="@dimen/dimen_60dp"
-            android:orientation="vertical"/>
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="@dimen/dimen_60dp" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/gl_main_right"
             android:layout_width="@dimen/dimen_1dp"
             android:layout_height="0dp"
-            app:layout_constraintGuide_end="@dimen/dimen_60dp"
-            android:orientation="vertical"/>
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="@dimen/dimen_60dp" />
 
         <!--        左侧 设置 公司信息 清除 拍照三连-->
         <!--      设置-->
@@ -79,66 +84,66 @@
             android:layout_height="@dimen/dimen_40dp"
             android:layout_marginTop="@dimen/dimen_15dp"
             android:background="@drawable/selector_main_preview_setting"
+            android:button="@null"
+            app:layout_constraintBottom_toBottomOf="@id/gl_percent1"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/gl_main_left"
             app:layout_constraintTop_toTopOf="@id/gl_percent1"
-            app:layout_constraintBottom_toBottomOf="@id/gl_percent1"
-            android:button="@null"
             tools:ignore="ContentDescription" />
         <!--            公司信息-->
         <CheckBox
             android:id="@+id/iv_preview_left_company_info"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/gl_main_left"
-            app:layout_constraintTop_toTopOf="@id/gl_percent2"
-            app:layout_constraintBottom_toBottomOf="@id/gl_percent2"
             android:layout_width="@dimen/dimen_40dp"
             android:layout_height="@dimen/dimen_40dp"
+            android:layout_centerInParent="true"
             android:layout_margin="@dimen/dimen_15dp"
             android:background="@drawable/selector_main_preview_aboutus"
             android:button="@null"
-            android:layout_centerInParent="true"/>
+            app:layout_constraintBottom_toBottomOf="@id/gl_percent2"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/gl_main_left"
+            app:layout_constraintTop_toTopOf="@id/gl_percent2" />
         <!--           清除-->
         <CheckBox
             android:id="@+id/iv_preview_left_Reset"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/gl_main_left"
-            app:layout_constraintTop_toTopOf="@id/gl_percent3"
-            app:layout_constraintBottom_toBottomOf="@id/gl_percent3"
             android:layout_width="@dimen/dimen_40dp"
             android:layout_height="@dimen/dimen_40dp"
             android:layout_margin="@dimen/dimen_15dp"
             android:background="@drawable/selector_main_preview_clear"
             android:button="@null"
-            tools:ignore="ContentDescription"/>
-<!--        android:onClick="@{pf::toClear}"-->
+            app:layout_constraintBottom_toBottomOf="@id/gl_percent3"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/gl_main_left"
+            app:layout_constraintTop_toTopOf="@id/gl_percent3"
+            tools:ignore="ContentDescription" />
+        <!--        android:onClick="@{pf::toClear}"-->
         <!--                拍照-->
         <CheckBox
             android:id="@+id/iv_preview_left_takePhoto"
             android:layout_width="@dimen/dimen_40dp"
             android:layout_height="@dimen/dimen_40dp"
             android:layout_margin="@dimen/dimen_15dp"
-            app:layout_constraintTop_toTopOf="@id/gl_percent4"
-            app:layout_constraintBottom_toBottomOf="@id/gl_percent4"
-            app:layout_constraintRight_toLeftOf="@id/gl_main_left"
-            app:layout_constraintLeft_toLeftOf="parent"
+            android:background="@drawable/selector_main_preview_takephoto"
             android:button="@null"
-            android:background="@drawable/selector_main_preview_takephoto"/>
+            app:layout_constraintBottom_toBottomOf="@id/gl_percent4"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/gl_main_left"
+            app:layout_constraintTop_toTopOf="@id/gl_percent4" />
         <!--            android:onClick="@{pf::toImage}"-->
         <!--           录制-->
         <Button
             android:id="@+id/bt_preview_left_record"
-            app:layout_constraintTop_toTopOf="@id/gl_percent5"
-            app:layout_constraintBottom_toBottomOf="@id/gl_percent5"
-            app:layout_constraintRight_toLeftOf="@id/gl_main_left"
-            app:layout_constraintLeft_toLeftOf="parent"
             android:layout_width="@dimen/dimen_40dp"
             android:layout_height="@dimen/dimen_40dp"
             android:layout_margin="@dimen/dimen_15dp"
-
+            android:background="@drawable/selector_main_preview_record"
             android:button="@null"
-            android:background="@drawable/selector_main_preview_record"/>
-<!--        android:onClick="@{pf::toRecord}"-->
+            app:layout_constraintBottom_toBottomOf="@id/gl_percent5"
+            app:layout_constraintLeft_toLeftOf="parent"
+
+            app:layout_constraintRight_toLeftOf="@id/gl_main_left"
+            app:layout_constraintTop_toTopOf="@id/gl_percent5" />
+        <!--        android:onClick="@{pf::toRecord}"-->
         <!--            相册-->
         <CheckBox
             android:id="@+id/iv_preview_left_gallery"
@@ -146,80 +151,81 @@
             android:layout_height="@dimen/dimen_40dp"
             android:layout_marginTop="@dimen/dimen_15dp"
             android:layout_marginBottom="@dimen/dimen_15dp"
-            app:layout_constraintRight_toLeftOf="@id/gl_main_left"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@id/gl_percent6"
-            app:layout_constraintBottom_toBottomOf="@id/gl_percent6"
             android:background="@drawable/selector_main_preview_gallery"
-            android:button="@null"/>
-<!--        android:onClick="@{pf::toGallery}"-->
+            android:button="@null"
+            app:layout_constraintBottom_toBottomOf="@id/gl_percent6"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/gl_main_left"
+            app:layout_constraintTop_toTopOf="@id/gl_percent6" />
+        <!--        android:onClick="@{pf::toGallery}"-->
         <!--左侧 分割线-->
         <TextView
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="@id/gl_main_left"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="@dimen/dimen_1dp"
+            android:layout_height="match_parent"
             android:layout_marginEnd="1dp"
             android:background="@color/bg_preview_left_cutoff_rule"
-            android:layout_width="@dimen/dimen_1dp"
-            android:layout_height="match_parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="@id/gl_main_left"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!--        预览区-->
         <FrameLayout
             android:id="@+id/fl_preview"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:background="@color/bg_preview_right"
             app:layout_constraintLeft_toRightOf="@id/gl_main_left"
-            app:layout_constraintRight_toLeftOf="@id/tv_line2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent">
+            app:layout_constraintRight_toLeftOf="@id/tv_line2">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-<!--                OTG提示语句-->
-<!--                <TextView-->
-<!--                    android:id="@+id/tv_preview_hint"-->
-<!--                    android:textColorHint="@color/white"-->
-<!--                    android:textSize="@dimen/dimen_16sp"-->
-<!--                    android:background="@color/black"-->
-<!--                    android:hint="@string/preview_hint_not_connect"-->
-<!--                    app:layout_constraintTop_toTopOf="parent"-->
-<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                    app:layout_constraintLeft_toLeftOf="parent"-->
-<!--                    app:layout_constraintRight_toRightOf="parent"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"/>-->
+                <!--                OTG提示语句-->
+                <!--                <TextView-->
+                <!--                    android:id="@+id/tv_preview_hint"-->
+                <!--                    android:textColorHint="@color/white"-->
+                <!--                    android:textSize="@dimen/dimen_16sp"-->
+                <!--                    android:background="@color/black"-->
+                <!--                    android:hint="@string/preview_hint_not_connect"-->
+                <!--                    app:layout_constraintTop_toTopOf="parent"-->
+                <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+                <!--                    app:layout_constraintLeft_toLeftOf="parent"-->
+                <!--                    app:layout_constraintRight_toRightOf="parent"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"/>-->
 
                 <com.dyt.wcc.cameracommon.widget.UVCCameraTextureView
                     android:id="@+id/textureView_preview_activity"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="4:3"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintDimensionRatio="4:3"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"/>
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <com.dyt.wcc.common.widget.dragView.DragTempContainer
                     android:id="@+id/dragTempContainer_preview_fragment"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="#00000000"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="4:3"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintDimensionRatio="4:3"
-                    android:background="#00000000"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <!--        计时器-->
                 <Chronometer
-                    app:layout_constraintLeft_toLeftOf="@id/textureView_preview_activity"
-                    app:layout_constraintBottom_toBottomOf="@id/textureView_preview_activity"
                     android:id="@+id/chronometer_RecordTime_Info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
-                    android:visibility="invisible"
                     android:textColor="@color/red"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@id/textureView_preview_activity"
+                    app:layout_constraintLeft_toLeftOf="@id/textureView_preview_activity" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </FrameLayout>
@@ -228,11 +234,12 @@
         <!--        测试按钮-->
         <Button
             android:id="@+id/btTest01"
-            android:text="TEST01"
-            app:layout_constraintTop_toTopOf="@id/ll_container_preview_seekbar"
-            app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="TEST01"
+            android:visibility="invisible"
+            app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"
+            app:layout_constraintTop_toTopOf="@id/ll_container_preview_seekbar" />
         <!--        打挡-->
         <!--        <Button-->
         <!--            android:id="@+id/btTest02"-->
@@ -245,30 +252,30 @@
         <!--        分割线-->
         <TextView
             android:id="@+id/tv_line2"
-            app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"
-            android:layout_marginEnd="@dimen/dimen_1dp"
             android:layout_width="@dimen/dimen_1dp"
             android:layout_height="match_parent"
-            android:background="@color/bg_preview_left_cutoff_rule"/>
+            android:layout_marginEnd="@dimen/dimen_1dp"
+            android:background="@color/bg_preview_left_cutoff_rule"
+            app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar" />
 
         <!--        拖动条布局-->
         <LinearLayout
             android:id="@+id/ll_container_preview_seekbar"
-            android:layout_height="match_parent"
             android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/dimen_2dp"
             android:layout_marginRight="@dimen/dimen_2dp"
-            app:layout_constraintTop_toTopOf="parent"
+            android:background="@color/bg_preview_right"
+            android:gravity="center"
+            android:orientation="horizontal"
             app:layout_constraintLeft_toRightOf="@id/fl_preview"
             app:layout_constraintRight_toLeftOf="@id/gl_main_right"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:background="@color/bg_preview_right">
+            app:layout_constraintTop_toTopOf="parent">
 
             <com.dyt.wcc.common.widget.MyCustomRangeSeekBar
                 android:id="@+id/custom_seekbar_preview_fragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
         </LinearLayout>
 
         <!--        右侧 色板等 按钮布局-->
@@ -287,10 +294,10 @@
             android:layout_height="@dimen/dimen_40dp"
             android:background="@drawable/selector_main_preview_palette"
             android:button="@null"
-            app:layout_constraintTop_toTopOf="@id/gl_percent1"
             app:layout_constraintBottom_toBottomOf="@id/gl_percent1"
             app:layout_constraintLeft_toRightOf="@id/gl_main_right"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/gl_percent1"
             tools:ignore="ContentDescription" />
         <!--            测温模式-->
         <CheckBox
@@ -299,10 +306,10 @@
             android:layout_height="@dimen/dimen_40dp"
             android:background="@drawable/selector_main_preview_measuretemp"
             android:button="@null"
-            app:layout_constraintTop_toTopOf="@id/gl_percent2"
             app:layout_constraintBottom_toBottomOf="@id/gl_percent2"
             app:layout_constraintLeft_toRightOf="@id/gl_main_right"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/gl_percent2"
             tools:ignore="ContentDescription" />
 
         <!--        高 低 中心点 温度追踪-->
@@ -312,11 +319,10 @@
             android:layout_height="@dimen/dimen_40dp"
             android:background="@drawable/selector_main_preview_highlowtrace"
             android:button="@null"
-            app:layout_constraintTop_toTopOf="@id/gl_percent3"
             app:layout_constraintBottom_toBottomOf="@id/gl_percent3"
             app:layout_constraintLeft_toRightOf="@id/gl_main_right"
             app:layout_constraintRight_toRightOf="parent"
-            />
+            app:layout_constraintTop_toTopOf="@id/gl_percent3" />
         <!--框内细查-->
         <Button
             android:id="@+id/toggle_area_check"
@@ -324,11 +330,10 @@
             android:layout_height="@dimen/dimen_40dp"
             android:background="@drawable/selector_main_preview_areacheck"
             android:button="@null"
-            app:layout_constraintTop_toTopOf="@id/gl_percent4"
             app:layout_constraintBottom_toBottomOf="@id/gl_percent4"
             app:layout_constraintLeft_toRightOf="@id/gl_main_right"
             app:layout_constraintRight_toRightOf="parent"
-            />
+            app:layout_constraintTop_toTopOf="@id/gl_percent4" />
         <!--            超温报警-->
         <Button
             android:id="@+id/toggle_high_temp_alarm"
@@ -336,10 +341,10 @@
             android:layout_height="@dimen/dimen_40dp"
             android:background="@drawable/selector_main_preview_overtempalarm"
             android:button="@null"
-            app:layout_constraintTop_toTopOf="@id/gl_percent5"
             app:layout_constraintBottom_toBottomOf="@id/gl_percent5"
             app:layout_constraintLeft_toRightOf="@id/gl_main_right"
-            app:layout_constraintRight_toRightOf="parent"/>
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/gl_percent5" />
 
         <!--            固定温度条-->
         <Button
@@ -348,10 +353,10 @@
             android:layout_height="@dimen/dimen_40dp"
             android:background="@drawable/selector_main_preview_fixtempstrip"
             android:button="@null"
-            app:layout_constraintTop_toTopOf="@id/gl_percent6"
             app:layout_constraintBottom_toBottomOf="@id/gl_percent6"
             app:layout_constraintLeft_toRightOf="@id/gl_main_right"
-            app:layout_constraintRight_toRightOf="parent"/>
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/gl_percent6" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

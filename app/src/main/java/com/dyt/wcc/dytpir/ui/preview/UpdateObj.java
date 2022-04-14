@@ -8,7 +8,7 @@ package com.dyt.wcc.dytpir.ui.preview;
  * <p>PackagePath: com.dyt.wcc.dytpir.ui.preview     </p>
  */
 public class UpdateObj {
-	private int appVersionCode;
+	private int    appVersionCode;
 	private String appVersionName;
 	private String describe;
 	//不带有.apk 后缀的

@@ -74,12 +74,9 @@ public class PreviewPhotosAdapter extends RecyclerView.Adapter<PreviewPhotosAdap
 
         holder.tvFileName.setText(String.format("%s", photos.get(position).name));
 
-//        Log.e(TAG, "onBindViewHolder: =========" + photos.get(position).time);
-//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd hh:mm");
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd hh:mm", Locale.US);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.US);
         // Create a calendar object that will convert the date and time value in milliseconds to date.
         Calendar calendar = Calendar.getInstance();
-//        Log.e(TAG, "onBindViewHolder: ===NOW===" +  calendar.getTime().getTime());
         calendar.setTimeInMillis( photos.get(position).time * 1000 );
         holder.tvShootingTime.setText(String.format("%s", formatter.format(calendar.getTime())));
 

@@ -14,13 +14,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -40,7 +38,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
 
 import com.dyt.wcc.cameracommon.encoder.MediaMuxerWrapper;
@@ -84,7 +81,6 @@ import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 import com.zhihu.matisse.Matisse;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -154,7 +150,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 					View view = LayoutInflater.from(mContext.get()).inflate(R.layout.dialog_custom, null);
 					TextView tvTitle = view.findViewById(R.id.tvTitle);
-					tvTitle.setText(String.format(getString(R.string.pop_version) + " %s->%s", BuildConfig.VERSION_NAME, updateObjList.get(maxIndex).getAppVersionName()));
+					tvTitle.setText(String.format(getString(R.string.pop_version) + "V%s", updateObjList.get(maxIndex).getAppVersionName()));
 					TextView tvContent = view.findViewById(R.id.tvContent);
 					tvContent.setVisibility(View.GONE);
 					//					tvContent.setText("1、新增某某功能、\n2、修改某某问题、\n3、优化某某BUG、");
@@ -353,7 +349,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);//每隔一分钟打一次快门
 					if (mUvcCameraHandler != null)
 						mUvcCameraHandler.whenShutRefresh();
-					if (isDebug)Log.e(TAG, "每隔60s执行一次操作");
+					if (isDebug)
+						Log.e(TAG, "每隔60s执行一次操作");
 				}
 			}, 500, 600000);
 		}
@@ -384,7 +381,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					mDataBinding.toggleHighTempAlarm.setSelected(false);
 
 					mDataBinding.customSeekbarPreviewFragment.setWidgetMode(0);
-					mDataBinding.customSeekbarPreviewFragment.setPalette(0);
+					mDataBinding.customSeekbarPreviewFragment.setPalette(sp.getInt(DYConstants.PALETTE_NUMBER, 1) - 1);
 					mDataBinding.customSeekbarPreviewFragment.invalidate();
 					mDataBinding.toggleFixedTempBar.setSelected(false);
 					if (mUvcCameraHandler != null) {
@@ -482,7 +479,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			}
 		});
 
-		paletteType = 1;
+		paletteType = sp.getInt(DYConstants.PALETTE_NUMBER, 1);
 		mUvcCameraHandler.PreparePalette(palettePath, paletteType);
 		mUvcCameraHandler.setAreaCheck(0);
 
@@ -511,46 +508,45 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	private static final int REQUEST_CODE_UNKNOWN_APP = 10085;
 
-	private void installApk (String path) {
-		File file = new File(path);
-		if (file.exists()) {
-			Intent installApkIntent = new Intent();
-			installApkIntent.setAction(Intent.ACTION_VIEW);
-			installApkIntent.addCategory(Intent.CATEGORY_DEFAULT);
-			installApkIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			//适配8.0需要有权限
-
-			//			Log.e(TAG, "installApk:  +Build.VERSION.SDK_INT  " + Build.VERSION.SDK_INT);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-				boolean hasInstallPermission = getPackageManager().canRequestPackageInstalls();
-				//				Log.e(TAG, "installApk:  +  " + hasInstallPermission);
-				if (hasInstallPermission) {
-					//安装应用
-					installApkIntent.setDataAndType(FileProvider.getUriForFile(getApplicationContext(), getPackageName() + ".FileProvider", file), "application/vnd.android.package-archive");
-					installApkIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-					if (getPackageManager().queryIntentActivities(installApkIntent, 0).size() > 0) {
-						startActivity(installApkIntent);
-					}
-				} else {
-					//跳转至“安装未知应用”权限界面，引导用户开启权限
-					Uri selfPackageUri = Uri.parse("package:" + this.getPackageName());
-					Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, selfPackageUri);
-					startActivityForResult(intent, REQUEST_CODE_UNKNOWN_APP);
-				}
-			} else {
-				if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-					installApkIntent.setDataAndType(FileProvider.getUriForFile(getApplicationContext(), getPackageName() + ".FileProvider", file), "application/vnd.android.package-archive");
-					installApkIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-				} else {
-					installApkIntent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
-				}
-				if (getPackageManager().queryIntentActivities(installApkIntent, 0).size() > 0) {
-					startActivity(installApkIntent);
-				}
-			}
-			//			file.delete();
-		}
-	}
+	//	private void installApk (String path) {
+	//		File file = new File(path);
+	//		if (file.exists()) {
+	//			Intent installApkIntent = new Intent();
+	//			installApkIntent.setAction(Intent.ACTION_VIEW);
+	//			installApkIntent.addCategory(Intent.CATEGORY_DEFAULT);
+	//			installApkIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	//			//适配8.0需要有权限
+	//			//			Log.e(TAG, "installApk:  +Build.VERSION.SDK_INT  " + Build.VERSION.SDK_INT);
+	//			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+	//				boolean hasInstallPermission = getPackageManager().canRequestPackageInstalls();
+	//				//				Log.e(TAG, "installApk:  +  " + hasInstallPermission);
+	//				if (hasInstallPermission) {
+	//					//安装应用
+	//					installApkIntent.setDataAndType(FileProvider.getUriForFile(getApplicationContext(), getPackageName() + ".FileProvider", file), "application/vnd.android.package-archive");
+	//					installApkIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+	//					if (getPackageManager().queryIntentActivities(installApkIntent, 0).size() > 0) {
+	//						startActivity(installApkIntent);
+	//					}
+	//				} else {
+	//					//跳转至“安装未知应用”权限界面，引导用户开启权限
+	//					Uri selfPackageUri = Uri.parse("package:" + this.getPackageName());
+	//					Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, selfPackageUri);
+	//					startActivityForResult(intent, REQUEST_CODE_UNKNOWN_APP);
+	//				}
+	//			} else {
+	//				if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+	//					installApkIntent.setDataAndType(FileProvider.getUriForFile(getApplicationContext(), getPackageName() + ".FileProvider", file), "application/vnd.android.package-archive");
+	//					installApkIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+	//				} else {
+	//					installApkIntent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+	//				}
+	//				if (getPackageManager().queryIntentActivities(installApkIntent, 0).size() > 0) {
+	//					startActivity(installApkIntent);
+	//				}
+	//			}
+	//			//			file.delete();
+	//		}
+	//	}
 
 
 	/**
@@ -599,13 +595,14 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE, 3);
 				}
 			}, 0);
-			handler0.postDelayed(new Runnable() {
-				@Override
-				public void run () {
-					//					result = sendS0Order(DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE,DYConstants.SETTING_HUMIDITY_INT);
-					defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE, 4);
-				}
-			}, 200);
+			//S0的湿度，对应大气透过率
+			//			handler0.postDelayed(new Runnable() {
+			//				@Override
+			//				public void run () {
+			//					//					result = sendS0Order(DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE,DYConstants.SETTING_HUMIDITY_INT);
+			//					defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE, 4);
+			//				}
+			//			}, 200);
 			handler0.postDelayed(new Runnable() {
 				@Override
 				public void run () {
@@ -831,7 +828,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
 				if (allGranted) {//基本权限被授予之后才能初始化监听器。
 					mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);//
-//					if (isDebug)Log.e(TAG, "onResult: mFontSize ==========> " + mFontSize);
+					//					if (isDebug)Log.e(TAG, "onResult: mFontSize ==========> " + mFontSize);
 					//					Log.e(TAG, "initView:  ==444444= " + System.currentTimeMillis());
 					AssetCopyer.copyAllAssets(DYTApplication.getInstance(), mContext.get().getExternalFilesDir(null).getAbsolutePath());
 					//		Log.e(TAG,"===========getExternalFilesDir=========="+this.getExternalFilesDir(null).getAbsolutePath());
@@ -858,7 +855,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					//		Log.e(TAG, "initView:  ==222222= " + System.currentTimeMillis());
 					mDataBinding.customSeekbarPreviewFragment.setmProgressBarSelectBgList(bitmaps);
 					//		Log.e(TAG, "initView: sp.get Palette_Number = " + sp.getInt(DYConstants.PALETTE_NUMBER,0));
-					mDataBinding.customSeekbarPreviewFragment.setPalette(0);
+					mDataBinding.customSeekbarPreviewFragment.setPalette(sp.getInt(DYConstants.PALETTE_NUMBER, 1) - 1);
 					initListener();
 
 					initRecord();
@@ -923,22 +920,22 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-//						for (byte data : tau_data) {
-//							Log.i(TAG, "run: tau_data => " + data);
-//						}
+						//						for (byte data : tau_data) {
+						//							Log.i(TAG, "run: tau_data => " + data);
+						//						}
 						char[] the_data = toChar(tau_data);
 
-//						char [] data = "tau_H.bin".toCharArray();
-//						Log.e(TAG, "run: the_data =======> " + Arrays.toString(the_data));
+						//						char [] data = "tau_H.bin".toCharArray();
+						//						Log.e(TAG, "run: the_data =======> " + Arrays.toString(the_data));
 						float hum = 1;
 						float oldTemp = 25;
 						float distance = 0.25f;
 						char[] tagArray = new char[1];
-						float value = TinyCUtils.getLUT( oldTemp, hum, distance, the_data, tagArray);
-						Log.e(TAG, "run: ======value" +value);
-//						for (char a : tagArray) {
-//							Log.e(TAG, "run:  a = > " + (int) a);
-//						}
+						float value = TinyCUtils.getLUT(oldTemp, hum, distance, the_data, tagArray);
+						Log.e(TAG, "run: ======value" + value);
+						//						for (char a : tagArray) {
+						//							Log.e(TAG, "run:  a = > " + (int) a);
+						//						}
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run () {
@@ -1177,7 +1174,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					if (mDataBinding.btPreviewLeftRecord.isSelected() && mUvcCameraHandler.isRecording()) {//停止录制
 						stopTimer();
 						mUvcCameraHandler.stopRecording();
-					} else if (!mDataBinding.btPreviewLeftRecord.isSelected() && !mUvcCameraHandler.isRecording() && mUvcCameraHandler.isPreviewing()) {//开始录制
+					} else if (!mDataBinding.btPreviewLeftRecord.isSelected() && !mUvcCameraHandler.isRecording() && mUvcCameraHandler.snRightIsPreviewing()) {//开始录制
 						startTimer();
 						mUvcCameraHandler.startRecording(sp.getInt(DYConstants.RECORD_AUDIO_SETTING, 1));
 					} else {
@@ -1207,7 +1204,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			}
 		});
 
-
 		//设置弹窗
 		mDataBinding.ivPreviewRightSetting.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -1234,10 +1230,17 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 				PopSettingBinding popSettingBinding = DataBindingUtil.bind(view);
 				assert popSettingBinding != null;
+				popSettingBinding.tvCheckVersionInfo.setText(String.format(getString(R.string.setting_check_version_info), BuildConfig.VERSION_NAME));
 				//设置单位
 				popSettingBinding.tvCameraSettingReviseUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
 				popSettingBinding.tvCameraSettingReflectUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
 				popSettingBinding.tvCameraSettingFreeAirTempUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
+
+				if (mPid == 1 && mVid == 5396) {
+					popSettingBinding.tvCameraSettingHumidity.setVisibility(View.VISIBLE);
+				} else if (mPid == 22592 && mVid == 3034) {
+					popSettingBinding.tvCameraSettingHumidity.setVisibility(View.GONE);
+				}
 
 				popSettingBinding.tvCheckVersion.setOnClickListener(new View.OnClickListener() {
 					@Override
@@ -1298,6 +1301,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 										message.what = MSG_CHECK_UPDATE;
 										message.obj = updateObjList;
 										mHandler.sendMessage(message);
+									} else {//已经为最新版本
+										runOnUiThread(new Runnable() {
+											@Override
+											public void run () {
+												showToast(R.string.toast_already_latest_version);
+											}
+										});
 									}
 								} catch (IOException | PackageManager.NameNotFoundException e) {
 									e.printStackTrace();
@@ -1309,24 +1319,69 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				//第二步：将获取的数据 展示在输入框内
 				if (cameraParams != null) {
 					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(cameraParams.get(DYConstants.setting_emittance)));//发射率 0-1
-					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_humidity) * 100)));//湿度 0-100
+
 					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(cameraParams.get(DYConstants.setting_correction)));//校正  -20 - 20
 					popSettingBinding.etCameraSettingReflect.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_reflect) * 1)));//反射温度 -10-40
 					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_environment) * 1)));//环境温度 -10 -40
+
+					if (mPid == 1 && mVid == 5396) {
+						popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_humidity) * 100)));//湿度 0-100
+						//湿度设置
+						popSettingBinding.etCameraSettingHumidity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+							@Override
+							public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
+								//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+								if (actionId == EditorInfo.IME_ACTION_DONE) {
+									if (TextUtils.isEmpty(v.getText().toString()))
+										return true;
+									int value = Integer.parseInt(v.getText().toString());
+									if (value > 100 || value < 0) {
+										//									showToast("取值范围(0-100)");
+										showToast(getString(R.string.toast_range_int, 0, 100));
+										return true;
+									}
+									float fvalue = value / 100.0f;
+									//								byte[] iputEm = new byte[4];
+									//								ByteUtil.putFloat(iputEm,fvalue,0);
+									if (mUvcCameraHandler != null) {
+										if (mPid == 1 && mVid == 5396) {
+											sendS0Order(fvalue, DYConstants.SETTING_HUMIDITY_INT);
+											//										mSendCommand.sendFloatCommand(DYConstants.SETTING_HUMIDITY_INT, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
+											//												20, 40, 60, 80, 120);
+										}
+										//									else if (mPid == 22592 && mVid == 3034) {
+										//										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, fvalue, 4);
+										//									}
+										popSettingBinding.etCameraSettingHumidity.setText(String.format(Locale.US, "%d", value));
+										sp.edit().putFloat(DYConstants.setting_humidity, fvalue).apply();
+										showToast(R.string.toast_complete_Humidity);
+									}
+									hideInput(v.getWindowToken());
+								}
+								return true;
+							}
+						});
+					} else if (mPid == 22592 && mVid == 3034) {
+
+					}
+
+					//TODO 设置机芯的默认值;
 					popSettingBinding.btSettingDefault.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick (View v) {
 							//							Log.e(TAG, "defaultSettingReturn  =b=====> " + defaultSettingReturn);
-							//TODO 设置机芯的默认值;
 							toSettingDefault();
+							if (mPid == 1 && mVid == 5396) {
+								popSettingBinding.etCameraSettingHumidity.setText(String.format(Locale.CHINESE, "%s", (int) (100 * DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE)));
+								sp.edit().putFloat(DYConstants.setting_humidity, DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE).apply();
+							}
+
 							if (true) {
 								popSettingBinding.etCameraSettingReflect.setText(String.format(Locale.CHINESE, "%d", DYConstants.SETTING_REFLECT_DEFAULT_VALUE));
 								popSettingBinding.etCameraSettingRevise.setText(String.format(Locale.CHINESE, "%s", DYConstants.SETTING_CORRECTION_DEFAULT_VALUE));
 								popSettingBinding.etCameraSettingEmittance.setText(String.format(Locale.CHINESE, "%s", DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE));
 								popSettingBinding.etCameraSettingFreeAirTemp.setText(String.format(Locale.CHINESE, "%d", DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE));
-								popSettingBinding.etCameraSettingHumidity.setText(String.format(Locale.CHINESE, "%s", (int) (100 * DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE)));
 
-								sp.edit().putFloat(DYConstants.setting_humidity, DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE).apply();
 								sp.edit().putFloat(DYConstants.setting_environment, DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE).apply();
 								sp.edit().putFloat(DYConstants.setting_reflect, DYConstants.SETTING_REFLECT_DEFAULT_VALUE).apply();
 								sp.edit().putFloat(DYConstants.setting_emittance, DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE).apply();
@@ -1499,48 +1554,16 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 							return true;
 						}
 					});
-					//湿度设置
-					popSettingBinding.etCameraSettingHumidity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-						@Override
-						public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
-							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
-							if (actionId == EditorInfo.IME_ACTION_DONE) {
-								if (TextUtils.isEmpty(v.getText().toString()))
-									return true;
-								int value = Integer.parseInt(v.getText().toString());
-								if (value > 100 || value < 0) {
-									//									showToast("取值范围(0-100)");
-									showToast(getString(R.string.toast_range_int, 0, 100));
-									return true;
-								}
-								float fvalue = value / 100.0f;
-								//								byte[] iputEm = new byte[4];
-								//								ByteUtil.putFloat(iputEm,fvalue,0);
-								if (mUvcCameraHandler != null) {
-									if (mPid == 1 && mVid == 5396) {
-										sendS0Order(fvalue, DYConstants.SETTING_HUMIDITY_INT);
-										//										mSendCommand.sendFloatCommand(DYConstants.SETTING_HUMIDITY_INT, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
-										//												20, 40, 60, 80, 120);
-									} else if (mPid == 22592 && mVid == 3034) {
-										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, fvalue, 4);
-									}
-									popSettingBinding.etCameraSettingHumidity.setText(String.format(Locale.US, "%d", value));
-									sp.edit().putFloat(DYConstants.setting_humidity, fvalue).apply();
-									showToast(R.string.toast_complete_Humidity);
-								}
-								hideInput(v.getWindowToken());
-							}
-							return true;
-						}
-					});
-				} else {//未连接机芯
-					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(sp.getFloat(DYConstants.setting_emittance, 0)));//发射率 0-1
-					//					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(sp.getFloat(DYConstants.setting_distance,0)));//距离 0-5
-					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int) (sp.getFloat(DYConstants.setting_humidity, 0) * 100)));//湿度 0-100
-					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(sp.getFloat(DYConstants.setting_correction, 0)));//修正 -3 -3
-					popSettingBinding.etCameraSettingReflect.setText(String.valueOf(sp.getFloat(DYConstants.setting_reflect, 0)));//反射温度 -10-40
-					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf(sp.getFloat(DYConstants.setting_environment, 0)));//环境温度 -10 -40
+
 				}
+				//				else {//未连接机芯
+				//					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(sp.getFloat(DYConstants.setting_emittance, 0)));//发射率 0-1
+				//					//					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(sp.getFloat(DYConstants.setting_distance,0)));//距离 0-5
+				//					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int) (sp.getFloat(DYConstants.setting_humidity, 0) * 100)));//湿度 0-100
+				//					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(sp.getFloat(DYConstants.setting_correction, 0)));//修正 -3 -3
+				//					popSettingBinding.etCameraSettingReflect.setText(String.valueOf(sp.getFloat(DYConstants.setting_reflect, 0)));//反射温度 -10-40
+				//					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf(sp.getFloat(DYConstants.setting_environment, 0)));//环境温度 -10 -40
+				//				}
 
 				int temp_unit = sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0);
 				//第三步：初始化自定义控件 温度单位 设置
@@ -1633,7 +1656,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_company_info, null);
 				PopCompanyInfoBinding popCompanyInfoBinding = DataBindingUtil.bind(view);
 				assert popCompanyInfoBinding != null;
-				popCompanyInfoBinding.tvVersionName.setText(String.format("%s", LanguageUtils.getVersionName(mContext.get())));
+				//				popCompanyInfoBinding.tvVersionName.setText(String.format("%s", LanguageUtils.getVersionName(mContext.get())));
 				popCompanyInfoBinding.tvContactusEmail.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
 				popCompanyInfoBinding.tvContactusEmail.setOnClickListener(new View.OnClickListener() {
 					@Override
@@ -1723,26 +1746,33 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	View.OnClickListener                   paletteChoiceListener      = v -> {
 		switch (v.getId()) {
 			case R.id.palette_layout_Tiehong:
+				//				sp.edit().putInt(DYConstants.PALETTE_NUMBER,1).apply();
 				setPalette(0);
+
 				//					if (isDebug)showToast("palette_layout_Tiehong ");
 				break;
 			case R.id.palette_layout_Caihong:
+				//				sp.edit().putInt(DYConstants.PALETTE_NUMBER,2).apply();
 				setPalette(1);
 				//					if (isDebug)showToast("palette_layout_Caihong ");
 				break;
 			case R.id.palette_layout_Hongre:
+				//				sp.edit().putInt(DYConstants.PALETTE_NUMBER,3).apply();
 				setPalette(2);
 				//					if (isDebug)showToast("palette_layout_Hongre ");
 				break;
 			case R.id.palette_layout_Heire:
+				//				sp.edit().putInt(DYConstants.PALETTE_NUMBER,4).apply();
 				setPalette(3);
 				//					if (isDebug)showToast("palette_layout_Heire ");
 				break;
 			case R.id.palette_layout_Baire:
+				//				sp.edit().putInt(DYConstants.PALETTE_NUMBER,5).apply();
 				setPalette(4);
 				//					if (isDebug)showToast("palette_layout_Baire ");
 				break;
 			case R.id.palette_layout_Lenglan:
+				//				sp.edit().putInt(DYConstants.PALETTE_NUMBER,6).apply();
 				setPalette(5);
 				//					if (isDebug)showToast("palette_layout_Lenglan ");
 				break;
@@ -1945,6 +1975,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			allPopupWindows.dismiss();
 		}
 		if (mUvcCameraHandler != null && mUvcCameraHandler.isPreviewing() && id < 6) {
+			sp.edit().putInt(DYConstants.PALETTE_NUMBER, id + 1).apply();
 			mUvcCameraHandler.setPalette(id + 1);
 			mDataBinding.customSeekbarPreviewFragment.setPalette(id);
 			mDataBinding.customSeekbarPreviewFragment.invalidate();//刷新控件

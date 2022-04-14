@@ -10,10 +10,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.dyt.wcc.common.utils.TempConvertUtils;
 import com.dyt.wcc.common.widget.NumberPickerView;
 import com.dyt.wcc.common.widget.dragView.DragTempContainer;
 import com.dyt.wcc.dytpir.R;
-import com.dyt.wcc.common.utils.TempConvertUtils;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -24,28 +24,32 @@ import com.dyt.wcc.common.utils.TempConvertUtils;
  * <p>PackagePath: com.dyt.wcc.dytpir.ui.preview     </p>
  */
 public class OverTempDialog extends Dialog implements NumberPickerView.OnValueChangeListener {
-	private static final String TAG = "OverTempDialog";
-	private NumberPickerView numberPickerView_hundreds;//百位
-	private NumberPickerView numberPickerView_decade;//十位
-	private NumberPickerView numberPickerView_unit;//个位
-	private NumberPickerView numberPickerView_decimal;//小数位
-	private float mValue;//数值
-	private Button bt_confirm;//确认按钮
-	private Button bt_cancel;
-	private int mType = 0 ; // 温度的类型 ： 0 摄氏度， 1 华氏度， 2 开氏度
-	private SetCompleteListener  mListener;
-	private TextView tv_unit;
+	private static final String              TAG   = "OverTempDialog";
+	private              NumberPickerView    numberPickerView_hundreds;//百位
+	private              NumberPickerView    numberPickerView_decade;//十位
+	private              NumberPickerView    numberPickerView_unit;//个位
+	private              NumberPickerView    numberPickerView_decimal;//小数位
+	private              float               mValue;//数值
+	private              Button              bt_confirm;//确认按钮
+	private              Button              bt_cancel;
+	private              int                 mType = 0; // 温度的类型 ： 0 摄氏度， 1 华氏度， 2 开氏度
+	private              SetCompleteListener mListener;
+	private              TextView            tv_unit;
 
-	private String [] ranges = new String[]{"0","1","2","3","4","5","6","7","8","9"};
+	private String[] ranges = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
 
-	public OverTempDialog (@NonNull Context context,float oldValue , int type) {
+	public OverTempDialog (@NonNull Context context, float oldValue, int type) {
 		super(context);
-		if (type < DragTempContainer.tempSuffixList.length){
+		if (type < DragTempContainer.tempSuffixList.length) {
 			this.mType = type;
-		}else {mType = 0;}
-		mValue = TempConvertUtils.centigrade2Temp(oldValue,mType);
-		if (mValue < 0 ){mValue = 0.0f;}
+		} else {
+			mType = 0;
+		}
+		mValue = TempConvertUtils.centigrade2Temp(oldValue, mType);
+		if (mValue < 0) {
+			mValue = 0.0f;
+		}
 		Log.e(TAG, "OverTempDialog: " + oldValue);
 	}
 
@@ -57,13 +61,15 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 		this.mListener = listener;
 	}
 
-	interface SetCompleteListener{
+	interface SetCompleteListener {
 		/**
 		 * 设置超温警告的温度， 数值的单位为： 摄氏度。
+		 *
 		 * @param setValue float 类型的 摄氏度
 		 */
-		void onSetComplete(float setValue);
-		void onCancelListener();
+		void onSetComplete (float setValue);
+
+		void onCancelListener ();
 	}
 
 
@@ -77,7 +83,7 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 	}
 
 
-	private void initView(){
+	private void initView () {
 		numberPickerView_hundreds = findViewById(R.id.numberPicker_hundreds_main_preview_overTemp_pop);
 		numberPickerView_decade = findViewById(R.id.numberPicker_decade_main_preview_overTemp_pop);
 		numberPickerView_unit = findViewById(R.id.numberPicker_unit_main_preview_overTemp_pop);
@@ -87,7 +93,7 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 		tv_unit = findViewById(R.id.tv_main_preview_ovetemp_pop_unit);
 	}
 
-	private void initData(){
+	private void initData () {
 		numberPickerView_hundreds.refreshByNewDisplayedValues(ranges);
 		numberPickerView_decade.refreshByNewDisplayedValues(ranges);
 		numberPickerView_unit.refreshByNewDisplayedValues(ranges);
@@ -98,24 +104,26 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 		numberPickerView_unit.setOnValueChangedListener(this);
 		numberPickerView_decimal.setOnValueChangedListener(this);
 
-		numberPickerView_hundreds.setValue((int)mValue/100);
-		numberPickerView_decade.setValue((int)mValue%100/10);
-		numberPickerView_unit.setValue((int)mValue%10);
-		numberPickerView_decimal.setValue((int)(mValue*10)%10);
+		numberPickerView_hundreds.setValue((int) mValue / 100);
+		numberPickerView_decade.setValue((int) mValue % 100 / 10);
+		numberPickerView_unit.setValue((int) mValue % 10);
+		numberPickerView_decimal.setValue((int) (mValue * 10) % 10);
 		tv_unit.setText(DragTempContainer.tempSuffixList[mType]);
 
 		bt_confirm.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-//				Log.e(TAG, "onClick:   value  = > " + mValue  + "  mode =  > " + mType );
-				if (mListener!= null)mListener.onSetComplete(TempConvertUtils.temp2Centigrade(mValue,mType));
+				//				Log.e(TAG, "onClick:   value  = > " + mValue  + "  mode =  > " + mType );
+				if (mListener != null)
+					mListener.onSetComplete(TempConvertUtils.temp2Centigrade(mValue, mType));
 				dismiss();
 			}
 		});
 		bt_cancel.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-				if (mListener!= null)mListener.onCancelListener();
+				if (mListener != null)
+					mListener.onCancelListener();
 				dismiss();
 			}
 		});
@@ -123,20 +131,20 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 
 	@Override
 	public void onValueChange (NumberPickerView picker, int oldVal, int newVal) {
-//		Toast.makeText(getContext(),picker.getDisplayedValues()[newVal - picker.getMinValue()],Toast.LENGTH_SHORT).show();
-		String value  = picker.getDisplayedValues()[newVal - picker.getMinValue()];
-		switch (picker.getId()){
+		//		Toast.makeText(getContext(),picker.getDisplayedValues()[newVal - picker.getMinValue()],Toast.LENGTH_SHORT).show();
+		String value = picker.getDisplayedValues()[newVal - picker.getMinValue()];
+		switch (picker.getId()) {
 			case R.id.numberPicker_hundreds_main_preview_overTemp_pop://百分更改
-				mValue = mValue % 100 + Float.parseFloat(value)*100;
+				mValue = mValue % 100 + Float.parseFloat(value) * 100;
 				break;
 			case R.id.numberPicker_decade_main_preview_overTemp_pop://十位更改， 第一部分：个位加小数。第二部分 为百位 ， 第三部分 十位更改后的值
-				mValue = mValue % 10 + ((int)mValue /100) *100 + Float.parseFloat(value)*10;
+				mValue = mValue % 10 + ((int) mValue / 100) * 100 + Float.parseFloat(value) * 10;
 				break;
 			case R.id.numberPicker_unit_main_preview_overTemp_pop://个位更改
-				mValue = (int)mValue/10 *10 + Float.parseFloat(value) + (mValue - (int )mValue);
+				mValue = (int) mValue / 10 * 10 + Float.parseFloat(value) + (mValue - (int) mValue);
 				break;
 			case R.id.numberPicker_decimal_main_preview_overTemp_pop://小数位更改
-				mValue = (int)mValue + Float.parseFloat(value)/10;
+				mValue = (int) mValue + Float.parseFloat(value) / 10;
 				break;
 		}
 	}

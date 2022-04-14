@@ -22,7 +22,7 @@
     <string name="cancel">Cancel</string>
     <string name="confirm">OK</string>
     <!--关于页面-->
-    <string name="check_updates">Check for updates</string>
+    <string name="check_updates">Upgrade</string>
     <string name="VersionName">Version: </string>
     <string name="contactUs">Contact us: </string>
     <string name="ContactEmail">service@dianytech.com</string>
@@ -46,6 +46,7 @@
     <string name="SettingCameraParams_FreeAirTemp">Ambient Temperature </string>
     <string name="SettingCameraParams_Humidity">Humidity (%)</string>
     <string name="SettingCameraParams_Reset">Default</string>
+    <string name="setting_check_version_info">App Version:%s</string>
 
     <string name="setting_language_chinese">Chinese</string>
     <string name="setting_language_english">English</string>
@@ -72,8 +73,9 @@
 
 
 <!--    更新操作-->
-    <string name="toast_downloading_background">Downloading in the background...</string>
-    <string name="pop_version">Version:</string>
+    <string name="toast_downloading_background">Downloading in the background…</string>
+    <string name="pop_version">The latest version:</string>
+    <string name="toast_already_latest_version">already the latest version</string>
     <string name="pop_update_now">Update now</string>
     <string name="pop_ignore">Ignore</string>
     <string name="value_zero">0.0</string>

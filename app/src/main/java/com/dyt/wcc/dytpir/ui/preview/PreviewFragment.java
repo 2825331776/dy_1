@@ -1038,7 +1038,7 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 							PopCompanyInfoBinding popCompanyInfoBinding = DataBindingUtil.bind(view);
 							assert popCompanyInfoBinding != null;
 							//							popCompanyInfoBinding.tvCheckVersion.setOnClickListener(chartModeCheckListener);
-							popCompanyInfoBinding.tvVersionName.setText(""+ LanguageUtils.getVersionName(mContext.get()));
+//							popCompanyInfoBinding.tvVersionName.setText(""+ LanguageUtils.getVersionName(mContext.get()));
 							popCompanyInfoBinding.tvContactusEmail.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
 							popCompanyInfoBinding.tvContactusEmail.setOnClickListener(new View.OnClickListener() {
 								@Override

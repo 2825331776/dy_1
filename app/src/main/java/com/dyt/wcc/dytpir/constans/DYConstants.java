@@ -24,7 +24,7 @@ public class DYConstants {
 	//发射率
 	public static final String setting_emittance = "setting_emittance";
 	public static final int SETTING_EMITTANCE_INT = 4 * 4;
-	public static final float SETTING_EMITTANCE_DEFAULT_VALUE = 0.98f;
+	public static final float SETTING_EMITTANCE_DEFAULT_VALUE = 1.00f;
 	//距离
 	public static final String setting_distance = "setting_distance";
 	public static final int SETTING_DISTANCE_INT = 5 * 4;
@@ -40,11 +40,11 @@ public class DYConstants {
 	//反射温度
 	public static final String setting_reflect = "setting_reflect";
 	public static final int SETTING_REFLECT_INT = 1 * 4;
-	public static final int SETTING_REFLECT_DEFAULT_VALUE = 25;
+	public static final int SETTING_REFLECT_DEFAULT_VALUE = 27;
 	//环境温度
 	public static final String setting_environment = "setting_environment";
 	public static final int SETTING_ENVIRONMENT_INT = 2 * 4;
-	public static final int SETTING_ENVIRONMENT_DEFAULT_VALUE = 25;
+	public static final int SETTING_ENVIRONMENT_DEFAULT_VALUE = 27;
 
 	public static final int CAMERA_DATA_MODE_8004 = 0x8004;
 	public static final int CAMERA_DATA_MODE_8005 = 0x8005;

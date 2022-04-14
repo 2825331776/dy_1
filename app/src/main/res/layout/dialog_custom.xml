@@ -41,7 +41,7 @@
             android:layout_weight="1"
             android:text="@string/pop_update_now"
             android:textSize="@dimen/dimen_16sp"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:background="@drawable/btn_confirm_selector"/>
         <TextView
             android:id="@+id/btnCancel"

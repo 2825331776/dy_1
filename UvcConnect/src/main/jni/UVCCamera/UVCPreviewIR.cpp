@@ -1354,9 +1354,10 @@ void UVCPreviewIR::draw_preview_one(uint8_t *frameData, ANativeWindow **window, 
 
     if (LIKELY(*window)) {
         if (mCurrentAndroidVersion == 0) {
-            RgbaHoldBuffer = mFrameImage->onePreviewData(frameData);
+            if(mFrameImage){
+                RgbaHoldBuffer = mFrameImage->onePreviewData(frameData);
+            }
         }
-
         copyToSurface(RgbaHoldBuffer, window);
     }
 }

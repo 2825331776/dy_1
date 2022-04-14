@@ -22,8 +22,6 @@ public class SettingPopupFragment extends DialogFragment {
 	@Override
 	public Dialog onCreateDialog (@Nullable Bundle savedInstanceState) {
 		return super.onCreateDialog(savedInstanceState);
-
-
 	}
 
 	@Nullable

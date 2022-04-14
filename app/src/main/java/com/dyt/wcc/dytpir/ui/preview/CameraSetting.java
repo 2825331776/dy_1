@@ -12,7 +12,7 @@ public class CameraSetting {
 	private boolean isShowAreaCheck;
 	private boolean isHighTempAlarm;
 
-	private int TempMode = -1;
+	private int TempMode    = -1;
 	private int PaletteMode = 0;
 
 }
