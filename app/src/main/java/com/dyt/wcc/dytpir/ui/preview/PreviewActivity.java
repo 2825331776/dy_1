@@ -12,6 +12,10 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,7 +37,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -139,6 +142,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private AppUpdater      mAppUpdater;
 	private int             maxIndex = 0;
 	private List<UpdateObj> updateObjList;
+	//传感器
+	private SensorManager   mSensorManager;
+	private Sensor          mMagneticSensor, mAccelerometerSensor;//磁场传感器，加速度传感器
 
 	private static final int     MSG_CHECK_UPDATE = 1;
 	private              Handler mHandler         = new Handler(new Handler.Callback() {
@@ -200,6 +206,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			if (BuildConfig.DEBUG)
 				Log.e(TAG, "onPause: 停止温度回调");
 		}
+		mSensorManager.unregisterListener(sensorEventListener,mAccelerometerSensor);
+		mSensorManager.unregisterListener(sensorEventListener,mMagneticSensor);
 		//解决去图库 拔出机芯闪退 2022年3月24日11:03:49
 		//		if (mUvcCameraHandler!=null){
 		//			mUvcCameraHandler.stopPreview();
@@ -270,6 +278,17 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		super.onDestroy();
 
 	}
+	private SensorEventListener sensorEventListener = new SensorEventListener() {
+		@Override
+		public void onSensorChanged (SensorEvent event) {
+//			Log.e(TAG, "onSensorChanged: " + event.sensor.getName());
+		}
+
+		@Override
+		public void onAccuracyChanged (Sensor sensor, int accuracy) {
+//			Log.e(TAG, "onAccuracyChanged: "+accuracy);
+		}
+	};
 
 	@Override
 	protected void onResume () {
@@ -277,6 +296,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			Log.e(TAG, "onResume: ");
 		if (mUsbMonitor != null && !mUsbMonitor.isRegistered()) {
 			mUsbMonitor.register();
+		}
+		if (mSensorManager!= null){
+			mSensorManager.registerListener(sensorEventListener,mAccelerometerSensor,SensorManager.SENSOR_DELAY_NORMAL);
+			mSensorManager.registerListener(sensorEventListener,mMagneticSensor,SensorManager.SENSOR_DELAY_NORMAL);
 		}
 
 		language = sp.getInt(DYConstants.LANGUAGE_SETTING, -1);
@@ -813,6 +836,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		screenHeight = dm.heightPixels;
 		mSendCommand = new SendCommand();
 
+		mSensorManager = (SensorManager) mContext.get().getSystemService(Context.SENSOR_SERVICE);
+		mMagneticSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+		mAccelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO).onExplainRequestReason(new ExplainReasonCallback() {
 			@Override
 			public void onExplainReason (@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
@@ -875,17 +902,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		});
 	}
 
-	public static char[] toChar (byte[] b) {
-		if (b == null) {
-			return null;
-		} else {
-			char[] returnData = new char[b.length / 2];
-			int i = 0;
-			for (int var3 = 0; i < b.length; returnData[var3++] = (char) ((b[i++] & 255) + ((b[i++] & 255) << 8))) {
-			}
-			return returnData;
-		}
-	}
+
 
 	/**
 	 * 初始化界面的监听器
@@ -923,27 +940,38 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						//						for (byte data : tau_data) {
 						//							Log.i(TAG, "run: tau_data => " + data);
 						//						}
-						char[] the_data = toChar(tau_data);
-
-						//						char [] data = "tau_H.bin".toCharArray();
-						//						Log.e(TAG, "run: the_data =======> " + Arrays.toString(the_data));
-						float hum = 1;
-						float oldTemp = 25;
-						float distance = 0.25f;
-						char[] tagArray = new char[1];
-						float value = TinyCUtils.getLUT(oldTemp, hum, distance, the_data, tagArray);
-						Log.e(TAG, "run: ======value" + value);
-						//						for (char a : tagArray) {
-						//							Log.e(TAG, "run:  a = > " + (int) a);
-						//						}
-						runOnUiThread(new Runnable() {
-							@Override
-							public void run () {
-								Toast.makeText(PreviewActivity.this, "read nuc success" + tau_data.length, Toast.LENGTH_SHORT).show();
-							}
-						});
+//						String binPath = mContext.get().getExternalFilesDir(null).getAbsolutePath() + File.separator+ "tau_H.bin";
+//						Log.e(TAG, "run:binPath =  "+ binPath);
+//						File file = new File(binPath);
+//						Log.e(TAG, "run: "+file.exists());
+//						char [] path = binPath.toCharArray();
+//						Log.e(TAG, "run:  path [] =" + Arrays.toString(path));
+//						char [] data = TinyCUtils.toChar(tau_data);
+						short[] shortArrayData = TinyCUtils.byte2Short(tau_data);
+						float hum = 100;
+						float oldTemp = 100;
+						float distance = 100;
+//						char [] re = new char[4];
+//						Libirtemp.read_tau(data,hum,oldTemp, distance,re);
+//						Log.e(TAG, "run: ======re =" + Arrays.toString(re));
+						short value = TinyCUtils.getLUT(oldTemp, hum, distance, shortArrayData);
+						Log.e(TAG, "run: ======value =" + value);
+//						Log.e(TAG, "run:  a 1= > " + (int) (re[0]));
+//						Log.e(TAG, "run:  a 2= > " + (int) (re[1]));
+//						Log.e(TAG, "run:  a 3= > " + (int) (re[2]));
+//						Log.e(TAG, "run:  a 4= > " + (int) (re[3]));
+//						for (int a : re) {
+//							Log.e(TAG, "run:  a = > " + (int) a);
+//						}
+//						runOnUiThread(new Runnable() {
+//							@Override
+//							public void run () {
+//								Toast.makeText(PreviewActivity.this, "read nuc success" + tau_data.length, Toast.LENGTH_SHORT).show();
+//							}
+//						});
 					}
 				}).start();
+//				setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
 
 			}
 		});
@@ -1330,24 +1358,18 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						popSettingBinding.etCameraSettingHumidity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 							@Override
 							public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
-								//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
 								if (actionId == EditorInfo.IME_ACTION_DONE) {
 									if (TextUtils.isEmpty(v.getText().toString()))
 										return true;
 									int value = Integer.parseInt(v.getText().toString());
 									if (value > 100 || value < 0) {
-										//									showToast("取值范围(0-100)");
 										showToast(getString(R.string.toast_range_int, 0, 100));
 										return true;
 									}
 									float fvalue = value / 100.0f;
-									//								byte[] iputEm = new byte[4];
-									//								ByteUtil.putFloat(iputEm,fvalue,0);
 									if (mUvcCameraHandler != null) {
 										if (mPid == 1 && mVid == 5396) {
 											sendS0Order(fvalue, DYConstants.SETTING_HUMIDITY_INT);
-											//										mSendCommand.sendFloatCommand(DYConstants.SETTING_HUMIDITY_INT, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
-											//												20, 40, 60, 80, 120);
 										}
 										//									else if (mPid == 22592 && mVid == 3034) {
 										//										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, fvalue, 4);
@@ -1369,13 +1391,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					popSettingBinding.btSettingDefault.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick (View v) {
-							//							Log.e(TAG, "defaultSettingReturn  =b=====> " + defaultSettingReturn);
 							toSettingDefault();
 							if (mPid == 1 && mVid == 5396) {
 								popSettingBinding.etCameraSettingHumidity.setText(String.format(Locale.CHINESE, "%s", (int) (100 * DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE)));
 								sp.edit().putFloat(DYConstants.setting_humidity, DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE).apply();
 							}
-
 							if (true) {
 								popSettingBinding.etCameraSettingReflect.setText(String.format(Locale.CHINESE, "%d", DYConstants.SETTING_REFLECT_DEFAULT_VALUE));
 								popSettingBinding.etCameraSettingRevise.setText(String.format(Locale.CHINESE, "%s", DYConstants.SETTING_CORRECTION_DEFAULT_VALUE));
@@ -1389,8 +1409,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 								mDataBinding.textureViewPreviewActivity.setTinyCCorrection(DYConstants.SETTING_CORRECTION_DEFAULT_VALUE);
 							}
-							//							Log.e(TAG, "defaultSettingReturn  =h=====> " + defaultSettingReturn);
-							//							defaultSettingReturn = -1;
 						}
 					});
 
@@ -1601,11 +1619,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					@Override
 					public void onDismiss () {
 						if (mUvcCameraHandler != null) {
-							//TinyC 保存
+							//TinyC 断电保存
 							if (mPid == 22592 && mVid == 3034) {
 								mUvcCameraHandler.tinySaveCameraParams();
-								//S0 断电保存
 							}
+							//S0 断电保存
 							if (mPid == 1 && mVid == 5396) {
 								setValue(UVCCamera.CTRL_ZOOM_ABS, 0x80ff);
 							}

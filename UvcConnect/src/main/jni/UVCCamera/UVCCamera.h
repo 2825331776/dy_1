@@ -173,6 +173,7 @@ class UVCCamera {
 		paramget_func_u8 get_func, paramset_func_u8 set_func);
 	int internalSetCtrlValue(control_value_t &values, uint8_t value1, uint8_t value2,
 		paramget_func_u8u8 get_func, paramset_func_u8u8 set_func);
+	//设置机芯参数，打挡8000，S0 切换8004 8005 指令   保存80ff指令
     int internalSetCtrlValue(control_value_t &values, int32_t value,paramset_func_u16 set_func);
 	int internalSetCtrlValue(control_value_t &values, int8_t value1, uint8_t value2,
 		paramget_func_i8u8 get_func, paramset_func_i8u8 set_func);

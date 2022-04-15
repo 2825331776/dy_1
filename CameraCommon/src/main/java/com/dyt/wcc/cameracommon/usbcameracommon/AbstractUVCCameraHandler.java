@@ -666,7 +666,7 @@ abstract class AbstractUVCCameraHandler extends Handler {
 //                return 1;
             }
         }
-        return 100;
+        return -10;
     }
 
     /**
