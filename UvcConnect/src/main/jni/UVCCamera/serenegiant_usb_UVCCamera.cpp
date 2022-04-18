@@ -128,11 +128,11 @@ static jboolean nativeSnRightIsPreviewing(JNIEnv *env , jobject thiz ,ID_TYPE id
 }
 
 //2022年4月7日11:53:52 吴长城 测试发送JNI指令
-static jboolean nativeJavaSendJniOrder(JNIEnv *env , jobject thiz ,ID_TYPE id_camera){
+static jboolean nativeJavaSendJniOrder(JNIEnv *env , jobject thiz ,ID_TYPE id_camera ,jint status){
 	bool result = JNI_ERR;
 	UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
 	if (LIKELY(camera)) {
-		result = camera -> javaSendJniOrder();
+		result = camera -> javaSendJniOrder(status);
 	}
 	RETURN(result,jboolean);
 }
@@ -2355,7 +2355,7 @@ jint registerNativeMethods(JNIEnv* env, const char *class_name, JNINativeMethod 
 
 static JNINativeMethod methods[] = {
 	////2022年4月7日11:53:52 吴长城 测试发送JNI指令
-	{"nativeJavaSendJniOrder","(J)Z",(void*)nativeJavaSendJniOrder},
+	{"nativeJavaSendJniOrder","(JI)Z",(void*)nativeJavaSendJniOrder},
 
 	////2022年3月24日16:10:35 吴长城 sn是否正确 并在预览中
 	{"nativeSnRightIsPreviewing","(J)Z",(void*)nativeSnRightIsPreviewing},

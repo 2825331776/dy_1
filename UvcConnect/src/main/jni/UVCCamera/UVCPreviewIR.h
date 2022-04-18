@@ -206,11 +206,17 @@ private:
     float mCbTemper[640 * 512 + 10];//回调给Java层的温度数据，大小是不是太大了
     unsigned short detectAvg;
 
-    //打挡策略
+    //打挡策略  只有在确定出了预览图之后生效
+    int general_block_strategy_frame_interval = 25 * 60 * 10;//十分钟
+    int all_frame_count = 0;//总帧率计数器
  	int newADValue;//现 打挡 AD值
  	int oldADValue;//旧 打挡 AD值
-// 	bool isNeedBlock = false;//是否 需要打挡
- 	int blockValueDifference = 15;//打挡的差值
+ 	//so 打挡的值
+ 	int s0_value_difference = 5;//打挡的差值
+ 	//TinyC 当打策略
+ 	int tinyC_frame_count = 0;
+ 	int tinyC_block_order_interval = 25;//读取指令间隔
+    int tinyC_block_value_difference = 5;//差值间隔
 
 public:
     UVCPreviewIR();

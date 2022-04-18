@@ -1114,12 +1114,18 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         data[5] = (dwStartAddr & 0x000000ff);
                         data[6] = (dataLen >> 8);
                         data[7] = (dataLen & 0xff);
-                        ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d00, data,
-                                                  sizeof(data), 1000);
+                        if (mDeviceHandle) {
+                            ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d00,
+                                                      data,
+                                                      sizeof(data), 1000);
+                        }
                         unsigned char status;
                         for (int index = 0; index < 1000; index++) {
-                            uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x0200, &status,
-                                                1, 1000);
+                            if (mDeviceHandle) {
+                                uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x0200,
+                                                    &status,
+                                                    1, 1000);
+                            }
                             if ((status & 0x01) == 0x00) {
                                 if ((status & 0x02) == 0x00) {
                                     break;
@@ -1128,8 +1134,10 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                                 }
                             }
                         }
-                        ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d08,
-                                                  readData, 15, 1000);
+                        if (mDeviceHandle) {
+                            ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d08,
+                                                      readData, 15, 1000);
+                        }
                         *(tinyUserSn + 15) = '\0';
 //                        LOGE("===================readData>>>>>>>>>%s<<<<<<<<<<<<<<<============",TinyUserSN);
                         unsigned char data2[8] = {0};
@@ -1141,12 +1149,18 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         data2[5] = 0x10;
                         data2[6] = 0x00;
                         data2[7] = 0x10;
-                        ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d00, data2,
-                                                  sizeof(data2), 1000);
+                        if (mDeviceHandle) {
+                            ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d00,
+                                                      data2,
+                                                      sizeof(data2), 1000);
+                        }
                         unsigned char status1;
                         for (int index = 0; index < 1000; index++) {
-                            uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x0200, &status1,
-                                                1, 1000);
+                            if (mDeviceHandle) {
+                                uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x0200,
+                                                    &status1,
+                                                    1, 1000);
+                            }
                             if ((status1 & 0x01) == 0x00) {
                                 if ((status1 & 0x02) == 0x00) {
                                     break;
@@ -1156,8 +1170,10 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                                 }
                             }
                         }
-                        ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d08,
-                                                  flashId, 15, 1000);
+                        if (mDeviceHandle) {
+                            ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d08,
+                                                      flashId, 15, 1000);
+                        }
 //                        LOGE("===================flashId>>>>>>>>>%s<<<<<<<<<<<<<<<============" , TinyRobotSn);
                         *(tinyRobotSn + 15) = '\0';
 
@@ -1175,9 +1191,13 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         //输出温度数据(AD值)
                         tinyC_data[0] = 0x0a;
                         tinyC_data[1] = 0x01;
-                        ret = uvc_diy_communicate(mDeviceHandle, tinyC_request_type, tinyC_bRequest,
-                                                  tinyC_wValue, tinyC_wIndex, tinyC_data,
-                                                  sizeof(tinyC_data), 1000);
+                        if (mDeviceHandle) {
+                            ret = uvc_diy_communicate(mDeviceHandle, tinyC_request_type,
+                                                      tinyC_bRequest,
+                                                      tinyC_wValue, tinyC_wIndex, tinyC_data,
+                                                      sizeof(tinyC_data), 1000);
+                        }
+
 //                        pthread_mutex_lock(&tinyC_send_order_mutex);
                         //获取 机器的SN 和 用户区的SN
 //                        LOGE("========tinyC_RobotSn_sixLast == %s =========",tinyC_UserSn_sixLast);
@@ -1293,6 +1313,13 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 //判断完了之后去 渲染成图
                 if (snIsRight) {//s0 的 sn 是否符合规定。SN 校验是正确的，  使用 HoldBuffer 去判定 S0是否需要打挡
                     draw_preview_one(HoldBuffer, &mPreviewWindow, NULL, 4);
+
+                    all_frame_count++;
+                    if (all_frame_count > general_block_strategy_frame_interval) {
+                        all_frame_count = 0;
+                        //打挡。
+                    }
+
                     if (mVid == 5396 && mPid == 1) {
                         unsigned short *tmp_buf = (unsigned short *) HoldBuffer;
                         int amountPixels1 = requestWidth * (requestHeight - 4);
@@ -1301,14 +1328,55 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         if (oldADValue == 0) {
                             oldADValue = tmp_buf[amountPixels1];
                         }
-                        if (abs(newADValue - oldADValue) >= blockValueDifference) {
+                        if (abs(newADValue - oldADValue) >= s0_value_difference) {
+                            LOGE("=====newADValue==%d====oldADValue===%d", newADValue, oldADValue);
                             //打挡指令
-                            uvc_set_zoom_abs(mDeviceHandle,0x8000);
+                            uvc_set_zoom_abs(mDeviceHandle, 0x8000);
                             oldADValue = newADValue;
                             mFrameImage->shutRefresh();
+                            all_frame_count = 0;
+
                         }
 //                        LOGE("=====newADValue==%d====oldADValue===%d",newADValue,oldADValue);
-                        tmp_buf =NULL;
+                        tmp_buf = NULL;
+                    }
+                    //TinyC 打挡策略
+                    if (mPid == 22592 && mVid == 3034) {
+//                        tinyC_frame_count++;
+//                        if (tinyC_frame_count > tinyC_block_order_interval) {
+//                            //获取指令。
+//                            unsigned char reData[2] = {0};
+//                            unsigned char data[8] = {0x0d, 0x8b, 0x00, 0x00, 0x00, 0x00, 0x00,
+//                                                     0x02};
+//                            if (mDeviceHandle) {
+//                                uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d00, data,
+//                                                    sizeof(data),
+//                                                    1000);
+//                                uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d08,
+//                                                    reData, sizeof(reData),
+//                                                    1000);
+//                            }
+//                            unsigned char reData2[2] = {0};
+//                            reData2[1] = reData[0];
+//                            reData2[0] = reData[1];
+//                            unsigned short *dd = (unsigned short *) reData2;
+////                            LOGE("================================ javaSendJniOrder=======dd====== %d======",*dd);
+//                            newADValue = *dd;
+//                            tinyC_frame_count = 0;
+//                            dd = NULL;
+//                        }
+//                        if (abs(newADValue - oldADValue) >= tinyC_block_value_difference) {
+////                            LOGE("=====newADValue==%d====oldADValue===%d", newADValue, oldADValue);
+//                            oldADValue = newADValue;
+//                            //打挡指令
+//                            unsigned char data[8] = {0x0d, 0xc1, 0x00, 0x00, 0x00, 0x00, 0x00,
+//                                                     0x00};
+//                            if (mDeviceHandle) {
+//                                uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078,
+//                                                    0x1d00, data, sizeof(data), 1000);
+//                            }
+//                            all_frame_count = 0;
+//                        }
                     }
                 }
                 tmp_buf = NULL;

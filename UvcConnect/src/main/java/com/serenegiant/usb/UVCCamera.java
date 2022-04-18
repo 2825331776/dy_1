@@ -1219,10 +1219,10 @@ public class UVCCamera {
 	}
 
 	//2022年4月7日11:53:52 吴长城 测试发送JNI指令
-	public boolean javaSendJniOrder(){
+	public boolean javaSendJniOrder(int status){
 		if (mCtrlBlock != null) {
 			Log.e(TAG, "javaSendJniOrder");
-			return nativeJavaSendJniOrder(mNativePtr);
+			return nativeJavaSendJniOrder(mNativePtr,status);
 		}
 		return false;
 	}
@@ -1318,7 +1318,7 @@ public class UVCCamera {
 		}
 	}
 	//2022年4月7日11:53:52 吴长城 测试发送JNI指令
-	private static final native boolean nativeJavaSendJniOrder(final long id_camera);
+	private static final native boolean nativeJavaSendJniOrder(final long id_camera,int status);
 	//2022年3月24日16:10:35 吴长城 sn是否正确 并在预览中
 	private static final native boolean nativeSnRightIsPreviewing(final long id_camera);
 	//add 吴长城

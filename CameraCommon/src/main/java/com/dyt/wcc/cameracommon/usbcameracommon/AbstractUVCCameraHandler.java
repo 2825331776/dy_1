@@ -204,11 +204,11 @@ abstract class AbstractUVCCameraHandler extends Handler {
     }
 
     //2022年4月7日11:53:52 吴长城 测试发送JNI指令
-    public boolean javaSendJniOrder(){
+    public boolean javaSendJniOrder(int status){
         if (BuildConfig.DEBUG)Log.e(TAG, "javaSendJniOrder: ");
         final CameraThread thread = mWeakThread.get();
         if ((thread != null) && (thread.mUVCCamera) != null) {
-            return thread.mUVCCamera.javaSendJniOrder();
+            return thread.mUVCCamera.javaSendJniOrder(status);
         }
         return false;
     }

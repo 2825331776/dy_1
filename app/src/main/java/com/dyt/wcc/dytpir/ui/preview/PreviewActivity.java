@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -69,7 +68,6 @@ import com.dyt.wcc.dytpir.utils.AssetCopyer;
 import com.dyt.wcc.dytpir.utils.ByteUtilsCC;
 import com.dyt.wcc.dytpir.utils.CreateBitmap;
 import com.dyt.wcc.dytpir.utils.LanguageUtils;
-import com.dyt.wcc.dytpir.utils.TinyCUtils;
 import com.huantansheng.easyphotos.EasyPhotos;
 import com.king.app.dialog.AppDialog;
 import com.king.app.updater.AppUpdater;
@@ -85,7 +83,6 @@ import com.serenegiant.usb.UVCCamera;
 import com.zhihu.matisse.Matisse;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,6 +97,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
+	//jni测试按钮状态记录
+	private int jni_status = 0;
+
 	private UVCCameraHandler   mUvcCameraHandler;
 	private Surface            stt;
 	private PopupWindow        PLRPopupWindows;//点线矩形测温弹窗
@@ -206,8 +206,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			if (BuildConfig.DEBUG)
 				Log.e(TAG, "onPause: 停止温度回调");
 		}
-		mSensorManager.unregisterListener(sensorEventListener,mAccelerometerSensor);
-		mSensorManager.unregisterListener(sensorEventListener,mMagneticSensor);
+		mSensorManager.unregisterListener(sensorEventListener, mAccelerometerSensor);
+		mSensorManager.unregisterListener(sensorEventListener, mMagneticSensor);
 		//解决去图库 拔出机芯闪退 2022年3月24日11:03:49
 		//		if (mUvcCameraHandler!=null){
 		//			mUvcCameraHandler.stopPreview();
@@ -278,15 +278,63 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		super.onDestroy();
 
 	}
+	private int sensorCount = 0;
 	private SensorEventListener sensorEventListener = new SensorEventListener() {
 		@Override
 		public void onSensorChanged (SensorEvent event) {
-//			Log.e(TAG, "onSensorChanged: " + event.sensor.getName());
+			if (sensorCount < 5){
+				sensorCount ++;
+			}else if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_MAGNETIC_FIELD)){
+				Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_MAGNETIC_FIELD");
+				float[] values = event.values;
+				//values[0]：方位角，手机绕着Z轴旋转的角度。0表示正北(North)，90表示正东(East)，
+				//180表示正南(South)，270表示正西(West)。假如values[0]的值刚好是这四个值的话，
+				//并且手机沿水平放置的话，那么当前手机的正前方就是这四个方向，可以利用这一点来
+				//写一个指南针。
+				Log.e(TAG, "====方位角: ===" + values[0]);
+				//			values[1]：倾斜角，手机翘起来的程度，当手机绕着x轴倾斜时该值会发生变化。取值
+				//			范围是[-180,180]之间。假如把手机放在桌面上，而桌面是完全水平的话，values1的则应该
+				//			是0，当然很少桌子是绝对水平的。从手机顶部开始抬起，直到手机沿着x轴旋转180(此时屏幕
+				//					乡下水平放在桌面上)。在这个旋转过程中，values[1]的值会从0到-180之间变化，即手机抬起
+				//			时，values1的值会逐渐变小，知道等于-180；而加入从手机底部开始抬起，直到手机沿着x轴
+				//			旋转180度，此时values[1]的值会从0到180之间变化。我们可以利用value[1]的这个特性结合
+				//			value[2]来实现一个平地尺。
+				Log.e(TAG, "====倾斜角: ===" + values[1]);
+				//			value[2]：滚动角，沿着Y轴的滚动角度，取值范围为：[-90,90]，假设将手机屏幕朝上水平放在
+				//			桌面上，这时如果桌面是平的，values2的值应为0。将手机从左侧逐渐抬起，values[2]的值将
+				//			逐渐减小，知道垂直于手机放置，此时values[2]的值为-90，从右侧则是0-90；加入在垂直位置
+				//			时继续向右或者向左滚动，values[2]的值将会继续在-90到90之间变化。
+				Log.e(TAG, "====滚动角: ===" + values[2]);
+				sensorCount = 0;
+			}
+//			else if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_ACCELEROMETER)){
+//				Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_ACCELEROMETER");
+//				float[] values = event.values;
+//				//values[0]：方位角，手机绕着Z轴旋转的角度。0表示正北(North)，90表示正东(East)，
+//				//180表示正南(South)，270表示正西(West)。假如values[0]的值刚好是这四个值的话，
+//				//并且手机沿水平放置的话，那么当前手机的正前方就是这四个方向，可以利用这一点来
+//				//写一个指南针。
+//				Log.e(TAG, "====方位角: ===" + values[0]);
+//				//			values[1]：倾斜角，手机翘起来的程度，当手机绕着x轴倾斜时该值会发生变化。取值
+//				//			范围是[-180,180]之间。假如把手机放在桌面上，而桌面是完全水平的话，values1的则应该
+//				//			是0，当然很少桌子是绝对水平的。从手机顶部开始抬起，直到手机沿着x轴旋转180(此时屏幕
+//				//					乡下水平放在桌面上)。在这个旋转过程中，values[1]的值会从0到-180之间变化，即手机抬起
+//				//			时，values1的值会逐渐变小，知道等于-180；而加入从手机底部开始抬起，直到手机沿着x轴
+//				//			旋转180度，此时values[1]的值会从0到180之间变化。我们可以利用value[1]的这个特性结合
+//				//			value[2]来实现一个平地尺。
+//				Log.e(TAG, "====倾斜角: ===" + values[1]);
+//				//			value[2]：滚动角，沿着Y轴的滚动角度，取值范围为：[-90,90]，假设将手机屏幕朝上水平放在
+//				//			桌面上，这时如果桌面是平的，values2的值应为0。将手机从左侧逐渐抬起，values[2]的值将
+//				//			逐渐减小，知道垂直于手机放置，此时values[2]的值为-90，从右侧则是0-90；加入在垂直位置
+//				//			时继续向右或者向左滚动，values[2]的值将会继续在-90到90之间变化。
+//				Log.e(TAG, "====滚动角: ===" + values[2]);
+//			}
+//			}
 		}
 
 		@Override
 		public void onAccuracyChanged (Sensor sensor, int accuracy) {
-//			Log.e(TAG, "onAccuracyChanged: "+accuracy);
+			//			Log.e(TAG, "onAccuracyChanged: "+accuracy);
 		}
 	};
 
@@ -297,9 +345,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		if (mUsbMonitor != null && !mUsbMonitor.isRegistered()) {
 			mUsbMonitor.register();
 		}
-		if (mSensorManager!= null){
-			mSensorManager.registerListener(sensorEventListener,mAccelerometerSensor,SensorManager.SENSOR_DELAY_NORMAL);
-			mSensorManager.registerListener(sensorEventListener,mMagneticSensor,SensorManager.SENSOR_DELAY_NORMAL);
+		if (mSensorManager != null) {
+			mSensorManager.registerListener(sensorEventListener, mAccelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+			mSensorManager.registerListener(sensorEventListener, mMagneticSensor, SensorManager.SENSOR_DELAY_NORMAL);
 		}
 
 		language = sp.getInt(DYConstants.LANGUAGE_SETTING, -1);
@@ -809,12 +857,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				configuration.setLayoutDirection(Locale.ENGLISH);
 				getResources().updateConfiguration(configuration, metrics);
 				break;
-			//			case 2:
-			//				sp.edit().putInt(DYConstants.LANGUAGE_SETTING, 2).commit();
-			//				configuration.locale = new Locale("ru", "RU");
-			//				getResources().updateConfiguration(configuration, metrics);
-			//				Log.e(TAG, "Language2:" + language);
-			//				break;
 		}
 
 		if (sp.getInt(DYConstants.FIRST_RUN, 1) == 0) {
@@ -839,6 +881,45 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mSensorManager = (SensorManager) mContext.get().getSystemService(Context.SENSOR_SERVICE);
 		mMagneticSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 		mAccelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+//		//获取当前设备支持的传感器列表
+//		List<Sensor> allSensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+//		StringBuilder sb = new StringBuilder();
+//		sb.append("当前设备支持传感器数：" + allSensors.size() + "   分别是：\n\n");
+//		for(Sensor s:allSensors){
+//			switch (s.getType()){
+//				case Sensor.TYPE_ACCELEROMETER:
+//					sb.append("加速度传感器(Accelerometer sensor)" + "\n");
+//					break;
+//				case Sensor.TYPE_GYROSCOPE:
+//					sb.append("陀螺仪传感器(Gyroscope sensor)" + "\n");
+//					break;
+//				case Sensor.TYPE_LIGHT:
+//					sb.append("光线传感器(Light sensor)" + "\n");
+//					break;
+//				case Sensor.TYPE_MAGNETIC_FIELD:
+//					sb.append("磁场传感器(Magnetic field sensor)" + "\n");
+//					break;
+//				case Sensor.TYPE_ORIENTATION:
+//					sb.append("方向传感器(Orientation sensor)" + "\n");
+//					break;
+//				case Sensor.TYPE_PRESSURE:
+//					sb.append("气压传感器(Pressure sensor)" + "\n");
+//					break;
+//				case Sensor.TYPE_PROXIMITY:
+//					sb.append("距离传感器(Proximity sensor)" + "\n");
+//					break;
+//				case Sensor.TYPE_TEMPERATURE:
+//					sb.append("温度传感器(Temperature sensor)" + "\n");
+//					break;
+//				default:
+//					sb.append("其他传感器" + "\n");
+//					break;
+//			}
+//			sb.append("设备名称：" + s.getName() + "\n 设备版本：" + s.getVersion() + "\n 供应商："
+//					+ s.getVendor() + "\n\n");
+//		}
+//		Log.e("TAG","sb.toString()----:"+sb.toString());
 
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO).onExplainRequestReason(new ExplainReasonCallback() {
 			@Override
@@ -903,7 +984,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	}
 
 
-
 	/**
 	 * 初始化界面的监听器
 	 */
@@ -917,61 +997,70 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				//					Log.e(TAG, "onClick: " + Locale.getDefault().getLanguage());
 				//					Log.e(TAG, "onClick: " + sp.getInt(DYConstants.LANGUAGE_SETTING,8));
 				//				}
+				boolean dd = false;
+				if (jni_status == 0) {
+					dd = mUvcCameraHandler.javaSendJniOrder(jni_status);
+					jni_status = 1;
+				} else {
+					dd = mUvcCameraHandler.javaSendJniOrder(jni_status);
+					jni_status = 0;
+				}
+				Log.e(TAG, "onClick: " + dd);
 
 				//*****************************************************************
 				//				Button bt = null;
 				//				bt.setText("111");
-				new Thread(new Runnable() {
-					@Override
-					public void run () {
-						AssetManager am = getAssets();
-						InputStream is;
-						try {
-							is = am.open("tau_H.bin");
-							int length = is.available();
-							tau_data = new byte[length];
-							if (is.read(tau_data) != length) {
-								Log.d(TAG, "read file fail ");
-							}
-							Log.d(TAG, "read file lenth " + length);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						//						for (byte data : tau_data) {
-						//							Log.i(TAG, "run: tau_data => " + data);
-						//						}
-//						String binPath = mContext.get().getExternalFilesDir(null).getAbsolutePath() + File.separator+ "tau_H.bin";
-//						Log.e(TAG, "run:binPath =  "+ binPath);
-//						File file = new File(binPath);
-//						Log.e(TAG, "run: "+file.exists());
-//						char [] path = binPath.toCharArray();
-//						Log.e(TAG, "run:  path [] =" + Arrays.toString(path));
-//						char [] data = TinyCUtils.toChar(tau_data);
-						short[] shortArrayData = TinyCUtils.byte2Short(tau_data);
-						float hum = 100;
-						float oldTemp = 100;
-						float distance = 100;
-//						char [] re = new char[4];
-//						Libirtemp.read_tau(data,hum,oldTemp, distance,re);
-//						Log.e(TAG, "run: ======re =" + Arrays.toString(re));
-						short value = TinyCUtils.getLUT(oldTemp, hum, distance, shortArrayData);
-						Log.e(TAG, "run: ======value =" + value);
-//						Log.e(TAG, "run:  a 1= > " + (int) (re[0]));
-//						Log.e(TAG, "run:  a 2= > " + (int) (re[1]));
-//						Log.e(TAG, "run:  a 3= > " + (int) (re[2]));
-//						Log.e(TAG, "run:  a 4= > " + (int) (re[3]));
-//						for (int a : re) {
-//							Log.e(TAG, "run:  a = > " + (int) a);
-//						}
-//						runOnUiThread(new Runnable() {
-//							@Override
-//							public void run () {
-//								Toast.makeText(PreviewActivity.this, "read nuc success" + tau_data.length, Toast.LENGTH_SHORT).show();
-//							}
-//						});
-					}
-				}).start();
-//				setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
+				//				new Thread(new Runnable() {
+				//					@Override
+				//					public void run () {
+				//						AssetManager am = getAssets();
+				//						InputStream is;
+				//						try {
+				//							is = am.open("tau_H.bin");
+				//							int length = is.available();
+				//							tau_data = new byte[length];
+				//							if (is.read(tau_data) != length) {
+				//								Log.d(TAG, "read file fail ");
+				//							}
+				//							Log.d(TAG, "read file lenth " + length);
+				//						} catch (IOException e) {
+				//							e.printStackTrace();
+				//						}
+				//						//						for (byte data : tau_data) {
+				//						//							Log.i(TAG, "run: tau_data => " + data);
+				//						//						}
+				////						String binPath = mContext.get().getExternalFilesDir(null).getAbsolutePath() + File.separator+ "tau_H.bin";
+				////						Log.e(TAG, "run:binPath =  "+ binPath);
+				////						File file = new File(binPath);
+				////						Log.e(TAG, "run: "+file.exists());
+				////						char [] path = binPath.toCharArray();
+				////						Log.e(TAG, "run:  path [] =" + Arrays.toString(path));
+				////						char [] data = TinyCUtils.toChar(tau_data);
+				//						short[] shortArrayData = TinyCUtils.byte2Short(tau_data);
+				//						float hum = 100;
+				//						float oldTemp = 100;
+				//						float distance = 100;
+				////						char [] re = new char[4];
+				////						Libirtemp.read_tau(data,hum,oldTemp, distance,re);
+				////						Log.e(TAG, "run: ======re =" + Arrays.toString(re));
+				//						short value = TinyCUtils.getLUT(oldTemp, hum, distance, shortArrayData);
+				//						Log.e(TAG, "run: ======value =" + value);
+				////						Log.e(TAG, "run:  a 1= > " + (int) (re[0]));
+				////						Log.e(TAG, "run:  a 2= > " + (int) (re[1]));
+				////						Log.e(TAG, "run:  a 3= > " + (int) (re[2]));
+				////						Log.e(TAG, "run:  a 4= > " + (int) (re[3]));
+				////						for (int a : re) {
+				////							Log.e(TAG, "run:  a = > " + (int) a);
+				////						}
+				////						runOnUiThread(new Runnable() {
+				////							@Override
+				////							public void run () {
+				////								Toast.makeText(PreviewActivity.this, "read nuc success" + tau_data.length, Toast.LENGTH_SHORT).show();
+				////							}
+				////						});
+				//					}
+				//				}).start();
+				//				setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
 
 			}
 		});

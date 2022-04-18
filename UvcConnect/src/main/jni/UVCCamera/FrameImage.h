@@ -97,6 +97,10 @@ private:
 	int mVid;
 	int mPid;
 
+	//读写文件的操作
+	int file_count = 0;
+	int file_count_limit = 50;
+	volatile bool isWriteFile = false;
 
 
 	/**********************录制*******************************/
@@ -110,6 +114,8 @@ public:
     FrameImage();
     FrameImage(uvc_device_handle_t *devh);
     ~FrameImage();
+    /*************************************测试函数**********************************/
+    bool setIsWriteFile(int status);
 
     /************************************操作 设置 类*********************************************/
     void setResourcePath(const char* path);//设置画板的资源路径
