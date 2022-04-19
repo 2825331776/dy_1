@@ -15,6 +15,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_main_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/bg_preview_right"
@@ -237,6 +238,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TEST01"
+            android:visibility="invisible"
             app:layout_constraintRight_toLeftOf="@id/ll_container_preview_seekbar"
             app:layout_constraintTop_toTopOf="@id/ll_container_preview_seekbar" />
         <!--        打挡-->
@@ -286,6 +288,17 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="@id/gl_main_right"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <!--        右侧按钮空布局-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_right_main_preview_empty"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/gl_main_right"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <!--            切换色板-->
         <CheckBox
             android:id="@+id/iv_preview_left_palette"

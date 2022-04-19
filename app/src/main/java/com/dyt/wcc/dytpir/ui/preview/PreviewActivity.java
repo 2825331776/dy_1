@@ -144,7 +144,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private List<UpdateObj> updateObjList;
 	//传感器
 	private SensorManager   mSensorManager;
-	private Sensor          mMagneticSensor, mAccelerometerSensor;//磁场传感器，加速度传感器
+	private Sensor          mAccelerometerSensor;//磁场传感器，加速度传感器 mMagneticSensor,
 
 	private static final int     MSG_CHECK_UPDATE = 1;
 	private              Handler mHandler         = new Handler(new Handler.Callback() {
@@ -207,7 +207,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				Log.e(TAG, "onPause: 停止温度回调");
 		}
 		mSensorManager.unregisterListener(sensorEventListener, mAccelerometerSensor);
-		mSensorManager.unregisterListener(sensorEventListener, mMagneticSensor);
+//		mSensorManager.unregisterListener(sensorEventListener, mMagneticSensor);
 		//解决去图库 拔出机芯闪退 2022年3月24日11:03:49
 		//		if (mUvcCameraHandler!=null){
 		//			mUvcCameraHandler.stopPreview();
@@ -278,20 +278,21 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		super.onDestroy();
 
 	}
-	private int sensorCount = 0;
+
+	private int                 sensorCount         = 0;
 	private SensorEventListener sensorEventListener = new SensorEventListener() {
 		@Override
 		public void onSensorChanged (SensorEvent event) {
-			if (sensorCount < 5){
-				sensorCount ++;
-			}else if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_MAGNETIC_FIELD)){
-				Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_MAGNETIC_FIELD");
-				float[] values = event.values;
+			if (sensorCount < 5) {
+				sensorCount++;
+			} else if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_MAGNETIC_FIELD)) {
+				//				Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_MAGNETIC_FIELD");
+				//				float[] values = event.values;
 				//values[0]：方位角，手机绕着Z轴旋转的角度。0表示正北(North)，90表示正东(East)，
 				//180表示正南(South)，270表示正西(West)。假如values[0]的值刚好是这四个值的话，
 				//并且手机沿水平放置的话，那么当前手机的正前方就是这四个方向，可以利用这一点来
 				//写一个指南针。
-				Log.e(TAG, "====方位角: ===" + values[0]);
+				//				Log.e(TAG, "====方位角: ===" + values[0]);
 				//			values[1]：倾斜角，手机翘起来的程度，当手机绕着x轴倾斜时该值会发生变化。取值
 				//			范围是[-180,180]之间。假如把手机放在桌面上，而桌面是完全水平的话，values1的则应该
 				//			是0，当然很少桌子是绝对水平的。从手机顶部开始抬起，直到手机沿着x轴旋转180(此时屏幕
@@ -299,37 +300,42 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				//			时，values1的值会逐渐变小，知道等于-180；而加入从手机底部开始抬起，直到手机沿着x轴
 				//			旋转180度，此时values[1]的值会从0到180之间变化。我们可以利用value[1]的这个特性结合
 				//			value[2]来实现一个平地尺。
-				Log.e(TAG, "====倾斜角: ===" + values[1]);
+				//				Log.e(TAG, "====倾斜角: ===" + values[1]);
 				//			value[2]：滚动角，沿着Y轴的滚动角度，取值范围为：[-90,90]，假设将手机屏幕朝上水平放在
 				//			桌面上，这时如果桌面是平的，values2的值应为0。将手机从左侧逐渐抬起，values[2]的值将
 				//			逐渐减小，知道垂直于手机放置，此时values[2]的值为-90，从右侧则是0-90；加入在垂直位置
 				//			时继续向右或者向左滚动，values[2]的值将会继续在-90到90之间变化。
-				Log.e(TAG, "====滚动角: ===" + values[2]);
-				sensorCount = 0;
+				//				Log.e(TAG, "====滚动角: ===" + values[2]);
+				//				sensorCount = 0;
+
+				//				SensorManager.getRotationMatrix()
+			} else if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_ACCELEROMETER)) {
+								Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_ACCELEROMETER");
+				float x = event.values[SensorManager.DATA_X];
+				float y = event.values[SensorManager.DATA_Y];
+				float z = event.values[SensorManager.DATA_Z];
+				relayout(x, y, z);
+				//				float[] values = event.values;
+				//				//values[0]：方位角，手机绕着Z轴旋转的角度。0表示正北(North)，90表示正东(East)，
+				//				//180表示正南(South)，270表示正西(West)。假如values[0]的值刚好是这四个值的话，
+				//				//并且手机沿水平放置的话，那么当前手机的正前方就是这四个方向，可以利用这一点来
+				//				//写一个指南针。
+				//				Log.e(TAG, "====方位角: ===" + values[0]);
+				//				//			values[1]：倾斜角，手机翘起来的程度，当手机绕着x轴倾斜时该值会发生变化。取值
+				//				//			范围是[-180,180]之间。假如把手机放在桌面上，而桌面是完全水平的话，values1的则应该
+				//				//			是0，当然很少桌子是绝对水平的。从手机顶部开始抬起，直到手机沿着x轴旋转180(此时屏幕
+				//				//					乡下水平放在桌面上)。在这个旋转过程中，values[1]的值会从0到-180之间变化，即手机抬起
+				//				//			时，values1的值会逐渐变小，知道等于-180；而加入从手机底部开始抬起，直到手机沿着x轴
+				//				//			旋转180度，此时values[1]的值会从0到180之间变化。我们可以利用value[1]的这个特性结合
+				//				//			value[2]来实现一个平地尺。
+				//				Log.e(TAG, "====倾斜角: ===" + values[1]);
+				//				//			value[2]：滚动角，沿着Y轴的滚动角度，取值范围为：[-90,90]，假设将手机屏幕朝上水平放在
+				//				//			桌面上，这时如果桌面是平的，values2的值应为0。将手机从左侧逐渐抬起，values[2]的值将
+				//				//			逐渐减小，知道垂直于手机放置，此时values[2]的值为-90，从右侧则是0-90；加入在垂直位置
+				//				//			时继续向右或者向左滚动，values[2]的值将会继续在-90到90之间变化。
+				//				Log.e(TAG, "====滚动角: ===" + values[2]);
 			}
-//			else if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_ACCELEROMETER)){
-//				Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_ACCELEROMETER");
-//				float[] values = event.values;
-//				//values[0]：方位角，手机绕着Z轴旋转的角度。0表示正北(North)，90表示正东(East)，
-//				//180表示正南(South)，270表示正西(West)。假如values[0]的值刚好是这四个值的话，
-//				//并且手机沿水平放置的话，那么当前手机的正前方就是这四个方向，可以利用这一点来
-//				//写一个指南针。
-//				Log.e(TAG, "====方位角: ===" + values[0]);
-//				//			values[1]：倾斜角，手机翘起来的程度，当手机绕着x轴倾斜时该值会发生变化。取值
-//				//			范围是[-180,180]之间。假如把手机放在桌面上，而桌面是完全水平的话，values1的则应该
-//				//			是0，当然很少桌子是绝对水平的。从手机顶部开始抬起，直到手机沿着x轴旋转180(此时屏幕
-//				//					乡下水平放在桌面上)。在这个旋转过程中，values[1]的值会从0到-180之间变化，即手机抬起
-//				//			时，values1的值会逐渐变小，知道等于-180；而加入从手机底部开始抬起，直到手机沿着x轴
-//				//			旋转180度，此时values[1]的值会从0到180之间变化。我们可以利用value[1]的这个特性结合
-//				//			value[2]来实现一个平地尺。
-//				Log.e(TAG, "====倾斜角: ===" + values[1]);
-//				//			value[2]：滚动角，沿着Y轴的滚动角度，取值范围为：[-90,90]，假设将手机屏幕朝上水平放在
-//				//			桌面上，这时如果桌面是平的，values2的值应为0。将手机从左侧逐渐抬起，values[2]的值将
-//				//			逐渐减小，知道垂直于手机放置，此时values[2]的值为-90，从右侧则是0-90；加入在垂直位置
-//				//			时继续向右或者向左滚动，values[2]的值将会继续在-90到90之间变化。
-//				Log.e(TAG, "====滚动角: ===" + values[2]);
-//			}
-//			}
+			//			}
 		}
 
 		@Override
@@ -337,6 +343,46 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			//			Log.e(TAG, "onAccuracyChanged: "+accuracy);
 		}
 	};
+	private int oldRotation = 0;
+	private void relayout(float x, float y, float z) {
+		if (x > -2.5 && x <= 2.5 && y > 7.5 && y <= 10 && oldRotation != 270) {
+			oldRotation = 270;
+			mDataBinding.clMainPreview.setRotation(0);
+			if (PLRPopupWindows!=null && PLRPopupWindows.isShowing()){
+				PLRPopupWindows.getContentView().setRotation(0);
+			}
+			if (allPopupWindows!=null && allPopupWindows.isShowing()){
+				allPopupWindows.getContentView().setRotation(0);
+			}
+		} else if (x > 7.5 && x <= 10 && y > -2.5 && y <= 2.5 && oldRotation != 0) {
+			oldRotation = 0;
+			mDataBinding.clMainPreview.setRotation(oldRotation);
+			if (PLRPopupWindows!=null && PLRPopupWindows.isShowing()){
+				PLRPopupWindows.getContentView().setRotation(0);
+			}
+			if (allPopupWindows!=null && allPopupWindows.isShowing()){
+				allPopupWindows.getContentView().setRotation(0);
+			}
+		}else if (x > -2.5 && x <= 2.5 && y > -10 && y <= -7.5 && oldRotation != 90) {
+			oldRotation = 90;
+			mDataBinding.clMainPreview.setRotation(180);
+			if (PLRPopupWindows!=null && PLRPopupWindows.isShowing()){
+				PLRPopupWindows.getContentView().setRotation(180);
+			}
+			if (allPopupWindows!=null && allPopupWindows.isShowing()){
+				allPopupWindows.getContentView().setRotation(180);
+			}
+		}else if (x > -10 && x <= -7.5 && y > -2.5 && y < 2.5 && oldRotation != 180) {
+			oldRotation = 180;
+			mDataBinding.clMainPreview.setRotation(180);
+			if (PLRPopupWindows!=null && PLRPopupWindows.isShowing()){
+				PLRPopupWindows.getContentView().setRotation(180);
+			}
+			if (allPopupWindows!=null && allPopupWindows.isShowing()){
+				allPopupWindows.getContentView().setRotation(180);
+			}
+		}
+	}
 
 	@Override
 	protected void onResume () {
@@ -347,7 +393,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		}
 		if (mSensorManager != null) {
 			mSensorManager.registerListener(sensorEventListener, mAccelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
-			mSensorManager.registerListener(sensorEventListener, mMagneticSensor, SensorManager.SENSOR_DELAY_NORMAL);
+//			mSensorManager.registerListener(sensorEventListener, mMagneticSensor, SensorManager.SENSOR_DELAY_NORMAL);
 		}
 
 		language = sp.getInt(DYConstants.LANGUAGE_SETTING, -1);
@@ -879,47 +925,47 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mSendCommand = new SendCommand();
 
 		mSensorManager = (SensorManager) mContext.get().getSystemService(Context.SENSOR_SERVICE);
-		mMagneticSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+//		mMagneticSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 		mAccelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-//		//获取当前设备支持的传感器列表
-//		List<Sensor> allSensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
-//		StringBuilder sb = new StringBuilder();
-//		sb.append("当前设备支持传感器数：" + allSensors.size() + "   分别是：\n\n");
-//		for(Sensor s:allSensors){
-//			switch (s.getType()){
-//				case Sensor.TYPE_ACCELEROMETER:
-//					sb.append("加速度传感器(Accelerometer sensor)" + "\n");
-//					break;
-//				case Sensor.TYPE_GYROSCOPE:
-//					sb.append("陀螺仪传感器(Gyroscope sensor)" + "\n");
-//					break;
-//				case Sensor.TYPE_LIGHT:
-//					sb.append("光线传感器(Light sensor)" + "\n");
-//					break;
-//				case Sensor.TYPE_MAGNETIC_FIELD:
-//					sb.append("磁场传感器(Magnetic field sensor)" + "\n");
-//					break;
-//				case Sensor.TYPE_ORIENTATION:
-//					sb.append("方向传感器(Orientation sensor)" + "\n");
-//					break;
-//				case Sensor.TYPE_PRESSURE:
-//					sb.append("气压传感器(Pressure sensor)" + "\n");
-//					break;
-//				case Sensor.TYPE_PROXIMITY:
-//					sb.append("距离传感器(Proximity sensor)" + "\n");
-//					break;
-//				case Sensor.TYPE_TEMPERATURE:
-//					sb.append("温度传感器(Temperature sensor)" + "\n");
-//					break;
-//				default:
-//					sb.append("其他传感器" + "\n");
-//					break;
-//			}
-//			sb.append("设备名称：" + s.getName() + "\n 设备版本：" + s.getVersion() + "\n 供应商："
-//					+ s.getVendor() + "\n\n");
-//		}
-//		Log.e("TAG","sb.toString()----:"+sb.toString());
+		//		//获取当前设备支持的传感器列表
+		//		List<Sensor> allSensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+		//		StringBuilder sb = new StringBuilder();
+		//		sb.append("当前设备支持传感器数：" + allSensors.size() + "   分别是：\n\n");
+		//		for(Sensor s:allSensors){
+		//			switch (s.getType()){
+		//				case Sensor.TYPE_ACCELEROMETER:
+		//					sb.append("加速度传感器(Accelerometer sensor)" + "\n");
+		//					break;
+		//				case Sensor.TYPE_GYROSCOPE:
+		//					sb.append("陀螺仪传感器(Gyroscope sensor)" + "\n");
+		//					break;
+		//				case Sensor.TYPE_LIGHT:
+		//					sb.append("光线传感器(Light sensor)" + "\n");
+		//					break;
+		//				case Sensor.TYPE_MAGNETIC_FIELD:
+		//					sb.append("磁场传感器(Magnetic field sensor)" + "\n");
+		//					break;
+		//				case Sensor.TYPE_ORIENTATION:
+		//					sb.append("方向传感器(Orientation sensor)" + "\n");
+		//					break;
+		//				case Sensor.TYPE_PRESSURE:
+		//					sb.append("气压传感器(Pressure sensor)" + "\n");
+		//					break;
+		//				case Sensor.TYPE_PROXIMITY:
+		//					sb.append("距离传感器(Proximity sensor)" + "\n");
+		//					break;
+		//				case Sensor.TYPE_TEMPERATURE:
+		//					sb.append("温度传感器(Temperature sensor)" + "\n");
+		//					break;
+		//				default:
+		//					sb.append("其他传感器" + "\n");
+		//					break;
+		//			}
+		//			sb.append("设备名称：" + s.getName() + "\n 设备版本：" + s.getVersion() + "\n 供应商："
+		//					+ s.getVendor() + "\n\n");
+		//		}
+		//		Log.e("TAG","sb.toString()----:"+sb.toString());
 
 		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO).onExplainRequestReason(new ExplainReasonCallback() {
 			@Override
@@ -1001,9 +1047,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				if (jni_status == 0) {
 					dd = mUvcCameraHandler.javaSendJniOrder(jni_status);
 					jni_status = 1;
+					mDataBinding.btTest01.setText("采集中");
 				} else {
 					dd = mUvcCameraHandler.javaSendJniOrder(jni_status);
 					jni_status = 0;
+					mDataBinding.btTest01.setText("终止");
 				}
 				Log.e(TAG, "onClick: " + dd);
 
@@ -1117,16 +1165,26 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				popPaletteChoice.paletteLayoutBaire.setOnClickListener(paletteChoiceListener);
 				popPaletteChoice.paletteLayoutLenglan.setOnClickListener(paletteChoiceListener);
 				//				showPopWindows(view,20,10,20);
-				allPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-				allPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-				allPopupWindows.setHeight(mDataBinding.llContainerPreviewSeekbar.getHeight());
-				allPopupWindows.setWidth(mDataBinding.llContainerPreviewSeekbar.getWidth());
+				PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+				PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+				PLRPopupWindows.setHeight(mDataBinding.llContainerPreviewSeekbar.getHeight());
+				PLRPopupWindows.setWidth(mDataBinding.llContainerPreviewSeekbar.getWidth());
 
-				allPopupWindows.setFocusable(false);
-				allPopupWindows.setOutsideTouchable(true);
-				allPopupWindows.setTouchable(true);
+				PLRPopupWindows.setFocusable(false);
+				PLRPopupWindows.setOutsideTouchable(true);
+				PLRPopupWindows.setTouchable(true);
 
-				allPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, 0, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+//				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, 0, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+				if (oldRotation == 90 || oldRotation == 180) {
+					int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
+					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+					PLRPopupWindows.getContentView().setRotation(180);
+				}
+				if (oldRotation == 0 || oldRotation == 270) {
+					int offsetX = 0;
+					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+					PLRPopupWindows.getContentView().setRotation(0);
+				}
 				//				}
 			}
 		});
@@ -1151,7 +1209,17 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			PLRPopupWindows.setOutsideTouchable(true);
 			PLRPopupWindows.setTouchable(true);
 
-			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, 0, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			if (oldRotation == 90 || oldRotation == 180) {
+				int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
+				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+				PLRPopupWindows.getContentView().setRotation(180);
+			}
+			if (oldRotation == 0 || oldRotation == 270) {
+				int offsetX = 0;
+				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+				PLRPopupWindows.getContentView().setRotation(0);
+			}
+//			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, 0, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 			//			}
 		});
 
@@ -1179,7 +1247,20 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			PLRPopupWindows.setOutsideTouchable(true);
 			PLRPopupWindows.setTouchable(true);
 
-			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, 0, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			if (oldRotation == 90 || oldRotation == 180) {
+				Log.e(TAG, "initListener: ===oldRotation == 90 || oldRotation == 180=====");
+				int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
+				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+				PLRPopupWindows.getContentView().setRotation(180);
+			}
+			if (oldRotation == 0 || oldRotation == 270) {
+				Log.e(TAG, "initListener: oldRotation == 0 || oldRotation == 270===");
+				int offsetX = 0;
+				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+				PLRPopupWindows.getContentView().setRotation(0);
+			}
+
+//			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, 0, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 
 			//				}
 		});
@@ -1605,7 +1686,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 									//									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(20.0f)+")");
 									showToast(getString(R.string.toast_range_float, getBorderValue(-20.0f), getBorderValue(20.0f)));
 									return true;
-
 								}
 								//								byte[] iputEm = new byte[4];
 								//								ByteUtil.putFloat(iputEm,value,0);
@@ -1613,7 +1693,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 									if (mPid == 1 && mVid == 5396) {
 										sendS0Order(value, DYConstants.SETTING_CORRECTION_INT);
 										//										mSendCommand.sendFloatCommand(DYConstants.SETTING_CORRECTION_INT, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
-
 									} else if (mPid == 22592 && mVid == 3034) {//校正 TinyC
 										//										sp.edit().putFloat(DYConstants.setting_correction, value).apply();
 										mDataBinding.textureViewPreviewActivity.setTinyCCorrection(value);
@@ -1645,14 +1724,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 								if (mUvcCameraHandler != null) {
 									if (mPid == 1 && mVid == 5396) {
 										sendS0Order(value, DYConstants.SETTING_ENVIRONMENT_INT);
-
 										//										mSendCommand.sendFloatCommand(DYConstants.SETTING_ENVIRONMENT_INT, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
 										//												20, 40, 60, 80, 120);
 									} else if (mPid == 22592 && mVid == 3034) {
 										//										Log.e(TAG, "onEditorAction: 环境温度 set value = " + value);
 										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, (int) value, 2);
 									}
-									popSettingBinding.etCameraSettingFreeAirTemp.setText(String.format(Locale.US, "%f", value));
+									//									popSettingBinding.etCameraSettingFreeAirTemp.setText(String.format(Locale.US, "%f", value));
 									sp.edit().putFloat(DYConstants.setting_environment, value).apply();
 									showToast(R.string.toast_complete_FreeAirTemp);
 								}
@@ -1690,21 +1768,34 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					}
 				});
 				//显示设置 弹窗
-				PopupWindow popupWindow = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-				popupWindow.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-				if (popupWindow.getContentView().getMeasuredHeight() > fl.getHeight() / 3 * 2) {
-					popupWindow.setHeight(fl.getHeight() / 3 * 2);
-				} else {
-					popupWindow.setHeight(popupWindow.getContentView().getMeasuredHeight());
+//				allPopupWindows = new PopupWindow(view,fl.getWidth()-DensityUtil.dp2px(mContext.get(),20), fl.getHeight()/2);
+				allPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+				allPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+				allPopupWindows.setHeight(mDataBinding.textureViewPreviewActivity.getHeight()/2);
+				allPopupWindows.setWidth(mDataBinding.textureViewPreviewActivity.getWidth()-DensityUtil.dp2px(mContext.get(),20));
+
+				allPopupWindows.setFocusable(true);
+				allPopupWindows.setOutsideTouchable(true);
+				allPopupWindows.setTouchable(true);
+
+
+				if (oldRotation == 90 || oldRotation == 180) {
+					Log.e(TAG, "initListener: ===oldRotation == 90 || oldRotation == 180=====");
+					int offsetX = -DensityUtil.dp2px(mContext.get(),80);
+					allPopupWindows.showAsDropDown(mDataBinding.textureViewPreviewActivity, offsetX, -allPopupWindows.getHeight()/2, Gravity.CENTER);
+					allPopupWindows.getContentView().setRotation(180);
 				}
-				popupWindow.setWidth(fl.getWidth() - 30);
-				popupWindow.setFocusable(true);
-				popupWindow.setOutsideTouchable(true);
-				popupWindow.setTouchable(true);
+				if (oldRotation == 0 || oldRotation == 270) {
+					Log.e(TAG, "initListener: oldRotation == 0 || oldRotation == 270===");
+					int offsetX = DensityUtil.dp2px(mContext.get(),10);
+					allPopupWindows.showAsDropDown(mDataBinding.textureViewPreviewActivity, offsetX, -allPopupWindows.getHeight()/2, Gravity.CENTER);
+					allPopupWindows.getContentView().setRotation(0);
+				}
+
 				//第四步：显示控件
-				popupWindow.showAsDropDown(mDataBinding.flPreview, 15, -popupWindow.getHeight() - 20, Gravity.CENTER);
+//				allPopupWindows.showAsDropDown(mDataBinding.flPreview, DensityUtil.dp2px(mContext.get(),20), -allPopupWindows.getHeight() - 20, Gravity.CENTER);
 				//弹窗消失，TinyC需要执行保存指令。
-				popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+				allPopupWindows.setOnDismissListener(new PopupWindow.OnDismissListener() {
 					@Override
 					public void onDismiss () {
 						if (mUvcCameraHandler != null) {
@@ -1743,8 +1834,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 							public void onClick (DialogInterface dialog, int which) {
 								if (which != sp.getInt(DYConstants.LANGUAGE_SETTING, 0)) {
 									sp.edit().putInt(DYConstants.LANGUAGE_SETTING, which).apply();
-									popupWindow.dismiss();
-
+									allPopupWindows.dismiss();
 									toSetLanguage(which);
 								}
 								dialog.dismiss();
