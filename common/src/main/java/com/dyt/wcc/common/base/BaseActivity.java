@@ -34,6 +34,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 	protected T                      mDataBinding;//绑定的布局View
 	protected boolean                isDebug = true;
 	protected Toast                  mToast;
+	protected int mRotation;
 
 	@Override
 	protected void onCreate (@Nullable Bundle savedInstanceState) {
@@ -44,12 +45,22 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 
 		mContext = new WeakReference<>(this);
 		mToast = Toast.makeText(mContext.get(),"",Toast.LENGTH_SHORT);
+//		mToast.setGravity();
 		initView();
 	}
 	////设置绑定布局
 	protected abstract int bindingLayout();
 	//初始化控件
 	protected abstract void initView();
+
+	public int getMRotation () {
+		return mRotation;
+	}
+
+	public void setMRotation (int mRotation) {
+		this.mRotation = mRotation;
+		mToast.getView().setRotation(mRotation);
+	}
 
 	protected void showToast(int resId){
 		//		mToast.cancel();

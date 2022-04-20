@@ -95,6 +95,4 @@ public class GlideEngine implements ImageEngine {
     public Bitmap getCacheBitmap(@NonNull Context context, @NonNull Uri uri, int width, int height) throws Exception {
         return Glide.with(context).asBitmap().load(uri).submit(width, height).get();
     }
-
-
 }

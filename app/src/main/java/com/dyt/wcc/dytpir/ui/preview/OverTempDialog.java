@@ -71,7 +71,15 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 
 		void onCancelListener ();
 	}
+	private int mRotation;
 
+	public int getRotation () {
+		return mRotation;
+	}
+	public void setRotation (int rotation) {
+		this.mRotation = rotation;
+//		getWindow().getDecorView().setRotation(mRotation);
+	}
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {

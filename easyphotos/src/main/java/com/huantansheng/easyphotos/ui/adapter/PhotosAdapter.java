@@ -1,10 +1,6 @@
 package com.huantansheng.easyphotos.ui.adapter;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +8,10 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.huantansheng.easyphotos.R;
 import com.huantansheng.easyphotos.constant.Type;
@@ -87,6 +87,13 @@ public class PhotosAdapter extends RecyclerView.Adapter {
                 ((PhotoViewHolder) holder).tvType.setVisibility(View.VISIBLE);
                 ((PhotoViewHolder) holder).ivVideo.setVisibility(View.GONE);
             } else if (Setting.showVideo && type.contains(Type.VIDEO)) {
+//                Log.e(TAG, "onBindViewHolder: " + item.path);
+                //                MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+                //                mediaMetadataRetriever.setDataSource(item.path);
+                //                Bitmap frameBitmap = mediaMetadataRetriever.getFrameAtTime(2000);
+                //                mediaMetadataRetriever.release();
+                //                Setting.imageEngine.loadPhoto(((PhotoViewHolder) holder).ivPhoto.getContext(), uri, ((PhotoViewHolder) holder).ivPhoto);
+                //                Glide.with(((PhotoViewHolder) holder).ivPhoto.getContext()).load(frameBitmap).transition(withCrossFade()).into(((PhotoViewHolder) holder).ivPhoto);
                 Setting.imageEngine.loadPhoto(((PhotoViewHolder) holder).ivPhoto.getContext(), uri, ((PhotoViewHolder) holder).ivPhoto);
                 ((PhotoViewHolder) holder).tvType.setText(DurationUtils.format(duration));
                 ((PhotoViewHolder) holder).tvType.setVisibility(View.VISIBLE);

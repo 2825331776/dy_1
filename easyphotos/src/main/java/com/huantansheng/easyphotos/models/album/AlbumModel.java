@@ -269,7 +269,6 @@ public class AlbumModel {
                     album.getAlbumItem(albumItem_all_name).addImageItem(imageItem);
                 }
 
-
                 if (Setting.showVideo && isVideo && !albumItem_video_name.equals(albumItem_all_name)) {
                     album.addAlbumItem(albumItem_video_name, "", path, uri);
                     album.getAlbumItem(albumItem_video_name).addImageItem(imageItem);

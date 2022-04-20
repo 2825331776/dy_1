@@ -80,7 +80,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 
-abstract class AbstractUVCCameraHandler extends Handler {
+public abstract class AbstractUVCCameraHandler extends Handler {
     private static final boolean DEBUG = true;    // TODO set false on release
     private static final String TAG = "AbsUVCCameraHandler";
 
@@ -98,7 +98,11 @@ abstract class AbstractUVCCameraHandler extends Handler {
         public void onStopRecording();
 
         public void onError(final Exception e);
+        //  add  吴长城 2022年4月20日17:18:06
+        public void onSavePicFinished(boolean isFinish, String picPath);
     }
+
+
 
     private static final int MSG_OPEN = 0;
     private static final int MSG_CLOSE = 1;
@@ -849,8 +853,8 @@ abstract class AbstractUVCCameraHandler extends Handler {
                 break;
             case MSG_MEDIA_UPDATE:
                 thread.handleUpdateMedia((String) msg.obj);
-                break;
 
+                break;
             case MSG_RELEASE:
                 thread.handleRelease();
                 break;
@@ -1462,8 +1466,6 @@ abstract class AbstractUVCCameraHandler extends Handler {
                         //吴长城 add
 //                        mHandler.setSavePicture(outputFile.getPath());
                         mHandler.sendMessage(mHandler.obtainMessage(MSG_MEDIA_UPDATE, outputFile.getPath()));
-
-
                     } catch (final IOException e) {
                     }
                 } finally {
@@ -1844,6 +1846,15 @@ abstract class AbstractUVCCameraHandler extends Handler {
                 try {
                     if (DEBUG) Log.i(TAG, "MediaScannerConnection#scanFile");
                     MediaScannerConnection.scanFile(parent.getApplicationContext(), new String[]{path}, null, ScanCompletedListener);
+
+                    for (final CameraCallback callback : mCallbacks) {
+                        try {
+                            callback.onSavePicFinished(true,path);
+                        } catch (final Exception e) {
+                            mCallbacks.remove(callback);
+                            Log.w(TAG, e);
+                        }
+                    }
                 } catch (final Exception e) {
                     Log.e(TAG, "handleUpdateMedia:", e);
                 }

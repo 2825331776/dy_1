@@ -1329,13 +1329,12 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             oldADValue = tmp_buf[amountPixels1];
                         }
                         if (abs(newADValue - oldADValue) >= s0_value_difference) {
-                            LOGE("=====newADValue==%d====oldADValue===%d", newADValue, oldADValue);
+//                            LOGE("=====newADValue==%d====oldADValue===%d", newADValue, oldADValue);
                             //打挡指令
                             uvc_set_zoom_abs(mDeviceHandle, 0x8000);
                             oldADValue = newADValue;
-                            mFrameImage->shutRefresh();
+//                            mFrameImage->shutRefresh();
                             all_frame_count = 0;
-
                         }
 //                        LOGE("=====newADValue==%d====oldADValue===%d",newADValue,oldADValue);
                         tmp_buf = NULL;

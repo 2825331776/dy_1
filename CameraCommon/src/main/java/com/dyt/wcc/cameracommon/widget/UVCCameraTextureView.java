@@ -994,6 +994,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 ////                        temperature1 = new float[mSuportHeight*mSuportWidth*4]; 初始化太迟 之前访问会报错
 //                    Log.e(TAG, "onReceiveTemperature:  vid === " + mVid + "  ===== mPid === " + mPid + "====== .tinCorrection " + tinyCorrection );
                     if (mPid == 22592 && mVid == 3034){
+                        temperature1[0] = temperature[0] + tinyCorrection;
                         temperature1[3] = temperature[3] + tinyCorrection;
                         temperature1[6] = temperature[6] + tinyCorrection;
                         for (int i = 0; i < mSupportHeight*mSupportWidth;i++){
@@ -1004,8 +1005,6 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                     }
                     maxtemperature = temperature[3];
                     mintemperature = temperature[6];
-
-
                 }
             };
 //            public final TcpITemperatureCallback tcpAhITemperatureCallback = new TcpITemperatureCallback() {
@@ -1317,7 +1316,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                      * 	temperatureData[9]=point3Tmp;
                      */
                     //绘制 全幅 最高温 最低温  中心点温度 ,并且查找点是否 不在线 和矩形之中
-                    if ((featurePointsControl & 0x0f00) > 0 && (true)){//最高点温度
+                    if ((featurePointsControl & 0x0f00) > 0){//最高点温度
                         highTempToggle = true;
                         bpRectF.left = temperature1[1] * (icon.getWidth() / (float) mSupportWidth) - mBitmapRectSize / 2.0f;
                         bpRectF.right = temperature1[1] * (icon.getWidth() / (float) mSupportWidth) + mBitmapRectSize / 2.0f;
@@ -1330,7 +1329,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
                                 decimalFormat.format(TempConvertUtils.centigrade2Temp(temperature1[3],mDragTempContainer.getTempSuffixMode()))
                                         + DragTempContainer.tempSuffixList[mDragTempContainer.getTempSuffixMode()],tempTextBgTextPaint,tempTextPaint,0);
                     }else {highTempToggle = false;}
-                    if ((featurePointsControl & 0x00f0) > 0 && (true)){//最低点温度
+                    if ((featurePointsControl & 0x00f0) > 0){//最低点温度
                         lowTempToggle = true;
                         bpRectF.left = temperature1[4] * (icon.getWidth() / (float) mSupportWidth) - mBitmapRectSize / 2.0f;
                         bpRectF.right = temperature1[4] * (icon.getWidth() / (float) mSupportWidth) + mBitmapRectSize / 2.0f;
