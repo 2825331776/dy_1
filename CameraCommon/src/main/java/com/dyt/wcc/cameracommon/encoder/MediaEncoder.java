@@ -32,7 +32,7 @@ import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 
 /**
- *
+ *  媒体编码器
  */
 public abstract class MediaEncoder implements Runnable {
 	private static final boolean DEBUG = true;	// TODO set false on release
@@ -50,6 +50,7 @@ public abstract class MediaEncoder implements Runnable {
 	protected final Object mSync = new Object();
 	/**
 	 * Flag that indicate this encoder is capturing now.
+	 * 指示此编码器现在正在 录制 的标志。
 	 */
     protected volatile boolean mIsCapturing;
 	/**
@@ -78,14 +79,17 @@ public abstract class MediaEncoder implements Runnable {
     protected int mTrackIndex;
     /**
      * MediaCodec instance for encoding
+     * 用于编码的 MediaCodec 实例
      */
     protected MediaCodec mMediaCodec;				// API >= 16(Android4.1.2)
     /**
      * Weak refarence of MediaMuxerWarapper instance
+     * MediaMuxerWarapper 实例的弱引用
      */
     protected final WeakReference<MediaMuxerWrapper> mWeakMuxer;
     /**
      * BufferInfo instance for dequeuing
+     * 用于出队的 BufferInfo 实例
      */
     private MediaCodec.BufferInfo mBufferInfo;		// API >= 16(Android4.1.2)
 

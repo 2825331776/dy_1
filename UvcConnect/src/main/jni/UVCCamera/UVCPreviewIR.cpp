@@ -1341,41 +1341,41 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     }
                     //TinyC 打挡策略
                     if (mPid == 22592 && mVid == 3034) {
-//                        tinyC_frame_count++;
-//                        if (tinyC_frame_count > tinyC_block_order_interval) {
-//                            //获取指令。
-//                            unsigned char reData[2] = {0};
-//                            unsigned char data[8] = {0x0d, 0x8b, 0x00, 0x00, 0x00, 0x00, 0x00,
-//                                                     0x02};
-//                            if (mDeviceHandle) {
-//                                uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d00, data,
-//                                                    sizeof(data),
-//                                                    1000);
-//                                uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d08,
-//                                                    reData, sizeof(reData),
-//                                                    1000);
-//                            }
-//                            unsigned char reData2[2] = {0};
-//                            reData2[1] = reData[0];
-//                            reData2[0] = reData[1];
-//                            unsigned short *dd = (unsigned short *) reData2;
-////                            LOGE("================================ javaSendJniOrder=======dd====== %d======",*dd);
-//                            newADValue = *dd;
-//                            tinyC_frame_count = 0;
-//                            dd = NULL;
-//                        }
-//                        if (abs(newADValue - oldADValue) >= tinyC_block_value_difference) {
-////                            LOGE("=====newADValue==%d====oldADValue===%d", newADValue, oldADValue);
-//                            oldADValue = newADValue;
-//                            //打挡指令
-//                            unsigned char data[8] = {0x0d, 0xc1, 0x00, 0x00, 0x00, 0x00, 0x00,
-//                                                     0x00};
-//                            if (mDeviceHandle) {
-//                                uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078,
-//                                                    0x1d00, data, sizeof(data), 1000);
-//                            }
-//                            all_frame_count = 0;
-//                        }
+                        tinyC_frame_count++;
+                        if (tinyC_frame_count > tinyC_block_order_interval) {
+                            //获取指令。
+                            unsigned char reData[2] = {0};
+                            unsigned char data[8] = {0x0d, 0x8b, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                                     0x02};
+                            if (mDeviceHandle) {
+                                uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d00, data,
+                                                    sizeof(data),
+                                                    1000);
+                                uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d08,
+                                                    reData, sizeof(reData),
+                                                    1000);
+                            }
+                            unsigned char reData2[2] = {0};
+                            reData2[1] = reData[0];
+                            reData2[0] = reData[1];
+                            unsigned short *dd = (unsigned short *) reData2;
+//                            LOGE("================================ javaSendJniOrder=======dd====== %d======",*dd);
+                            newADValue = *dd;
+                            tinyC_frame_count = 0;
+                            dd = NULL;
+                        }
+                        if (abs(newADValue - oldADValue) >= tinyC_block_value_difference) {
+//                            LOGE("=====newADValue==%d====oldADValue===%d", newADValue, oldADValue);
+                            oldADValue = newADValue;
+                            //打挡指令
+                            unsigned char data[8] = {0x0d, 0xc1, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                                     0x00};
+                            if (mDeviceHandle) {
+                                uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078,
+                                                    0x1d00, data, sizeof(data), 1000);
+                            }
+                            all_frame_count = 0;
+                        }
                     }
                 }
                 tmp_buf = NULL;

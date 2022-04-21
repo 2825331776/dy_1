@@ -98,9 +98,9 @@ private:
 	int mPid;
 
 	//读写文件的操作
-	int file_count = 0;
-	int file_count_limit = 50;
-	volatile bool isWriteFile = false;
+//	int file_count = 0;
+//	int file_count_limit = 50;
+//	volatile bool isWriteFile = false;
 
 
 	/**********************录制*******************************/

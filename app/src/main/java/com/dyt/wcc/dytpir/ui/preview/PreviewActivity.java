@@ -1545,19 +1545,19 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mDataBinding.ivPreviewLeftGallery.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-				if (!mUvcCameraHandler.snRightIsPreviewing()) {
-					return;
-				}
-				if (mDataBinding.btPreviewLeftRecord.isSelected()) {
-					showToast(getResources().getString(R.string.toast_is_recording));
-					return;
-				} else {
-					mUvcCameraHandler.close();
-					mUsbMonitor.unregister();
+//				if (!mUvcCameraHandler.snRightIsPreviewing()) {
+//					return;
+//				}
+//				if (mDataBinding.btPreviewLeftRecord.isSelected()) {
+//					showToast(getResources().getString(R.string.toast_is_recording));
+//					return;
+//				} else {
+//					mUvcCameraHandler.close();
+//					mUsbMonitor.unregister();
 					EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
 							.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider").setCount(1000).setVideo(true).setGif(false)
 							.start(101);
-				}
+//				}
 			}
 		});
 

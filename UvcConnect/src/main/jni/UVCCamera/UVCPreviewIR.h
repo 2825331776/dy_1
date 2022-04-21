@@ -212,7 +212,7 @@ private:
  	int newADValue;//现 打挡 AD值
  	int oldADValue;//旧 打挡 AD值
  	//so 打挡的值
- 	int s0_value_difference = 5;//打挡的差值
+ 	int s0_value_difference = 15;//打挡的差值
  	//TinyC 当打策略
  	int tinyC_frame_count = 0;
  	int tinyC_block_order_interval = 25;//读取指令间隔

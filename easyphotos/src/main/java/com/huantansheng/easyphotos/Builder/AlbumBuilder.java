@@ -495,7 +495,7 @@ public class AlbumBuilder {
                 Setting.onlyStartCamera = true;
                 Setting.isShowCamera = true;
                 break;
-            case ALBUM:
+            case ALBUM://点扬项目选择此处
                 Setting.isShowCamera = false;
                 break;
             case ALBUM_CAMERA:

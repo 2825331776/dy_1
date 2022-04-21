@@ -301,11 +301,11 @@ void SearchMaxMin(unsigned short *tempAD_data, int size, unsigned short *max, un
     }
 }
 bool FrameImage::setIsWriteFile(int status){
-    if (!status){
-        isWriteFile = true;
-    } else{
-        isWriteFile = false;
-    }
+//    if (!status){
+//        isWriteFile = true;
+//    } else{
+//        isWriteFile = false;
+//    }
     return true;
 }
 
@@ -334,39 +334,40 @@ unsigned char *FrameImage::onePreviewData(uint8_t *frameData) {
         }
         mcount++;
     }*/
-    if (isWriteFile){
-        FILE* outFile = NULL;
-        outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/tempData0418.txt", "a+");
-        if(outFile != NULL) {
-            file_count++;
-            if (file_count > (file_count_limit * 2)) {
-                LOGE("====== todo ==== write file with record VTemp、MaxTemp ========");
-                float maxT = max ;
-                fprintf(outFile, "maxTemp =%f,", ((maxT/64.0f)-273.15f));
-                //读取Vtemp指令。
-                unsigned char reData[2] = {0};
-                unsigned char data[8] = {0x0d, 0x8b, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                         0x02};
-                if (mDeviceHandle) {
-                    uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d00, data,
-                                        sizeof(data),
-                                        1000);
-                    uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d08,
-                                        reData, sizeof(reData),
-                                        1000);
-                }
-                unsigned char reData2[2] = {0};
-                reData2[1] = reData[0];
-                reData2[0] = reData[1];
-                unsigned short *dd = (unsigned short *) reData2;
-                int a = *dd;
-                fprintf(outFile, "vTemp=%d . \n", a);
-                dd = NULL;
-                file_count = 0;
-            }
-            fclose(outFile);
-        }
-    }
+//    /读写文件的操作
+//    if (isWriteFile){
+//        FILE* outFile = NULL;
+//        outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/tempData0418.txt", "a+");
+//        if(outFile != NULL) {
+//            file_count++;
+//            if (file_count > (file_count_limit)) {
+//                LOGE("====== todo ==== write file with record VTemp、MaxTemp ========");
+//                float maxT = max ;
+//                fprintf(outFile, "maxTemp =%f,", ((maxT/64.0f)-273.15f));
+//                //读取Vtemp指令。
+//                unsigned char reData[2] = {0};
+//                unsigned char data[8] = {0x0d, 0x8b, 0x00, 0x00, 0x00, 0x00, 0x00,
+//                                         0x02};
+//                if (mDeviceHandle) {
+//                    uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d00, data,
+//                                        sizeof(data),
+//                                        1000);
+//                    uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d08,
+//                                        reData, sizeof(reData),
+//                                        1000);
+//                }
+//                unsigned char reData2[2] = {0};
+//                reData2[1] = reData[0];
+//                reData2[0] = reData[1];
+//                unsigned short *dd = (unsigned short *) reData2;
+//                int a = *dd;
+//                fprintf(outFile, "vTemp=%d . \n", a);
+//                dd = NULL;
+//                file_count = 0;
+//            }
+//            fclose(outFile);
+//        }
+//    }
 
 
 

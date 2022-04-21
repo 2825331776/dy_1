@@ -20,4 +20,7 @@ public class Key {
     public static final String PUZZLE_SAVE_DIR = "keyOfPuzzleSaveDir";
     //拼图界面图片保存文件名前缀
     public static final String PUZZLE_SAVE_NAME_PREFIX = "keyOfPuzzleSaveNamePrefix";
+
+    //是否选择照片 0 所有， 1 照片 2 视频
+    public static final String PREVIEW_TYPE_SHOWING  = "keyOfPreviewTypeShowing";
 }

@@ -1,7 +1,8 @@
 package com.huantansheng.easyphotos.setting;
 
-import androidx.annotation.IntDef;
 import android.view.View;
+
+import androidx.annotation.IntDef;
 
 import com.huantansheng.easyphotos.constant.Type;
 import com.huantansheng.easyphotos.engine.ImageEngine;
@@ -22,7 +23,7 @@ public class Setting {
     public static int minWidth = 1;
     public static int minHeight = 1;
     public static long minSize = 1;
-    public static int count = 1;
+    public static int count = 1000;
 
     public static WeakReference<View> photosAdView = null;
     public static WeakReference<View> albumItemsAdView = null;
@@ -104,6 +105,8 @@ public class Setting {
         }
         return false;
     }
+
+
 
     public static boolean isOnlyVideo() {
         return filterTypes.size() == 1 && filterTypes.get(0).equals(Type.VIDEO);
