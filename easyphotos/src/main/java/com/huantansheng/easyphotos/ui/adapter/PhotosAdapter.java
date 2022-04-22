@@ -52,6 +52,7 @@ public class PhotosAdapter extends RecyclerView.Adapter {
 		this.mInflater = LayoutInflater.from(cxt);
 		this.unable = Result.count() == Setting.count;
 		this.isSingle = Setting.count == 1;
+
 	}
 
 	public void change () {
@@ -62,14 +63,14 @@ public class PhotosAdapter extends RecyclerView.Adapter {
 	@NonNull
 	@Override
 	public RecyclerView.ViewHolder onCreateViewHolder (@NonNull ViewGroup parent, int viewType) {
-		switch (viewType) {
-			case TYPE_AD:
-				return new AdViewHolder(mInflater.inflate(R.layout.item_ad_easy_photos, parent, false));
-			case TYPE_CAMERA:
-				return new CameraViewHolder(mInflater.inflate(R.layout.item_camera_easy_photos, parent, false));
-			default:
+//		switch (viewType) {
+//			case TYPE_AD:
+//				return new AdViewHolder(mInflater.inflate(R.layout.item_ad_easy_photos, parent, false));
+//			case TYPE_CAMERA:
+//				return new CameraViewHolder(mInflater.inflate(R.layout.item_camera_easy_photos, parent, false));
+//			default:
 				return new PhotoViewHolder(mInflater.inflate(R.layout.item_rv_photos_easy_photos, parent, false));
-		}
+//		}
 	}
 
 	@Override
@@ -96,7 +97,7 @@ public class PhotosAdapter extends RecyclerView.Adapter {
 //								mediaMetadataRetriever.setDataSource(item.path);
 //								Bitmap frameBitmap = mediaMetadataRetriever.getFrameAtTime(1000000);
 //								mediaMetadataRetriever.release();
-				//				Glide.with(((PhotoViewHolder) holder).ivPhoto.getContext()).load(frameBitmap).into(((PhotoViewHolder) holder).ivPhoto);
+//								Glide.with(((PhotoViewHolder) holder).ivPhoto.getContext()).load(frameBitmap).into(((PhotoViewHolder) holder).ivPhoto);
 
 				Setting.imageEngine.loadPhoto(((PhotoViewHolder) holder).ivPhoto.getContext(), uri, ((PhotoViewHolder) holder).ivPhoto);
 				((PhotoViewHolder) holder).tvType.setText(DurationUtils.format(duration));
@@ -246,7 +247,8 @@ public class PhotosAdapter extends RecyclerView.Adapter {
 				singlePosition = position;
 				tvSelector.setText("1");
 			}
-		} else {
+		}
+		else {
 			if (unable) {
 				tvSelector.setBackgroundResource(R.drawable.bg_select_false_unable_easy_photos);
 			} else {

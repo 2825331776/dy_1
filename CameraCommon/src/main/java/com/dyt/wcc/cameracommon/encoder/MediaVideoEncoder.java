@@ -50,6 +50,7 @@ public class MediaVideoEncoder extends MediaEncoder implements IVideoEncoder {
 	private static final String TAG = "MediaVideoEncoder";
 
 	private static final String MIME_TYPE = "video/avc";
+//private static final String MIME_TYPE = "video/mp4v-es";
 	// parameters for recording
 	private final int mWidth, mHeight;
     private static final int FRAME_RATE = 24;
@@ -64,8 +65,10 @@ public class MediaVideoEncoder extends MediaEncoder implements IVideoEncoder {
 		mRenderHandler = RenderHandler1.createHandler(TAG);
 //		mWidth = 1680;
 //		mHeight = 1264;
-		mWidth = 1440;
-		mHeight = 1080;
+//		mWidth = 1440;
+//		mHeight = 1080;
+		mWidth = 1280;
+		mHeight = 960;
 //		mWidth = width;
 //		mHeight = height;
 	}

@@ -91,6 +91,9 @@ UVCPreviewIR::~UVCPreviewIR() {
 
     ENTER();
     SAFE_DELETE(mFrameImage);
+    if (mDeviceHandle){
+        uvc_stop_streaming(mDeviceHandle);
+    }
     mFrameImage = NULL;
     if (mPreviewWindow)
         ANativeWindow_release(mPreviewWindow);
@@ -634,7 +637,6 @@ int UVCPreviewIR::getTinyCParams(void *rdata, diy func_diy) {
     backData = NULL;
     RETURN(ret, int);
 }
-
 
 int UVCPreviewIR::stopPreview() {
     ENTER();

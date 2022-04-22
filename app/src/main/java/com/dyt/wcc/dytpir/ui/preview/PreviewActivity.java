@@ -165,24 +165,16 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					tvContent.setVisibility(View.GONE);
 					//					tvContent.setText("1、新增某某功能、\n2、修改某某问题、\n3、优化某某BUG、");
 					View btnCancel = view.findViewById(R.id.btnCancel);
-					btnCancel.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick (View v) {
-							AppDialog.INSTANCE.dismissDialog();
-						}
-					});
+					btnCancel.setOnClickListener(v -> AppDialog.INSTANCE.dismissDialog());
 					View btnConfirm = view.findViewById(R.id.btnConfirm);
-					btnConfirm.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick (View v) {
-							showToast(getString(R.string.toast_downloading_background));
-							mAppUpdater = new AppUpdater.Builder().setUrl(DYConstants.UPDATE_DOWNLOAD_API + updateObjList.get(maxIndex).getPackageName())
-									//                        .setApkMD5("3df5b1c1d2bbd01b4a7ddb3f2722ccca")//支持MD5校验，如果缓存APK的MD5与此MD5相同，则直接取本地缓存安装，推荐使用MD5校验的方式
-									.setVersionCode(updateObjList.get(maxIndex).getAppVersionCode())//支持versionCode校验，设置versionCode之后，新版本versionCode相同的apk只下载一次,优先取本地缓存,推荐使用MD5校验的方式
-									.setFilename(updateObjList.get(maxIndex).getPackageName() + ".apk").setVibrate(true).build(mContext.get());
-							mAppUpdater.setHttpManager(OkHttpManager.getInstance()).start();
-							AppDialog.INSTANCE.dismissDialog();
-						}
+					btnConfirm.setOnClickListener(v -> {
+						showToast(getString(R.string.toast_downloading_background));
+						mAppUpdater = new AppUpdater.Builder().setUrl(DYConstants.UPDATE_DOWNLOAD_API + updateObjList.get(maxIndex).getPackageName())
+								//                        .setApkMD5("3df5b1c1d2bbd01b4a7ddb3f2722ccca")//支持MD5校验，如果缓存APK的MD5与此MD5相同，则直接取本地缓存安装，推荐使用MD5校验的方式
+								.setVersionCode(updateObjList.get(maxIndex).getAppVersionCode())//支持versionCode校验，设置versionCode之后，新版本versionCode相同的apk只下载一次,优先取本地缓存,推荐使用MD5校验的方式
+								.setFilename(updateObjList.get(maxIndex).getPackageName() + ".apk").setVibrate(true).build(mContext.get());
+						mAppUpdater.setHttpManager(OkHttpManager.getInstance()).start();
+						AppDialog.INSTANCE.dismissDialog();
 					});
 					AppDialog.INSTANCE.showDialog(mContext.get(), view, 0.5f);
 					break;
@@ -700,44 +692,16 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		Handler handler0 = new Handler();
 		defaultSettingReturn = -1;
 		if (mPid == 1 && mVid == 5396) {
-			handler0.postDelayed(new Runnable() {
-				@Override
-				public void run () {
-					defaultSettingReturn = sendS0Order(DYConstants.SETTING_CORRECTION_DEFAULT_VALUE, DYConstants.SETTING_CORRECTION_INT);
-				}
-			}, 0);
+			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_CORRECTION_DEFAULT_VALUE, DYConstants.SETTING_CORRECTION_INT), 0);
 
-			handler0.postDelayed(new Runnable() {
-				@Override
-				public void run () {
-					defaultSettingReturn = sendS0Order(DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE, DYConstants.SETTING_EMITTANCE_INT);
-				}
-			}, 150);
-			handler0.postDelayed(new Runnable() {
-				@Override
-				public void run () {
-					defaultSettingReturn = sendS0Order(DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE, DYConstants.SETTING_HUMIDITY_INT);
-				}
-			}, 300);
-			handler0.postDelayed(new Runnable() {
-				@Override
-				public void run () {
-					defaultSettingReturn = sendS0Order(DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE, DYConstants.SETTING_ENVIRONMENT_INT);
-				}
-			}, 450);
-			handler0.postDelayed(new Runnable() {
-				@Override
-				public void run () {
-					defaultSettingReturn = sendS0Order(DYConstants.SETTING_REFLECT_DEFAULT_VALUE, DYConstants.SETTING_REFLECT_INT);
-				}
-			}, 600);
+			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE, DYConstants.SETTING_EMITTANCE_INT), 150);
+			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE, DYConstants.SETTING_HUMIDITY_INT), 300);
+			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE, DYConstants.SETTING_ENVIRONMENT_INT), 450);
+			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_REFLECT_DEFAULT_VALUE, DYConstants.SETTING_REFLECT_INT), 600);
 		} else if (mPid == 22592 && mVid == 3034) {
-			handler0.postDelayed(new Runnable() {
-				@Override
-				public void run () {
-					//					result = sendS0Order(DYConstants.SETTING_CORRECTION_DEFAULT_VALUE,DYConstants.SETTING_CORRECTION_INT);
-					defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE, 3);
-				}
+			handler0.postDelayed(() -> {
+				//					result = sendS0Order(DYConstants.SETTING_CORRECTION_DEFAULT_VALUE,DYConstants.SETTING_CORRECTION_INT);
+				defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE, 3);
 			}, 0);
 			//S0的湿度，对应大气透过率
 			//			handler0.postDelayed(new Runnable() {
@@ -747,19 +711,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			//					defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE, 4);
 			//				}
 			//			}, 200);
-			handler0.postDelayed(new Runnable() {
-				@Override
-				public void run () {
-					//					result = sendS0Order(DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE,DYConstants.SETTING_ENVIRONMENT_INT);
-					defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE, 2);
-				}
+			handler0.postDelayed(() -> {
+				//					result = sendS0Order(DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE,DYConstants.SETTING_ENVIRONMENT_INT);
+				defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE, 2);
 			}, 400);
-			handler0.postDelayed(new Runnable() {
-				@Override
-				public void run () {
-					//					result = sendS0Order(DYConstants.SETTING_REFLECT_DEFAULT_VALUE,DYConstants.SETTING_REFLECT_INT);
-					defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_REFLECT_DEFAULT_VALUE, 1);
-				}
+			handler0.postDelayed(() -> {
+				//					result = sendS0Order(DYConstants.SETTING_REFLECT_DEFAULT_VALUE,DYConstants.SETTING_REFLECT_INT);
+				defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_REFLECT_DEFAULT_VALUE, 1);
 			}, 600);
 		}
 		return defaultSettingReturn;
@@ -1532,9 +1490,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					} else if (!mDataBinding.btPreviewLeftRecord.isSelected() && !mUvcCameraHandler.isRecording() && mUvcCameraHandler.snRightIsPreviewing()) {//开始录制
 						startTimer();
 						mUvcCameraHandler.startRecording(sp.getInt(DYConstants.RECORD_AUDIO_SETTING, 1));
-					} else {
-						//						if (isDebug)Log.e(TAG, "Record Error: error record state !");
-					}
+					}  //						if (isDebug)Log.e(TAG, "Record Error: error record state !");
+
 					mDataBinding.btPreviewLeftRecord.setSelected(!mDataBinding.btPreviewLeftRecord.isSelected());
 				} else {
 					showToast(getResources().getString(R.string.toast_need_connect_camera));
@@ -1545,19 +1502,18 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mDataBinding.ivPreviewLeftGallery.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-//				if (!mUvcCameraHandler.snRightIsPreviewing()) {
-//					return;
-//				}
-//				if (mDataBinding.btPreviewLeftRecord.isSelected()) {
-//					showToast(getResources().getString(R.string.toast_is_recording));
-//					return;
-//				} else {
-//					mUvcCameraHandler.close();
-//					mUsbMonitor.unregister();
+				if (!mUvcCameraHandler.snRightIsPreviewing()) {
+					return;
+				}
+				if (mDataBinding.btPreviewLeftRecord.isSelected()) {
+					showToast(getResources().getString(R.string.toast_is_recording));
+				} else {
+					mUvcCameraHandler.close();
+					mUsbMonitor.unregister();
 					EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance())
 							.setFileProviderAuthority("com.dyt.wcc.dytpir.FileProvider").setCount(1000).setVideo(true).setGif(false)
 							.start(101);
-//				}
+				}
 			}
 		});
 
