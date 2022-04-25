@@ -350,7 +350,7 @@ public abstract class MediaEncoder implements Runnable {
 
     /**
      * drain encoded data and write them to muxer
-	 * 清空编码的数据并将其写入多路复用器
+	 * 清空编码的数据并将其 写入 混合器
      */
     @SuppressWarnings("deprecation")
 	protected void drain() {

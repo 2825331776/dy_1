@@ -1,7 +1,6 @@
 package com.huantansheng.easyphotos.ui.adapter;
 
 import android.content.Context;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +42,7 @@ public class PhotosAdapter extends RecyclerView.Adapter {
 
 	private boolean clearAd = false;
 
-	private MediaMetadataRetriever mediaMetadataRetriever;
+//	private MediaMetadataRetriever mediaMetadataRetriever;
 
 
 	public PhotosAdapter (Context cxt, ArrayList<Object> dataList, OnClickListener listener) {
@@ -92,13 +91,9 @@ public class PhotosAdapter extends RecyclerView.Adapter {
 				((PhotoViewHolder) holder).tvType.setVisibility(View.VISIBLE);
 				((PhotoViewHolder) holder).ivVideo.setVisibility(View.GONE);
 			} else if (Setting.showVideo && type.contains(Type.VIDEO)) {
-				//                Log.e(TAG, "onBindViewHolder: " + item.path);
-//								mediaMetadataRetriever = new MediaMetadataRetriever();
-//								mediaMetadataRetriever.setDataSource(item.path);
-//								Bitmap frameBitmap = mediaMetadataRetriever.getFrameAtTime(1000000);
-//								mediaMetadataRetriever.release();
-//								Glide.with(((PhotoViewHolder) holder).ivPhoto.getContext()).load(frameBitmap).into(((PhotoViewHolder) holder).ivPhoto);
-
+//				if (item.getBitmap() != null){
+//					Glide.with(((PhotoViewHolder) holder).ivPhoto.getContext()).load(item.getBitmap()).into(((PhotoViewHolder) holder).ivPhoto);
+//				}
 				Setting.imageEngine.loadPhoto(((PhotoViewHolder) holder).ivPhoto.getContext(), uri, ((PhotoViewHolder) holder).ivPhoto);
 				((PhotoViewHolder) holder).tvType.setText(DurationUtils.format(duration));
 				((PhotoViewHolder) holder).tvType.setVisibility(View.VISIBLE);

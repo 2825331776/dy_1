@@ -46,7 +46,7 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 		} else {
 			mType = 0;
 		}
-		mValue = TempConvertUtils.centigrade2Temp(oldValue, mType);
+		mValue = TempConvertUtils.Celsius2Temp(oldValue, mType);
 		if (mValue < 0) {
 			mValue = 0.0f;
 		}
@@ -123,7 +123,7 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 			public void onClick (View v) {
 				//				Log.e(TAG, "onClick:   value  = > " + mValue  + "  mode =  > " + mType );
 				if (mListener != null)
-					mListener.onSetComplete(TempConvertUtils.temp2Centigrade(mValue, mType));
+					mListener.onSetComplete(TempConvertUtils.temp2Celsius(mValue, mType));
 				dismiss();
 			}
 		});

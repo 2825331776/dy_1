@@ -1,5 +1,6 @@
 package com.huantansheng.easyphotos.models.album.entity;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -24,6 +25,8 @@ public class Photo implements Parcelable {
     public long time;//图片拍摄的时间戳,单位：毫秒
     public boolean selected;//是否被选中,内部使用,无需关心
     public boolean selectedOriginal;//用户选择时是否选择了原图选项
+    private Bitmap bitmap;
+
 
     public Photo(String name, Uri uri, String path, long time, int width, int height,int orientation, long size, long duration, String type) {
         this.name = name;
@@ -38,6 +41,14 @@ public class Photo implements Parcelable {
         this.duration = duration;
         this.selected = false;
         this.selectedOriginal = false;
+    }
+
+    public Bitmap getBitmap () {
+        return bitmap;
+    }
+
+    public void setBitmap (Bitmap bitmap) {
+        this.bitmap = bitmap;
     }
 
     @Override

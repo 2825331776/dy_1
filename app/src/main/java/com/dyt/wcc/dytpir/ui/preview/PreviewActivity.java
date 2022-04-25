@@ -526,7 +526,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			mVid = 0;
 			mPid = 0;
 			if (mUvcCameraHandler != null) {
-				mUvcCameraHandler.removeCallback(cameraCallback);
+//				mUvcCameraHandler.removeCallback(cameraCallback);
 				mUvcCameraHandler.stopTemperaturing();
 				mUvcCameraHandler.close();
 			}
@@ -549,7 +549,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mUvcCameraHandler.addCallback(cameraCallback);
 		//				if (isDebug)Log.e(TAG, "startPreview: flPreview  width == " + mDataBinding.flPreview.getMeasuredWidth()
 		//						+ " height == " + mDataBinding.flPreview.getMeasuredHeight());
+		if (mDataBinding.textureViewPreviewActivity.getSurfaceTexture() == null){
+			Log.e(TAG, "startPreview: 启动失败,getSurfaceTexture 为null.");
+			return;
+		}
 		stt = new Surface(mDataBinding.textureViewPreviewActivity.getSurfaceTexture());
+//		mDataBinding.textureViewPreviewActivity.bringToFront();
 
 		mTextureViewWidth = mDataBinding.textureViewPreviewActivity.getWidth();
 		mTextureViewHeight = mDataBinding.textureViewPreviewActivity.getHeight();
@@ -910,7 +915,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 							//拍照成功，并显示动画效果
 							mDataBinding.ivSaveImgAnimator.setVisibility(View.VISIBLE);
 
-							mDataBinding.ivSaveImgAnimator.bringToFront();
+//							mDataBinding.ivSaveImgAnimator.bringToFront();
 							Bitmap bitmap = BitmapFactory.decodeFile(picPath);
 							mDataBinding.ivSaveImgAnimator.setImageBitmap(bitmap);
 
@@ -965,7 +970,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 								@Override
 								public void onAnimationEnd (Animation animation) {
-									mDataBinding.ivSaveImgAnimator.setVisibility(View.INVISIBLE);
+									mDataBinding.ivSaveImgAnimator.setVisibility(View.GONE);
 								}
 
 								@Override
@@ -976,6 +981,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						}
 					});
 				}
+
 			}
 		};
 

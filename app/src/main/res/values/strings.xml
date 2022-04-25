@@ -46,6 +46,7 @@
     <string name="SettingCameraParams_FreeAirTemp">Ambient Temperature </string>
     <string name="SettingCameraParams_Humidity">Humidity (%)</string>
     <string name="SettingCameraParams_Reset">Default</string>
+    <string name="setting_update">Upgrade</string>
     <string name="setting_check_version_info">App Version:%s</string>
 
     <string name="setting_language_chinese">Chinese</string>

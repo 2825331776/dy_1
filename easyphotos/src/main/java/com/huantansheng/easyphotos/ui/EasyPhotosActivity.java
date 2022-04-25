@@ -185,13 +185,16 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 		tvPermission = findViewById(R.id.tv_permission);
 		rootViewAlbumItems = findViewById(R.id.root_view_album_items);
 		tvTitle = findViewById(R.id.tv_title);
-		if (Setting.isOnlyVideo()) {
-			tvTitle.setText(R.string.video_selection_easy_photos);
-		}
+//		if (Setting.isOnlyVideo()) {//判断是否仅仅显示视频，此时未用到
+//			tvTitle.setText(R.string.video_selection_easy_photos);
+//		}
 		//        findViewById(R.id.iv_second_menu).setVisibility(Setting.showPuzzleMenu || Setting.showCleanMenu || Setting.showOriginalMenu ? View.VISIBLE : View.GONE);
 		setClick(R.id.iv_back);
 	}
 
+	/**
+	 * 有权限的情况下可以去 加载图片
+	 */
 	private void hasPermissions () {
 		permissionView.setVisibility(View.GONE);
 		if (Setting.onlyStartCamera) {
@@ -216,17 +219,17 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 	}
 
 	protected String[] getNeedPermissions () {
-		if (Setting.isShowCamera) {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-				return new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-			}
-			return new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-		} else {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+//		if (Setting.isShowCamera) {
+//			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+//				return new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+//			}
+//			return new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+//		} else {
+//			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 				return new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-			}
-			return new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-		}
+//			}
+//			return new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+//		}
 	}
 
 
@@ -1029,9 +1032,19 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 					}
 				} else if (onlyVideo) {
 					if ((photo.name).contains("mp4")) {
+//						MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+//						mediaMetadataRetriever.setDataSource(photo.path);
+//						photo.setBitmap(mediaMetadataRetriever.getFrameAtTime(1000000));
+//						mediaMetadataRetriever.release();
 						dataList.add(photo);
 					}
 				} else {
+//					if ((photo.name).contains("mp4")) {
+//						MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+//						mediaMetadataRetriever.setDataSource(photo.path);
+//						photo.setBitmap(mediaMetadataRetriever.getFrameAtTime(1000000));
+//						mediaMetadataRetriever.release();
+//					}
 					dataList.add(photo);
 				}
 			}

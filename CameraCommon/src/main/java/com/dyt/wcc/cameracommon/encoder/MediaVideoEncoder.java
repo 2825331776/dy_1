@@ -113,7 +113,7 @@ public class MediaVideoEncoder extends MediaEncoder implements IVideoEncoder {
         format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);
 		//format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 0);//设置全关键帧
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
-		if (DEBUG) Log.i(TAG, "format: " + format);
+//		if (DEBUG) Log.i(TAG, "format: " + format);
 
         mMediaCodec = MediaCodec.createEncoderByType(MIME_TYPE);
         mMediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
