@@ -75,7 +75,6 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -1411,7 +1410,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 
         //added by wupei
         public void handlePreparePalette(final String path, final int type) {
-            if (DEBUG) Log.v(TAG_THREAD, "handleSetPalettePath:");
+//            if (DEBUG) Log.v(TAG_THREAD, "handleSetPalettePath:");
             if (cameraType == 1) {
                 if (mUVCCamera != null) {
                     mUVCCamera.setPath(path);
@@ -1617,7 +1616,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 
         //added by wupei
         public void handleSetAreaCheck(int isAreaCheck) {
-            if (DEBUG) Log.v(TAG_THREAD, "handleSetPalettePath:");
+//            if (DEBUG) Log.v(TAG_THREAD, "handleSetPalettePath:");
             if (mUVCCamera != null) {
                 mUVCCamera.setAreaCheck(isAreaCheck);
             }
@@ -1625,7 +1624,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 
 
         public void handleSetArea(final Object area) {
-            if (DEBUG) Log.v(TAG_THREAD, "handleSetPalettePath:");
+//            if (DEBUG) Log.v(TAG_THREAD, "handleSetPalettePath:");
             if (mUVCCamera != null) {
                 int [] data = (int [])area;
 //                int [] areainfo = (int []) area;
@@ -1661,7 +1660,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 //                    }
 //                    i++;
 //                }
-                Log.e(TAG_THREAD, "handleSetArea:"  + Arrays.toString(data));
+//                Log.e(TAG_THREAD, "handleSetArea:"  + Arrays.toString(data));
                 mUVCCamera.setArea(data);
             }
         }

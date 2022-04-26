@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 
 import com.dyt.wcc.common.utils.TempConvertUtils;
 import com.dyt.wcc.common.widget.NumberPickerView;
-import com.dyt.wcc.common.widget.dragView.DragTempContainer;
+import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
 import com.dyt.wcc.dytpir.R;
 
 /**
@@ -41,7 +41,7 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 
 	public OverTempDialog (@NonNull Context context, float oldValue, int type) {
 		super(context);
-		if (type < DragTempContainer.tempSuffixList.length) {
+		if (type < MeasureTempContainerView.tempSuffixList.length) {
 			this.mType = type;
 		} else {
 			mType = 0;
@@ -116,7 +116,7 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 		numberPickerView_decade.setValue((int) mValue % 100 / 10);
 		numberPickerView_unit.setValue((int) mValue % 10);
 		numberPickerView_decimal.setValue((int) (mValue * 10) % 10);
-		tv_unit.setText(DragTempContainer.tempSuffixList[mType]);
+		tv_unit.setText(MeasureTempContainerView.tempSuffixList[mType]);
 
 		bt_confirm.setOnClickListener(new View.OnClickListener() {
 			@Override

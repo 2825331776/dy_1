@@ -52,9 +52,9 @@ import com.dyt.wcc.common.utils.DensityUtil;
 import com.dyt.wcc.common.utils.FontUtils;
 import com.dyt.wcc.common.widget.MyCustomRangeSeekBar;
 import com.dyt.wcc.common.widget.SwitchMultiButton;
-import com.dyt.wcc.common.widget.dragView.DragTempContainer;
-import com.dyt.wcc.common.widget.dragView.DrawLineRecHint;
-import com.dyt.wcc.common.widget.dragView.TempWidgetObj;
+import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
+import com.dyt.wcc.common.widget.dragView.DrawLineRectHint;
+import com.dyt.wcc.common.widget.dragView.MeasureEntity;
 import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.constans.DYConstants;
 import com.dyt.wcc.dytpir.databinding.FragmentPreviewMainBinding;
@@ -1055,23 +1055,23 @@ public class PreviewFragment extends BaseFragment<FragmentPreviewMainBinding> im
 							showPopWindows(view,30,15,20);
 			}
 		});
-		mDataBinding.dragTempContainerPreviewFragment.setAddChildDataListener(new DragTempContainer.onAddChildDataListener() {
+		mDataBinding.dragTempContainerPreviewFragment.setAddChildDataListener(new MeasureTempContainerView.onAddChildDataListener() {
 			@Override
-			public void onIsEventActionMove (DrawLineRecHint hint) {
+			public void onIsEventActionMove (DrawLineRectHint hint) {
 				mDataBinding.textureViewPreviewFragment.setDrawHint(hint);
 			}
 
 			@Override
-			public void onIsEventActionUp (DrawLineRecHint hint) {
+			public void onIsEventActionUp (DrawLineRectHint hint) {
 				hint.setNeedDraw(false);
 				mDataBinding.textureViewPreviewFragment.setDrawHint(hint);
 			}
 		});
 
 		//测温模式中 工具栏 点击监听器（删除，等工具栏）
-		mDataBinding.dragTempContainerPreviewFragment.setChildToolsClickListener(new DragTempContainer.OnChildToolsClickListener() {
+		mDataBinding.dragTempContainerPreviewFragment.setChildToolsClickListener(new MeasureTempContainerView.OnChildToolsClickListener() {
 			@Override
-			public void onChildToolsClick (TempWidgetObj child, int position) {
+			public void onChildToolsClick (MeasureEntity child, int position) {
 				Log.e(TAG, "onChildToolsClick: ======preview tools position == > " + position);
 				if (position==0){
 					mDataBinding.dragTempContainerPreviewFragment.deleteChildView(child);

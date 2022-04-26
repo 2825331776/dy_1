@@ -21,7 +21,7 @@ import com.dyt.wcc.common.R;
 import com.dyt.wcc.common.base.BaseConstants;
 import com.dyt.wcc.common.utils.DensityUtil;
 import com.dyt.wcc.common.utils.TempConvertUtils;
-import com.dyt.wcc.common.widget.dragView.DragTempContainer;
+import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -539,7 +539,7 @@ public class MyCustomRangeSeekBar extends View {
 
 
 		//绘制温度单位。
-		canvas.drawText(DragTempContainer.tempSuffixList[tempUnitMode], maxTempTextLength + realTimeHighLowPicWidth + seekbarWidth / 2.0f - mPaint.measureText(DragTempContainer.tempSuffixList[tempUnitMode]), maxTempTextRect.height() + mPaint.descent(), mPaint);
+		canvas.drawText(MeasureTempContainerView.tempSuffixList[tempUnitMode], maxTempTextLength + realTimeHighLowPicWidth + seekbarWidth / 2.0f - mPaint.measureText(MeasureTempContainerView.tempSuffixList[tempUnitMode]), maxTempTextRect.height() + mPaint.descent(), mPaint);
 		//绘制顶部最高温、底部最低温
 		canvas.drawText(Float2Str(mMaxTemp), maxTempTextLength + realTimeHighLowPicWidth + (seekbarWidth - maxTempTextLength) / 2, maxTempTextRect.height() * 2 - mPaint.ascent(), mPaint);
 		canvas.drawText(Float2Str(mMinTemp), maxTempTextLength + realTimeHighLowPicWidth + (seekbarWidth - maxTempTextLength) / 2, getHeight() - maxTempTextRect.height() * 2 - mPaint.descent(), mPaint);

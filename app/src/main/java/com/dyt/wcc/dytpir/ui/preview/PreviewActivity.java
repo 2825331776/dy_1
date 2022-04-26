@@ -36,7 +36,6 @@ import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.EditorInfo;
 import android.widget.CompoundButton;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -55,9 +54,9 @@ import com.dyt.wcc.common.utils.DensityUtil;
 import com.dyt.wcc.common.utils.FontUtils;
 import com.dyt.wcc.common.widget.MyCustomRangeSeekBar;
 import com.dyt.wcc.common.widget.SwitchMultiButton;
-import com.dyt.wcc.common.widget.dragView.DragTempContainer;
-import com.dyt.wcc.common.widget.dragView.DrawLineRecHint;
-import com.dyt.wcc.common.widget.dragView.TempWidgetObj;
+import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
+import com.dyt.wcc.common.widget.dragView.DrawLineRectHint;
+import com.dyt.wcc.common.widget.dragView.MeasureEntity;
 import com.dyt.wcc.dytpir.BuildConfig;
 import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.constans.DYConstants;
@@ -114,7 +113,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private USBMonitor mUsbMonitor;
 	private int        mTextureViewWidth, mTextureViewHeight;
 
-	private FrameLayout fl;
+//	private FrameLayout fl;
 
 	private int mFontSize;
 	private int paletteType, isWatermark, isTempShow;
@@ -146,8 +145,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private int             maxIndex = 0;
 	private     List<UpdateObj> updateObjList;
 	//传感器
-//	private SensorManager   mSensorManager;
-//	private Sensor          mAccelerometerSensor;//磁场传感器，加速度传感器 mMagneticSensor,
+	private SensorManager   mSensorManager;
+	private Sensor          mAccelerometerSensor;//磁场传感器，加速度传感器 mMagneticSensor,
 	private AbstractUVCCameraHandler.CameraCallback cameraCallback;
 
 	private static final int     MSG_CHECK_UPDATE = 1;
@@ -202,7 +201,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			if (BuildConfig.DEBUG)
 				Log.e(TAG, "onPause: 停止温度回调");
 		}
-//				mSensorManager.unregisterListener(sensorEventListener, mAccelerometerSensor);
+				mSensorManager.unregisterListener(sensorEventListener, mAccelerometerSensor);
 		//		mSensorManager.unregisterListener(sensorEventListener, mMagneticSensor);
 		//解决去图库 拔出机芯闪退 2022年3月24日11:03:49
 		//		if (mUvcCameraHandler!=null){
@@ -281,32 +280,34 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		public void onSensorChanged (SensorEvent event) {
 			if (sensorCount < 5) {
 				sensorCount++;
-			} else if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_MAGNETIC_FIELD)) {
-				//				Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_MAGNETIC_FIELD");
-				//				float[] values = event.values;
-				//values[0]：方位角，手机绕着Z轴旋转的角度。0表示正北(North)，90表示正东(East)，
-				//180表示正南(South)，270表示正西(West)。假如values[0]的值刚好是这四个值的话，
-				//并且手机沿水平放置的话，那么当前手机的正前方就是这四个方向，可以利用这一点来
-				//写一个指南针。
-				//				Log.e(TAG, "====方位角: ===" + values[0]);
-				//			values[1]：倾斜角，手机翘起来的程度，当手机绕着x轴倾斜时该值会发生变化。取值
-				//			范围是[-180,180]之间。假如把手机放在桌面上，而桌面是完全水平的话，values1的则应该
-				//			是0，当然很少桌子是绝对水平的。从手机顶部开始抬起，直到手机沿着x轴旋转180(此时屏幕
-				//					乡下水平放在桌面上)。在这个旋转过程中，values[1]的值会从0到-180之间变化，即手机抬起
-				//			时，values1的值会逐渐变小，知道等于-180；而加入从手机底部开始抬起，直到手机沿着x轴
-				//			旋转180度，此时values[1]的值会从0到180之间变化。我们可以利用value[1]的这个特性结合
-				//			value[2]来实现一个平地尺。
-				//				Log.e(TAG, "====倾斜角: ===" + values[1]);
-				//			value[2]：滚动角，沿着Y轴的滚动角度，取值范围为：[-90,90]，假设将手机屏幕朝上水平放在
-				//			桌面上，这时如果桌面是平的，values2的值应为0。将手机从左侧逐渐抬起，values[2]的值将
-				//			逐渐减小，知道垂直于手机放置，此时values[2]的值为-90，从右侧则是0-90；加入在垂直位置
-				//			时继续向右或者向左滚动，values[2]的值将会继续在-90到90之间变化。
-				//				Log.e(TAG, "====滚动角: ===" + values[2]);
-				//				sensorCount = 0;
-
-				//				SensorManager.getRotationMatrix()
-			} else if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_ACCELEROMETER)) {
-								Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_ACCELEROMETER");
+			}
+//			else if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_MAGNETIC_FIELD)) {
+//				//				Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_MAGNETIC_FIELD");
+//				//				float[] values = event.values;
+//				//values[0]：方位角，手机绕着Z轴旋转的角度。0表示正北(North)，90表示正东(East)，
+//				//180表示正南(South)，270表示正西(West)。假如values[0]的值刚好是这四个值的话，
+//				//并且手机沿水平放置的话，那么当前手机的正前方就是这四个方向，可以利用这一点来
+//				//写一个指南针。
+//				//				Log.e(TAG, "====方位角: ===" + values[0]);
+//				//			values[1]：倾斜角，手机翘起来的程度，当手机绕着x轴倾斜时该值会发生变化。取值
+//				//			范围是[-180,180]之间。假如把手机放在桌面上，而桌面是完全水平的话，values1的则应该
+//				//			是0，当然很少桌子是绝对水平的。从手机顶部开始抬起，直到手机沿着x轴旋转180(此时屏幕
+//				//					乡下水平放在桌面上)。在这个旋转过程中，values[1]的值会从0到-180之间变化，即手机抬起
+//				//			时，values1的值会逐渐变小，知道等于-180；而加入从手机底部开始抬起，直到手机沿着x轴
+//				//			旋转180度，此时values[1]的值会从0到180之间变化。我们可以利用value[1]的这个特性结合
+//				//			value[2]来实现一个平地尺。
+//				//				Log.e(TAG, "====倾斜角: ===" + values[1]);
+//				//			value[2]：滚动角，沿着Y轴的滚动角度，取值范围为：[-90,90]，假设将手机屏幕朝上水平放在
+//				//			桌面上，这时如果桌面是平的，values2的值应为0。将手机从左侧逐渐抬起，values[2]的值将
+//				//			逐渐减小，知道垂直于手机放置，此时values[2]的值为-90，从右侧则是0-90；加入在垂直位置
+//				//			时继续向右或者向左滚动，values[2]的值将会继续在-90到90之间变化。
+//				//				Log.e(TAG, "====滚动角: ===" + values[2]);
+//				//				sensorCount = 0;
+//
+//				//				SensorManager.getRotationMatrix()
+//			}
+			else if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_ACCELEROMETER)) {
+//								Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_ACCELEROMETER");
 								float x = event.values[SensorManager.DATA_X];
 								float y = event.values[SensorManager.DATA_Y];
 								float z = event.values[SensorManager.DATA_Z];
@@ -348,6 +349,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 //			mDataBinding.clRightFunctionContainer.setRotation(0);
 //			mDataBinding.llContainerPreviewSeekbar.setRotation(0);
 			mDataBinding.clMainPreview.setRotation(0);
+			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(false);
+//			mDataBinding.flPreview.setRotation(180);
 			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
 				PLRPopupWindows.dismiss();
 				PLRPopupWindows.getContentView().setRotation(0);
@@ -362,6 +365,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 //			mDataBinding.clRightFunctionContainer.setRotation(0);
 //			mDataBinding.llContainerPreviewSeekbar.setRotation(0);
 			mDataBinding.clMainPreview.setRotation(0);
+			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(false);
+//			mDataBinding.flPreview.setRotation(180);
 			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
 				PLRPopupWindows.dismiss();
 				PLRPopupWindows.getContentView().setRotation(0);
@@ -376,6 +381,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 //			mDataBinding.clRightFunctionContainer.setRotation(180);
 //			mDataBinding.llContainerPreviewSeekbar.setRotation(180);
 			mDataBinding.clMainPreview.setRotation(180);
+			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(true);
+//			mDataBinding.flPreview.setRotation(180);
 			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
 				PLRPopupWindows.dismiss();
 				PLRPopupWindows.getContentView().setRotation(180);
@@ -390,6 +397,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 //			mDataBinding.clRightFunctionContainer.setRotation(180);
 //			mDataBinding.llContainerPreviewSeekbar.setRotation(180);
 			mDataBinding.clMainPreview.setRotation(180);
+			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(true);
+//			mDataBinding.flPreview.setRotation(180);
 			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
 				PLRPopupWindows.dismiss();
 				PLRPopupWindows.getContentView().setRotation(180);
@@ -408,9 +417,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		if (mUsbMonitor != null && !mUsbMonitor.isRegistered()) {
 			mUsbMonitor.register();
 		}
-//				if (mSensorManager != null) {
-//					mSensorManager.registerListener(sensorEventListener, mAccelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
-//				}
+				if (mSensorManager != null) {
+					mSensorManager.registerListener(sensorEventListener, mAccelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+				}
 
 		language = sp.getInt(DYConstants.LANGUAGE_SETTING, -1);
 		switch (language) {
@@ -494,9 +503,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			if (isDebug)
 				Log.e(TAG, "DD  onDetach: ");
 			runOnUiThread(() -> {
-				mDataBinding.dragTempContainerPreviewFragment.setBackgroundColor(getColor(R.color.bg_preview_otg_unconnect));
-				mDataBinding.dragTempContainerPreviewFragment.setConnect(false);
-				mDataBinding.dragTempContainerPreviewFragment.invalidate();
+				mDataBinding.dragTempContainerPreviewActivity.setBackgroundColor(getColor(R.color.bg_preview_otg_unconnect));
+				mDataBinding.dragTempContainerPreviewActivity.setConnect(false);
+				mDataBinding.dragTempContainerPreviewActivity.invalidate();
 				onPause();
 				onStop();
 			});
@@ -565,7 +574,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mDataBinding.textureViewPreviewActivity.setVidPid(mVid, mPid);//设置vid  pid
 		mDataBinding.textureViewPreviewActivity.initTempFontSize(mFontSize);
 		mDataBinding.textureViewPreviewActivity.setTinyCCorrection(sp.getFloat(DYConstants.setting_correction, 0.0f));//设置vid  pid
-		mDataBinding.textureViewPreviewActivity.setDragTempContainer(mDataBinding.dragTempContainerPreviewFragment);
+		mDataBinding.textureViewPreviewActivity.setDragTempContainer(mDataBinding.dragTempContainerPreviewActivity);
 		mDataBinding.customSeekbarPreviewFragment.setmThumbListener(new MyCustomRangeSeekBar.ThumbListener() {
 			@Override
 			public void thumbChanged (float maxPercent, float minPercent, float maxValue, float minValue) {
@@ -633,9 +642,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mUvcCameraHandler.startTemperaturing();//温度回调
 		//		mDataBinding.tvPreviewHint.setVisibility(View.INVISIBLE);
 
-		mDataBinding.dragTempContainerPreviewFragment.setBackgroundColor(getColor(R.color.bg_preview_otg_connect));
-		mDataBinding.dragTempContainerPreviewFragment.setConnect(true);
-		mDataBinding.dragTempContainerPreviewFragment.invalidate();
+		mDataBinding.dragTempContainerPreviewActivity.setBackgroundColor(getColor(R.color.bg_preview_otg_connect));
+		mDataBinding.dragTempContainerPreviewActivity.setConnect(true);
+		mDataBinding.dragTempContainerPreviewActivity.invalidate();
 
 		//2022年3月27日12:58:52 吴长城  添加预览的高、低、中心温度
 		mDataBinding.textureViewPreviewActivity.openFeaturePoints(0);
@@ -648,46 +657,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	}
 
 	private static final int REQUEST_CODE_UNKNOWN_APP = 10085;
-
-	//	private void installApk (String path) {
-	//		File file = new File(path);
-	//		if (file.exists()) {
-	//			Intent installApkIntent = new Intent();
-	//			installApkIntent.setAction(Intent.ACTION_VIEW);
-	//			installApkIntent.addCategory(Intent.CATEGORY_DEFAULT);
-	//			installApkIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	//			//适配8.0需要有权限
-	//			//			Log.e(TAG, "installApk:  +Build.VERSION.SDK_INT  " + Build.VERSION.SDK_INT);
-	//			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-	//				boolean hasInstallPermission = getPackageManager().canRequestPackageInstalls();
-	//				//				Log.e(TAG, "installApk:  +  " + hasInstallPermission);
-	//				if (hasInstallPermission) {
-	//					//安装应用
-	//					installApkIntent.setDataAndType(FileProvider.getUriForFile(getApplicationContext(), getPackageName() + ".FileProvider", file), "application/vnd.android.package-archive");
-	//					installApkIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-	//					if (getPackageManager().queryIntentActivities(installApkIntent, 0).size() > 0) {
-	//						startActivity(installApkIntent);
-	//					}
-	//				} else {
-	//					//跳转至“安装未知应用”权限界面，引导用户开启权限
-	//					Uri selfPackageUri = Uri.parse("package:" + this.getPackageName());
-	//					Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, selfPackageUri);
-	//					startActivityForResult(intent, REQUEST_CODE_UNKNOWN_APP);
-	//				}
-	//			} else {
-	//				if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-	//					installApkIntent.setDataAndType(FileProvider.getUriForFile(getApplicationContext(), getPackageName() + ".FileProvider", file), "application/vnd.android.package-archive");
-	//					installApkIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-	//				} else {
-	//					installApkIntent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
-	//				}
-	//				if (getPackageManager().queryIntentActivities(installApkIntent, 0).size() > 0) {
-	//					startActivity(installApkIntent);
-	//				}
-	//			}
-	//			//			file.delete();
-	//		}
-	//	}
 
 
 	/**
@@ -1029,8 +998,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		screenHeight = dm.heightPixels;
 		mSendCommand = new SendCommand();
 
-//		mSensorManager = (SensorManager) mContext.get().getSystemService(Context.SENSOR_SERVICE);
-//		mAccelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		mSensorManager = (SensorManager) mContext.get().getSystemService(Context.SENSOR_SERVICE);
+		mAccelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
 		//		//获取当前设备支持的传感器列表
 		//		List<Sensor> allSensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
@@ -1118,12 +1087,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 					initRecord();
 
-					mDataBinding.dragTempContainerPreviewFragment.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
-					mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0));
+					mDataBinding.dragTempContainerPreviewActivity.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
+					mDataBinding.dragTempContainerPreviewActivity.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0));
 
 					mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null, 0);
 
-					fl = mDataBinding.flPreview;
+//					fl = mDataBinding.flPreview;
 
 					mUsbMonitor = new USBMonitor(mContext.get(), onDeviceConnectListener);
 				} else {
@@ -1235,7 +1204,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				mDataBinding.toggleHighTempAlarm.setSelected(!mDataBinding.toggleHighTempAlarm.isSelected());
 				if (mDataBinding.toggleHighTempAlarm.isSelected()) {
 					if (overTempDialog == null) {
-						overTempDialog = new OverTempDialog(mContext.get(), sp.getFloat("overTemp", 0.0f), mDataBinding.dragTempContainerPreviewFragment.getTempSuffixMode());
+						overTempDialog = new OverTempDialog(mContext.get(), sp.getFloat("overTemp", 0.0f), mDataBinding.dragTempContainerPreviewActivity.getTempSuffixMode());
 						overTempDialog.getWindow().setGravity(Gravity.CENTER);
 						//					WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
 						//					params.x =  mDataBinding.flPreview.getMeasuredWidth()/2 - DensityUtil.dp2px(mContext.get(), 50);
@@ -1243,7 +1212,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 							@Override
 							public void onSetComplete (float setValue) {
 								//							if (isDebug)Log.e(TAG, "onSetComplete: " + "confirm value = == > " + setValue  );
-								mDataBinding.dragTempContainerPreviewFragment.openHighTempAlarm(setValue);
+								mDataBinding.dragTempContainerPreviewActivity.openHighTempAlarm(setValue);
 								mDataBinding.textureViewPreviewActivity.startTempAlarm(setValue);
 								sp.edit().putFloat("overTemp", setValue).apply();
 							}
@@ -1265,7 +1234,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					overTempDialog.show();
 				} else {
 					mDataBinding.textureViewPreviewActivity.stopTempAlarm();
-					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
+					mDataBinding.dragTempContainerPreviewActivity.closeHighTempAlarm();
 				}
 			}
 		});
@@ -1393,8 +1362,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					mUvcCameraHandler.disWenKuan();
 			}
 			if (!mDataBinding.toggleAreaCheck.isSelected()) {
-				mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewActivity.getWidth(), mDataBinding.textureViewPreviewActivity.getHeight());
-				int[] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
+				mDataBinding.dragTempContainerPreviewActivity.openAreaCheck(mDataBinding.textureViewPreviewActivity.getWidth(), mDataBinding.textureViewPreviewActivity.getHeight());
+				int[] areaData = mDataBinding.dragTempContainerPreviewActivity.getAreaIntArray();
 
 				//					Log.e(TAG, "onCheckedChanged: checked  ==== >  " + isChecked + " ==================" + Arrays.toString(areaData));
 				if (mUvcCameraHandler == null)
@@ -1441,7 +1410,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					//重置色板
 					setPalette(0);
 					//重置绘制界面
-					mDataBinding.dragTempContainerPreviewFragment.clearAll();
+					mDataBinding.dragTempContainerPreviewActivity.clearAll();
 					//关闭框内细查
 					if (mDataBinding.toggleAreaCheck.isSelected()) {
 						mDataBinding.toggleAreaCheck.setSelected(false);
@@ -1450,7 +1419,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					//关闭 超温警告
 					mDataBinding.toggleHighTempAlarm.setSelected(false);
 					mDataBinding.textureViewPreviewActivity.stopTempAlarm();
-					mDataBinding.dragTempContainerPreviewFragment.closeHighTempAlarm();
+					mDataBinding.dragTempContainerPreviewActivity.closeHighTempAlarm();
 					//关闭 固定温度条
 					if (mDataBinding.toggleFixedTempBar.isSelected()) {
 						mDataBinding.toggleFixedTempBar.setSelected(false);
@@ -1871,7 +1840,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				popSettingBinding.switchChoiceTempUnit.setText(DYConstants.tempUnit).setSelectedTab(temp_unit).setOnSwitchListener(new SwitchMultiButton.OnSwitchListener() {
 					@Override
 					public void onSwitch (int position, String tabText) {//切换 温度单位 监听器
-						mDataBinding.dragTempContainerPreviewFragment.setTempSuffix(position);
+						mDataBinding.dragTempContainerPreviewActivity.setTempSuffix(position);
 						sp.edit().putInt(DYConstants.TEMP_UNIT_SETTING, position).apply();
 						//切换 温度单位 需要更改 输入框的 单位
 						popSettingBinding.tvCameraSettingReviseUnit.setText("(" + DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)] + ")");
@@ -1983,30 +1952,30 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			}
 		});
 		//
-		mDataBinding.dragTempContainerPreviewFragment.setAddChildDataListener(new DragTempContainer.onAddChildDataListener() {
+		mDataBinding.dragTempContainerPreviewActivity.setAddChildDataListener(new MeasureTempContainerView.onAddChildDataListener() {
 			@Override
-			public void onIsEventActionMove (DrawLineRecHint hint) {
+			public void onIsEventActionMove (DrawLineRectHint hint) {
 				mDataBinding.textureViewPreviewActivity.setDrawHint(hint);
 			}
 
 			@Override
-			public void onIsEventActionUp (DrawLineRecHint hint) {
+			public void onIsEventActionUp (DrawLineRectHint hint) {
 				hint.setNeedDraw(false);
 				mDataBinding.textureViewPreviewActivity.setDrawHint(hint);
 			}
 		});
 
 		//测温模式中 工具栏 点击监听器（删除，等工具栏）
-		mDataBinding.dragTempContainerPreviewFragment.setChildToolsClickListener(new DragTempContainer.OnChildToolsClickListener() {
+		mDataBinding.dragTempContainerPreviewActivity.setChildToolsClickListener(new MeasureTempContainerView.OnChildToolsClickListener() {
 			@Override
-			public void onChildToolsClick (TempWidgetObj child, int position) {
+			public void onChildToolsClick (MeasureEntity child, int position) {
 				//				if (isDebug)Log.e(TAG, "onChildToolsClick: ======preview tools position == > " + position);
 				if (position == 0) {
-					mDataBinding.dragTempContainerPreviewFragment.deleteChildView(child);
+					mDataBinding.dragTempContainerPreviewActivity.deleteChildView(child);
 					//底层重新设置 矩形框的 数据
 					if (child.getType() == 3) {
-						//						mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
-						int[] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
+						//						mDataBinding.dragTempContainerPreviewActivity.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
+						int[] areaData = mDataBinding.dragTempContainerPreviewActivity.getAreaIntArray();
 						//						if (isDebug)Log.e(TAG, "onChildToolsClick: ======setArea data  == >" + Arrays.toString(areaData));
 						if (areaData != null) {
 						} else {
@@ -2027,8 +1996,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			public void onRectChangedListener () {//移动框框之后刷新C层控件的设置
 				//				if (isDebug)Log.e(TAG, "onRectChangedListener:  ===== ");
 				if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened()) {
-					//					mDataBinding.dragTempContainerPreviewFragment.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
-					int[] areaData = mDataBinding.dragTempContainerPreviewFragment.getAreaIntArray();
+					//					mDataBinding.dragTempContainerPreviewActivity.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
+					int[] areaData = mDataBinding.dragTempContainerPreviewActivity.getAreaIntArray();
 					if (areaData != null) {
 					} else {
 						areaData = new int[0];
@@ -2046,7 +2015,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 			@Override
 			public void onSetParentUnselect () {
-				mDataBinding.dragTempContainerPreviewFragment.setAllChildUnSelect();
+				mDataBinding.dragTempContainerPreviewActivity.setAllChildUnSelect();
 			}
 		});
 	}
@@ -2087,18 +2056,18 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			switch (v.getId()) {
 				case R.id.iv_temp_mode_point:
 					PLRPopupWindows.dismiss();
-					mDataBinding.dragTempContainerPreviewFragment.setDrawTempMode(1);
-					//					mDataBinding.dragTempContainerPreviewFragment.getDrawTempMode();
+					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(1);
+					//					mDataBinding.dragTempContainerPreviewActivity.getDrawTempMode();
 					//					if (isDebug)showToast("point ");
 					break;
 				case R.id.iv_temp_mode_line:
 					PLRPopupWindows.dismiss();
-					mDataBinding.dragTempContainerPreviewFragment.setDrawTempMode(2);
+					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(2);
 					//					if (isDebug)showToast("line ");
 					break;
 				case R.id.iv_temp_mode_rectangle:
 					PLRPopupWindows.dismiss();
-					mDataBinding.dragTempContainerPreviewFragment.setDrawTempMode(3);
+					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(3);
 					//					if (isDebug)showToast("rectangle ");
 					break;
 			}
