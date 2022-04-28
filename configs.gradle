@@ -7,8 +7,8 @@ ext{
             minSdkV         :23,
             targetSdkV      :27,
             //版本号和名字
-            VCode           :8,
-            VName           :"1.0.8",
+            VCode           :9,
+            VName           :"1.0.9",
 
             supportV        :"27.0.0",
             applicationId: "com.dyt.wcc.dytpir"

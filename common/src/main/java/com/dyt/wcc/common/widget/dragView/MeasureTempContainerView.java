@@ -619,8 +619,8 @@ public class MeasureTempContainerView extends RelativeLayout {
 		endPressY = Math.max(0, Math.min(endPressY, screenHeight));
 
 
-		Log.e(TAG, "reviseCoordinate:  Math" + " SX = > " + startPressX + " SY => " + startPressY + " , EX = > " + endPressX + " EY = > " + endPressY);
-		Log.e(TAG, "reviseCoordinate: minAddWidgetWidth " + minAddWidgetWidth + " minAddWidgetHeight " + minAddWidgetHeight);
+//		Log.e(TAG, "reviseCoordinate:  Math" + " SX = > " + startPressX + " SY => " + startPressY + " , EX = > " + endPressX + " EY = > " + endPressY);
+//		Log.e(TAG, "reviseCoordinate: minAddWidgetWidth " + minAddWidgetWidth + " minAddWidgetHeight " + minAddWidgetHeight);
 
 		return true;
 	}
@@ -993,7 +993,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 		if (drawTempMode == -1) {
 			//判定事件 是否在  已选中子View
 			if (pressInSelectView(ev)) {
-				Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and pressInSelectView ============: ");
+//				Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and pressInSelectView ============: ");
 				/**
 				 * 可能存在响应级高于 自身的 未选中view 在事件处。
 				 */
@@ -1022,16 +1022,16 @@ public class MeasureTempContainerView extends RelativeLayout {
 				//				}
 				return super.onInterceptTouchEvent(ev);
 			} else {// 事件 不在 已选中的View 中，交给当前的 onTouchEvent处理
-				Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and pressInSelectView ====NO========: ");
+//				Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and pressInSelectView ====NO========: ");
 				//				if (mTimer!=null) mTimer.cancel();
 				setAllChildUnSelect();
 				//				mChildToolsClickListener.onRectChangedListener();
 				//存在 按下事件在 数据源感应区，但 弹起事件不在 感应区，此时 子view变成了 选中状态。
 				// 如何保证 500ms之内 事件都在同一个子View 内 则触发 选中事件。
 				if (pressInUserAddData(ev) != null) {
-					Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and press DONT InSelectView ===But in Data !!!========: ");
+//					Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and press DONT InSelectView ===But in Data !!!========: ");
 
-					Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and press DONT InSelectView ===But in Data !!!======getX==: " + ev.getX());
+//					Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and press DONT InSelectView ===But in Data !!!======getX==: " + ev.getX());
 					return super.onInterceptTouchEvent(ev);
 				}
 

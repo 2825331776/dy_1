@@ -12,7 +12,6 @@ import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextPaint;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -36,22 +35,29 @@ public class MeasureTempSpecificView extends View {
 
 	private Bitmap maxTempBt, minTempBt, centerTempBt;//最小温度，最大温度图片（单点只有最小温度的图片）
 	private MeasureEntity tempWidgetData;//数据源
-
-	private int mMinHeight;//最小高度像素点个数   //矩阵类型独有
-	private int mMinWidth;//最小宽度像素点个数    //矩阵和线独有
+	/**
+	 * 最小矩形的 边长（单位：像素/30dp）
+	 */
+	private int           mMinRectPixelsLength = 0;
+	//	private int mMinWidth;//最小宽度像素点个数    //矩阵和线独有
 	//矩形描边的长度为 最小宽度的一半 除以3，厚度为固定值8
 
 	private boolean isShowBg = false;//是否显示背景
 
 	private TextPaint pointTextPaint, maxTempTextPaint, minTempTextPaint, centerTempTextPaint;//画笔：点文字、最高最低文字、 中心点文字
 	private Paint pointPaint, linePaint, linePaintBg;//画笔：画点图片 、绘制线矩形的线条画笔
-	private Paint recZoomBox;//绘制背景画笔，绘制矩形八个方位的画笔//bgRoundPaint,
+	private Paint recZoomBox;//绘制背景画笔，绘制矩形八个方位的画笔
 	private int   recZoomBoxPaintStroke;// 缩放框画笔 宽度
 	private Paint textStokerPaint;
 
 	private WeakReference<Context> mContext;
 
-	private int padLeft, padRight, padTop, padBottom;//内容布局的四周margin
+	private int padLeft, padRight, padTop, padBottom;//内容布局的四周 padding 填充  // 貌似可以无需这个， 设置成一个常量的边界距离就OK
+	/**
+	 * 子View 与 父容器边界的 最小间隔 2个dp
+	 */
+	private int containerBorderLength = 0;
+
 
 	private int moveMaxWidth;//能移动的最大宽度和高度（即父控件的长宽）
 	private int moveMaxHeight;
@@ -97,14 +103,6 @@ public class MeasureTempSpecificView extends View {
 		this.mChildToolsClickListener = childToolsClickListener;
 	}
 
-	//	public MyMoveWidget (Context context, AttributeSet attrs) {
-	//		this(context, attrs,0);
-	//	}
-	//	public MyMoveWidget (Context context, AttributeSet attrs, int defStyleAttr) { super(context, attrs, defStyleAttr);
-	//		mContext = new WeakReference<>(context);
-	//		initView();
-	//		initPaint();
-	//	}
 	public MeasureTempSpecificView (Context context, MeasureEntity view, int maxWidth, int maxHeight) {
 		super(context);
 		mContext = new WeakReference<>(context);
@@ -113,13 +111,13 @@ public class MeasureTempSpecificView extends View {
 		moveMaxHeight = maxHeight;
 		setClickable(true);
 
-		Log.e(TAG, "MyMoveWidget:  type => " + view.getType());
-		if (view.getOtherTemp() != null) {
-			MeasureLineRectEntity otherView = view.getOtherTemp();
-			//			Log.e(TAG, "MyMoveWidget: OtherTemp startX = > " +  otherView.getStartPointX()  + " startY = > " + otherView.getStartPointY());
-			//			Log.e(TAG, "MyMoveWidget: OtherTemp endX = > " +  otherView.getEndPointX()  + " endY = > " + otherView.getEndPointY());
-			//			Log.e(TAG, "MyMoveWidget: otherTemp  min " + otherView.getMinTemp() +" maxTemp = " + otherView.getMaxTemp());
-		}
+		//		Log.e(TAG, "MyMoveWidget:  type => " + view.getType());
+		//		if (view.getOtherTemp() != null) {
+		//			MeasureLineRectEntity otherView = view.getOtherTemp();
+		//			Log.e(TAG, "MyMoveWidget: OtherTemp startX = > " +  otherView.getStartPointX()  + " startY = > " + otherView.getStartPointY());
+		//			Log.e(TAG, "MyMoveWidget: OtherTemp endX = > " +  otherView.getEndPointX()  + " endY = > " + otherView.getEndPointY());
+		//			Log.e(TAG, "MyMoveWidget: otherTemp  min " + otherView.getMinTemp() +" maxTemp = " + otherView.getMaxTemp());
+		//		}
 
 		//		Log.e(TAG, "MyMoveWidget: w=====================> " + moveMaxWidth +" h == " +moveMaxHeight);
 
@@ -129,41 +127,22 @@ public class MeasureTempSpecificView extends View {
 		initData();
 	}
 
+
+	/**
+	 * 初始化 一些参数
+	 */
 	private void initView () {
+		containerBorderLength = DensityUtil.dp2px(mContext.get(), 2);
 		padTop = padBottom = padLeft = padRight = DensityUtil.dp2px(mContext.get(), 3);//设置背景间距,动态计算。不同dpi有明显差异  3DP
-		mMinHeight = mMinWidth = 15 * padLeft;//矩形的最小宽高等于十五倍padding  45dp
+		mMinRectPixelsLength = DensityUtil.dp2px(mContext.get(), 60);//最小矩形的 边长（单位：像素/30dp）
 		recZoomBoxPaintStroke = DensityUtil.dp2px(mContext.get(), 3);//矩形缩放框 画笔的宽度
 		zoomLineLength = DensityUtil.dp2px(mContext.get(), 20);
 	}
 
-	//	private Timer mTimer = null;
-	//	private TimerTask mTimeTask;
-	private static final int     TO_CHANGE_SELECT = 11;
-	private              Handler mHandler         = new Handler(new Handler.Callback() {
-		@Override
-		public boolean handleMessage (@NonNull Message msg) {
-			switch (msg.what) {
-				case TO_CHANGE_SELECT:
-					//					if (tempWidgetData.isCanMove()){
-					tempWidgetData.setSelect(true);
-					requestLayout();
-					//					}
-					break;
-			}
-			return true;
-		}
-	});
-
-	public MeasureEntity gettempWidgetData () {
-		return tempWidgetData;
-	}
-
-	public void settempWidgetData (MeasureEntity tempWidgetData) {
-		this.tempWidgetData = tempWidgetData;
-	}
-
+	/**
+	 * 初始化画笔
+	 */
 	private void initPaint () {
-		//		if (isDebug)Log.e(TAG, "initPaint: ");
 		pointPaint = new Paint();
 		pointPaint.setColor(getResources().getColor(R.color.bg_preview_toggle_select));
 
@@ -224,17 +203,38 @@ public class MeasureTempSpecificView extends View {
 		textStokerPaint.setStrokeWidth(5);
 		textStokerPaint.setStyle(Paint.Style.STROKE);
 
-		//		bgRoundPaint = new Paint();
-		//		bgRoundPaint.setStyle(Paint.Style.FILL);
-		//		bgRoundPaint.setColor(getResources().getColor(R.color.bg_move_layout_round_bg));
-		//		bgRoundPaint.setAlpha(100);//透明度 0透明-255不透明
-		//		bgRoundPaint.setFlags(Paint.ANTI_ALIAS_FLAG);//抗锯齿
-
 		recZoomBox = new Paint();
 		recZoomBox.setColor(getResources().getColor(R.color.white));
-		Log.e(TAG, "initPaint: recZoomBoxPaintStroke = " + recZoomBoxPaintStroke);
+		//		Log.e(TAG, "initPaint: recZoomBoxPaintStroke = " + recZoomBoxPaintStroke);
 		recZoomBox.setStrokeWidth(recZoomBoxPaintStroke);
 	}
+
+	//	private Timer mTimer = null;
+	//	private TimerTask mTimeTask;
+	private static final int     TO_CHANGE_SELECT = 11;
+	private              Handler mHandler         = new Handler(new Handler.Callback() {
+		@Override
+		public boolean handleMessage (@NonNull Message msg) {
+			switch (msg.what) {
+				case TO_CHANGE_SELECT:
+					//					if (tempWidgetData.isCanMove()){
+					tempWidgetData.setSelect(true);
+					requestLayout();
+					//					}
+					break;
+			}
+			return true;
+		}
+	});
+
+	public MeasureEntity gettempWidgetData () {
+		return tempWidgetData;
+	}
+
+	public void settempWidgetData (MeasureEntity tempWidgetData) {
+		this.tempWidgetData = tempWidgetData;
+	}
+
 
 	public void dataUpdate (MeasureEntity obj) {
 		tempWidgetData = obj;
@@ -258,10 +258,6 @@ public class MeasureTempSpecificView extends View {
 			//			int[]{R.mipmap.ic_areacheck_tools_delete}
 			tempWidgetData.addToolsBp(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_areacheck_tools_delete));
 		}
-		//		if (!tempWidgetData.isCanMove()){//不管什么类型，不能移动绝对不能选中
-		//			tempWidgetData.setSelect(false);
-		//		}
-		//		hasBackGroundAndTools = tempWidgetData.isSelect();//初始化是否有工具栏及其背景
 		//√计算工具栏的所需宽高
 		toolsNeedWidth = DensityUtil.dp2px(mContext.get(), (MeasureTempContainerView.perToolsWidthHeightSet + MeasureTempContainerView.perToolsMargin * 2));
 		toolsNeedHeight = tempWidgetData.getToolsNumber() * toolsNeedWidth;//包含了 margin
@@ -609,14 +605,14 @@ public class MeasureTempSpecificView extends View {
 				float min, max;
 				//点模式，计算最左的坐标
 				min = Math.min(contentBgLeft, contentLeft);
-				;
+
 				minLeft = min;
 				min = Math.min(contentBgTop, contentTop);
-				;
+
 				minTop = min;
 
 				max = Math.max(contentBgRight, contentRight);
-				;
+
 				maxRight = max;
 
 				max = Math.max(contentBgBottom, contentBottom);
@@ -1014,55 +1010,44 @@ public class MeasureTempSpecificView extends View {
 
 	@Override
 	public boolean dispatchTouchEvent (MotionEvent ev) {
-		Log.e(TAG, "Child View  === dispatchTouchEvent ==  ev.getAction ==== " + ev.getAction());
+		//		Log.e(TAG, "Child View  === dispatchTouchEvent ==  ev.getAction ==== " + ev.getAction());
 		//		Log.e(TAG, "Child View  === dispatchTouchEvent ==  get Event , do judge event is in select or in data ?");
 		if (!tempWidgetData.isSelect()) {
-			Log.e(TAG, "Child View  === dispatchTouchEvent ==  get Event , do judge event === Don't select or in data!");
+			//			Log.e(TAG, "Child View  === dispatchTouchEvent ==  get Event , do judge event === Don't select or in data!");
 			boolean result = true;//事件是否在 数据源感应区内
 			switch (tempWidgetData.getType()) {
 				case 1://点
-					result = (ev.getX() < (tempWidgetData.getPointTemp().getStartPointX() - xOffset) + mDataNearByUnit * 3.0f)
-							&& (ev.getX() > (tempWidgetData.getPointTemp().getStartPointX() - xOffset) - mDataNearByUnit * 3.0f)
-							&& (ev.getY() < (tempWidgetData.getPointTemp().getStartPointY() - yOffset) + mDataNearByUnit * 3.0f)
-							&& (ev.getY() > (tempWidgetData.getPointTemp().getStartPointY() - yOffset) - mDataNearByUnit * 3.0f);
+					result = (ev.getX() < (tempWidgetData.getPointTemp().getStartPointX() - xOffset) + mDataNearByUnit * 3.0f) && (ev.getX() > (tempWidgetData.getPointTemp().getStartPointX() - xOffset) - mDataNearByUnit * 3.0f) && (ev.getY() < (tempWidgetData.getPointTemp().getStartPointY() - yOffset) + mDataNearByUnit * 3.0f) && (ev.getY() > (tempWidgetData.getPointTemp().getStartPointY() - yOffset) - mDataNearByUnit * 3.0f);
 					break;
 				case 2://线
-					float k = (tempWidgetData.getOtherTemp().getEndPointY() - tempWidgetData.getOtherTemp().getStartPointY())
-							/ (tempWidgetData.getOtherTemp().getEndPointX() - tempWidgetData.getOtherTemp().getStartPointX());
+					float k = (tempWidgetData.getOtherTemp().getEndPointY() - tempWidgetData.getOtherTemp().getStartPointY()) / (tempWidgetData.getOtherTemp().getEndPointX() - tempWidgetData.getOtherTemp().getStartPointX());
 					//当前子View的 Y轴偏移量
-					float k_b = tempWidgetData.getOtherTemp().getStartPointY() - yOffset
-							- k * (tempWidgetData.getOtherTemp().getStartPointX() - xOffset);
+					float k_b = tempWidgetData.getOtherTemp().getStartPointY() - yOffset - k * (tempWidgetData.getOtherTemp().getStartPointX() - xOffset);
 					//点击的点 在绘制的线 周围 20个dp范围内
 					result = Math.abs(k_b - (ev.getY() - k * ev.getX())) < mDataNearByUnit * 2.0f;
 					break;
 				case 3://矩形
-					if (tempWidgetData.isRotate()){
-//						Log.e(TAG, "dispatchTouchEvent: xOffset = " +xOffset + " yOffset= "+ yOffset );
-//						Log.e(TAG, "dispatchTouchEvent: StartPointX() = " +tempWidgetData.getOtherTemp().getStartPointX() +
-//								" getEndPointX()= " + tempWidgetData.getOtherTemp().getEndPointX() );
-//						Log.e(TAG, "dispatchTouchEvent: getStartPointY() = " +tempWidgetData.getOtherTemp().getStartPointY() +
-//								" getEndPointY()= " + tempWidgetData.getOtherTemp().getEndPointY() );
+					if (tempWidgetData.isRotate()) {
+						//						Log.e(TAG, "dispatchTouchEvent: xOffset = " +xOffset + " yOffset= "+ yOffset );
+						//						Log.e(TAG, "dispatchTouchEvent: StartPointX() = " +tempWidgetData.getOtherTemp().getStartPointX() +
+						//								" getEndPointX()= " + tempWidgetData.getOtherTemp().getEndPointX() );
+						//						Log.e(TAG, "dispatchTouchEvent: getStartPointY() = " +tempWidgetData.getOtherTemp().getStartPointY() +
+						//								" getEndPointY()= " + tempWidgetData.getOtherTemp().getEndPointY() );
 
-//						result = (ev.getX() > (xOffset - tempWidgetData.getOtherTemp().getStartPointX()) - mDataNearByUnit)
-//								&& (ev.getX() < (xOffset - tempWidgetData.getOtherTemp().getEndPointX()) + mDataNearByUnit)
-//								&& (ev.getY() > (yOffset - tempWidgetData.getOtherTemp().getStartPointY()) - mDataNearByUnit)
-//								&& (ev.getY() < (yOffset - tempWidgetData.getOtherTemp().getEndPointY()) + mDataNearByUnit);
-						result = (ev.getX() > (tempWidgetData.getOtherTemp().getStartPointX() - xOffset) - mDataNearByUnit)
-								&& (ev.getX() < (tempWidgetData.getOtherTemp().getEndPointX() - xOffset) + mDataNearByUnit)
-								&& (ev.getY() > (tempWidgetData.getOtherTemp().getStartPointY() - yOffset) - mDataNearByUnit)
-								&& (ev.getY() < (tempWidgetData.getOtherTemp().getEndPointY() - yOffset) + mDataNearByUnit);
-					}else {
-						result = (ev.getX() > (tempWidgetData.getOtherTemp().getStartPointX() - xOffset) - mDataNearByUnit)
-								&& (ev.getX() < (tempWidgetData.getOtherTemp().getEndPointX() - xOffset) + mDataNearByUnit)
-								&& (ev.getY() > (tempWidgetData.getOtherTemp().getStartPointY() - yOffset) - mDataNearByUnit)
-								&& (ev.getY() < (tempWidgetData.getOtherTemp().getEndPointY() - yOffset) + mDataNearByUnit);
+						//						result = (ev.getX() > (xOffset - tempWidgetData.getOtherTemp().getStartPointX()) - mDataNearByUnit)
+						//								&& (ev.getX() < (xOffset - tempWidgetData.getOtherTemp().getEndPointX()) + mDataNearByUnit)
+						//								&& (ev.getY() > (yOffset - tempWidgetData.getOtherTemp().getStartPointY()) - mDataNearByUnit)
+						//								&& (ev.getY() < (yOffset - tempWidgetData.getOtherTemp().getEndPointY()) + mDataNearByUnit);
+						result = (ev.getX() > (tempWidgetData.getOtherTemp().getStartPointX() - xOffset) - mDataNearByUnit) && (ev.getX() < (tempWidgetData.getOtherTemp().getEndPointX() - xOffset) + mDataNearByUnit) && (ev.getY() > (tempWidgetData.getOtherTemp().getStartPointY() - yOffset) - mDataNearByUnit) && (ev.getY() < (tempWidgetData.getOtherTemp().getEndPointY() - yOffset) + mDataNearByUnit);
+					} else {
+						result = (ev.getX() > (tempWidgetData.getOtherTemp().getStartPointX() - xOffset) - mDataNearByUnit) && (ev.getX() < (tempWidgetData.getOtherTemp().getEndPointX() - xOffset) + mDataNearByUnit) && (ev.getY() > (tempWidgetData.getOtherTemp().getStartPointY() - yOffset) - mDataNearByUnit) && (ev.getY() < (tempWidgetData.getOtherTemp().getEndPointY() - yOffset) + mDataNearByUnit);
 					}
 
-//					Log.e(TAG, "Child View  === dispatchTouchEvent == view unSelect: Type = 3  ==== mDataNearByUnit == " + mDataNearByUnit);
-//					Log.e(TAG, "Child View  === dispatchTouchEvent == view unSelect: Type = 3  Event getX =  " + ev.getX() + " data.getStartPointX-xOffset =  > " + (tempWidgetData.getOtherTemp().getStartPointX() - xOffset) + " , data.getEndPointX-xOffset =  > " + (tempWidgetData.getOtherTemp().getEndPointX() - xOffset));
+					//					Log.e(TAG, "Child View  === dispatchTouchEvent == view unSelect: Type = 3  ==== mDataNearByUnit == " + mDataNearByUnit);
+					//					Log.e(TAG, "Child View  === dispatchTouchEvent == view unSelect: Type = 3  Event getX =  " + ev.getX() + " data.getStartPointX-xOffset =  > " + (tempWidgetData.getOtherTemp().getStartPointX() - xOffset) + " , data.getEndPointX-xOffset =  > " + (tempWidgetData.getOtherTemp().getEndPointX() - xOffset));
 					break;
 			}
-//			Log.e(TAG, "Child View  === dispatchTouchEvent ==  get Event , do judge event == result == >> " + result);
+			//			Log.e(TAG, "Child View  === dispatchTouchEvent ==  get Event , do judge event == result == >> " + result);
 			if (result) {
 				return super.dispatchTouchEvent(ev);
 			} else {
@@ -1120,194 +1105,188 @@ public class MeasureTempSpecificView extends View {
 		return state;
 	}
 
+
 	/**
-	 * 规定了 矩形测温模式  边界。 并重新设置矩形数据源 坐标，去重绘制图像
+	 * <p>矩形测温 的缩放 或 平移 ，pressDirection 为center的时候为平移，其余为缩放。</p>
+	 * <p>不论是否被翻转，当前View的 绘制原点都在左上顶点 。即绘制起点在左上</p>
 	 *
-	 * @param data           数据源 ，要去修改坐标的 对象
-	 * @param xOff           移动的 X轴偏移量。 根据判断偏移量是否越界 是否重新设置 数据源坐标
-	 * @param yOff           移动的 Y轴偏移量。 根据判断偏移量是否越界 是否重新设置 数据源坐标
-	 * @param pressDirection 按下的点 是否在 矩形的 八个 顶点边界上。是的话则是 缩放矩形。否则只是 简单的平移
+	 * @param entity         <p>数据源 ，要去修改坐标的 对象</p>
+	 * @param xOff           <p>移动的 X轴偏移量。 判断偏移之后是否越界 决定是否重新设置 数据源坐标</p>
+	 * @param yOff           <p>移动的 Y轴偏移量。 判断偏移之后是否越界 决定是否重新设置 数据源坐标</p>
+	 * @param pressDirection <p>按下的点 是否在 矩形的 八个 顶点边界上。是的话则是 缩放矩形。否则只是 简单的平移</p>
 	 */
-	private void reviseRectangleLocation (MeasureEntity data, float xOff, float yOff, int pressDirection) {
-		float sx = data.getOtherTemp().getStartPointX(), sy = data.getOtherTemp().getStartPointY();
-		float ex = data.getOtherTemp().getEndPointX(), ey = data.getOtherTemp().getEndPointY();
-		float lengthX = ex - sx;
-		float lengthY = ey - sy;
-		Log.e(TAG, "reviseRectangleLocation:: pressDirection  == > " + pressDirection);
+	private void reviseRectangleLocation (MeasureEntity entity, float xOff, float yOff, int pressDirection) {
+		float startX = entity.getOtherTemp().getStartPointX(), startY = entity.getOtherTemp().getStartPointY();
+		float endX = entity.getOtherTemp().getEndPointX(), endY = entity.getOtherTemp().getEndPointY();
+		float rectXLength = endX - startX;
+		float rectYLength = endY - startY;
+		boolean isRotate = entity.isRotate();
+		//		Log.e(TAG, "reviseRectangleLocation:: pressDirection  == > " + pressDirection);
 
 		switch (pressDirection) {
-			case WIDGET_DIRECTION_STATE_LEFT:
-				if ((sx + xOff) >= padLeft && (ex - (sx + xOff)) >= DensityUtil.dp2px(mContext.get(), 70)) {
-					if (tempWidgetData.isRotate()) {
-						sx -= xOff;
-					} else {
-						sx += xOff;
+			case WIDGET_DIRECTION_STATE_LEFT://左侧
+				if (isRotate) {//旋转
+					if ((startX - xOff) >= containerBorderLength && (endX - (startX - xOff)) >= mMinRectPixelsLength) {
+						startX -= xOff;
 					}
-					data.getOtherTemp().setStartPointX(sx);
-					requestLayout();
+				} else {//未旋转
+					if ((startX + xOff) >= containerBorderLength && (endX - (startX + xOff)) >= mMinRectPixelsLength) {
+						startX += xOff;
+					}
 				}
+				entity.getOtherTemp().setStartPointX(startX);
+				requestLayout();
 				break;
-			case WIDGET_DIRECTION_STATE_LEFT_TOP:
-				if ((sx + xOff) >= padLeft && (ex - (sx + xOff)) >= DensityUtil.dp2px(mContext.get(), 70)) {
-					if (tempWidgetData.isRotate()) {
-						sx -= xOff;
-					} else {
-						sx += xOff;
+			case WIDGET_DIRECTION_STATE_RIGHT://右侧
+				if (isRotate) {//旋转
+					if ((endX - xOff) - startX >= mMinRectPixelsLength && (endX - xOff) <= (moveMaxWidth - containerBorderLength)) {
+						endX -= xOff;
 					}
-					//					sx += xOff;
-					data.getOtherTemp().setStartPointX(sx);
-					requestLayout();
-				}
-				if ((sy + yOff) >= padTop && (ey - (sy + yOff)) >= DensityUtil.dp2px(mContext.get(), 70)) {
-					if (tempWidgetData.isRotate()) {
-						sy -= yOff;
-					} else {
-						sy += yOff;
+				} else {//未旋转
+					if ((endX + xOff) - startX >= mMinRectPixelsLength && (endX + xOff) <= (moveMaxWidth - containerBorderLength)) {
+						endX += xOff;
 					}
-					//					sy += yOff;
-					data.getOtherTemp().setStartPointY(sy);
-					requestLayout();
 				}
+				entity.getOtherTemp().setEndPointX(endX);
+				requestLayout();
 				break;
-			case WIDGET_DIRECTION_STATE_LEFT_BOTTOM:
-				if ((sx + xOff) >= padLeft && (ex - (sx + xOff)) >= DensityUtil.dp2px(mContext.get(), 70)) {
-					if (tempWidgetData.isRotate()) {
-						sx -= xOff;
-					} else {
-						sx += xOff;
+			case WIDGET_DIRECTION_STATE_TOP://顶部
+				if (isRotate) {//旋转
+					if ((startY - yOff) >= containerBorderLength && (endY - (startY - yOff)) >= mMinRectPixelsLength) {
+						startY -= yOff;
 					}
-					//					sx += xOff;
-					data.getOtherTemp().setStartPointX(sx);
-					requestLayout();
-				}
-				if ((ey + yOff) <= (moveMaxHeight - padBottom) && ((ey + yOff) - sy) >= DensityUtil.dp2px(mContext.get(), 70)) {
-					if (tempWidgetData.isRotate()) {
-						ey -= yOff;
-					} else {
-						ey += yOff;
+				} else {//未旋转
+					if ((startY + yOff) >= containerBorderLength && (endY - (startY + yOff)) >= mMinRectPixelsLength) {
+						startY += yOff;
 					}
-					//					ey += yOff;
-					data.getOtherTemp().setEndPointY(ey);
-					requestLayout();
 				}
+				entity.getOtherTemp().setStartPointY(startY);
+				requestLayout();
 				break;
-			case WIDGET_DIRECTION_STATE_TOP:
-				if ((sy + yOff) >= padTop && (ey - (sy + yOff)) >= DensityUtil.dp2px(mContext.get(), 70)) {
-					if (tempWidgetData.isRotate()) {
-						sy -= yOff;
-					} else {
-						sy += yOff;
+			case WIDGET_DIRECTION_STATE_BOTTOM://底部
+				if (isRotate) {//旋转
+					if ((endY - yOff) <= (moveMaxHeight - containerBorderLength) && ((endY - yOff) - startY) >= mMinRectPixelsLength) {
+						endY -= yOff;
 					}
-					//					sy += yOff;
-					data.getOtherTemp().setStartPointY(sy);
-					requestLayout();
+				} else {//未旋转
+					if ((endY + yOff) <= (moveMaxHeight - containerBorderLength) && ((endY + yOff) - startY) >= mMinRectPixelsLength) {
+						endY += yOff;
+					}
 				}
+				entity.getOtherTemp().setEndPointY(endY);
+				requestLayout();
 				break;
-			case WIDGET_DIRECTION_STATE_BOTTOM:
-				if ((ey + yOff) <= (moveMaxHeight - padBottom) && ((ey + yOff) - sy) >= DensityUtil.dp2px(mContext.get(), 70)) {
-					if (tempWidgetData.isRotate()) {
-						ey -= yOff;
-					} else {
-						ey += yOff;
+			case WIDGET_DIRECTION_STATE_LEFT_TOP://左上
+				if (isRotate) {//旋转
+					if ((startX - xOff) >= containerBorderLength && (endX - (startX - xOff)) >= mMinRectPixelsLength) {
+						startX -= xOff;
 					}
-					//					ey += yOff;
-					data.getOtherTemp().setEndPointY(ey);
-					requestLayout();
+					if ((startY - yOff) >= containerBorderLength && (endY - (startY - yOff)) >= mMinRectPixelsLength) {
+						startY -= yOff;
+					}
+				} else {//未旋转
+					if ((startX + xOff) >= containerBorderLength && (endX - (startX + xOff)) >= mMinRectPixelsLength) {
+						startX += xOff;
+					}
+					if ((startY + yOff) >= containerBorderLength && (endY - (startY + yOff)) >= mMinRectPixelsLength) {
+						startY += yOff;
+					}
 				}
+				entity.getOtherTemp().setStartPointX(startX);
+				entity.getOtherTemp().setStartPointY(startY);
+				requestLayout();
 				break;
-			case WIDGET_DIRECTION_STATE_RIGHT:
-				if ((ex + xOff) - sx >= DensityUtil.dp2px(mContext.get(), 70) && (ex + xOff) <= (moveMaxWidth - padRight)) {
-					if (tempWidgetData.isRotate()) {
-						ex -= xOff;
-					} else {
-						ex += xOff;
+			case WIDGET_DIRECTION_STATE_LEFT_BOTTOM://左下
+				if (isRotate) {//旋转
+					if ((startX - xOff) >= containerBorderLength && (endX - (startX - xOff)) >= mMinRectPixelsLength) {
+						startX -= xOff;
 					}
-					//					ex += xOff;
-					data.getOtherTemp().setEndPointX(ex);
-					requestLayout();
+					if ((endY - yOff) <= (moveMaxHeight - containerBorderLength) && ((endY - yOff) - startY) >= mMinRectPixelsLength) {
+						endY -= yOff;
+					}
+				} else {//未旋转
+					if ((startX + xOff) >= containerBorderLength && (endX - (startX + xOff)) >= mMinRectPixelsLength) {
+						startX += xOff;
+					}
+					if ((endY + yOff) <= (moveMaxHeight - containerBorderLength) && ((endY + yOff) - startY) >= mMinRectPixelsLength) {
+						endY += yOff;
+					}
 				}
+				entity.getOtherTemp().setStartPointX(startX);
+				entity.getOtherTemp().setEndPointY(endY);
+				requestLayout();
 				break;
-			case WIDGET_DIRECTION_STATE_RIGHT_TOP:
-				if ((sy + yOff) >= padTop && (ey - (sy + yOff)) >= DensityUtil.dp2px(mContext.get(), 70)) {
-					if (tempWidgetData.isRotate()) {
-						sy -= yOff;
-					} else {
-						sy += yOff;
+			case WIDGET_DIRECTION_STATE_RIGHT_TOP://右上
+				if (isRotate) {//旋转
+					if ((endX - xOff) - startX >= mMinRectPixelsLength && (endX - xOff) <= (moveMaxWidth - containerBorderLength)) {
+						endX -= xOff;
 					}
-					//					sy += yOff;
-					data.getOtherTemp().setStartPointY(sy);
-					requestLayout();
-				}
-				if ((ex + xOff) - sx >= DensityUtil.dp2px(mContext.get(), 70) && (ex + xOff) <= (moveMaxWidth - padRight)) {
-					if (tempWidgetData.isRotate()) {
-						ex -= xOff;
-					} else {
-						ex += xOff;
+					if ((startY - yOff) >= containerBorderLength && (endY - (startY - yOff)) >= mMinRectPixelsLength) {
+						startY -= yOff;
 					}
-					//					ex += xOff;
-					data.getOtherTemp().setEndPointX(ex);
-					requestLayout();
+				} else {//未旋转
+					if ((endX + xOff) - startX >= mMinRectPixelsLength && (endX + xOff) <= (moveMaxWidth - containerBorderLength)) {
+						endX += xOff;
+					}
+					if ((startY + yOff) >= containerBorderLength && (endY - (startY + yOff)) >= mMinRectPixelsLength) {
+						startY += yOff;
+					}
 				}
+				entity.getOtherTemp().setEndPointX(endX);
+				entity.getOtherTemp().setStartPointY(startY);
+				requestLayout();
 				break;
-			case WIDGET_DIRECTION_STATE_RIGHT_BOTTOM:
-				if ((ex + xOff) - sx >= DensityUtil.dp2px(mContext.get(), 70) && (ex + xOff) <= (moveMaxWidth - padRight)) {
-					if (tempWidgetData.isRotate()) {
-						ex -= xOff;
-					} else {
-						ex += xOff;
+			case WIDGET_DIRECTION_STATE_RIGHT_BOTTOM://右下
+				if (isRotate) {//旋转
+					if ((endX - xOff) - startX >= mMinRectPixelsLength && (endX - xOff) <= (moveMaxWidth - padRight)) {
+						endX -= xOff;
 					}
-					//					ex += xOff;
-					data.getOtherTemp().setEndPointX(ex);
-					requestLayout();
-				}
-				if ((ey + yOff) <= (moveMaxHeight - padBottom) && ((ey + yOff) - sy) >= DensityUtil.dp2px(mContext.get(), 70)) {
-					if (tempWidgetData.isRotate()) {
-						ey -= yOff;
-					} else {
-						ey += yOff;
+					if ((endY - yOff) <= (moveMaxHeight - padBottom) && ((endY - yOff) - startY) >= mMinRectPixelsLength) {
+						endY -= yOff;
 					}
-					//					ey += yOff;
-					data.getOtherTemp().setEndPointY(ey);
-					requestLayout();
+				} else {//未旋转
+					if ((endX + xOff) - startX >= mMinRectPixelsLength && (endX + xOff) <= (moveMaxWidth - padRight)) {
+						endX += xOff;
+					}
+					if ((endY + yOff) <= (moveMaxHeight - padBottom) && ((endY + yOff) - startY) >= mMinRectPixelsLength) {
+						endY += yOff;
+					}
 				}
+				entity.getOtherTemp().setEndPointX(endX);
+				entity.getOtherTemp().setEndPointY(endY);
+				requestLayout();
 				break;
 			case CENTER_RECTANGLE:
-				//rectangleState
 				//				Log.e(TAG, "reviseRectangleLocation:CENTER_RECTANGLE " + CENTER_RECTANGLE);
 				//				Log.e(TAG, "onTouchEvent: type == 3 "  );
 				//(event.getRawX()- pressDownX) 偏移量   (event.getRawY()- pressDownY)
 				//X 起点的取值范围为[ 0 , moveMaxWidth-(endX-startX)]   终点 [ (endX-startX) , moveMaxWidth]
 				//Y 起点取值范围[0,moveMaxHeight]   终点 [0,moveMaxHeight]
 				//				float xoff = (event.getRawX()- pressDownX),yoff = (event.getRawY()- pressDownY);
-				if ((sx + xOff) >= padLeft && (sx + xOff) <= (moveMaxWidth - lengthX) && (ex + xOff) >= lengthX && (ex + xOff) <= moveMaxWidth - padRight) {
-					if (tempWidgetData.isRotate()) {
-						sx -= xOff;
-						ex -= xOff;
-					} else {
-						sx += xOff;
-						ex += xOff;
+				if (isRotate) {//旋转
+					if ((startX - xOff) >= containerBorderLength && (startX - xOff) <= (moveMaxWidth - rectXLength) && (endX - xOff) >= rectXLength && (endX - xOff) <= moveMaxWidth - containerBorderLength) {
+						startX -= xOff;
+						endX -= xOff;
 					}
-					//					sx += xOff;
-					//					ex += xOff;
-
-					data.getOtherTemp().setStartPointX(sx);
-					data.getOtherTemp().setEndPointX(ex);
-					requestLayout();
-				}
-				if ((sy + yOff) >= padTop && (sy + yOff) <= (moveMaxHeight - padBottom) && (ey + yOff) >= lengthY && (ey + yOff) <= (moveMaxHeight - padRight)) {
-					if (tempWidgetData.isRotate()) {
-						sy -= yOff;
-						ey -= yOff;
-					} else {
-						sy += yOff;
-						ey += yOff;
+					if ((startY - yOff) >= containerBorderLength && (startY - yOff) <= (moveMaxHeight - containerBorderLength) && (endY - yOff) >= rectYLength && (endY - yOff) <= (moveMaxHeight - containerBorderLength)) {
+						startY -= yOff;
+						endY -= yOff;
 					}
-					//					sy += yOff;
-					//					ey += yOff;
-					data.getOtherTemp().setStartPointY(sy);
-					data.getOtherTemp().setEndPointY(ey);
-					requestLayout();
+				} else {//未旋转
+					if ((startX + xOff) >= containerBorderLength && (startX + xOff) <= (moveMaxWidth - rectXLength) && (endX + xOff) >= rectXLength && (endX + xOff) <= moveMaxWidth - containerBorderLength) {
+						startX += xOff;
+						endX += xOff;
+					}
+					if ((startY + yOff) >= containerBorderLength && (startY + yOff) <= (moveMaxHeight - containerBorderLength) && (endY + yOff) >= rectYLength && (endY + yOff) <= (moveMaxHeight - containerBorderLength)) {
+						startY += yOff;
+						endY += yOff;
+					}
 				}
+				entity.getOtherTemp().setStartPointX(startX);
+				entity.getOtherTemp().setEndPointX(endX);
+				entity.getOtherTemp().setStartPointY(startY);
+				entity.getOtherTemp().setEndPointY(endY);
+				requestLayout();
 				break;
 		}
 	}
@@ -1318,15 +1297,15 @@ public class MeasureTempSpecificView extends View {
 
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
-		Log.e(TAG, "Child onTouchEvent:  getX=======> " + event.getX() + " getY======> " + event.getY() + "  bg = " + tempWidgetData.isSelect());
-		Log.e(TAG, "Child onTouchEvent:  getRawX ===> " + event.getX() + " getRawY===>" + event.getY());
+		//		Log.e(TAG, "Child onTouchEvent:  getX=======> " + event.getX() + " getY======> " + event.getY() + "  bg = " + tempWidgetData.isSelect());
+		//		Log.e(TAG, "Child onTouchEvent:  getRawX ===> " + event.getX() + " getRawY===>" + event.getY());
 		//触碰事件在 工具栏内， 则回调工具栏点击事件，并消耗掉 此次事件。
 		if (tempWidgetData.isSelect() && event.getX() > toolsBgLeft && event.getX() < toolsBgRight && event.getY() > toolsBgTop && event.getY() < toolsBgBottom) {
 			//点击了工具栏
-			Log.e(TAG, "onTouchEvent:  in tools bg ");
+			//			Log.e(TAG, "onTouchEvent:  in tools bg ");
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
 				int clickPosition = (int) ((event.getY() - toolsBgTop) / toolsNeedWidth);
-				Log.e(TAG, "onTouchEvent: child click tools position is === >  " + clickPosition);
+				//				Log.e(TAG, "onTouchEvent: child click tools position is === >  " + clickPosition);
 				mChildToolsClickListener.onChildToolsClick(tempWidgetData, clickPosition);
 			}
 			return true;
@@ -1339,18 +1318,13 @@ public class MeasureTempSpecificView extends View {
 					if (tempWidgetData.getType() == 3 && tempWidgetData.isSelect()) {
 						rectangleState = setPressDownState(event.getX(), event.getY());
 					}
-					Log.e(TAG, "type = 3: ==== > " + rectangleState);
-
-
-					Log.e(TAG, "onTouchEvent:child action down " + event.getRawX() + "  Y = >" + event.getRawY());
+					//					Log.e(TAG, "onTouchEvent:child action down " + event.getRawX() + "  Y = >" + event.getRawY());
 					pressDownX = event.getRawX();
 					pressDownY = event.getRawY();
-
 					break;
 				case MotionEvent.ACTION_MOVE://每帧都会刷新  // 移动边界值问题
-					Log.e(TAG, " child onTouchEvent:  =      ========== ");
+					//					Log.e(TAG, " child onTouchEvent:  =      ========== ");
 					if (tempWidgetData.isSelect()) {
-
 						//						pressDownX = event.getRawX();
 						//						pressDownY = event.getRawY();
 						if (tempWidgetData.getType() == 1) {
@@ -1373,7 +1347,6 @@ public class MeasureTempSpecificView extends View {
 						}
 						//移动  线测温模式
 						if (tempWidgetData.getType() == 2) {
-							Log.e(TAG, "onTouchEvent: type == 2 ");
 							//(event.getRawX()- pressDownX) 偏移量   (event.getRawY()- pressDownY)
 							//X 起点的取值范围为[ 0 , moveMaxWidth-(endX-startX)]   终点 [ (endX-startX) , moveMaxWidth]
 							//Y 起点取值范围[0,moveMaxHeight]   终点 [0,moveMaxHeight]
@@ -1383,34 +1356,38 @@ public class MeasureTempSpecificView extends View {
 							float ex = tempWidgetData.getOtherTemp().getEndPointX(), ey = tempWidgetData.getOtherTemp().getEndPointY();
 							float xLength = Math.abs(ex - sx);//x 轴 长度
 							float yLength = Math.abs(ey - sy);//y 轴 长度
-							//线测温模式 X 坐标 限制区域
-							if ((sx + xoff) >= padLeft && (sx + xoff) <= (moveMaxWidth - xLength - padRight) && (ex + xoff) >= padLeft + xLength && (ex + xoff) <= moveMaxWidth - padRight) {
-								if (tempWidgetData.isRotate()) {
+							if (tempWidgetData.isRotate()) {
+								if ((sx - xoff) >= containerBorderLength && (sx - xoff) <= (moveMaxWidth - xLength - containerBorderLength)
+										&& (ex - xoff) >= containerBorderLength + xLength && (ex - xoff) <= moveMaxWidth - containerBorderLength) {
 									sx -= xoff;
 									ex -= xoff;
-								} else {
+								}
+								if ((Math.min(ey, sy) - yoff) >= containerBorderLength
+										&& ((Math.min(ey, sy) - yoff) <= (moveMaxHeight - yLength - containerBorderLength))
+										&& (Math.max(ey, sy) - yoff) >= (containerBorderLength + yLength)
+										&& ((Math.max(ey, sy) - yoff) <= (moveMaxHeight - containerBorderLength))) {
+									sy -= yoff;
+									ey -= yoff;
+								}
+							} else {
+								if ((sx + xoff) >= containerBorderLength && (sx + xoff) <= (moveMaxWidth - xLength - padRight)
+										&& (ex + xoff) >= padLeft + xLength && (ex + xoff) <= moveMaxWidth - padRight) {
 									sx += xoff;
 									ex += xoff;
 								}
-
-								tempWidgetData.getOtherTemp().setStartPointX(sx);
-								tempWidgetData.getOtherTemp().setEndPointX(ex);
-								requestLayout();
-
-							}
-							//线测温模式 Y 坐标 限制区域
-							if ((Math.min(ey, sy) + yoff) >= padTop && ((Math.min(ey, sy) + yoff) <= (moveMaxHeight - yLength - padBottom)) && (Math.max(ey, sy) + yoff) >= (padTop + yLength) && ((Math.max(ey, sy) + yoff) <= (moveMaxHeight - padBottom))) {
-								if (tempWidgetData.isRotate()) {
-									sy -= yoff;
-									ey -= yoff;
-								} else {
+								if ((Math.min(ey, sy) + yoff) >= containerBorderLength
+										&& ((Math.min(ey, sy) + yoff) <= (moveMaxHeight - yLength - containerBorderLength))
+										&& (Math.max(ey, sy) + yoff) >= (containerBorderLength + yLength)
+										&& ((Math.max(ey, sy) + yoff) <= (moveMaxHeight - containerBorderLength))) {
 									sy += yoff;
 									ey += yoff;
 								}
-								tempWidgetData.getOtherTemp().setStartPointY(sy);
-								tempWidgetData.getOtherTemp().setEndPointY(ey);
-								requestLayout();
 							}
+							tempWidgetData.getOtherTemp().setStartPointX(sx);
+							tempWidgetData.getOtherTemp().setEndPointX(ex);
+							tempWidgetData.getOtherTemp().setStartPointY(sy);
+							tempWidgetData.getOtherTemp().setEndPointY(ey);
+							requestLayout();
 
 							pressDownX = event.getRawX();
 							pressDownY = event.getRawY();
@@ -1419,28 +1396,19 @@ public class MeasureTempSpecificView extends View {
 						if (tempWidgetData.getType() == 3) {
 							//计算触碰的方位
 							reviseRectangleLocation(tempWidgetData, event.getRawX() - pressDownX, event.getRawY() - pressDownY, rectangleState);
-
 							pressDownX = event.getRawX();
 							pressDownY = event.getRawY();
 						}
 
 					}
-					//					Log.e(TAG, "onTouchEvent:child action move " + event.getRawX() +"  Y = >"+ event.getRawY());
-					//				Log.e(TAG, "onTouchEvent:child action move");
 					break;
 				case MotionEvent.ACTION_UP:
-
 					if (tempWidgetData.isSelect() && tempWidgetData.getType() == 3) {
 						//todo 发送一个指令给C层刷新 矩阵数据
 						mChildToolsClickListener.onRectChangedListener();
 					}
-					//					Log.e(TAG, "onTouchEvent:child action up" + event.getX() +"  Y = >"+ event.getY());
-					Log.e(TAG, "onTouchEvent:child action up ======  == " + event.getRawX() + "  Y = >" + event.getRawY());
-
-
 					break;
 			}
-			//			return true;
 		} else {
 			switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:

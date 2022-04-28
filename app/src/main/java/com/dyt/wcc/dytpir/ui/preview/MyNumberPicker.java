@@ -1,14 +1,17 @@
 package com.dyt.wcc.dytpir.ui.preview;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
 import com.dyt.wcc.common.utils.TempConvertUtils;
 import com.dyt.wcc.common.widget.NumberPickerView;
@@ -23,8 +26,8 @@ import com.dyt.wcc.dytpir.R;
  * <p>另外一个数据是  温度的单位。</p>
  * <p>PackagePath: com.dyt.wcc.dytpir.ui.preview     </p>
  */
-public class OverTempDialog extends Dialog implements NumberPickerView.OnValueChangeListener {
-	private static final String              TAG   = "OverTempDialog";
+public class MyNumberPicker extends DialogFragment implements NumberPickerView.OnValueChangeListener {
+	private static final String              TAG   = "MyNumberPicker";
 	private              NumberPickerView    numberPickerView_hundreds;//百位
 	private              NumberPickerView    numberPickerView_decade;//十位
 	private              NumberPickerView    numberPickerView_unit;//个位
@@ -38,8 +41,7 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 
 	private String[] ranges = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
-	public OverTempDialog (@NonNull Context context, float oldValue, int type) {
-		super(context);
+	public MyNumberPicker (@NonNull Context context, float oldValue, int type) {
 		if (type < MeasureTempContainerView.tempSuffixList.length) {
 			this.mType = type;
 		} else {
@@ -59,6 +61,7 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 	public void setListener (SetCompleteListener listener) {
 		this.mListener = listener;
 	}
+
 
 	interface SetCompleteListener {
 		/**
@@ -80,24 +83,49 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 	////		getWindow().getDecorView().setRotation(mRotation);
 	//	}
 
-	@Override
-	protected void onCreate (Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.pop_overtemp_alarm);
+	//	@Override
+	//	protected void onCreate (Bundle savedInstanceState) {
+	//		super.onCreate(savedInstanceState);
+	//		setContentView(R.layout.pop_overtemp_alarm);
+	//
+	//		initView();
+	//		initData();
+	//	}
+	private boolean rotation;
 
-		initView();
+	public boolean isRotation () {
+		return rotation;
+	}
+
+	public void setRotation (boolean rotation) {
+		this.rotation = rotation;
+	}
+
+//	private View contentView;
+
+	@Nullable
+	@Override
+	public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+			View view = inflater.inflate(R.layout.pop_overtemp_alarm, container, false);
+		if (rotation) {
+			view.setRotation(180);
+		} else {
+			view.setRotation(0);
+		}
+		initView(view);
 		initData();
+		return view;
 	}
 
 
-	private void initView () {
-		numberPickerView_hundreds = findViewById(R.id.numberPicker_hundreds_main_preview_overTemp_pop);
-		numberPickerView_decade = findViewById(R.id.numberPicker_decade_main_preview_overTemp_pop);
-		numberPickerView_unit = findViewById(R.id.numberPicker_unit_main_preview_overTemp_pop);
-		numberPickerView_decimal = findViewById(R.id.numberPicker_decimal_main_preview_overTemp_pop);
-		bt_confirm = findViewById(R.id.bt_submit);
-		bt_cancel = findViewById(R.id.bt_cancel);
-		tv_unit = findViewById(R.id.tv_main_preview_ovetemp_pop_unit);
+	private void initView (@NonNull View view) {
+		numberPickerView_hundreds = view.findViewById(R.id.numberPicker_hundreds_main_preview_overTemp_pop);
+		numberPickerView_decade = view.findViewById(R.id.numberPicker_decade_main_preview_overTemp_pop);
+		numberPickerView_unit = view.findViewById(R.id.numberPicker_unit_main_preview_overTemp_pop);
+		numberPickerView_decimal = view.findViewById(R.id.numberPicker_decimal_main_preview_overTemp_pop);
+		bt_confirm = view.findViewById(R.id.bt_submit);
+		bt_cancel = view.findViewById(R.id.bt_cancel);
+		tv_unit = view.findViewById(R.id.tv_main_preview_ovetemp_pop_unit);
 	}
 
 	private void initData () {
@@ -117,22 +145,16 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 		numberPickerView_decimal.setValue((int) (mValue * 10) % 10);
 		tv_unit.setText(MeasureTempContainerView.tempSuffixList[mType]);
 
-		bt_confirm.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick (View v) {
-				//				Log.e(TAG, "onClick:   value  = > " + mValue  + "  mode =  > " + mType );
-				if (mListener != null)
-					mListener.onSetComplete(TempConvertUtils.temp2Celsius(mValue, mType));
-				dismiss();
-			}
+		bt_confirm.setOnClickListener(v -> {
+			Log.e(TAG, "onClick:   value  = > " + mValue + "  mode =  > " + mType);
+			if (mListener != null)
+				mListener.onSetComplete(TempConvertUtils.temp2Celsius(mValue, mType));
+			dismiss();
 		});
-		bt_cancel.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick (View v) {
-				if (mListener != null)
-					mListener.onCancelListener();
-				dismiss();
-			}
+		bt_cancel.setOnClickListener(v -> {
+			if (mListener != null)
+				mListener.onCancelListener();
+			dismiss();
 		});
 	}
 
