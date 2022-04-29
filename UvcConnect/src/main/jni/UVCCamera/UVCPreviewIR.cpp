@@ -326,7 +326,6 @@ int UVCPreviewIR::sendTinyCAllOrder(void *params, diy func_tinyc, int mark) {
 
 //    LOGE("=======sendTinyCAllOrder === lock==Thread id = %d===== mark = %d==" , gettid() , tinyC_mark);
 //    LOGE("=======mark === >%d=========" , mark);
-
     if (mark == 10) {//获去tinyc机芯参数列表
         pthread_mutex_lock(&tinyC_send_order_mutex);
         ret = getTinyCParams(params, func_tinyc);
@@ -553,6 +552,12 @@ int UVCPreviewIR::getTinyCParams(void *rdata, diy func_diy) {
     *backData = flashId[0];
     backData++;
     *backData = flashId[1];
+    unsigned char flashId2[2] = {0};
+    flashId2[0] = flashId[1];
+    flashId2[1] = flashId[0];
+    unsigned short * dd = (unsigned short *)flashId2;
+    LOGE("发射率 ======= %d", *dd);
+    dd = NULL;
     LOGE("发射率 0 ==== %d", flashId[0]);
     LOGE("发射率 1 ==== %d", flashId[1]);
 
@@ -609,30 +614,30 @@ int UVCPreviewIR::getTinyCParams(void *rdata, diy func_diy) {
     LOGE("大气温度 1 ==== %d", flashId[1]);
 
     // 获取 大气透过率（已成功）
-    data[3] = 0x04;
-    status = 0;
-    ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data, sizeof(data), 1000);
-    ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
-                              1000);
-    for (int index = 0; index < 1000; index++) {
-        uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x0200, &status, 1, 1000);
-        if ((status & 0x01) == 0x00) {
-            if ((status & 0x02) == 0x00) {
-                break;
-            } else if ((status & 0xFC) != 0x00) {
-                LOGE("===========================return ==========================");
-                RETURN(-1, int);
-            }
-        }
-    }
-    ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId, sizeof(flashId),
-                              1000);
-    LOGE("大气透过率 0 ==== %d", flashId[0]);
-    LOGE("大气透过率 1 ==== %d", flashId[1]);
-    backData++;
-    *backData = flashId[0];
-    backData++;
-    *backData = flashId[1];
+//    data[3] = 0x04;
+//    status = 0;
+//    ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data, sizeof(data), 1000);
+//    ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
+//                              1000);
+//    for (int index = 0; index < 1000; index++) {
+//        uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x0200, &status, 1, 1000);
+//        if ((status & 0x01) == 0x00) {
+//            if ((status & 0x02) == 0x00) {
+//                break;
+//            } else if ((status & 0xFC) != 0x00) {
+//                LOGE("===========================return ==========================");
+//                RETURN(-1, int);
+//            }
+//        }
+//    }
+//    ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId, sizeof(flashId),
+//                              1000);
+//    LOGE("大气透过率 0 ==== %d", flashId[0]);
+//    LOGE("大气透过率 1 ==== %d", flashId[1]);
+//    backData++;
+//    *backData = flashId[0];
+//    backData++;
+//    *backData = flashId[1];
 
     backData = NULL;
     RETURN(ret, int);
@@ -1071,6 +1076,9 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 //等待数据 初始化到位,之后运行下面的代码。
                 pthread_cond_wait(&preview_sync, &preview_mutex);
 //                 LOGE("do_preview0===pthread_cond_wait=========================");
+                //判断是否需要翻转
+
+
                 if (isCopyPicturing()) {//判断截屏
                     LOGE("======mutex===========");
                     memset(picOutBuffer, 0, 256 * 196 * 2);

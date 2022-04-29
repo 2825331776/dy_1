@@ -28,7 +28,7 @@ android {
 
         // 设置支持的so库架构
         ndk {
-            abiFilters 'armeabi-v7a','arm64-v8a','x86_64','x86'
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64', 'x86'
         }
     }
 
@@ -67,9 +67,9 @@ android {
         // 然后这里指向的资源路径，是渠道特有的资源，总而言之，就是这里的资源会覆盖，正常 res 目录下的资源
         //放入渠道特有的 资源，需要替换对应的资源时，在 productFlavors 的渠道名称{} 里的 manifestPlaceholders
         //加上 替换的资源为那个名称
-            web.res.srcDirs = ['src/main/res-huawei']
-            huawei.res.srcDirs = ['src/main/res-huawei']
-            xiaomi.res.srcDirs = ['src/main/res-xiaomi']
+        web.res.srcDirs = ['src/main/res-huawei']
+        huawei.res.srcDirs = ['src/main/res-huawei']
+        xiaomi.res.srcDirs = ['src/main/res-xiaomi']
     }
 
     flavorDimensions "theb"
@@ -89,8 +89,8 @@ android {
             buildConfigField "String", "ENVIRONMENT", '"web"'
             // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE: "web"
-                                    ,app_name : "webDD"
-                                    ,app_icon   : "@mipmap/delete_all"]
+                                    , app_name   : "webDD"
+                                    , app_icon   : "@mipmap/delete_all"]
         }
         //华为
         huawei {
@@ -107,12 +107,12 @@ android {
             buildConfigField "String", "ENVIRONMENT", '"huawei"'
             // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE: "huawei"
-                                    ,app_name : "huaweiheihei"
-                                    ,app_icon   : "@mipmap/delete_all"]
+                                    , app_name   : "huaweiheihei"
+                                    , app_icon   : "@mipmap/delete_all"]
         }
         //小米
         xiaomi {
-           // 每个环境包名不同
+            // 每个环境包名不同
             dimension "theb"
             applicationId rootProject.ext.envInfo.phone.applicationId
             versionCode rootProject.ext.projectVersions.VCode
@@ -125,8 +125,8 @@ android {
             buildConfigField "String", "ENVIRONMENT", '"xiaomi"'
             // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE: "xiaomi"
-                                    ,app_name : "xiaomihahaha"
-                                    ,app_icon   : "@mipmap/delete_all"]
+                                    , app_name   : "xiaomihahaha"
+                                    , app_icon   : "@mipmap/delete_all"]
         }
     }
 
@@ -178,7 +178,9 @@ android {
                 def outputFile = output.outputFile
                 variant
                 if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                    def fileName = "DytSpectrumOwl"+ "_${variant.flavorName}_${variant.buildType.name}_v${variant.productFlavors[0].versionName}" +
+//                    def fileName = "DytSpectrumOwl"+ "_${variant.flavorName}_${variant.buildType.name}_v${variant.productFlavors[0].versionName}" +
+//                            "_b${variant.productFlavors[0].versionCode}_${releasePackageTime()}.apk"
+                    def fileName = "DytSpectrumOwl" + "_${variant.buildType.name}_v${variant.productFlavors[0].versionName}" +
                             "_b${variant.productFlavors[0].versionCode}_${releasePackageTime()}.apk"
                     outputFileName = fileName
                 }
@@ -213,11 +215,13 @@ dependencies {
     //okhttp
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
 
-//app-updater
+    //app-updater
     implementation 'com.github.jenly1314.AppUpdater:app-updater:1.1.2'
     //app-dialog
     implementation 'com.github.jenly1314.AppUpdater:app-dialog:1.1.2'
+    //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.1.9
+    implementation 'com.tencent.bugly:crashreport:3.4.4'
+    //其中latest.release指代最新Bugly NDK版本号，也可以指定明确的版本号，例如3.0
+    implementation 'com.tencent.bugly:nativecrashreport:3.9.2'
 
-    implementation 'com.tencent.bugly:crashreport:3.4.4' //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.1.9
-    implementation 'com.tencent.bugly:nativecrashreport:3.9.2' //其中latest.release指代最新Bugly NDK版本号，也可以指定明确的版本号，例如3.0
 }

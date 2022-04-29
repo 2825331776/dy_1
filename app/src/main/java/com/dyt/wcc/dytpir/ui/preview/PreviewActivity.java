@@ -92,22 +92,23 @@ import okhttp3.Response;
 
 public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//jni测试按钮状态记录
-//	private final int jni_status = 0;
+	//	private final int jni_status = 0;
 
 	private UVCCameraHandler   mUvcCameraHandler;
-	private PopupWindow        PLRPopupWindows;//点线矩形测温弹窗
+	//点线矩形测温弹窗
+	private PopupWindow        PLRPopupWindows;
+	private PopupWindow        settingPopWindows;
+	private PopupWindow        companyPopWindows;
 	//	private View popView;
 	private Map<String, Float> cameraParams;
 	private SharedPreferences  sp;
-	private int                mVid, mPid; //设备 vid pid
+	//设备 vid pid
+	private int                mVid, mPid;
 
 	private USBMonitor mUsbMonitor;
 
-	//	private FrameLayout fl;
-
-	private int mFontSize;
+	private int    mFontSize;
 	private String palettePath;
-	//customSeekBar
 	private Bitmap tiehong = null, caihong = null, baire = null, heire = null, hongre = null, lenglan = null;
 	private SendCommand mSendCommand;
 
@@ -120,12 +121,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private int            language   = -1;//语言的 索引下标
 	private boolean        isFirstRun = false;
 
-	private static final int            REQUEST_CODE_CHOOSE  = 23;
+	private static final int REQUEST_CODE_CHOOSE  = 23;
 	// 重置参数 返回值
-	private              int            defaultSettingReturn = -1;
-//	private              OverTempDialog overTempDialog;
-
-	//callBack
+	private              int defaultSettingReturn = -1;
 
 	//更新工具类对象
 	private AppUpdater                              mAppUpdater;
@@ -133,7 +131,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private List<UpdateObj>                         updateObjList;
 	//传感器
 	private SensorManager                           mSensorManager;
-	private Sensor                                  mAccelerometerSensor;//磁场传感器，加速度传感器 mMagneticSensor,
+	//磁场传感器，加速度传感器 mMagneticSensor,
+	private Sensor                                  mAccelerometerSensor;
 	private AbstractUVCCameraHandler.CameraCallback cameraCallback;
 
 	private static final int     MSG_CHECK_UPDATE = 1;
@@ -260,150 +259,179 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		super.onDestroy();
 	}
 
-	private       int                 sensorCount         = 0;
 	private final SensorEventListener sensorEventListener = new SensorEventListener() {
 		@Override
 		public void onSensorChanged (SensorEvent event) {
-			if (sensorCount < 5) {
-				sensorCount++;
-			}
-			//			else if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_MAGNETIC_FIELD)) {
-			//				//				Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_MAGNETIC_FIELD");
-			//				//				float[] values = event.values;
-			//				//values[0]：方位角，手机绕着Z轴旋转的角度。0表示正北(North)，90表示正东(East)，
-			//				//180表示正南(South)，270表示正西(West)。假如values[0]的值刚好是这四个值的话，
-			//				//并且手机沿水平放置的话，那么当前手机的正前方就是这四个方向，可以利用这一点来
-			//				//写一个指南针。
-			//				//				Log.e(TAG, "====方位角: ===" + values[0]);
-			//				//			values[1]：倾斜角，手机翘起来的程度，当手机绕着x轴倾斜时该值会发生变化。取值
-			//				//			范围是[-180,180]之间。假如把手机放在桌面上，而桌面是完全水平的话，values1的则应该
-			//				//			是0，当然很少桌子是绝对水平的。从手机顶部开始抬起，直到手机沿着x轴旋转180(此时屏幕
-			//				//					乡下水平放在桌面上)。在这个旋转过程中，values[1]的值会从0到-180之间变化，即手机抬起
-			//				//			时，values1的值会逐渐变小，知道等于-180；而加入从手机底部开始抬起，直到手机沿着x轴
-			//				//			旋转180度，此时values[1]的值会从0到180之间变化。我们可以利用value[1]的这个特性结合
-			//				//			value[2]来实现一个平地尺。
-			//				//				Log.e(TAG, "====倾斜角: ===" + values[1]);
-			//				//			value[2]：滚动角，沿着Y轴的滚动角度，取值范围为：[-90,90]，假设将手机屏幕朝上水平放在
-			//				//			桌面上，这时如果桌面是平的，values2的值应为0。将手机从左侧逐渐抬起，values[2]的值将
-			//				//			逐渐减小，知道垂直于手机放置，此时values[2]的值为-90，从右侧则是0-90；加入在垂直位置
-			//				//			时继续向右或者向左滚动，values[2]的值将会继续在-90到90之间变化。
-			//				//				Log.e(TAG, "====滚动角: ===" + values[2]);
-			//				//				sensorCount = 0;
-			//
-			//				//				SensorManager.getRotationMatrix()
-			//			}
-			else if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_ACCELEROMETER)) {
-				//								Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_ACCELEROMETER");
+			if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_ACCELEROMETER)) {//								Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_ACCELEROMETER");
 				float x = event.values[0];
 				float y = event.values[1];
 				float z = event.values[2];
 				relayout(x, y, z);
-				//				float[] values = event.values;
-				//				//values[0]：方位角，手机绕着Z轴旋转的角度。0表示正北(North)，90表示正东(East)，
-				//				//180表示正南(South)，270表示正西(West)。假如values[0]的值刚好是这四个值的话，
-				//				//并且手机沿水平放置的话，那么当前手机的正前方就是这四个方向，可以利用这一点来
-				//				//写一个指南针。
-				//				Log.e(TAG, "====方位角: ===" + values[0]);
-				//				//			values[1]：倾斜角，手机翘起来的程度，当手机绕着x轴倾斜时该值会发生变化。取值
-				//				//			范围是[-180,180]之间。假如把手机放在桌面上，而桌面是完全水平的话，values1的则应该
-				//				//			是0，当然很少桌子是绝对水平的。从手机顶部开始抬起，直到手机沿着x轴旋转180(此时屏幕
-				//				//					乡下水平放在桌面上)。在这个旋转过程中，values[1]的值会从0到-180之间变化，即手机抬起
-				//				//			时，values1的值会逐渐变小，知道等于-180；而加入从手机底部开始抬起，直到手机沿着x轴
-				//				//			旋转180度，此时values[1]的值会从0到180之间变化。我们可以利用value[1]的这个特性结合
-				//				//			value[2]来实现一个平地尺。
-				//				Log.e(TAG, "====倾斜角: ===" + values[1]);
-				//				//			value[2]：滚动角，沿着Y轴的滚动角度，取值范围为：[-90,90]，假设将手机屏幕朝上水平放在
-				//				//			桌面上，这时如果桌面是平的，values2的值应为0。将手机从左侧逐渐抬起，values[2]的值将
-				//				//			逐渐减小，知道垂直于手机放置，此时values[2]的值为-90，从右侧则是0-90；加入在垂直位置
-				//				//			时继续向右或者向左滚动，values[2]的值将会继续在-90到90之间变化。
-				//				Log.e(TAG, "====滚动角: ===" + values[2]);
 			}
-			//			}
 		}
 
 		@Override
 		public void onAccuracyChanged (Sensor sensor, int accuracy) {
-			//			Log.e(TAG, "onAccuracyChanged: "+accuracy);
 		}
 	};
-	private int                 oldRotation         = 0;
+	private       int                 oldRotation         = 0;
 
 	private void relayout (float x, float y, float z) {
 		if (x > -2.5 && x <= 2.5 && y > 7.5 && y <= 10 && oldRotation != 270) {
 			oldRotation = 270;
-			//			mDataBinding.clLeftFunctionContainer.setRotation(0);
-			//			mDataBinding.clRightFunctionContainer.setRotation(0);
-			//			mDataBinding.llContainerPreviewSeekbar.setRotation(0);
+//			mDataBinding.textureViewPreviewActivity.setRotation(0);
+//			mDataBinding.dragTempContainerPreviewActivity.setRotation(0);
 			mDataBinding.clMainPreview.setRotation(0);
-//			mDataBinding.clPreviewActivity.setRotation(180);
+			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(0);
+			//			mDataBinding.clPreviewActivity.setRotation(180);
 			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(false);
-			//			mDataBinding.flPreview.setRotation(180);
 			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
 				PLRPopupWindows.dismiss();
-				PLRPopupWindows.getContentView().setRotation(0);
-
+				if (oldRotation == 0 || oldRotation == 270) {
+					int offsetX = 0;
+					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+					PLRPopupWindows.getContentView().setRotation(0);
+				}
 			}
-			if (myNumberPicker!=null && myNumberPicker.isVisible()){
+
+			if (settingPopWindows != null && settingPopWindows.isShowing()) {
+				settingPopWindows.dismiss();
+				if (oldRotation == 0 || oldRotation == 270) {
+					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2, Gravity.CENTER);
+					settingPopWindows.getContentView().setRotation(0);
+				}
+			}
+
+			if (companyPopWindows != null && companyPopWindows.isShowing()) {
+				companyPopWindows.dismiss();
+				if (oldRotation == 0 || oldRotation == 270) {
+					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -DensityUtil.dp2px(mContext.get(), 110), Gravity.CENTER);
+					companyPopWindows.getContentView().setRotation(0);
+				}
+			}
+			if (myNumberPicker != null && myNumberPicker.isVisible()) {
 				myNumberPicker.dismiss();
 				myNumberPicker.setRotation(false);
-				myNumberPicker.show(getSupportFragmentManager(),null);
+				myNumberPicker.show(getSupportFragmentManager(), null);
 			}
 			setMRotation(0);
 		} else if (x > 7.5 && x <= 10 && y > -2.5 && y <= 2.5 && oldRotation != 0) {
 			oldRotation = 0;
-			//			mDataBinding.clLeftFunctionContainer.setRotation(0);
-			//			mDataBinding.clRightFunctionContainer.setRotation(0);
-			//			mDataBinding.llContainerPreviewSeekbar.setRotation(0);
+//			mDataBinding.dragTempContainerPreviewActivity.setRotation(0);
+//			mDataBinding.textureViewPreviewActivity.setRotation(0);
 			mDataBinding.clMainPreview.setRotation(0);
-//			mDataBinding.clPreviewActivity.setRotation(180);
 			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(false);
-			//			mDataBinding.flPreview.setRotation(180);
 			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
 				PLRPopupWindows.dismiss();
-				PLRPopupWindows.getContentView().setRotation(0);
+				if (oldRotation == 0 || oldRotation == 270) {
+					int offsetX = 0;
+					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+					PLRPopupWindows.getContentView().setRotation(0);
+				}
 			}
-			if (myNumberPicker!=null && myNumberPicker.isVisible()){
+			if (settingPopWindows != null && settingPopWindows.isShowing()) {
+				settingPopWindows.dismiss();
+				if (oldRotation == 0 || oldRotation == 270) {
+					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2, Gravity.CENTER);
+					settingPopWindows.getContentView().setRotation(0);
+				}
+			}
+
+			if (companyPopWindows != null && companyPopWindows.isShowing()) {
+				companyPopWindows.dismiss();
+				if (oldRotation == 0 || oldRotation == 270) {
+					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -DensityUtil.dp2px(mContext.get(), 110), Gravity.CENTER);
+					companyPopWindows.getContentView().setRotation(0);
+				}
+			}
+
+			if (myNumberPicker != null && myNumberPicker.isVisible()) {
 				myNumberPicker.dismiss();
 				myNumberPicker.setRotation(false);
-				myNumberPicker.show(getSupportFragmentManager(),null);
+				myNumberPicker.show(getSupportFragmentManager(), null);
 			}
 			setMRotation(0);
 		} else if (x > -2.5 && x <= 2.5 && y > -10 && y <= -7.5 && oldRotation != 90) {
 			oldRotation = 90;
-			//			mDataBinding.clLeftFunctionContainer.setRotation(180);
-			//			mDataBinding.clRightFunctionContainer.setRotation(180);
-			//			mDataBinding.llContainerPreviewSeekbar.setRotation(180);
+//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
+//			mDataBinding.textureViewPreviewActivity.setRotation(180);
 			mDataBinding.clMainPreview.setRotation(180);
-//			mDataBinding.clPreviewActivity.setRotation(180);
+			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
 			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(true);
-			//			mDataBinding.flPreview.setRotation(180);
 			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
 				PLRPopupWindows.dismiss();
-				PLRPopupWindows.getContentView().setRotation(180);
+				if (oldRotation == 90 || oldRotation == 180) {
+					int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
+					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+					PLRPopupWindows.getContentView().setRotation(180);
+				}
 			}
-			if (myNumberPicker!=null && myNumberPicker.isVisible()){
+			if (settingPopWindows != null && settingPopWindows.isShowing()) {
+				settingPopWindows.dismiss();
+				//第四步：显示控件
+				if (oldRotation == 90 || oldRotation == 180) {
+					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
+					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -(mDataBinding.clPreviewActivity.getHeight() / 3) + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+					settingPopWindows.getContentView().setRotation(180);
+				}
+			}
+
+			if (companyPopWindows != null && companyPopWindows.isShowing()) {
+				companyPopWindows.dismiss();
+				if (oldRotation == 90 || oldRotation == 180) {
+					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
+					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -DensityUtil.dp2px(mContext.get(), 275), Gravity.CENTER);
+					companyPopWindows.getContentView().setRotation(180);
+				}
+			}
+
+			if (myNumberPicker != null && myNumberPicker.isVisible()) {
 				myNumberPicker.dismiss();
 				myNumberPicker.setRotation(true);
-				myNumberPicker.show(getSupportFragmentManager(),null);
+				myNumberPicker.show(getSupportFragmentManager(), null);
 			}
 			setMRotation(180);
 		} else if (x > -10 && x <= -7.5 && y > -2.5 && y < 2.5 && oldRotation != 180) {
 			oldRotation = 180;
-			//			mDataBinding.clLeftFunctionContainer.setRotation(180);
-			//			mDataBinding.clRightFunctionContainer.setRotation(180);
-			//			mDataBinding.llContainerPreviewSeekbar.setRotation(180);
+//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
+//			mDataBinding.textureViewPreviewActivity.setRotation(180);
 			mDataBinding.clMainPreview.setRotation(180);
-//			mDataBinding.clPreviewActivity.setRotation(180);
 			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(true);
-			//			mDataBinding.flPreview.setRotation(180);
 			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
 				PLRPopupWindows.dismiss();
-				PLRPopupWindows.getContentView().setRotation(180);
+				if (oldRotation == 90 || oldRotation == 180) {
+					int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
+					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+					PLRPopupWindows.getContentView().setRotation(180);
+				}
 			}
-			if (myNumberPicker!=null && myNumberPicker.isVisible()){
+			if (settingPopWindows != null && settingPopWindows.isShowing()) {
+				settingPopWindows.dismiss();
+				//第四步：显示控件
+				if (oldRotation == 90 || oldRotation == 180) {
+					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
+					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -(mDataBinding.clPreviewActivity.getHeight() / 3) + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+					settingPopWindows.getContentView().setRotation(180);
+				}
+			}
+
+			if (companyPopWindows != null && companyPopWindows.isShowing()) {
+				companyPopWindows.dismiss();
+				if (oldRotation == 90 || oldRotation == 180) {
+					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
+					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -DensityUtil.dp2px(mContext.get(), 275), Gravity.CENTER);
+					companyPopWindows.getContentView().setRotation(180);
+				}
+			}
+
+			if (myNumberPicker != null && myNumberPicker.isVisible()) {
 				myNumberPicker.dismiss();
 				myNumberPicker.setRotation(true);
-				myNumberPicker.show(getSupportFragmentManager(),null);
+				myNumberPicker.show(getSupportFragmentManager(), null);
 			}
 			setMRotation(180);
 		}
@@ -647,7 +675,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		return mUvcCameraHandler != null ? mUvcCameraHandler.setValue(flag, value) : 0;
 	}
 
-//	private static final int REQUEST_CODE_UNKNOWN_APP = 10085;
+	//	private static final int REQUEST_CODE_UNKNOWN_APP = 10085;
 
 
 	/**
@@ -1026,18 +1054,18 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	}
 
 	private MyNumberPicker myNumberPicker;
+
 	/**
 	 * 初始化界面的监听器
 	 */
 	private void initListener () {
 		//测试的 监听器
-//				mDataBinding.btTest01.setVisibility(View.VISIBLE);
+		//				mDataBinding.btTest01.setVisibility(View.VISIBLE);
 		mDataBinding.btTest01.setOnClickListener(v -> {
 			//******************************MyNumberPicker***************************************
 
 			//****************************动画开始*************************************
 			//读取一张图片到某个控件，然后把图片缩小 给相册这个按钮。透明度逐渐变低
-
 			//				Animator animator = new ObjectAnimator();
 			//				Animation animation = new TranslateAnimation();
 
@@ -1123,9 +1151,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mDataBinding.toggleHighTempAlarm.setOnClickListener(v -> {
 			mDataBinding.toggleHighTempAlarm.setSelected(!mDataBinding.toggleHighTempAlarm.isSelected());
 			if (mDataBinding.toggleHighTempAlarm.isSelected()) {
-				if (myNumberPicker == null){
-					myNumberPicker = new MyNumberPicker(mContext.get(), sp.getFloat("overTemp", 0.0f),
-							mDataBinding.dragTempContainerPreviewActivity.getTempSuffixMode());
+				if (myNumberPicker == null) {
+					myNumberPicker = new MyNumberPicker(mContext.get(), sp.getFloat("overTemp", 0.0f), mDataBinding.dragTempContainerPreviewActivity.getTempSuffixMode());
 				}
 				myNumberPicker.setListener(new MyNumberPicker.SetCompleteListener() {
 					@Override
@@ -1135,6 +1162,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						mDataBinding.textureViewPreviewActivity.startTempAlarm(setValue);
 						sp.edit().putFloat("overTemp", setValue).apply();
 					}
+
 					@Override
 					public void onCancelListener () {
 						//							Log.e(TAG, "onCancelListener: " + "cancel "  );
@@ -1144,7 +1172,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				myNumberPicker.setCancelable(false);
 
 				myNumberPicker.setRotation(oldRotation != 0 && oldRotation != 270);
-				myNumberPicker.show(getSupportFragmentManager(),null);
+				myNumberPicker.show(getSupportFragmentManager(), null);
 			} else {
 				mDataBinding.textureViewPreviewActivity.stopTempAlarm();
 				mDataBinding.dragTempContainerPreviewActivity.closeHighTempAlarm();
@@ -1414,10 +1442,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			} else if (mPid == 22592 && mVid == 3034) {//TinyC 无湿度参数
 				popSettingBinding.tvCameraSettingHumidity.setVisibility(View.GONE);
 			}
-
 			popSettingBinding.tvCheckVersion.setOnClickListener(v1 -> {
 				//点击之后 立即wifi 或者 移动数据 是否打开，给提示。  连接超时 也给提示
-				//下载完成之后回调方法，保存文件，之后读取该文件夹下的zip文件。解压，安装apk，之后删除apk zip 文件
 				//读取 更新info 的接口，获取信息，分割之后校验，是否存在更新。  如果存在，一个提示版本窗口，
 				// (先检查本地是否存在同名文件，有则跳过下载直接安装)
 				// 否则确认之后则去下载地址去下载，然后安装
@@ -1445,7 +1471,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 							String[] AppVersionCodeList = new String[AppVersionNameList.length];//保存app 版本号
 							//筛选最大 VersionCode 的index
 							int maxCode = 0;
-							int currentVersionCode = 0;
+							int currentVersionCode;
 							for (int i = 0; i < AppVersionNameList.length; i++) {
 								AppVersionCodeList[i] = AppVersionNameList[i].split("_b")[1].split("_")[0];
 								currentVersionCode = Integer.parseInt(AppVersionCodeList[i]);
@@ -1559,14 +1585,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 							return true;
 						}
 						v14.clearFocus();
-						//								byte[] iputEm = new byte[4];
-						//								ByteUtil.putFloat(iputEm,value,0);
 						if (mUvcCameraHandler != null) {
 							if (mPid == 1 && mVid == 5396) {
 								sendS0Order(value, DYConstants.SETTING_EMITTANCE_INT);
-								//										mSendCommand.sendFloatCommand(DYConstants.SETTING_EMITTANCE_INT, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
-								//												20, 40, 60, 80, 120);
-								//										mUvcCameraHandler.startTemperaturing();
 							} else if (mPid == 22592 && mVid == 3034) {
 								mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, value, 3);
 							}
@@ -1615,8 +1636,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 							//									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(120.0f)+")");
 							return true;
 						}
-						//								byte[] iputEm = new byte[4];
-						//								ByteUtil.putFloat(iputEm,value,0);
 						if (mUvcCameraHandler != null) {
 							if (mPid == 1 && mVid == 5396) {
 								sendS0Order(value, DYConstants.SETTING_REFLECT_INT);
@@ -1693,7 +1712,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					}
 					return true;
 				});
-
 			}
 			//				else {//未连接机芯
 			//					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(sp.getFloat(DYConstants.setting_emittance, 0)));//发射率 0-1
@@ -1719,39 +1737,40 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				popSettingBinding.etCameraSettingReflect.setText(String.valueOf(refreshValueByTempUnit(sp.getFloat(DYConstants.setting_reflect, 0.0f))));
 			});
 			//显示设置的弹窗
-			PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-			PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-			PLRPopupWindows.setHeight(mDataBinding.clPreviewActivity.getHeight() / 3 * 2);
-			PLRPopupWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
+			settingPopWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+			settingPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+			settingPopWindows.setHeight(mDataBinding.clPreviewActivity.getHeight() / 3 * 2);
+			settingPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
 
-			PLRPopupWindows.setFocusable(true);
-			PLRPopupWindows.setOutsideTouchable(true);
-			PLRPopupWindows.setTouchable(true);
+			settingPopWindows.setFocusable(true);
+			settingPopWindows.setOutsideTouchable(true);
+			settingPopWindows.setTouchable(true);
 
 			//第四步：显示控件
 			if (oldRotation == 90 || oldRotation == 180) {
 				int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-				PLRPopupWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,
-						-(mDataBinding.clPreviewActivity.getHeight() / 3)+ DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
-				PLRPopupWindows.getContentView().setRotation(180);
+				settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -(mDataBinding.clPreviewActivity.getHeight() / 3) + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+				settingPopWindows.getContentView().setRotation(180);
 			}
 			if (oldRotation == 0 || oldRotation == 270) {
 				int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-				PLRPopupWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2, Gravity.CENTER);
-				PLRPopupWindows.getContentView().setRotation(0);
+				settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2, Gravity.CENTER);
+				settingPopWindows.getContentView().setRotation(0);
 			}
 
-			//弹窗消失，TinyC需要执行保存指令。
-			PLRPopupWindows.setOnDismissListener(() -> {
+			//弹窗消失，机芯执行保存指令。
+			settingPopWindows.setOnDismissListener(() -> {
 				if (mUvcCameraHandler != null) {
-					//TinyC 断电保存
-					if (mPid == 22592 && mVid == 3034) {
-						mUvcCameraHandler.tinySaveCameraParams();
-					}
-					//S0 断电保存
-					if (mPid == 1 && mVid == 5396) {
-						setValue(UVCCamera.CTRL_ZOOM_ABS, 0x80ff);
-					}
+					new Thread(() -> {
+						//TinyC 断电保存
+						if (mPid == 22592 && mVid == 3034) {
+							mUvcCameraHandler.tinySaveCameraParams();
+						}
+						//S0 断电保存
+						if (mPid == 1 && mVid == 5396) {
+							setValue(UVCCamera.CTRL_ZOOM_ABS, 0x80ff);
+						}
+					}).start();
 				}
 			});
 
@@ -1986,7 +2005,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	}
 
 	/**
-	 * @param value 发送的值
+	 * @param value    发送的值
 	 * @param position 下标
 	 * @return 是否成功
 	 */
@@ -2010,26 +2029,26 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	 */
 	private void showPopWindows (View view, int widthMargin, int XOffset, int YOffset) {
 		Log.e(TAG, "showPopWindows: " + view.getHeight());
-		PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-		PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+		companyPopWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		companyPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 		//		Log.e(TAG, "showPopWindows: " + PLRPopupWindows.getHeight());
-		PLRPopupWindows.setHeight(DensityUtil.dp2px(mContext.get(), 105));
-		PLRPopupWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
+		companyPopWindows.setHeight(DensityUtil.dp2px(mContext.get(), 105));
+		companyPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
 
 
-		PLRPopupWindows.setFocusable(false);
-		PLRPopupWindows.setOutsideTouchable(true);
-		PLRPopupWindows.setTouchable(true);
+		companyPopWindows.setFocusable(false);
+		companyPopWindows.setOutsideTouchable(true);
+		companyPopWindows.setTouchable(true);
 
 		if (oldRotation == 90 || oldRotation == 180) {
 			int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-			PLRPopupWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -DensityUtil.dp2px(mContext.get(), 275), Gravity.CENTER);
-			PLRPopupWindows.getContentView().setRotation(180);
+			companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -DensityUtil.dp2px(mContext.get(), 275), Gravity.CENTER);
+			companyPopWindows.getContentView().setRotation(180);
 		}
 		if (oldRotation == 0 || oldRotation == 270) {
 			int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-			PLRPopupWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -DensityUtil.dp2px(mContext.get(), 110), Gravity.CENTER);
-			PLRPopupWindows.getContentView().setRotation(0);
+			companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -DensityUtil.dp2px(mContext.get(), 110), Gravity.CENTER);
+			companyPopWindows.getContentView().setRotation(0);
 		}
 	}
 
