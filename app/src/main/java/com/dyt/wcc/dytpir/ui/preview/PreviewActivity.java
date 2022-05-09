@@ -715,6 +715,20 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		}
 		return defaultSettingReturn;
 	}
+	public static long startTime = 0;
+
+	/**
+	 * <p>判断是否连续点击</p>
+	 * @return boolean
+	 */
+	public static boolean doubleClick() {
+		long now = System.currentTimeMillis();
+		if (now - startTime < 500) {
+			return true;
+		}
+		startTime = now;
+		return false;
+	}
 
 	/**
 	 * 切换语言
@@ -1417,9 +1431,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			//打开设置第一步：获取机芯数据。
 			if (mUvcCameraHandler == null)
 				return;
+			//是否出图
 			if (!mUvcCameraHandler.snRightIsPreviewing()) {
 				return;
 			}
+			if(doubleClick())return;
+			//是否连续打开
 			if (mUvcCameraHandler.isOpened()) {
 				if (mPid == 1 && mVid == 5396) {
 					getCameraParams();//
@@ -1993,6 +2010,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private void getTinyCCameraParams () {//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
 		byte[] tempParams = mUvcCameraHandler.getTinyCCameraParams(10);
 		cameraParams = ByteUtilsCC.tinyCByte2HashMap(tempParams);
+		if (!cameraParamsIsRight(cameraParams)){
+			getTinyCCameraParams();
+			return;
+		}
+		//判断获取的参数是否是对的,否则再次请求。
 		cameraParams.put(DYConstants.setting_correction, sp.getFloat(DYConstants.setting_correction, 0.0f));
 		if (cameraParams != null) {
 			sp.edit().putFloat(DYConstants.setting_correction, cameraParams.containsKey(DYConstants.setting_correction) ? cameraParams.get(DYConstants.setting_correction) : DYConstants.SETTING_CORRECTION_DEFAULT_VALUE).apply();
@@ -2002,6 +2024,17 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			sp.edit().putFloat(DYConstants.setting_environment, cameraParams.get(DYConstants.setting_environment) != null ? cameraParams.get(DYConstants.setting_environment) : 0.0f).apply();
 			sp.edit().putFloat(DYConstants.setting_humidity, cameraParams.get(DYConstants.setting_humidity)).apply();
 		}
+	}
+
+	private boolean cameraParamsIsRight(Map<String,Float> params){
+		boolean isRight = true;
+		if (params.get(DYConstants.setting_environment) < (-50.f) || params.get(DYConstants.setting_environment) > 500.0f){
+			isRight = false;
+		}
+		if (params.get(DYConstants.setting_reflect) < (-50.f) || params.get(DYConstants.setting_reflect) > 500.0f){
+			isRight = false;
+		}
+		return isRight;
 	}
 
 	/**

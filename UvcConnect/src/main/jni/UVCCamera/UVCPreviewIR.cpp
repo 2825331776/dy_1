@@ -462,10 +462,8 @@ int UVCPreviewIR::getTinyCUserData(void *returnData, diy func_diy, int userMark)
     //读取用户区数据
     unsigned char data[8] = {0x0d, 0xc1, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     if (userMark == 20) {//读取用户区SN
-        // 读取用户区域
-        int dataLen = 15; //获取或读取数据大小
+        int dataLen = 15; //读取数据长度
         unsigned char *readData = (unsigned char *) returnData;
-//        LOGE("=============  redaData length = > %d ",sizeof (readData));
         int dwStartAddr = 0x7FF000;// 用户区域首地址
 
         data[0] = 0x01;
@@ -523,95 +521,85 @@ int UVCPreviewIR::getTinyCUserData(void *returnData, diy func_diy, int userMark)
     RETURN(ret, int);
 }
 
-int UVCPreviewIR::getTinyCParams(void *rdata, diy func_diy) {
-    LOGE("========================================");
-    int ret = UVC_ERROR_IO;
-    unsigned char *backData = (unsigned char *) rdata;
-    // 发射率
-    unsigned char flashId[2] = {0};
-    unsigned char data[8] = {0x14, 0x85, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00};
-    unsigned char data2[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02};
-    ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data, sizeof(data), 1000);
-    ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
-                              1000);
-
+int UVCPreviewIR::getTinyCDevicesStatus(){
+    int ret = 0;
     unsigned char status = 0;
     for (int index = 0; index < 1000; index++) {
         uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x0200, &status, 1, 1000);
         if ((status & 0x01) == 0x00) {
             if ((status & 0x02) == 0x00) {
+                ret = 1;
                 break;
             } else if ((status & 0xFC) != 0x00) {
-                LOGE("===========================return ==========================");
-                RETURN(-1, int);
+                RETURN(ret,int)
             }
         }
     }
-    ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId, sizeof(flashId),
+    RETURN(ret,int)
+}
+
+int UVCPreviewIR::getTinyCParams(void *rdata, diy func_diy) {
+    LOGE("========================================");
+    int ret = 0;
+    unsigned char *backData = (unsigned char *) rdata;
+    // 发射率
+    unsigned char flashId[2] = {0};
+    unsigned char reviewData[2] = {0};//复查View
+    unsigned char data[8] = {0x14, 0x85, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00};
+    unsigned char data2[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02};
+    ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data, sizeof(data), 1000);
+    ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
                               1000);
-    *backData = flashId[0];
-    backData++;
-    *backData = flashId[1];
-    unsigned char flashId2[2] = {0};
-    flashId2[0] = flashId[1];
-    flashId2[1] = flashId[0];
-    unsigned short * dd = (unsigned short *)flashId2;
-    LOGE("发射率 ======= %d", *dd);
-    dd = NULL;
-    LOGE("发射率 0 ==== %d", flashId[0]);
-    LOGE("发射率 1 ==== %d", flashId[1]);
+    if (getTinyCDevicesStatus()){
+        ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId, sizeof(flashId),
+                                  1000);
+        *backData = flashId[0];
+        backData++;
+        *backData = flashId[1];
+        unsigned char flashId2[2] = {0};
+        flashId2[0] = flashId[1];
+        flashId2[1] = flashId[0];
+        unsigned short * dd = (unsigned short *)flashId2;
+        LOGE("发射率 ======= %d", *dd);
+        dd = NULL;
+        LOGE("发射率 0 ==== %d", flashId[0]);
+        LOGE("发射率 1 ==== %d", flashId[1]);
+    }
+
 
     // 获取 反射温度（已成功）
-    status = 0;
     data[3] = 0x01;
     ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data, sizeof(data), 1000);
     ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
                               1000);
-    for (int index = 0; index < 1000; index++) {
-        uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x0200, &status, 1, 1000);
-        if ((status & 0x01) == 0x00) {
-            if ((status & 0x02) == 0x00) {
-                break;
-            } else if ((status & 0xFC) != 0x00) {
-                LOGE("===========================return ==========================");
-                RETURN(-1, int);
-            }
-        }
+    if (getTinyCDevicesStatus()){
+        ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId, sizeof(flashId),
+                                  1000);
+        backData++;
+        *backData = flashId[0];
+        backData++;
+        *backData = flashId[1];
+        LOGE("反射温度 0 ==== %d", flashId[0]);
+        LOGE("反射温度 1 ==== %d", flashId[1]);
     }
-    ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId, sizeof(flashId),
-                              1000);
-    backData++;
-    *backData = flashId[0];
-    backData++;
-    *backData = flashId[1];
-    LOGE("反射温度 0 ==== %d", flashId[0]);
-    LOGE("反射温度 1 ==== %d", flashId[1]);
+
 
     // 获取 大气温度（已成功）
     data[3] = 0x02;
-    status = 0;
+//    status = 0;
     ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data, sizeof(data), 1000);
     ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
                               1000);
-    for (int index = 0; index < 1000; index++) {
-        func_diy(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x0200, &status, 1, 1000);
-        if ((status & 0x01) == 0x00) {
-            if ((status & 0x02) == 0x00) {
-                break;
-            } else if ((status & 0xFC) != 0x00) {
-                LOGE("===========================return ==========================");
-                RETURN(-1, int);
-            }
-        }
+    if (getTinyCDevicesStatus()){
+        ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId, sizeof(flashId),
+                                  1000);
+        backData++;
+        *backData = flashId[0];
+        backData++;
+        *backData = flashId[1];
+        LOGE("大气温度 0 ==== %d", flashId[0]);
+        LOGE("大气温度 1 ==== %d", flashId[1]);
     }
-    ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId, sizeof(flashId),
-                              1000);
-    backData++;
-    *backData = flashId[0];
-    backData++;
-    *backData = flashId[1];
-    LOGE("大气温度 0 ==== %d", flashId[0]);
-    LOGE("大气温度 1 ==== %d", flashId[1]);
 
     // 获取 大气透过率（已成功）
 //    data[3] = 0x04;

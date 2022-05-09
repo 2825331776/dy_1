@@ -109,6 +109,7 @@ private:
     pthread_t tinyC_send_order_thread; //tinyc发送指令的线程
     pthread_cond_t tinyC_send_order_sync;//tinyc线程 条件变量
     pthread_mutex_t tinyC_send_order_mutex;//tinyc线程 互斥量
+    int getTinyCDevicesStatus();//获取TinyC机芯的状态
     int getTinyCParams(void *returnData, diy func_diy);//获取tinyc 机芯参数。仅获取
     int sendTinyCOrder(uint32_t *value, diy func_diy);// tinyc 打挡  获取数据 纯标识位 指令
     int sendTinyCParamsModification(float *value, diy func_diy, uint32_t mark);//tinyc 机芯参数 修改
