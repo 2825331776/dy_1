@@ -112,6 +112,7 @@ private:
     pthread_mutex_t tinyC_send_order_mutex;//tinyc线程 互斥量
     int getTinyCDevicesStatus();//获取TinyC机芯的状态
     int getTinyCParams(void *returnData, diy func_diy);//获取tinyc 机芯参数。仅获取
+    int getTinyCParams_impl(void *reData, diy func_diy , unsigned char data[8],unsigned char data2[8]);
     int sendTinyCOrder(uint32_t *value, diy func_diy);// tinyc 打挡  获取数据 纯标识位 指令
     int sendTinyCParamsModification(float *value, diy func_diy, uint32_t mark);//tinyc 机芯参数 修改
     int getTinyCUserData(void *returnData, diy func_diy, int userMark);//读取用户区数据

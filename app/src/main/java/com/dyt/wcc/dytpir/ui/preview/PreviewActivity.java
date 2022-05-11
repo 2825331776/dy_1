@@ -136,6 +136,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private AbstractUVCCameraHandler.CameraCallback cameraCallback;
 
 	private static final int     MSG_CHECK_UPDATE = 1;
+	private static final int     MSG_CAMERA_PARAMS= 2;
 	private final        Handler mHandler         = new Handler(new Handler.Callback() {
 		@Override
 		public boolean handleMessage (@NonNull Message msg) {
@@ -162,6 +163,369 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						AppDialog.INSTANCE.dismissDialog();
 					});
 					AppDialog.INSTANCE.showDialog(mContext.get(), view, 0.5f);
+					break;
+				case MSG_CAMERA_PARAMS:
+					View pop_View = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_setting, null);
+
+					PopSettingBinding popSettingBinding = DataBindingUtil.bind(pop_View);
+					assert popSettingBinding != null;
+					popSettingBinding.tvCheckVersionInfo.setText(String.format(getString(R.string.setting_check_version_info), BuildConfig.VERSION_NAME));
+					//设置单位
+					popSettingBinding.tvCameraSettingReviseUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
+					popSettingBinding.tvCameraSettingReflectUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
+					popSettingBinding.tvCameraSettingFreeAirTempUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
+
+					if (mPid == 1 && mVid == 5396) {//S0有湿度参数
+						popSettingBinding.tvCameraSettingHumidity.setVisibility(View.VISIBLE);
+					} else if (mPid == 22592 && mVid == 3034) {//TinyC 无湿度参数
+						popSettingBinding.tvCameraSettingHumidity.setVisibility(View.GONE);
+					}
+					popSettingBinding.btCheckVersion.setOnClickListener(v1 -> {
+						//点击之后 立即wifi 或者 移动数据 是否打开，给提示。  连接超时 也给提示
+						//读取 更新info 的接口，获取信息，分割之后校验，是否存在更新。  如果存在，一个提示版本窗口，
+						// (先检查本地是否存在同名文件，有则跳过下载直接安装)
+						// 否则确认之后则去下载地址去下载，然后安装
+						OkHttpClient client = new OkHttpClient();
+						new Thread(new Runnable() {
+							@Override
+							public void run () {
+								Request request = new Request.Builder().url(DYConstants.UPDATE_CHECK_INFO).get().build();
+								try {
+									Response response = client.newCall(request).execute();
+									byte[] responseByte = response.body().bytes();
+									String checkAPIData = new String(responseByte, StandardCharsets.UTF_8);
+									//									if (isDebug)Log.i(TAG, "run:responseByte ==========>  " + checkAPIData);
+									//分割 checkAPIData 得到具体信息
+									String[] AppVersionNameList = checkAPIData.split(";");//切割
+									updateObjList = new ArrayList<>(AppVersionNameList.length);
+									//去掉apk
+									for (int i = 0; i < AppVersionNameList.length; i++) {
+										UpdateObj updateObj = new UpdateObj();
+										AppVersionNameList[i] = AppVersionNameList[i].replace(".apk", "");
+										updateObj.setPackageName(AppVersionNameList[i]);
+										updateObjList.add(updateObj);
+									}
+									//									if (isDebug)Log.i(TAG, "run: =====AppVersionNameList====" + Arrays.toString(AppVersionNameList));
+									String[] AppVersionCodeList = new String[AppVersionNameList.length];//保存app 版本号
+									//筛选最大 VersionCode 的index
+									int maxCode = 0;
+									int currentVersionCode;
+									for (int i = 0; i < AppVersionNameList.length; i++) {
+										AppVersionCodeList[i] = AppVersionNameList[i].split("_b")[1].split("_")[0];
+										currentVersionCode = Integer.parseInt(AppVersionCodeList[i]);
+
+										updateObjList.get(i).setAppVersionCode(currentVersionCode);
+										updateObjList.get(i).setAppVersionName(AppVersionNameList[i].split("_v")[1].split("_b")[0]);
+
+										if (maxCode == 0) {
+											maxCode = currentVersionCode;
+											maxIndex = 0;
+										}
+										if (maxCode < currentVersionCode) {
+											maxCode = currentVersionCode;
+											maxIndex = i;
+										}
+									}
+									//									if (isDebug)Log.i(TAG, "run: 最大的 VersionCode 为： " + maxCode + " codeIndex = " + maxIndex + " 完成版本为： " + AppVersionNameList[maxIndex]);
+									//									if (isDebug)Log.i(TAG, "run: ======AppVersionCodeList===" + Arrays.toString(AppVersionCodeList));
+									int thisVersionCode = mContext.get().getPackageManager().getPackageInfo(mContext.get().getPackageName(), 0).versionCode;
+									//									if (isDebug)Log.i(TAG, "run: versionName === 》" + thisVersionCode);
+									//判断是否需要更新
+									if (thisVersionCode < updateObjList.get(maxIndex).getAppVersionCode()) {
+										Message message = mHandler.obtainMessage();
+										message.what = MSG_CHECK_UPDATE;
+										message.obj = updateObjList;
+										mHandler.sendMessage(message);
+									} else {//已经为最新版本
+										runOnUiThread(new Runnable() {
+											@Override
+											public void run () {
+												showToast(R.string.toast_already_latest_version);
+											}
+										});
+									}
+								} catch (IOException | PackageManager.NameNotFoundException e) {
+									e.printStackTrace();
+								}
+							}
+						}).start();
+					});
+					//第二步：将获取的数据 展示在输入框内
+					if (cameraParams != null) {
+						popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(cameraParams.get(DYConstants.setting_emittance)));//发射率 0-1
+
+						popSettingBinding.etCameraSettingRevise.setText(String.valueOf(cameraParams.get(DYConstants.setting_correction)));//校正  -20 - 20
+						popSettingBinding.etCameraSettingReflect.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_reflect) * 1)));//反射温度 -10-40
+						popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_environment) * 1)));//环境温度 -10 -40
+
+						if (mPid == 1 && mVid == 5396) {
+							popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_humidity) * 100)));//湿度 0-100
+							//湿度设置
+							popSettingBinding.etCameraSettingHumidity.setOnEditorActionListener((v12, actionId, event) -> {
+								if (actionId == EditorInfo.IME_ACTION_DONE) {
+									if (TextUtils.isEmpty(v12.getText().toString()))
+										return true;
+									int value = Integer.parseInt(v12.getText().toString());
+									if (value > 100 || value < 0) {
+										showToast(getString(R.string.toast_range_int, 0, 100));
+										return true;
+									}
+									float fvalue = value / 100.0f;
+									if (mUvcCameraHandler != null) {
+										if (mPid == 1 && mVid == 5396) {
+											sendS0Order(fvalue, DYConstants.SETTING_HUMIDITY_INT);
+										}
+										//									else if (mPid == 22592 && mVid == 3034) {
+										//										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, fvalue, 4);
+										//									}
+										popSettingBinding.etCameraSettingHumidity.setText(String.format(Locale.US, "%d", value));
+										sp.edit().putFloat(DYConstants.setting_humidity, fvalue).apply();
+										showToast(R.string.toast_complete_Humidity);
+									}
+									hideInput(v12.getWindowToken());
+								}
+								return true;
+							});
+						} else if (mPid == 22592 && mVid == 3034) {
+
+						}
+
+						//TODO 设置机芯的默认值;
+						popSettingBinding.btSettingDefault.setOnClickListener(v13 -> {
+							toSettingDefault();
+							if (mPid == 1 && mVid == 5396) {
+								popSettingBinding.etCameraSettingHumidity.setText(String.format(Locale.CHINESE, "%s", (int) (100 * DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE)));
+								sp.edit().putFloat(DYConstants.setting_humidity, DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE).apply();
+							}
+							if (true) {
+								popSettingBinding.etCameraSettingReflect.setText(String.format(Locale.CHINESE, "%d", DYConstants.SETTING_REFLECT_DEFAULT_VALUE));
+								popSettingBinding.etCameraSettingRevise.setText(String.format(Locale.CHINESE, "%s", DYConstants.SETTING_CORRECTION_DEFAULT_VALUE));
+								popSettingBinding.etCameraSettingEmittance.setText(String.format(Locale.CHINESE, "%s", DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE));
+								popSettingBinding.etCameraSettingFreeAirTemp.setText(String.format(Locale.CHINESE, "%d", DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE));
+
+								sp.edit().putFloat(DYConstants.setting_environment, DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE).apply();
+								sp.edit().putFloat(DYConstants.setting_reflect, DYConstants.SETTING_REFLECT_DEFAULT_VALUE).apply();
+								sp.edit().putFloat(DYConstants.setting_emittance, DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE).apply();
+								sp.edit().putFloat(DYConstants.setting_correction, DYConstants.SETTING_CORRECTION_DEFAULT_VALUE).apply();
+
+								mDataBinding.textureViewPreviewActivity.setTinyCCorrection(DYConstants.SETTING_CORRECTION_DEFAULT_VALUE);
+							}
+						});
+
+						//发射率
+						popSettingBinding.etCameraSettingEmittance.setOnEditorActionListener((v14, actionId, event) -> {
+							if (actionId == EditorInfo.IME_ACTION_DONE) {
+								if (TextUtils.isEmpty(v14.getText().toString()))
+									return true;
+								float value = Float.parseFloat(v14.getText().toString());
+								if (value > 1 || value < 0) {
+									showToast(getString(R.string.toast_range_int, 0, 1));
+									return true;
+								}
+								v14.clearFocus();
+								if (mUvcCameraHandler != null) {
+									if (mPid == 1 && mVid == 5396) {
+										sendS0Order(value, DYConstants.SETTING_EMITTANCE_INT);
+									} else if (mPid == 22592 && mVid == 3034) {
+										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, value, 3);
+									}
+									sp.edit().putFloat(DYConstants.setting_emittance, value).apply();
+									showToast(R.string.toast_complete_Emittance);
+								}
+								hideInput(v14.getWindowToken());
+							}
+							return true;
+						});
+						//距离设置
+						//					popSettingBinding.etCameraSettingDistance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+						//						@Override
+						//						public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
+						//							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+						//							if (actionId == EditorInfo.IME_ACTION_DONE){
+						//								if (TextUtils.isEmpty(v.getText().toString()))return true;
+						//								int value = Math.round(Float.parseFloat(v.getText().toString()));
+						//								if (value > 5 || value < 0){
+						//									showToast(getString(R.string.toast_range_int,0,5));
+						//									return true;
+						//								}
+						//								byte[] bIputDi = new byte[4];
+						//								ByteUtil.putInt(bIputDi,value,0);
+						//								if (mUvcCameraHandler!= null) {
+						//									if (mPid == 1 && mVid == 5396) {
+						//										mSendCommand.sendShortCommand(5 * 4, bIputDi[0], bIputDi[1], 20, 40, 60);
+						//									}
+						//									sp.edit().putFloat(DYConstants.setting_distance,value).apply();
+						//									showToast(R.string.toast_complete_Distance);
+						//								}
+						//								hideInput(v.getWindowToken());
+						//							}
+						//							return true;
+						//						}
+						//					});
+						//反射温度设置  -20 - 120 ℃
+						popSettingBinding.etCameraSettingReflect.setOnEditorActionListener((v15, actionId, event) -> {
+							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+							if (actionId == EditorInfo.IME_ACTION_DONE) {
+								if (TextUtils.isEmpty(v15.getText().toString()))
+									return true;
+								float value = inputValue2Temp(Integer.parseInt(v15.getText().toString()));//拿到的都是摄氏度
+								if (value > getBorderValue(120.0f) || value < getBorderValue(-20.0f)) {//带上 温度单位
+									showToast(getString(R.string.toast_range_float, getBorderValue(-20.0f), getBorderValue(120.0f)));
+									//									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(120.0f)+")");
+									return true;
+								}
+								if (mUvcCameraHandler != null) {
+									if (mPid == 1 && mVid == 5396) {
+										sendS0Order(value, DYConstants.SETTING_REFLECT_INT);
+										//										mSendCommand.sendFloatCommand(DYConstants.SETTING_REFLECT_INT, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
+										//												20, 40, 60, 80, 120);
+									} else if (mPid == 22592 && mVid == 3034) {
+										Log.e(TAG, "onEditorAction: 反射温度 set value = " + value);
+										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, (int) value, 1);
+									}
+									sp.edit().putFloat(DYConstants.setting_reflect, value).apply();
+									showToast(R.string.toast_complete_Reflect);
+								}
+								hideInput(v15.getWindowToken());
+							}
+							return true;
+						});
+						//校正设置 -20 - 20
+						popSettingBinding.etCameraSettingRevise.setOnEditorActionListener((v16, actionId, event) -> {
+							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+							if (actionId == EditorInfo.IME_ACTION_DONE) {
+								if (TextUtils.isEmpty(v16.getText().toString()))
+									return true;
+								float value = inputValue2Temp(Float.parseFloat(v16.getText().toString()));
+								if (value > getBorderValue(20.0f) || value < getBorderValue(-20.0f)) {
+									//									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(20.0f)+")");
+									showToast(getString(R.string.toast_range_float, getBorderValue(-20.0f), getBorderValue(20.0f)));
+									return true;
+								}
+								//								byte[] iputEm = new byte[4];
+								//								ByteUtil.putFloat(iputEm,value,0);
+								if (mUvcCameraHandler != null) {
+									if (mPid == 1 && mVid == 5396) {
+										sendS0Order(value, DYConstants.SETTING_CORRECTION_INT);
+										//										mSendCommand.sendFloatCommand(DYConstants.SETTING_CORRECTION_INT, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+									} else if (mPid == 22592 && mVid == 3034) {//校正 TinyC
+										//										sp.edit().putFloat(DYConstants.setting_correction, value).apply();
+										mDataBinding.textureViewPreviewActivity.setTinyCCorrection(value);
+									}
+									sp.edit().putFloat(DYConstants.setting_correction, value).apply();
+									showToast(R.string.toast_complete_Revise);
+								}
+								hideInput(v16.getWindowToken());
+							}
+							return true;
+						});
+						//环境温度设置  -20 -50
+						popSettingBinding.etCameraSettingFreeAirTemp.setOnEditorActionListener((v17, actionId, event) -> {
+							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+							if (actionId == EditorInfo.IME_ACTION_DONE) {
+								if (TextUtils.isEmpty(v17.getText().toString()))
+									return true;
+								float value = inputValue2Temp(Integer.parseInt(v17.getText().toString()));
+								if (value > getBorderValue(50.0f) || value < getBorderValue(-20.0f)) {
+									//									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(50.0f)+")");
+									showToast(getString(R.string.toast_range_float, getBorderValue(-20.0f), getBorderValue(50.0f)));
+									return true;
+								}
+								//								byte[] iputEm = new byte[4];
+								//								ByteUtil.putFloat(iputEm,value,0);
+								if (mUvcCameraHandler != null) {
+									if (mPid == 1 && mVid == 5396) {
+										sendS0Order(value, DYConstants.SETTING_ENVIRONMENT_INT);
+										//										mSendCommand.sendFloatCommand(DYConstants.SETTING_ENVIRONMENT_INT, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
+										//												20, 40, 60, 80, 120);
+									} else if (mPid == 22592 && mVid == 3034) {
+										//										Log.e(TAG, "onEditorAction: 环境温度 set value = " + value);
+										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, (int) value, 2);
+									}
+									//									popSettingBinding.etCameraSettingFreeAirTemp.setText(String.format(Locale.US, "%f", value));
+									sp.edit().putFloat(DYConstants.setting_environment, value).apply();
+									showToast(R.string.toast_complete_FreeAirTemp);
+								}
+								hideInput(v17.getWindowToken());
+							}
+							return true;
+						});
+					}
+					int temp_unit = sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0);
+					//第三步：初始化自定义控件 温度单位 设置
+					popSettingBinding.switchChoiceTempUnit.setText(DYConstants.tempUnit).setSelectedTab(temp_unit).setOnSwitchListener((position, tabText) -> {//切换 温度单位 监听器
+						mDataBinding.dragTempContainerPreviewActivity.setTempSuffix(position);
+						sp.edit().putInt(DYConstants.TEMP_UNIT_SETTING, position).apply();
+						//切换 温度单位 需要更改 输入框的 单位
+						popSettingBinding.tvCameraSettingReviseUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
+						popSettingBinding.tvCameraSettingReflectUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
+						popSettingBinding.tvCameraSettingFreeAirTempUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
+						//切换 温度单位 需要更改 里面已经输入的值。
+						popSettingBinding.etCameraSettingRevise.setText(String.valueOf(refreshValueByTempUnit(sp.getFloat(DYConstants.setting_correction, 0.0f))));
+						popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf(refreshValueByTempUnit(sp.getFloat(DYConstants.setting_environment, 0.0f))));
+						popSettingBinding.etCameraSettingReflect.setText(String.valueOf(refreshValueByTempUnit(sp.getFloat(DYConstants.setting_reflect, 0.0f))));
+					});
+					//显示设置的弹窗
+					settingPopWindows = new PopupWindow(pop_View, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+					settingPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+					settingPopWindows.setHeight(mDataBinding.clPreviewActivity.getHeight() / 3 * 2);
+					settingPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
+
+					settingPopWindows.setFocusable(true);
+					settingPopWindows.setOutsideTouchable(true);
+					settingPopWindows.setTouchable(true);
+
+					//第四步：显示控件
+					if (oldRotation == 90 || oldRotation == 180) {
+						int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
+						settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -(mDataBinding.clPreviewActivity.getHeight() / 3) + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+						settingPopWindows.getContentView().setRotation(180);
+					}
+					if (oldRotation == 0 || oldRotation == 270) {
+						int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+						settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2, Gravity.CENTER);
+						settingPopWindows.getContentView().setRotation(0);
+					}
+
+					//弹窗消失，机芯执行保存指令。
+					settingPopWindows.setOnDismissListener(() -> {
+						if (mUvcCameraHandler != null) {
+							new Thread(() -> {
+								//TinyC 断电保存
+								if (mPid == 22592 && mVid == 3034) {
+									mUvcCameraHandler.tinySaveCameraParams();
+								}
+								//S0 断电保存
+								if (mPid == 1 && mVid == 5396) {
+									setValue(UVCCamera.CTRL_ZOOM_ABS, 0x80ff);
+								}
+							}).start();
+						}
+					});
+
+					popSettingBinding.switchChoiceRecordAudio.setSelectedTab(sp.getInt(DYConstants.RECORD_AUDIO_SETTING, 1));
+					popSettingBinding.switchChoiceRecordAudio.setOnSwitchListener((position, tabText) -> {
+						sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING, position).apply();
+						//						if (isDebug)Log.e(TAG, "onSwitch: " + "=============================");
+					});
+
+
+					// 切换语言 spinner
+					popSettingBinding.btShowChoiceLanguage.setText(DYConstants.languageArray[sp.getInt(DYConstants.LANGUAGE_SETTING, 0)]);
+					popSettingBinding.btShowChoiceLanguage.setOnClickListener(v18 -> {
+						AlertDialog.Builder builder = new AlertDialog.Builder(mContext.get());
+						//						AlertDialog dialog =
+						//						AlertDialog alertDialog =
+						builder.setSingleChoiceItems(DYConstants.languageArray, sp.getInt(DYConstants.LANGUAGE_SETTING, 0), (dialog, which) -> {
+							if (which != sp.getInt(DYConstants.LANGUAGE_SETTING, 0)) {
+								sp.edit().putInt(DYConstants.LANGUAGE_SETTING, which).apply();
+								PLRPopupWindows.dismiss();
+								toSetLanguage(which);
+							}
+							dialog.dismiss();
+						}).create();
+						builder.show();
+					});
 					break;
 			}
 			return false;
@@ -1443,382 +1807,20 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			if(doubleClick())return;
 			//是否连续打开
 			if (mUvcCameraHandler.isOpened()) {
-				if (mPid == 1 && mVid == 5396) {
-					getCameraParams();//
-				} else if (mPid == 22592 && mVid == 3034) {
-					getTinyCCameraParams();
-				}
-			}
-			View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_setting, null);
-
-			PopSettingBinding popSettingBinding = DataBindingUtil.bind(view);
-			assert popSettingBinding != null;
-			popSettingBinding.tvCheckVersionInfo.setText(String.format(getString(R.string.setting_check_version_info), BuildConfig.VERSION_NAME));
-			//设置单位
-			popSettingBinding.tvCameraSettingReviseUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
-			popSettingBinding.tvCameraSettingReflectUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
-			popSettingBinding.tvCameraSettingFreeAirTempUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
-
-			if (mPid == 1 && mVid == 5396) {//S0有湿度参数
-				popSettingBinding.tvCameraSettingHumidity.setVisibility(View.VISIBLE);
-			} else if (mPid == 22592 && mVid == 3034) {//TinyC 无湿度参数
-				popSettingBinding.tvCameraSettingHumidity.setVisibility(View.GONE);
-			}
-			popSettingBinding.btCheckVersion.setOnClickListener(v1 -> {
-				//点击之后 立即wifi 或者 移动数据 是否打开，给提示。  连接超时 也给提示
-				//读取 更新info 的接口，获取信息，分割之后校验，是否存在更新。  如果存在，一个提示版本窗口，
-				// (先检查本地是否存在同名文件，有则跳过下载直接安装)
-				// 否则确认之后则去下载地址去下载，然后安装
-				OkHttpClient client = new OkHttpClient();
 				new Thread(new Runnable() {
 					@Override
 					public void run () {
-						Request request = new Request.Builder().url(DYConstants.UPDATE_CHECK_INFO).get().build();
-						try {
-							Response response = client.newCall(request).execute();
-							byte[] responseByte = response.body().bytes();
-							String checkAPIData = new String(responseByte, StandardCharsets.UTF_8);
-							//									if (isDebug)Log.i(TAG, "run:responseByte ==========>  " + checkAPIData);
-							//分割 checkAPIData 得到具体信息
-							String[] AppVersionNameList = checkAPIData.split(";");//切割
-							updateObjList = new ArrayList<>(AppVersionNameList.length);
-							//去掉apk
-							for (int i = 0; i < AppVersionNameList.length; i++) {
-								UpdateObj updateObj = new UpdateObj();
-								AppVersionNameList[i] = AppVersionNameList[i].replace(".apk", "");
-								updateObj.setPackageName(AppVersionNameList[i]);
-								updateObjList.add(updateObj);
-							}
-							//									if (isDebug)Log.i(TAG, "run: =====AppVersionNameList====" + Arrays.toString(AppVersionNameList));
-							String[] AppVersionCodeList = new String[AppVersionNameList.length];//保存app 版本号
-							//筛选最大 VersionCode 的index
-							int maxCode = 0;
-							int currentVersionCode;
-							for (int i = 0; i < AppVersionNameList.length; i++) {
-								AppVersionCodeList[i] = AppVersionNameList[i].split("_b")[1].split("_")[0];
-								currentVersionCode = Integer.parseInt(AppVersionCodeList[i]);
-
-								updateObjList.get(i).setAppVersionCode(currentVersionCode);
-								updateObjList.get(i).setAppVersionName(AppVersionNameList[i].split("_v")[1].split("_b")[0]);
-
-								if (maxCode == 0) {
-									maxCode = currentVersionCode;
-									maxIndex = 0;
-								}
-								if (maxCode < currentVersionCode) {
-									maxCode = currentVersionCode;
-									maxIndex = i;
-								}
-							}
-							//									if (isDebug)Log.i(TAG, "run: 最大的 VersionCode 为： " + maxCode + " codeIndex = " + maxIndex + " 完成版本为： " + AppVersionNameList[maxIndex]);
-							//									if (isDebug)Log.i(TAG, "run: ======AppVersionCodeList===" + Arrays.toString(AppVersionCodeList));
-							int thisVersionCode = mContext.get().getPackageManager().getPackageInfo(mContext.get().getPackageName(), 0).versionCode;
-							//									if (isDebug)Log.i(TAG, "run: versionName === 》" + thisVersionCode);
-							//判断是否需要更新
-							if (thisVersionCode < updateObjList.get(maxIndex).getAppVersionCode()) {
-								Message message = mHandler.obtainMessage();
-								message.what = MSG_CHECK_UPDATE;
-								message.obj = updateObjList;
-								mHandler.sendMessage(message);
-							} else {//已经为最新版本
-								runOnUiThread(new Runnable() {
-									@Override
-									public void run () {
-										showToast(R.string.toast_already_latest_version);
-									}
-								});
-							}
-						} catch (IOException | PackageManager.NameNotFoundException e) {
-							e.printStackTrace();
+						if (mPid == 1 && mVid == 5396) {
+							getCameraParams();//
+						} else if (mPid == 22592 && mVid == 3034) {
+							getTinyCCameraParams();
 						}
+						mHandler.sendEmptyMessage(MSG_CAMERA_PARAMS);
 					}
 				}).start();
-			});
-			//第二步：将获取的数据 展示在输入框内
-			if (cameraParams != null) {
-				popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(cameraParams.get(DYConstants.setting_emittance)));//发射率 0-1
 
-				popSettingBinding.etCameraSettingRevise.setText(String.valueOf(cameraParams.get(DYConstants.setting_correction)));//校正  -20 - 20
-				popSettingBinding.etCameraSettingReflect.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_reflect) * 1)));//反射温度 -10-40
-				popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_environment) * 1)));//环境温度 -10 -40
-
-				if (mPid == 1 && mVid == 5396) {
-					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_humidity) * 100)));//湿度 0-100
-					//湿度设置
-					popSettingBinding.etCameraSettingHumidity.setOnEditorActionListener((v12, actionId, event) -> {
-						if (actionId == EditorInfo.IME_ACTION_DONE) {
-							if (TextUtils.isEmpty(v12.getText().toString()))
-								return true;
-							int value = Integer.parseInt(v12.getText().toString());
-							if (value > 100 || value < 0) {
-								showToast(getString(R.string.toast_range_int, 0, 100));
-								return true;
-							}
-							float fvalue = value / 100.0f;
-							if (mUvcCameraHandler != null) {
-								if (mPid == 1 && mVid == 5396) {
-									sendS0Order(fvalue, DYConstants.SETTING_HUMIDITY_INT);
-								}
-								//									else if (mPid == 22592 && mVid == 3034) {
-								//										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, fvalue, 4);
-								//									}
-								popSettingBinding.etCameraSettingHumidity.setText(String.format(Locale.US, "%d", value));
-								sp.edit().putFloat(DYConstants.setting_humidity, fvalue).apply();
-								showToast(R.string.toast_complete_Humidity);
-							}
-							hideInput(v12.getWindowToken());
-						}
-						return true;
-					});
-				} else if (mPid == 22592 && mVid == 3034) {
-
-				}
-
-				//TODO 设置机芯的默认值;
-				popSettingBinding.btSettingDefault.setOnClickListener(v13 -> {
-					toSettingDefault();
-					if (mPid == 1 && mVid == 5396) {
-						popSettingBinding.etCameraSettingHumidity.setText(String.format(Locale.CHINESE, "%s", (int) (100 * DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE)));
-						sp.edit().putFloat(DYConstants.setting_humidity, DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE).apply();
-					}
-					if (true) {
-						popSettingBinding.etCameraSettingReflect.setText(String.format(Locale.CHINESE, "%d", DYConstants.SETTING_REFLECT_DEFAULT_VALUE));
-						popSettingBinding.etCameraSettingRevise.setText(String.format(Locale.CHINESE, "%s", DYConstants.SETTING_CORRECTION_DEFAULT_VALUE));
-						popSettingBinding.etCameraSettingEmittance.setText(String.format(Locale.CHINESE, "%s", DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE));
-						popSettingBinding.etCameraSettingFreeAirTemp.setText(String.format(Locale.CHINESE, "%d", DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE));
-
-						sp.edit().putFloat(DYConstants.setting_environment, DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE).apply();
-						sp.edit().putFloat(DYConstants.setting_reflect, DYConstants.SETTING_REFLECT_DEFAULT_VALUE).apply();
-						sp.edit().putFloat(DYConstants.setting_emittance, DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE).apply();
-						sp.edit().putFloat(DYConstants.setting_correction, DYConstants.SETTING_CORRECTION_DEFAULT_VALUE).apply();
-
-						mDataBinding.textureViewPreviewActivity.setTinyCCorrection(DYConstants.SETTING_CORRECTION_DEFAULT_VALUE);
-					}
-				});
-
-				//发射率
-				popSettingBinding.etCameraSettingEmittance.setOnEditorActionListener((v14, actionId, event) -> {
-					if (actionId == EditorInfo.IME_ACTION_DONE) {
-						if (TextUtils.isEmpty(v14.getText().toString()))
-							return true;
-						float value = Float.parseFloat(v14.getText().toString());
-						if (value > 1 || value < 0) {
-							showToast(getString(R.string.toast_range_int, 0, 1));
-							return true;
-						}
-						v14.clearFocus();
-						if (mUvcCameraHandler != null) {
-							if (mPid == 1 && mVid == 5396) {
-								sendS0Order(value, DYConstants.SETTING_EMITTANCE_INT);
-							} else if (mPid == 22592 && mVid == 3034) {
-								mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, value, 3);
-							}
-							sp.edit().putFloat(DYConstants.setting_emittance, value).apply();
-							showToast(R.string.toast_complete_Emittance);
-						}
-						hideInput(v14.getWindowToken());
-					}
-					return true;
-				});
-				//距离设置
-				//					popSettingBinding.etCameraSettingDistance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-				//						@Override
-				//						public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
-				//							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
-				//							if (actionId == EditorInfo.IME_ACTION_DONE){
-				//								if (TextUtils.isEmpty(v.getText().toString()))return true;
-				//								int value = Math.round(Float.parseFloat(v.getText().toString()));
-				//								if (value > 5 || value < 0){
-				//									showToast(getString(R.string.toast_range_int,0,5));
-				//									return true;
-				//								}
-				//								byte[] bIputDi = new byte[4];
-				//								ByteUtil.putInt(bIputDi,value,0);
-				//								if (mUvcCameraHandler!= null) {
-				//									if (mPid == 1 && mVid == 5396) {
-				//										mSendCommand.sendShortCommand(5 * 4, bIputDi[0], bIputDi[1], 20, 40, 60);
-				//									}
-				//									sp.edit().putFloat(DYConstants.setting_distance,value).apply();
-				//									showToast(R.string.toast_complete_Distance);
-				//								}
-				//								hideInput(v.getWindowToken());
-				//							}
-				//							return true;
-				//						}
-				//					});
-				//反射温度设置  -20 - 120 ℃
-				popSettingBinding.etCameraSettingReflect.setOnEditorActionListener((v15, actionId, event) -> {
-					//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
-					if (actionId == EditorInfo.IME_ACTION_DONE) {
-						if (TextUtils.isEmpty(v15.getText().toString()))
-							return true;
-						float value = inputValue2Temp(Integer.parseInt(v15.getText().toString()));//拿到的都是摄氏度
-						if (value > getBorderValue(120.0f) || value < getBorderValue(-20.0f)) {//带上 温度单位
-							showToast(getString(R.string.toast_range_float, getBorderValue(-20.0f), getBorderValue(120.0f)));
-							//									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(120.0f)+")");
-							return true;
-						}
-						if (mUvcCameraHandler != null) {
-							if (mPid == 1 && mVid == 5396) {
-								sendS0Order(value, DYConstants.SETTING_REFLECT_INT);
-								//										mSendCommand.sendFloatCommand(DYConstants.SETTING_REFLECT_INT, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
-								//												20, 40, 60, 80, 120);
-							} else if (mPid == 22592 && mVid == 3034) {
-								Log.e(TAG, "onEditorAction: 反射温度 set value = " + value);
-								mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, (int) value, 1);
-							}
-							sp.edit().putFloat(DYConstants.setting_reflect, value).apply();
-							showToast(R.string.toast_complete_Reflect);
-						}
-						hideInput(v15.getWindowToken());
-					}
-					return true;
-				});
-				//校正设置 -20 - 20
-				popSettingBinding.etCameraSettingRevise.setOnEditorActionListener((v16, actionId, event) -> {
-					//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
-					if (actionId == EditorInfo.IME_ACTION_DONE) {
-						if (TextUtils.isEmpty(v16.getText().toString()))
-							return true;
-						float value = inputValue2Temp(Float.parseFloat(v16.getText().toString()));
-						if (value > getBorderValue(20.0f) || value < getBorderValue(-20.0f)) {
-							//									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(20.0f)+")");
-							showToast(getString(R.string.toast_range_float, getBorderValue(-20.0f), getBorderValue(20.0f)));
-							return true;
-						}
-						//								byte[] iputEm = new byte[4];
-						//								ByteUtil.putFloat(iputEm,value,0);
-						if (mUvcCameraHandler != null) {
-							if (mPid == 1 && mVid == 5396) {
-								sendS0Order(value, DYConstants.SETTING_CORRECTION_INT);
-								//										mSendCommand.sendFloatCommand(DYConstants.SETTING_CORRECTION_INT, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
-							} else if (mPid == 22592 && mVid == 3034) {//校正 TinyC
-								//										sp.edit().putFloat(DYConstants.setting_correction, value).apply();
-								mDataBinding.textureViewPreviewActivity.setTinyCCorrection(value);
-							}
-							sp.edit().putFloat(DYConstants.setting_correction, value).apply();
-							showToast(R.string.toast_complete_Revise);
-						}
-						hideInput(v16.getWindowToken());
-					}
-					return true;
-				});
-				//环境温度设置  -20 -50
-				popSettingBinding.etCameraSettingFreeAirTemp.setOnEditorActionListener((v17, actionId, event) -> {
-					//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
-					if (actionId == EditorInfo.IME_ACTION_DONE) {
-						if (TextUtils.isEmpty(v17.getText().toString()))
-							return true;
-						float value = inputValue2Temp(Integer.parseInt(v17.getText().toString()));
-						if (value > getBorderValue(50.0f) || value < getBorderValue(-20.0f)) {
-							//									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(50.0f)+")");
-							showToast(getString(R.string.toast_range_float, getBorderValue(-20.0f), getBorderValue(50.0f)));
-							return true;
-						}
-						//								byte[] iputEm = new byte[4];
-						//								ByteUtil.putFloat(iputEm,value,0);
-						if (mUvcCameraHandler != null) {
-							if (mPid == 1 && mVid == 5396) {
-								sendS0Order(value, DYConstants.SETTING_ENVIRONMENT_INT);
-								//										mSendCommand.sendFloatCommand(DYConstants.SETTING_ENVIRONMENT_INT, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
-								//												20, 40, 60, 80, 120);
-							} else if (mPid == 22592 && mVid == 3034) {
-								//										Log.e(TAG, "onEditorAction: 环境温度 set value = " + value);
-								mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, (int) value, 2);
-							}
-							//									popSettingBinding.etCameraSettingFreeAirTemp.setText(String.format(Locale.US, "%f", value));
-							sp.edit().putFloat(DYConstants.setting_environment, value).apply();
-							showToast(R.string.toast_complete_FreeAirTemp);
-						}
-						hideInput(v17.getWindowToken());
-					}
-					return true;
-				});
-			}
-			//				else {//未连接机芯
-			//					popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(sp.getFloat(DYConstants.setting_emittance, 0)));//发射率 0-1
-			//					//					popSettingBinding.etCameraSettingDistance.setText(String.valueOf(sp.getFloat(DYConstants.setting_distance,0)));//距离 0-5
-			//					popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int) (sp.getFloat(DYConstants.setting_humidity, 0) * 100)));//湿度 0-100
-			//					popSettingBinding.etCameraSettingRevise.setText(String.valueOf(sp.getFloat(DYConstants.setting_correction, 0)));//修正 -3 -3
-			//					popSettingBinding.etCameraSettingReflect.setText(String.valueOf(sp.getFloat(DYConstants.setting_reflect, 0)));//反射温度 -10-40
-			//					popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf(sp.getFloat(DYConstants.setting_environment, 0)));//环境温度 -10 -40
-			//				}
-
-			int temp_unit = sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0);
-			//第三步：初始化自定义控件 温度单位 设置
-			popSettingBinding.switchChoiceTempUnit.setText(DYConstants.tempUnit).setSelectedTab(temp_unit).setOnSwitchListener((position, tabText) -> {//切换 温度单位 监听器
-				mDataBinding.dragTempContainerPreviewActivity.setTempSuffix(position);
-				sp.edit().putInt(DYConstants.TEMP_UNIT_SETTING, position).apply();
-				//切换 温度单位 需要更改 输入框的 单位
-				popSettingBinding.tvCameraSettingReviseUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
-				popSettingBinding.tvCameraSettingReflectUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
-				popSettingBinding.tvCameraSettingFreeAirTempUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
-				//切换 温度单位 需要更改 里面已经输入的值。
-				popSettingBinding.etCameraSettingRevise.setText(String.valueOf(refreshValueByTempUnit(sp.getFloat(DYConstants.setting_correction, 0.0f))));
-				popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf(refreshValueByTempUnit(sp.getFloat(DYConstants.setting_environment, 0.0f))));
-				popSettingBinding.etCameraSettingReflect.setText(String.valueOf(refreshValueByTempUnit(sp.getFloat(DYConstants.setting_reflect, 0.0f))));
-			});
-			//显示设置的弹窗
-			settingPopWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-			settingPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-			settingPopWindows.setHeight(mDataBinding.clPreviewActivity.getHeight() / 3 * 2);
-			settingPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
-
-			settingPopWindows.setFocusable(true);
-			settingPopWindows.setOutsideTouchable(true);
-			settingPopWindows.setTouchable(true);
-
-			//第四步：显示控件
-			if (oldRotation == 90 || oldRotation == 180) {
-				int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-				settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -(mDataBinding.clPreviewActivity.getHeight() / 3) + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
-				settingPopWindows.getContentView().setRotation(180);
-			}
-			if (oldRotation == 0 || oldRotation == 270) {
-				int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-				settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2, Gravity.CENTER);
-				settingPopWindows.getContentView().setRotation(0);
 			}
 
-			//弹窗消失，机芯执行保存指令。
-			settingPopWindows.setOnDismissListener(() -> {
-				if (mUvcCameraHandler != null) {
-					new Thread(() -> {
-						//TinyC 断电保存
-						if (mPid == 22592 && mVid == 3034) {
-							mUvcCameraHandler.tinySaveCameraParams();
-						}
-						//S0 断电保存
-						if (mPid == 1 && mVid == 5396) {
-							setValue(UVCCamera.CTRL_ZOOM_ABS, 0x80ff);
-						}
-					}).start();
-				}
-			});
-
-			popSettingBinding.switchChoiceRecordAudio.setSelectedTab(sp.getInt(DYConstants.RECORD_AUDIO_SETTING, 1));
-			popSettingBinding.switchChoiceRecordAudio.setOnSwitchListener((position, tabText) -> {
-				sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING, position).apply();
-				//						if (isDebug)Log.e(TAG, "onSwitch: " + "=============================");
-			});
-
-
-			// 切换语言 spinner
-			popSettingBinding.btShowChoiceLanguage.setText(DYConstants.languageArray[sp.getInt(DYConstants.LANGUAGE_SETTING, 0)]);
-			popSettingBinding.btShowChoiceLanguage.setOnClickListener(v18 -> {
-				AlertDialog.Builder builder = new AlertDialog.Builder(mContext.get());
-				//						AlertDialog dialog =
-				//						AlertDialog alertDialog =
-				builder.setSingleChoiceItems(DYConstants.languageArray, sp.getInt(DYConstants.LANGUAGE_SETTING, 0), (dialog, which) -> {
-					if (which != sp.getInt(DYConstants.LANGUAGE_SETTING, 0)) {
-						sp.edit().putInt(DYConstants.LANGUAGE_SETTING, which).apply();
-						PLRPopupWindows.dismiss();
-						toSetLanguage(which);
-					}
-					dialog.dismiss();
-				}).create();
-				builder.show();
-			});
 		});
 		//公司信息弹窗   监听器使用的图表的监听器对象
 		mDataBinding.ivPreviewLeftCompanyInfo.setOnClickListener(v -> {
@@ -2014,8 +2016,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	 */
 	private void getTinyCCameraParams () {//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
 		byte[] tempParams = mUvcCameraHandler.getTinyCCameraParams(10);
+		byte[] tempisRight = mUvcCameraHandler.getTinyCCameraParams(10);
 		cameraParams = ByteUtilsCC.tinyCByte2HashMap(tempParams);
-		if (!cameraParamsIsRight(cameraParams)){
+		if (!cameraParamsIsRight(cameraParams,tempParams,tempisRight)){
 			getTinyCCameraParams();
 			return;
 		}
@@ -2031,8 +2034,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		}
 	}
 
-	private boolean cameraParamsIsRight(Map<String,Float> params){
+	private boolean cameraParamsIsRight(Map<String,Float> params , byte [] p1 ,byte [] p2 ){
 		boolean isRight = true;
+		for (int i = 0 ; i< p1.length ; i++){
+			if (p1[i] != p2[i]){
+				isRight = false;
+			}
+		}
 		if (params.get(DYConstants.setting_environment) < (-50.f) || params.get(DYConstants.setting_environment) > 500.0f){
 			isRight = false;
 		}

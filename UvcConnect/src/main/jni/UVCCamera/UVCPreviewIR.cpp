@@ -371,7 +371,7 @@ bool UVCPreviewIR::snRightIsPreviewing() {
     return isSnRight();
 }
 
-void UVCPreviewIR::setRotateMatrix_180(bool isRotate){
+void UVCPreviewIR::setRotateMatrix_180(bool isRotate) {
     isRotateMatrix_180 = isRotate;
 }
 
@@ -608,32 +608,55 @@ int UVCPreviewIR::getTinyCParams(void *rdata, diy func_diy) {
         LOGE("大气温度 1 ==== %d", flashId[1]);
     }
 
-    // 获取 大气透过率（已成功）
-//    data[3] = 0x04;
-//    status = 0;
-//    ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data, sizeof(data), 1000);
-//    ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
-//                              1000);
-//    for (int index = 0; index < 1000; index++) {
-//        uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x0200, &status, 1, 1000);
-//        if ((status & 0x01) == 0x00) {
-//            if ((status & 0x02) == 0x00) {
-//                break;
-//            } else if ((status & 0xFC) != 0x00) {
-//                LOGE("===========================return ==========================");
-//                RETURN(-1, int);
-//            }
-//        }
-//    }
-//    ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId, sizeof(flashId),
-//                              1000);
-//    LOGE("大气透过率 0 ==== %d", flashId[0]);
-//    LOGE("大气透过率 1 ==== %d", flashId[1]);
-//    backData++;
-//    *backData = flashId[0];
-//    backData++;
-//    *backData = flashId[1];
+    RETURN(ret, int);
+}
 
+int UVCPreviewIR::getTinyCParams_impl(void *reData, diy func_diy, unsigned char *data,
+                                      unsigned char *data2) {
+    unsigned char *backData = (unsigned char *) reData;
+    int request_count = 0;//请求计数器
+    int right_count = 0;//正确次数计数器
+    unsigned char currentData[2] = {0};
+    unsigned char oldData[2] = {0};
+    bool isRight = false;
+    unsigned char finalData[2] = {0};
+
+    int ret = 0;
+    ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data, sizeof(data), 1000);
+    ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
+                              1000);
+    if (request_count < 2) {
+        if (getTinyCDevicesStatus()) {
+            if (request_count == 0) {
+                ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, currentData,
+                                          sizeof(currentData),
+                                          1000);
+            }
+            if (request_count == 1) {
+                ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, oldData,
+                                          sizeof(oldData),
+                                          1000);
+            }
+        }
+        request_count++;
+    }
+
+    if (currentData[0] == oldData[0] && currentData[1] == oldData[1]) {
+        isRight = true;
+        finalData[0] = currentData[0];
+        finalData[1] = currentData[1];
+    }
+    if (isRight) {
+        *backData = finalData[0];
+        backData++;
+        *backData = finalData[1];
+        backData++;
+    } else {
+        *backData = 0;
+        backData++;
+        *backData = 0;
+        backData++;
+    }
     backData = NULL;
     RETURN(ret, int);
 }
@@ -699,7 +722,7 @@ int UVCPreviewIR::stopPreview() {
     if (picOutBuffer != NULL) {
         delete[] picOutBuffer;
     }
-    if (backUpBuffer != NULL){
+    if (backUpBuffer != NULL) {
         delete[] backUpBuffer;
     }
 //    LOGE("UVCPreviewIR::stopPreview ============== delete over ");
@@ -1075,11 +1098,13 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 pthread_cond_wait(&preview_sync, &preview_mutex);
 //                 LOGE("do_preview0===pthread_cond_wait=========================");
                 //判断是否需要翻转
-                if (IsRotateMatrix_180()){
+                if (IsRotateMatrix_180()) {
                     if (mPid == 1 && mVid == 5396) {
-                        rotateMatrix_180((short *)backUpBuffer,(short *)HoldBuffer,frameWidth,frameHeight-4);
+                        rotateMatrix_180((short *) backUpBuffer, (short *) HoldBuffer, frameWidth,
+                                         frameHeight - 4);
                     } else {
-                        rotateMatrix_180((short *)backUpBuffer,(short *)HoldBuffer,frameWidth,frameHeight);
+                        rotateMatrix_180((short *) backUpBuffer, (short *) HoldBuffer, frameWidth,
+                                         frameHeight);
                     }
                 }
 
@@ -1426,8 +1451,7 @@ void
 UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_args, size_t hold_bytes) {
     UVCPreviewIR *preview = reinterpret_cast<UVCPreviewIR *>(vptr_args);
     //判断hold_bytes 不小于preview.frameBytes则跳转到 后面正常运行     UNLIKELY期待值大几率为false时,等价于if(value)
-    if (UNLIKELY(hold_bytes < preview->frameBytes))
-    {   //有手机两帧才返回一帧的数据。
+    if (UNLIKELY(hold_bytes < preview->frameBytes)) {   //有手机两帧才返回一帧的数据。
         LOGE("uvc_preview_frame_callback hold_bytes ===> %d < preview->frameBytes  ==== > %d",
              hold_bytes, preview->frameBytes);
 //        unsigned char *headData = preview->CacheBuffer;
@@ -1485,12 +1509,12 @@ UVCPreviewIR::draw_preview_one(uint8_t *frameData, ANativeWindow **window, convF
 }
 
 
-inline const bool UVCPreviewIR::IsRotateMatrix_180() const {return isRotateMatrix_180;}
+inline const bool UVCPreviewIR::IsRotateMatrix_180() const { return isRotateMatrix_180; }
 
 //图像 旋转180度  S0 机芯后面 四行参数不变，TinyC 全部都要改变
 void UVCPreviewIR::rotateMatrix_180(short src_frameData[], short dst_frameData[], int width,
                                     int height) {
-    LOGE("=============width ====%d========height=====%d=========",width,height);
+    LOGE("=============width ====%d========height=====%d=========", width, height);
     for (int h = 0; h < height; h++) {
         for (int w = 0; w < width; w++) {
             dst_frameData[h * width + w] = src_frameData[(height - h - 1) * width +

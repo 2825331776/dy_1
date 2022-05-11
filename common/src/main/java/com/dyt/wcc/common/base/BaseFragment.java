@@ -36,7 +36,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
 	protected WeakReference <Activity> mContext;
 	protected final String             TAG = this.getClass().getSimpleName();
 	protected T                        mDataBinding;
-	protected boolean                  isDebug = true;
+	protected boolean                  isDebug = false;
 	protected Toast mToast;
 
 	@Nullable

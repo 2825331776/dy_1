@@ -32,7 +32,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 
 	protected WeakReference<Context> mContext;
 	protected T                      mDataBinding;//绑定的布局View
-	protected boolean                isDebug = true;
+	protected boolean                isDebug = false;
 	protected Toast                  mToast;
 	protected int mRotation;
 
