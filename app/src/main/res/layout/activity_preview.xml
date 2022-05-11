@@ -20,48 +20,6 @@
         android:layout_height="match_parent"
         android:background="@color/bg_preview_right"
         android:gravity="center">
-        <!-- 横向 按钮定位 引导线-->
-        <!--        <androidx.constraintlayout.widget.Guideline-->
-        <!--            android:id="@+id/gl_percent1"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="0dp"-->
-        <!--            android:orientation="horizontal"-->
-        <!--            app:layout_constraintGuide_percent="0.125" />-->
-
-        <!--        <androidx.constraintlayout.widget.Guideline-->
-        <!--            android:id="@+id/gl_percent2"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="0dp"-->
-        <!--            android:orientation="horizontal"-->
-        <!--            app:layout_constraintGuide_percent="0.275" />-->
-
-        <!--        <androidx.constraintlayout.widget.Guideline-->
-        <!--            android:id="@+id/gl_percent3"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="0dp"-->
-        <!--            android:orientation="horizontal"-->
-        <!--            app:layout_constraintGuide_percent="0.425" />-->
-
-        <!--        <androidx.constraintlayout.widget.Guideline-->
-        <!--            android:id="@+id/gl_percent4"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="0dp"-->
-        <!--            android:orientation="horizontal"-->
-        <!--            app:layout_constraintGuide_percent="0.575" />-->
-
-        <!--        <androidx.constraintlayout.widget.Guideline-->
-        <!--            android:id="@+id/gl_percent5"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="0dp"-->
-        <!--            android:orientation="horizontal"-->
-        <!--            app:layout_constraintGuide_percent="0.725" />-->
-
-        <!--        <androidx.constraintlayout.widget.Guideline-->
-        <!--            android:id="@+id/gl_percent6"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="0dp"-->
-        <!--            android:orientation="horizontal"-->
-        <!--            app:layout_constraintGuide_percent="0.875" />-->
         <!--        纵向  左侧引导线-->
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/gl_main_left"

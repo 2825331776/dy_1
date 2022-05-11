@@ -636,9 +636,9 @@ int FrameImage::setTemperatureCallback(JNIEnv *env, jobject temperature_callback
 //查询温度对照表，将查询之后的具体数据回调给java层onReceiveTemperature函数
 void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
     //共用的指针。
+    unsigned short *orgData = (unsigned short *) frameData;
 //    LOGE("========0 ======= %d",frameData[0]);
 //    LOGE("========1 ======= %d",frameData[1]);
-    unsigned short *orgData = (unsigned short *) frameData;
 
     if (mPid == 1 && mVid == 5396) {
         unsigned short *fourLinePara = orgData + requestWidth * (requestHeight - 4);//后四行参数
@@ -670,7 +670,6 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
                                 mNCbTemper);
             env->ExceptionClear();
         }
-//    pthread_mutex_lock(&fixed_mutex);
         //固定温度条： 刷新 最大 最小AD的 ，S0通过查表刷新。
         if (isNeedFreshAD) {
 //            LOGE("refresh AD ====  maxThumbValue == %f ,  minThumbValue ==== %f " , maxThumbValue , minThumbValue);
@@ -680,7 +679,6 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
             //3 全幅最高温 ，6 是全幅最低温 AD值
 //        LOGE("max temp   = %f  , min temp = %f",)
         }
-//    pthread_mutex_unlock(&fixed_mutex);
         env->DeleteLocalRef(mNCbTemper);
 
         temperatureData = NULL;

@@ -69,7 +69,6 @@ public class LanguageUtils {
 
     /**
      * 对Application上下文进行替换
-     *
      * @param activity activity
      */
     public static void applyAppLanguage(@NonNull Activity activity) {

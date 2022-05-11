@@ -71,7 +71,7 @@ import java.text.DecimalFormat;
 public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 		implements TextureView.SurfaceTextureListener, CameraViewInterface {
 
-	private static final boolean DEBUG = true;    // TODO set false on release
+	private static final boolean DEBUG = false;    // TODO set false on release
 	private static final String  TAG   = "UVCCameraTextureView";
 
 
@@ -302,6 +302,12 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			mRenderHandler.initTempFontSize(fontSize);
 		}
 	}
+	public void S0_RotateMatrix_180(boolean isRotate){
+		if (mRenderHandler != null) {
+			mRenderHandler.S0_RotateMatrix_180(isRotate);
+		}
+	}
+
 
 	/**
 	 * 设置 最高温  最低温 中心点温度 正常点温度 图片 ，及其 每个图片占用的像素大小
@@ -609,6 +615,12 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			}
 		}
 
+		public void S0_RotateMatrix_180(boolean isRotate){
+			if (mThread != null) {
+				mThread.S0_RotateMatrix_180(isRotate);
+			}
+		}
+
 		public void iniTempBitmap (int w, int h) {
 			if (mThread != null) {
 				mThread.iniTempBitmap(w, h);
@@ -728,6 +740,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 				this.tempTextPaint.setTextSize(fontsize);
 				this.tempTextBgTextPaint.setTextSize(fontsize);
 			}
+
 
 			/**
 			 * 初始化 OpenGL ES 的画布的宽高 ，并初始化所需要的画笔。
@@ -1023,21 +1036,25 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			//            public void setUnitTemperature(int mode) {
 			//                this.UnitTemperature = mode;
 			//            }
+			private boolean isRotate_180 = false;
+			public void S0_RotateMatrix_180(boolean isRotate){
+				isRotate_180 = isRotate;
+			}
+
+			private void S0_RotateMatrix_180_MaxMin(float [] tempArray, int width , int height ){
+				tempArray[1] = width - tempArray[1];
+				tempArray[2] = height - tempArray[2];
+
+				tempArray[4] = width - tempArray[4];
+				tempArray[5] = height - tempArray[5];
+			}
 
 			//获取全幅温度函数
 			public final ITemperatureCallback ahITemperatureCallback = new ITemperatureCallback() {
-				//added by wupei
 				@Override
 				public void onReceiveTemperature (float[] temperature) {
 					// 回调的温度的长度为：256x192  + 10
-					//                    Log.e(TAG, "ITemperatureCallback.onReceiveTemperature.temperature[].length ==========="+temperature.length);
-					//                    Log.e(TAG, " 取整 temperature[].length ===========");
-					//                    Log.e(TAG, " 取余 temperature[].length ==========="+temperature.length%256);
 					System.arraycopy(temperature, 0, temperature1, 0, (mSupportHeight) * mSupportWidth + 10);
-					//                    if (UnitTemperature == 0) {     //摄氏度
-					//                        //Log.e(TAG, "000000000");
-					////                        temperature1 = new float[mSuportHeight*mSuportWidth*4]; 初始化太迟 之前访问会报错
-					//                    Log.e(TAG, "onReceiveTemperature:  vid === " + mVid + "  ===== mPid === " + mPid + "====== .tinCorrection " + tinyCorrection );
 					if (mPid == 22592 && mVid == 3034) {
 						temperature1[0] = temperature[0] + tinyCorrection;
 						temperature1[3] = temperature[3] + tinyCorrection;
@@ -1046,7 +1063,9 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 							temperature1[10 + i] = temperature1[10 + i] + tinyCorrection;
 						}
 					} else if (mPid == 1 && mVid == 5396) {
-
+						if (isRotate_180){
+							S0_RotateMatrix_180_MaxMin(temperature1,mSupportWidth,mSupportHeight);
+						}
 					}
 					maxtemperature = temperature[3];
 					mintemperature = temperature[6];

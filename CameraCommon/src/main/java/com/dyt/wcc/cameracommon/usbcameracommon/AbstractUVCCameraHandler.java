@@ -206,6 +206,14 @@ public abstract class AbstractUVCCameraHandler extends Handler {
         return false;
     }
 
+    //2022年3月24日16:10:35 吴长城 sn是否正确 并在预览中
+    public void setRotateMatrix_180(boolean isRotate_180){
+        final CameraThread thread = mWeakThread.get();
+        if ((thread != null) && (thread.mUVCCamera) != null) {
+           thread.mUVCCamera.setRotateMatrix_180(isRotate_180);
+        }
+    }
+
     //2022年4月7日11:53:52 吴长城 测试发送JNI指令
     public boolean javaSendJniOrder(int status){
         if (BuildConfig.DEBUG)Log.e(TAG, "javaSendJniOrder: ");

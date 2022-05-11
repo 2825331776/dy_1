@@ -179,12 +179,32 @@
                 app:strokeWidth="@dimen/dimen_1dp"
                 app:text_Size="@dimen/dimen_16sp" />
 
+            <!--     高低温增益模式 切换      -->
+            <TextView
+                android:id="@+id/tv_high_low_temp_gain_info"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dimen_20dp"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:gravity="center"
+                android:text="@string/setting_high_low_temp_gain_toggle_info"
+                android:textColor="@color/white"
+                android:textSize="@dimen/dimen_16sp"
+                app:layout_constraintLeft_toRightOf="@id/gl_setting_title"
+                app:layout_constraintTop_toBottomOf="@id/tv_record_audio_info" />
 
-            <!--        <include-->
-            <!--            app:layout_constraintLeft_toRightOf="@id/tv_temp_unit_choice_info"-->
-            <!--            app:layout_constraintTop_toTopOf="@id/tv_temp_unit_choice_info"-->
-            <!--            app:layout_constraintBottom_toBottomOf="@id/tv_temp_unit_choice_info"-->
-            <!--            layout="@layout/pop_widget_setting_three_choice_one"/>-->
+            <com.dyt.wcc.common.widget.SwitchMultiButton
+                android:id="@+id/switch_highlow_gain"
+                android:layout_width="@dimen/dimen_120dp"
+                android:layout_height="@dimen/dimen_20dp"
+                android:layout_marginStart="@dimen/dimen_10dp"
+                app:layout_constraintRight_toLeftOf="@id/gl_setting_content"
+                app:layout_constraintTop_toTopOf="@id/tv_high_low_temp_gain_info"
+                app:selectedColor="@color/bg_three_choice_one"
+                app:selectedTab="0"
+                app:switchTabs= "@array/highlow_gain"
+                app:strokeRadius="@dimen/dimen_5dp"
+                app:strokeWidth="@dimen/dimen_1dp"
+                app:text_Size="@dimen/dimen_16sp" />
 
             <TextView
                 android:id="@+id/tv4"
@@ -192,7 +212,7 @@
                 android:layout_height="@dimen/dimen_1dp"
                 android:layout_marginTop="@dimen/dimen_20dp"
                 android:background="@color/bg_cutoff_rule"
-                app:layout_constraintTop_toBottomOf="@id/tv_record_audio_info" />
+                app:layout_constraintTop_toBottomOf="@id/tv_high_low_temp_gain_info" />
 
             <!--            相机参数-->
             <TextView
@@ -590,76 +610,20 @@
                 app:layout_constraintLeft_toRightOf="@id/gl_setting_title"
                 app:layout_constraintTop_toBottomOf="@id/tv_camera_update" />
 
-            <TextView
-                android:id="@+id/tv_check_version"
+            <Button
+                android:id="@+id/bt_check_version"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_height="0dp"
                 android:background="@drawable/bg_setting_language_toggle"
                 android:gravity="center"
                 android:text="@string/check_updates"
+                android:textAllCaps="false"
                 android:textColor="@color/black"
                 android:textSize="@dimen/dimen_16sp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_check_version_info"
                 app:layout_constraintLeft_toLeftOf="@id/bt_show_choice_language"
                 app:layout_constraintRight_toRightOf="@id/bt_show_choice_language"
                 app:layout_constraintTop_toTopOf="@id/tv_check_version_info" />
-
-            <!--            环境温度 单位-->
-            <!--            <TextView-->
-            <!--                android:id="@+id/tv_camera_setting_freeAirTemp_range"-->
-            <!--                android:text="(-10-40)"-->
-            <!--                android:gravity="center"-->
-            <!--                android:textColor="@color/white"-->
-            <!--                android:textSize="16sp"-->
-            <!--                app:layout_constraintLeft_toRightOf="@id/gl_setting_content"-->
-            <!--                app:layout_constraintTop_toTopOf="@id/et_camera_setting_freeAirTemp"-->
-            <!--                app:layout_constraintBottom_toBottomOf="@id/et_camera_setting_freeAirTemp"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="@dimen/dimen_0dp"/>-->
-            <!--            <ImageButton-->
-            <!--                android:id="@+id/ib_camera_setting_freeAirTemp"-->
-            <!--                app:layout_constraintTop_toTopOf="@id/tv_camera_setting_freeAirTemp"-->
-            <!--                app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_freeAirTemp"-->
-            <!--                app:layout_constraintLeft_toRightOf="@id/et_camera_setting_freeAirTemp"-->
-            <!--                android:layout_marginStart="@dimen/dimen_5dp"-->
-            <!--                android:background="@drawable/ic_user_vector_confirm_24px"-->
-            <!--                android:layout_width="@dimen/dimen_20dp"-->
-            <!--                android:layout_height="@dimen/dimen_20dp"/>-->
-
-
-            <!--            <ImageButton-->
-            <!--                android:id="@+id/ib_camera_setting_humidity"-->
-            <!--                app:layout_constraintTop_toTopOf="@id/tv_camera_setting_humidity"-->
-            <!--                app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_humidity"-->
-            <!--                app:layout_constraintLeft_toRightOf="@id/et_camera_setting_humidity"-->
-            <!--                android:layout_marginStart="@dimen/dimen_5dp"-->
-            <!--                android:background="@drawable/ic_user_vector_confirm_24px"-->
-            <!--                android:layout_width="@dimen/dimen_20dp"-->
-            <!--                android:layout_height="@dimen/dimen_20dp"/>-->
-
-
-            <!--            <ImageButton-->
-            <!--                android:id="@+id/ib_camera_setting_reflect"-->
-            <!--                app:layout_constraintTop_toTopOf="@id/tv_camera_setting_reflect"-->
-            <!--                app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_reflect"-->
-            <!--                app:layout_constraintLeft_toRightOf="@id/et_camera_setting_reflect"-->
-            <!--                android:layout_marginStart="@dimen/dimen_5dp"-->
-            <!--                android:background="@drawable/ic_user_vector_confirm_24px"-->
-            <!--                android:layout_width="@dimen/dimen_20dp"-->
-            <!--                android:layout_height="@dimen/dimen_20dp"/>-->
-
-
-            <!--            <ImageButton-->
-            <!--                android:id="@+id/ib_camera_setting_revise"-->
-            <!--                app:layout_constraintTop_toTopOf="@id/tv_camera_setting_revise"-->
-            <!--                app:layout_constraintBottom_toBottomOf="@id/tv_camera_setting_revise"-->
-            <!--                app:layout_constraintLeft_toRightOf="@id/et_camera_setting_revise"-->
-            <!--                android:layout_marginStart="@dimen/dimen_5dp"-->
-            <!--                android:background="@drawable/ic_user_vector_confirm_24px"-->
-            <!--                android:layout_width="@dimen/dimen_20dp"-->
-            <!--                android:layout_height="@dimen/dimen_20dp"/>-->
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

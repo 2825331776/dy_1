@@ -126,6 +126,14 @@ static jboolean nativeSnRightIsPreviewing(JNIEnv *env , jobject thiz ,ID_TYPE id
 	}
 	RETURN(result,jboolean);
 }
+//2022年5月10日17:12:52    设置是否旋转180度
+static void nativeSetRotateMatrix_180(JNIEnv *env , jobject thiz ,ID_TYPE id_camera , jboolean isRotate){
+	UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
+	if (LIKELY(camera)) {
+		camera -> setRotateMatrix_180(isRotate);
+	}
+}
+
 
 //2022年4月7日11:53:52 吴长城 测试发送JNI指令
 static jboolean nativeJavaSendJniOrder(JNIEnv *env , jobject thiz ,ID_TYPE id_camera ,jint status){
@@ -244,7 +252,7 @@ static jobject nativeGetSupportedSize(JNIEnv *env, jobject thiz,
 
 
 static jbyteArray nativeGetByteArrayTemperaturePara(JNIEnv *env, jobject thiz,
-	ID_TYPE id_camera,int len) {
+	ID_TYPE id_camera,jint len) {
 
 	ENTER();
 	UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
@@ -270,7 +278,7 @@ static jbyteArray nativeGetByteArrayTemperaturePara(JNIEnv *env, jobject thiz,
  * @return
  */
 static jbyteArray nativeGetCameraParams(JNIEnv *env, jobject thiz,
-													ID_TYPE id_camera,int len) {
+													ID_TYPE id_camera,jint len) {
 	ENTER();
 	UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
 	jbyteArray array=(env)->NewByteArray(len);
@@ -2359,6 +2367,7 @@ static JNINativeMethod methods[] = {
 
 	////2022年3月24日16:10:35 吴长城 sn是否正确 并在预览中
 	{"nativeSnRightIsPreviewing","(J)Z",(void*)nativeSnRightIsPreviewing},
+	{"nativeSetRotateMatrix_180","(JZ)V",(void*)nativeSetRotateMatrix_180},
 
 	////add吴长城 nativeSetVerifySn
 	{ "nativeSetVerifySn",					"(JI)I", (void *) nativeSetVerifySn },

@@ -38,6 +38,7 @@
     <string name="SettingLanguage">Language</string>
     <string name="SettingTemperatureUnit">Temperature Unit</string>
     <string name="SettingIsRecordAudio">Record with Audio</string>
+    <string name="setting_high_low_temp_gain_toggle_info">高低温增益模式</string>
     <string name="SettingCameraParams">Thermal Parameters</string>
     <string name="SettingCameraParams_Emittance">Emissivity</string>
     <string name="SettingCameraParams_Distance">Distance </string>

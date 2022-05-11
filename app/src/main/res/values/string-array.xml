@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+        <string-array name="highlow_gain">
+            <item>高温</item>
+            <item>低温</item>
+        </string-array>
+</resources>

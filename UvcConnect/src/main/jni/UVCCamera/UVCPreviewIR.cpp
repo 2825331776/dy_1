@@ -31,7 +31,7 @@ using namespace std;
 
 #define LOG_TAG "===UVCPREVIEW==="
 
-#define    LOCAL_DEBUG 0
+#define    LOCAL_DEBUG 1
 #define MAX_FRAME 4
 #define PREVIEW_PIXEL_BYTES 4    // RGBA/RGBX
 #define FRAME_POOL_SZ MAX_FRAME
@@ -80,7 +80,7 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh, FrameImage *frameImage) {
 
     pthread_mutex_init(&data_callback_mutex, NULL);
 
-    pthread_cond_init(&tinyC_send_order_sync, NULL);
+//    pthread_cond_init(&tinyC_send_order_sync, NULL);
     pthread_mutex_init(&tinyC_send_order_mutex, NULL);
 
     EXIT();
@@ -91,7 +91,7 @@ UVCPreviewIR::~UVCPreviewIR() {
 
     ENTER();
     SAFE_DELETE(mFrameImage);
-    if (mDeviceHandle){
+    if (mDeviceHandle) {
         uvc_stop_streaming(mDeviceHandle);
     }
     mFrameImage = NULL;
@@ -107,7 +107,7 @@ UVCPreviewIR::~UVCPreviewIR() {
 
     pthread_mutex_destroy(&data_callback_mutex);
 
-    pthread_cond_destroy(&tinyC_send_order_sync);
+//    pthread_cond_destroy(&tinyC_send_order_sync);
     pthread_mutex_destroy(&tinyC_send_order_mutex);
     EXIT();
 }
@@ -203,7 +203,7 @@ int UVCPreviewIR::startPreview() {
         mIsRunning = true;
         //pthread_mutex_lock(&preview_mutex);
         result = pthread_create(&preview_thread, NULL, preview_thread_func, (void *) this);
-        pthread_create(&tinyC_send_order_thread, NULL, tinyC_sendOrder_thread_func, (void *) this);
+//        pthread_create(&tinyC_send_order_thread, NULL, tinyC_sendOrder_thread_func, (void *) this);
         ////LOGE("STARTPREVIEW RESULT1:%d",result);
         //}
         //	pthread_mutex_unlock(&preview_mutex);
@@ -234,18 +234,18 @@ int UVCPreviewIR::setIsVerifySn() {
     RETURN(result, int);
 }
 
-int UVCPreviewIR::tinyCControl() {
-    int result = UVC_ERROR_IO;
-    for (; LIKELY(isRunning());) {
-        pthread_mutex_lock(&tinyC_send_order_mutex);
-        pthread_cond_wait(&tinyC_send_order_sync, &tinyC_send_order_mutex);
-
-        result = doTinyCOrder();
-
-        pthread_mutex_unlock(&tinyC_send_order_mutex);
-    }
-    RETURN(result, int);
-}
+//int UVCPreviewIR::tinyCControl() {
+//    int result = UVC_ERROR_IO;
+//    for (; LIKELY(isRunning());) {
+//        pthread_mutex_lock(&tinyC_send_order_mutex);
+//        pthread_cond_wait(&tinyC_send_order_sync, &tinyC_send_order_mutex);
+//
+//        result = doTinyCOrder();
+//
+//        pthread_mutex_unlock(&tinyC_send_order_mutex);
+//    }
+//    RETURN(result, int);
+//}
 
 int UVCPreviewIR::doTinyCOrder() {
 //    uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d00,tinyC_data, sizeof(tinyC_data),1000);
@@ -369,6 +369,10 @@ int UVCPreviewIR::sendTinyCAllOrder(void *params, diy func_tinyc, int mark) {
  */
 bool UVCPreviewIR::snRightIsPreviewing() {
     return isSnRight();
+}
+
+void UVCPreviewIR::setRotateMatrix_180(bool isRotate){
+    isRotateMatrix_180 = isRotate;
 }
 
 int UVCPreviewIR::sendTinyCOrder(uint32_t *value, diy func_diy) {
@@ -521,7 +525,7 @@ int UVCPreviewIR::getTinyCUserData(void *returnData, diy func_diy, int userMark)
     RETURN(ret, int);
 }
 
-int UVCPreviewIR::getTinyCDevicesStatus(){
+int UVCPreviewIR::getTinyCDevicesStatus() {
     int ret = 0;
     unsigned char status = 0;
     for (int index = 0; index < 1000; index++) {
@@ -531,11 +535,11 @@ int UVCPreviewIR::getTinyCDevicesStatus(){
                 ret = 1;
                 break;
             } else if ((status & 0xFC) != 0x00) {
-                RETURN(ret,int)
+                RETURN(ret, int)
             }
         }
     }
-    RETURN(ret,int)
+    RETURN(ret, int)
 }
 
 int UVCPreviewIR::getTinyCParams(void *rdata, diy func_diy) {
@@ -550,8 +554,9 @@ int UVCPreviewIR::getTinyCParams(void *rdata, diy func_diy) {
     ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data, sizeof(data), 1000);
     ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
                               1000);
-    if (getTinyCDevicesStatus()){
-        ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId, sizeof(flashId),
+    if (getTinyCDevicesStatus()) {
+        ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId,
+                                  sizeof(flashId),
                                   1000);
         *backData = flashId[0];
         backData++;
@@ -559,7 +564,7 @@ int UVCPreviewIR::getTinyCParams(void *rdata, diy func_diy) {
         unsigned char flashId2[2] = {0};
         flashId2[0] = flashId[1];
         flashId2[1] = flashId[0];
-        unsigned short * dd = (unsigned short *)flashId2;
+        unsigned short *dd = (unsigned short *) flashId2;
         LOGE("发射率 ======= %d", *dd);
         dd = NULL;
         LOGE("发射率 0 ==== %d", flashId[0]);
@@ -572,8 +577,9 @@ int UVCPreviewIR::getTinyCParams(void *rdata, diy func_diy) {
     ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data, sizeof(data), 1000);
     ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
                               1000);
-    if (getTinyCDevicesStatus()){
-        ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId, sizeof(flashId),
+    if (getTinyCDevicesStatus()) {
+        ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId,
+                                  sizeof(flashId),
                                   1000);
         backData++;
         *backData = flashId[0];
@@ -590,8 +596,9 @@ int UVCPreviewIR::getTinyCParams(void *rdata, diy func_diy) {
     ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data, sizeof(data), 1000);
     ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
                               1000);
-    if (getTinyCDevicesStatus()){
-        ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId, sizeof(flashId),
+    if (getTinyCDevicesStatus()) {
+        ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId,
+                                  sizeof(flashId),
                                   1000);
         backData++;
         *backData = flashId[0];
@@ -639,14 +646,14 @@ int UVCPreviewIR::stopPreview() {
         mIsRunning = false;
 //        pthread_cond_signal(&capture_sync);
 
-        pthread_cond_signal(&tinyC_send_order_sync);
-//        int *result_preview_join = NULL;
-        if (pthread_join(tinyC_send_order_thread, NULL) != EXIT_SUCCESS) {
-            LOGE("UVCPreviewIR::stopPreview tinyC_send_order_thread: EXIT_failed");
-        } else {
-//            LOGE("UVCPreviewIR::stopPreview preview thread: EXIT_SUCCESS result =  %d" ,*result_preview_join);
-            LOGE("UVCPreviewIR::stopPreview tinyC_send_order_thread: EXIT_SUCCESS");
-        }
+//        pthread_cond_signal(&tinyC_send_order_sync);
+////        int *result_preview_join = NULL;
+//        if (pthread_join(tinyC_send_order_thread, NULL) != EXIT_SUCCESS) {
+//            LOGE("UVCPreviewIR::stopPreview tinyC_send_order_thread: EXIT_failed");
+//        } else {
+////            LOGE("UVCPreviewIR::stopPreview preview thread: EXIT_SUCCESS result =  %d" ,*result_preview_join);
+//            LOGE("UVCPreviewIR::stopPreview tinyC_send_order_thread: EXIT_SUCCESS");
+//        }
         pthread_cond_signal(&preview_sync);
 //        int *result_preview_join = NULL;
         if (pthread_join(preview_thread, NULL) != EXIT_SUCCESS) {
@@ -692,6 +699,9 @@ int UVCPreviewIR::stopPreview() {
     if (picOutBuffer != NULL) {
         delete[] picOutBuffer;
     }
+    if (backUpBuffer != NULL){
+        delete[] backUpBuffer;
+    }
 //    LOGE("UVCPreviewIR::stopPreview ============== delete over ");
     RETURN(0, int);
 }
@@ -712,16 +722,16 @@ void *UVCPreviewIR::preview_thread_func(void *vptr_args) {
     pthread_exit(NULL);
 }
 
-void *UVCPreviewIR::tinyC_sendOrder_thread_func(void *vptr_args) {
-    int result;
-    ENTER();
-    UVCPreviewIR *preview = reinterpret_cast<UVCPreviewIR *>(vptr_args);
-    if (LIKELY(preview)) {
-        result = preview->tinyCControl();
-    }
-    PRE_EXIT();
-    pthread_exit(NULL);
-}
+//void *UVCPreviewIR::tinyC_sendOrder_thread_func(void *vptr_args) {
+//    int result;
+//    ENTER();
+//    UVCPreviewIR *preview = reinterpret_cast<UVCPreviewIR *>(vptr_args);
+//    if (LIKELY(preview)) {
+//        result = preview->tinyCControl();
+//    }
+//    PRE_EXIT();
+//    pthread_exit(NULL);
+//}
 
 /**
  *
@@ -740,11 +750,13 @@ int UVCPreviewIR::prepare_preview(uvc_stream_ctrl_t *ctrl) {
     if (mPid == 1 && mVid == 5396) {
         RgbaOutBuffer = new unsigned char[requestWidth * (requestHeight - 4) * 4];
         RgbaHoldBuffer = new unsigned char[requestWidth * (requestHeight - 4) * 4];
+//        backUpBuffer = new unsigned char[frameWidth * (frameHeight) * 4];
     } else if (mPid == 22592 && mVid == 3034) {
         RgbaOutBuffer = new unsigned char[requestWidth * (requestHeight) * 4];
         RgbaHoldBuffer = new unsigned char[requestWidth * (requestHeight) * 4];
+//        backUpBuffer = new unsigned char[frameWidth * (frameHeight) * 4];
     }
-
+    backUpBuffer = new unsigned char[frameWidth * (frameHeight) * 4];
     picOutBuffer = new unsigned char[requestWidth * (requestHeight) * 2];
 //    picRgbaOutBuffer=new unsigned char[requestWidth*(requestHeight-4)*4];
 
@@ -1043,7 +1055,6 @@ string DecryptionAES(const string &strSrc) //AES解密
  */
 void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
     ENTER();
-    ////LOGE("do_preview");
     //uvc_stop_streaming(mDeviceHandle);
     LOGI("======================do_preview======================");
     uvc_error_t result = uvc_start_streaming_bandwidth(mDeviceHandle, ctrl,
@@ -1060,17 +1071,22 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
 //            LOGE("do_preview0");
             pthread_mutex_lock(&preview_mutex);
             {
-                //LOGE("get data and show wupei");
                 //等待数据 初始化到位,之后运行下面的代码。
                 pthread_cond_wait(&preview_sync, &preview_mutex);
 //                 LOGE("do_preview0===pthread_cond_wait=========================");
                 //判断是否需要翻转
-
+                if (IsRotateMatrix_180()){
+                    if (mPid == 1 && mVid == 5396) {
+                        rotateMatrix_180((short *)backUpBuffer,(short *)HoldBuffer,frameWidth,frameHeight-4);
+                    } else {
+                        rotateMatrix_180((short *)backUpBuffer,(short *)HoldBuffer,frameWidth,frameHeight);
+                    }
+                }
 
                 if (isCopyPicturing()) {//判断截屏
                     LOGE("======mutex===========");
                     memset(picOutBuffer, 0, 256 * 196 * 2);
-                    memcpy(picOutBuffer, OutBuffer, 256 * 196 * 2);
+                    memcpy(picOutBuffer, HoldBuffer, 256 * 196 * 2);
                     mIsCopyPicture = false;
                     signal_save_picture_thread();
                 }
@@ -1281,10 +1297,10 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             }
                         }
                         if (flag) {
-                            LOGE("=============SN匹配成功========");
+//                            LOGE("=============SN匹配成功========");
                             snIsRight = snIsRight | 1;
                         } else {
-                            LOGE("==============SN匹配不成功========");
+//                            LOGE("==============SN匹配不成功========");
                             snIsRight = snIsRight | 0;
                         }
                         delete[]decryptionChild;
@@ -1408,36 +1424,33 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
 //数据来源
 void
 UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_args, size_t hold_bytes) {
-//    LOGE("   ======tid= %d  =====pid =  %d",gettid(),getpid());
     UVCPreviewIR *preview = reinterpret_cast<UVCPreviewIR *>(vptr_args);
-
-    if (UNLIKELY(hold_bytes <
-                 preview->frameBytes))//判断hold_bytes 不小于preview.frameBytes则跳转到 后面正常运行     UNLIKELY期待值大几率为false时,等价于if(value)
+    //判断hold_bytes 不小于preview.frameBytes则跳转到 后面正常运行     UNLIKELY期待值大几率为false时,等价于if(value)
+    if (UNLIKELY(hold_bytes < preview->frameBytes))
     {   //有手机两帧才返回一帧的数据。
         LOGE("uvc_preview_frame_callback hold_bytes ===> %d < preview->frameBytes  ==== > %d",
              hold_bytes, preview->frameBytes);
 //        unsigned char *headData = preview->CacheBuffer;
         return;
     }
-//    LOGE("======================uvc_preview_frame_callback======================");
     //preview->isComputed()是否绘制完
     if (LIKELY(preview->isRunning() && preview->isComputed())) {
 //        pthread_mutex_lock(&preview->data_callback_mutex);
-//        {
 //            unsigned  char * thedata = preview->OutBuffer;
         //void *memcpy(void *destin, void *source, unsigned n);从源source中拷贝n个字节到目标destin中
         memcpy(preview->OutBuffer, frameData,
                (preview->requestWidth) * (preview->requestHeight) * 2);
-//        LOGE("===================frameSize ===========%s",sizeof(OutBuffer));
+        memcpy(preview->backUpBuffer, frameData,
+               (preview->requestWidth) * (preview->requestHeight) * 2);
         /* swap the buffers org */
 //            LOGE("======callback===11111111111111111111111========");
+//OutBuffer 用于接收 回调的数据流，接收完成后，和之前的HoldBuffer的地址互调。HoldBuffer用于渲染，绘制，查询。
         uint8_t *tmp_buf = NULL;
         tmp_buf = preview->OutBuffer;
         preview->OutBuffer = preview->HoldBuffer;
         preview->HoldBuffer = tmp_buf;
         tmp_buf = NULL;
         preview->signal_receive_frame_data();
-//        }
 //        pthread_mutex_unlock(&preview->data_callback_mutex);
     }
 }
@@ -1452,9 +1465,9 @@ void UVCPreviewIR::signal_save_picture_thread() {
     pthread_cond_signal(&screenShot_sync);
 }
 
-void UVCPreviewIR::signal_tiny_send_order() {
-    pthread_cond_signal(&tinyC_send_order_sync);
-}
+//void UVCPreviewIR::signal_tiny_send_order() {
+//    pthread_cond_signal(&tinyC_send_order_sync);
+//}
 
 //绘制每一帧的图像
 void
@@ -1468,6 +1481,21 @@ UVCPreviewIR::draw_preview_one(uint8_t *frameData, ANativeWindow **window, convF
             }
         }
         copyToSurface(RgbaHoldBuffer, window);
+    }
+}
+
+
+inline const bool UVCPreviewIR::IsRotateMatrix_180() const {return isRotateMatrix_180;}
+
+//图像 旋转180度  S0 机芯后面 四行参数不变，TinyC 全部都要改变
+void UVCPreviewIR::rotateMatrix_180(short src_frameData[], short dst_frameData[], int width,
+                                    int height) {
+    LOGE("=============width ====%d========height=====%d=========",width,height);
+    for (int h = 0; h < height; h++) {
+        for (int w = 0; w < width; w++) {
+            dst_frameData[h * width + w] = src_frameData[(height - h - 1) * width +
+                                                         (width - w - 1)];
+        }
     }
 }
 

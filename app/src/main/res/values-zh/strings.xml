@@ -33,6 +33,7 @@
     <string name="SettingLanguage">语言</string>
     <string name="SettingTemperatureUnit">温度单位</string>
     <string name="SettingIsRecordAudio">录制声音</string>
+    <string name="setting_high_low_temp_gain_toggle_info">高低温增益模式</string>
     <string name="SettingCameraParams">参数</string>
     <string name="SettingCameraParams_Emittance">发射率</string>
     <string name="SettingCameraParams_Distance">距离 </string>

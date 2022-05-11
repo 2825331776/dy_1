@@ -2588,6 +2588,12 @@ bool UVCCamera::snRightIsPreviewing() {
     return false;
 }
 
+void UVCCamera::setRotateMatrix_180(bool isRotate){
+    if (mPreview) {
+        mPreview->setRotateMatrix_180(isRotate);
+    }
+}
+
 //2022年4月7日11:53:52 吴长城 测试发送JNI指令
 bool UVCCamera::javaSendJniOrder(int status) {
     LOGE("==========================javaSendJniOrder============%d======================",status);

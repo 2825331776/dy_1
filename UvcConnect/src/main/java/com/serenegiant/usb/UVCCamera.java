@@ -1218,6 +1218,14 @@ public class UVCCamera {
 		return false;
 	}
 
+	//2022年3月24日16:10:35 吴长城 旋转180度
+	public void setRotateMatrix_180(boolean isRotate_180){
+		if (mCtrlBlock != null) {
+			Log.e(TAG, "SetRotateMatrix_180");
+			 nativeSetRotateMatrix_180(mNativePtr,isRotate_180);
+		}
+	}
+
 	//2022年4月7日11:53:52 吴长城 测试发送JNI指令
 	public boolean javaSendJniOrder(int status){
 		if (mCtrlBlock != null) {
@@ -1321,6 +1329,8 @@ public class UVCCamera {
 	private static final native boolean nativeJavaSendJniOrder(final long id_camera,int status);
 	//2022年3月24日16:10:35 吴长城 sn是否正确 并在预览中
 	private static final native boolean nativeSnRightIsPreviewing(final long id_camera);
+	//2022年3月24日16:10:35 吴长城 旋转180度
+	private static final native void nativeSetRotateMatrix_180(final long id_camera,boolean isRotate);
 	//add 吴长城
 	private static final native int nativeSetVerifySn(final long id_camera, int isVerifySn);//校验SN
 	private static final native void nativeSaveFiveSecondsData(final long id_camera,final String externalPath); //长城添加  保存五秒的数据

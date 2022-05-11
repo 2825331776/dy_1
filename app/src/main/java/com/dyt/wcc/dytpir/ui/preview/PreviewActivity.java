@@ -279,12 +279,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private void relayout (float x, float y, float z) {
 		if (x > -2.5 && x <= 2.5 && y > 7.5 && y <= 10 && oldRotation != 270) {
 			oldRotation = 270;
-//			mDataBinding.textureViewPreviewActivity.setRotation(0);
-//			mDataBinding.dragTempContainerPreviewActivity.setRotation(0);
 			mDataBinding.clMainPreview.setRotation(0);
-			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(0);
-			//			mDataBinding.clPreviewActivity.setRotation(180);
+			if (mUvcCameraHandler!=null && mUvcCameraHandler.snRightIsPreviewing())mUvcCameraHandler.setRotateMatrix_180(false);
+			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(false);
+
 			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(false);
+
 			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
 				PLRPopupWindows.dismiss();
 				if (oldRotation == 0 || oldRotation == 270) {
@@ -319,8 +319,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			setMRotation(0);
 		} else if (x > 7.5 && x <= 10 && y > -2.5 && y <= 2.5 && oldRotation != 0) {
 			oldRotation = 0;
-//			mDataBinding.dragTempContainerPreviewActivity.setRotation(0);
-//			mDataBinding.textureViewPreviewActivity.setRotation(0);
+			if (mUvcCameraHandler!=null && mUvcCameraHandler.snRightIsPreviewing())mUvcCameraHandler.setRotateMatrix_180(false);
+			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(false);
+
 			mDataBinding.clMainPreview.setRotation(0);
 			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(false);
 			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
@@ -357,6 +358,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			setMRotation(0);
 		} else if (x > -2.5 && x <= 2.5 && y > -10 && y <= -7.5 && oldRotation != 90) {
 			oldRotation = 90;
+			if (mUvcCameraHandler!=null && mUvcCameraHandler.snRightIsPreviewing())mUvcCameraHandler.setRotateMatrix_180(true);
+			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(true);
 //			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
 //			mDataBinding.textureViewPreviewActivity.setRotation(180);
 			mDataBinding.clMainPreview.setRotation(180);
@@ -397,6 +400,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			setMRotation(180);
 		} else if (x > -10 && x <= -7.5 && y > -2.5 && y < 2.5 && oldRotation != 180) {
 			oldRotation = 180;
+			if (mUvcCameraHandler!=null && mUvcCameraHandler.snRightIsPreviewing())mUvcCameraHandler.setRotateMatrix_180(true);
+			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(true);
 //			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
 //			mDataBinding.textureViewPreviewActivity.setRotation(180);
 			mDataBinding.clMainPreview.setRotation(180);
@@ -1074,7 +1079,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	 */
 	private void initListener () {
 		//测试的 监听器
-		//				mDataBinding.btTest01.setVisibility(View.VISIBLE);
+//						mDataBinding.btTest01.setVisibility(View.VISIBLE);
 		mDataBinding.btTest01.setOnClickListener(v -> {
 			//******************************MyNumberPicker***************************************
 
@@ -1459,7 +1464,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			} else if (mPid == 22592 && mVid == 3034) {//TinyC 无湿度参数
 				popSettingBinding.tvCameraSettingHumidity.setVisibility(View.GONE);
 			}
-			popSettingBinding.tvCheckVersion.setOnClickListener(v1 -> {
+			popSettingBinding.btCheckVersion.setOnClickListener(v1 -> {
 				//点击之后 立即wifi 或者 移动数据 是否打开，给提示。  连接超时 也给提示
 				//读取 更新info 的接口，获取信息，分割之后校验，是否存在更新。  如果存在，一个提示版本窗口，
 				// (先检查本地是否存在同名文件，有则跳过下载直接安装)

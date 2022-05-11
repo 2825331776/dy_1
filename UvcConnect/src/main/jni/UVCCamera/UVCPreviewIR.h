@@ -75,6 +75,7 @@ private:
     unsigned char *HoldBuffer;// 充满新数据的buffer
     unsigned char *RgbaOutBuffer;//上一张图幅
     unsigned char *RgbaHoldBuffer;//当前图幅
+    unsigned char *backUpBuffer;
     irBuffer *irBuffers;//使用专业级图像算法所需要的缓存
     size_t frameBytes;
 
@@ -106,8 +107,8 @@ private:
     unsigned char TinyRobotSn[15];
 
 //	Tinyc使用锁 相关变量
-    pthread_t tinyC_send_order_thread; //tinyc发送指令的线程
-    pthread_cond_t tinyC_send_order_sync;//tinyc线程 条件变量
+//    pthread_t tinyC_send_order_thread; //tinyc发送指令的线程
+//    pthread_cond_t tinyC_send_order_sync;//tinyc线程 条件变量
     pthread_mutex_t tinyC_send_order_mutex;//tinyc线程 互斥量
     int getTinyCDevicesStatus();//获取TinyC机芯的状态
     int getTinyCParams(void *returnData, diy func_diy);//获取tinyc 机芯参数。仅获取
@@ -115,7 +116,7 @@ private:
     int sendTinyCParamsModification(float *value, diy func_diy, uint32_t mark);//tinyc 机芯参数 修改
     int getTinyCUserData(void *returnData, diy func_diy, int userMark);//读取用户区数据
 
-    int tinyCControl();
+//    int tinyCControl();
 
     int doTinyCOrder();
 
@@ -132,8 +133,8 @@ private:
 
 
     //TinyC 发送指令专用线程
-    static void *tinyC_sendOrder_thread_func(void *vptr_args);//
-    void signal_tiny_send_order();
+//    static void *tinyC_sendOrder_thread_func(void *vptr_args);//
+//    void signal_tiny_send_order();
 //    void sendTinyCOrder();
 //	uint8_t tinyC_order_request_type;
 //	uint8_t tinyC_order_bRequest;
@@ -172,6 +173,11 @@ private:
     uvc_preview_frame_callback(uint8_t *frame, void *vptr_args, size_t hold_bytes);//数据来源
     void
     draw_preview_one(uint8_t *frameData, ANativeWindow **window, convFunc_t func, int pixelBytes);
+
+    inline const bool IsRotateMatrix_180() const;
+    volatile bool isRotateMatrix_180 = false;//是否旋转180
+    //旋转180度
+    void rotateMatrix_180(short src_frameData[], short dst_frameData[], int width, int height);
 
     void clearDisplay();
 
@@ -243,6 +249,8 @@ public:
     int sendTinyCAllOrder(void *params, diy func_tinyc, int mark);
 
     bool snRightIsPreviewing();
+
+    void setRotateMatrix_180(bool isRotate);//设置是否旋转180
 
 /***************************录制*****************************/
 //	int setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format);//把当前数据回调给Java层
