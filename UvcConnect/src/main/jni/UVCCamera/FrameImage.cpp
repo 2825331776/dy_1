@@ -34,7 +34,7 @@ FrameImage::FrameImage(uvc_device_handle_t *devh) {
     floatFpaTmp = correction = Refltmp = Airtmp = humi = emiss = distance = 0;
     cameraLens = 130;
     shutterFix = 0;
-    rangeMode = 120;//可更改
+    rangeMode = 400;//可更改
     mTemperatureCallbackObj = NULL;
 
     maxThumbAD = 0;

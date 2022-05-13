@@ -135,9 +135,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private Sensor                                  mAccelerometerSensor;
 	private AbstractUVCCameraHandler.CameraCallback cameraCallback;
 
-	private static final int     MSG_CHECK_UPDATE = 1;
-	private static final int     MSG_CAMERA_PARAMS= 2;
-	private final        Handler mHandler         = new Handler(new Handler.Callback() {
+	private static final int     MSG_CHECK_UPDATE  = 1;
+	private static final int     MSG_CAMERA_PARAMS = 2;
+	private final        Handler mHandler          = new Handler(new Handler.Callback() {
 		@Override
 		public boolean handleMessage (@NonNull Message msg) {
 			switch (msg.what) {
@@ -502,11 +502,25 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 							}).start();
 						}
 					});
-
+					//录制声音
 					popSettingBinding.switchChoiceRecordAudio.setSelectedTab(sp.getInt(DYConstants.RECORD_AUDIO_SETTING, 1));
 					popSettingBinding.switchChoiceRecordAudio.setOnSwitchListener((position, tabText) -> {
 						sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING, position).apply();
 						//						if (isDebug)Log.e(TAG, "onSwitch: " + "=============================");
+					});
+					//高低温增益切换
+					//tinyc set gain mode:Data_L = 0x0, low gain， Data_L = 0x1,  high gain
+					popSettingBinding.switchHighlowGain.setSelectedTab(sp.getInt(DYConstants.GAIN_TOGGLE_SETTING, 0));
+					popSettingBinding.switchHighlowGain.setOnSwitchListener((position, tabText) -> {
+						if (doubleClick())return;
+						sp.edit().putInt(DYConstants.GAIN_TOGGLE_SETTING, position).apply();
+						if (position == 0) {
+							mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8021),200); //最高200度
+							mHandler.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(),1500);
+						} else {
+							mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8020),200);
+							mHandler.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(),1500);
+						}
 					});
 
 
@@ -644,7 +658,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		if (x > -2.5 && x <= 2.5 && y > 7.5 && y <= 10 && oldRotation != 270) {
 			oldRotation = 270;
 			mDataBinding.clMainPreview.setRotation(0);
-			if (mUvcCameraHandler!=null && mUvcCameraHandler.snRightIsPreviewing())mUvcCameraHandler.setRotateMatrix_180(false);
+			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
+				mUvcCameraHandler.setRotateMatrix_180(false);
 			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(false);
 
 			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(false);
@@ -683,7 +698,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			setMRotation(0);
 		} else if (x > 7.5 && x <= 10 && y > -2.5 && y <= 2.5 && oldRotation != 0) {
 			oldRotation = 0;
-			if (mUvcCameraHandler!=null && mUvcCameraHandler.snRightIsPreviewing())mUvcCameraHandler.setRotateMatrix_180(false);
+			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
+				mUvcCameraHandler.setRotateMatrix_180(false);
 			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(false);
 
 			mDataBinding.clMainPreview.setRotation(0);
@@ -722,10 +738,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			setMRotation(0);
 		} else if (x > -2.5 && x <= 2.5 && y > -10 && y <= -7.5 && oldRotation != 90) {
 			oldRotation = 90;
-			if (mUvcCameraHandler!=null && mUvcCameraHandler.snRightIsPreviewing())mUvcCameraHandler.setRotateMatrix_180(true);
+			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
+				mUvcCameraHandler.setRotateMatrix_180(true);
 			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(true);
-//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
-//			mDataBinding.textureViewPreviewActivity.setRotation(180);
+			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
+			//			mDataBinding.textureViewPreviewActivity.setRotation(180);
 			mDataBinding.clMainPreview.setRotation(180);
 			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
 			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(true);
@@ -764,10 +781,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			setMRotation(180);
 		} else if (x > -10 && x <= -7.5 && y > -2.5 && y < 2.5 && oldRotation != 180) {
 			oldRotation = 180;
-			if (mUvcCameraHandler!=null && mUvcCameraHandler.snRightIsPreviewing())mUvcCameraHandler.setRotateMatrix_180(true);
+			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
+				mUvcCameraHandler.setRotateMatrix_180(true);
 			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(true);
-//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
-//			mDataBinding.textureViewPreviewActivity.setRotation(180);
+			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
+			//			mDataBinding.textureViewPreviewActivity.setRotation(180);
 			mDataBinding.clMainPreview.setRotation(180);
 			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(true);
 			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
@@ -1084,15 +1102,17 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		}
 		return defaultSettingReturn;
 	}
+
 	public static long startTime = 0;
 
 	/**
 	 * <p>判断是否连续点击</p>
+	 *
 	 * @return boolean
 	 */
-	public static boolean doubleClick() {
+	public static boolean doubleClick () {
 		long now = System.currentTimeMillis();
-		if (now - startTime < 500) {
+		if (now - startTime < 1500) {
 			return true;
 		}
 		startTime = now;
@@ -1443,7 +1463,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	 */
 	private void initListener () {
 		//测试的 监听器
-//						mDataBinding.btTest01.setVisibility(View.VISIBLE);
+		//						mDataBinding.btTest01.setVisibility(View.VISIBLE);
 		mDataBinding.btTest01.setOnClickListener(v -> {
 			//******************************MyNumberPicker***************************************
 
@@ -1804,7 +1824,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			if (!mUvcCameraHandler.snRightIsPreviewing()) {
 				return;
 			}
-			if(doubleClick())return;
+			if (doubleClick())
+				return;
 			//是否连续打开
 			if (mUvcCameraHandler.isOpened()) {
 				new Thread(new Runnable() {
@@ -2018,7 +2039,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		byte[] tempParams = mUvcCameraHandler.getTinyCCameraParams(10);
 		byte[] tempisRight = mUvcCameraHandler.getTinyCCameraParams(10);
 		cameraParams = ByteUtilsCC.tinyCByte2HashMap(tempParams);
-		if (!cameraParamsIsRight(cameraParams,tempParams,tempisRight)){
+		if (!cameraParamsIsRight(cameraParams, tempParams, tempisRight)) {
 			getTinyCCameraParams();
 			return;
 		}
@@ -2034,17 +2055,17 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		}
 	}
 
-	private boolean cameraParamsIsRight(Map<String,Float> params , byte [] p1 ,byte [] p2 ){
+	private boolean cameraParamsIsRight (Map<String, Float> params, byte[] p1, byte[] p2) {
 		boolean isRight = true;
-		for (int i = 0 ; i< p1.length ; i++){
-			if (p1[i] != p2[i]){
+		for (int i = 0; i < p1.length; i++) {
+			if (p1[i] != p2[i]) {
 				isRight = false;
 			}
 		}
-		if (params.get(DYConstants.setting_environment) < (-50.f) || params.get(DYConstants.setting_environment) > 500.0f){
+		if (params.get(DYConstants.setting_environment) < (-50.f) || params.get(DYConstants.setting_environment) > 500.0f) {
 			isRight = false;
 		}
-		if (params.get(DYConstants.setting_reflect) < (-50.f) || params.get(DYConstants.setting_reflect) > 500.0f){
+		if (params.get(DYConstants.setting_reflect) < (-50.f) || params.get(DYConstants.setting_reflect) > 500.0f) {
 			isRight = false;
 		}
 		return isRight;

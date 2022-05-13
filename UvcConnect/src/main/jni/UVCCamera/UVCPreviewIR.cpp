@@ -31,7 +31,7 @@ using namespace std;
 
 #define LOG_TAG "===UVCPREVIEW==="
 
-#define    LOCAL_DEBUG 1
+#define    LOCAL_DEBUG 0
 #define MAX_FRAME 4
 #define PREVIEW_PIXEL_BYTES 4    // RGBA/RGBX
 #define FRAME_POOL_SZ MAX_FRAME
