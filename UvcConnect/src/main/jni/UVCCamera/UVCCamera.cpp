@@ -48,7 +48,7 @@
 #include "Parameters.h"
 #include "libuvc_internal.h"
 
-#define    LOCAL_DEBUG 1
+#define    LOCAL_DEBUG 0
 
 //**********************************************************************
 //
@@ -2592,6 +2592,22 @@ void UVCCamera::setRotateMatrix_180(bool isRotate){
     if (mPreview) {
         mPreview->setRotateMatrix_180(isRotate);
     }
+}
+bool UVCCamera::setMachineSetting(int value,
+                        int mark){
+    bool result = false;
+    if (mPreview) {
+        result = mPreview->setMachineSetting( value, mark);
+    }
+    return result;
+}
+float UVCCamera::getMachineSetting(int flag, int value,
+                                   int mark){
+    float result = 0;
+    if (mPreview) {
+        result =  mPreview->getMachineSetting(flag, value, mark);
+    }
+    return result;
 }
 
 //2022年4月7日11:53:52 吴长城 测试发送JNI指令

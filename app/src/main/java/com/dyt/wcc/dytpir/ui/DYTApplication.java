@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.dyt.wcc.common.base.BaseApplication;
+import com.dyt.wcc.dytpir.constans.DYTRobotSingle;
 import com.dyt.wcc.dytpir.utils.LanguageUtils;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -20,8 +21,19 @@ import com.tencent.bugly.crashreport.CrashReport;
 public class DYTApplication extends BaseApplication {
 
 	//	private AppViewModel appViewModel;//全局唯一ViewModel
+	@NonNull
 	public static DYTApplication instance;
+	private static DYTRobotSingle robotSingle = DYTRobotSingle.NO_DEVICE;
 
+	public static DYTRobotSingle getRobotSingle () {
+		return robotSingle;
+	}
+
+	public static void setRobotSingle (DYTRobotSingle robotSingle) {
+		DYTApplication.robotSingle = robotSingle;
+	}
+
+	@NonNull
 	public static DYTApplication getInstance () {
 		return instance;
 	}

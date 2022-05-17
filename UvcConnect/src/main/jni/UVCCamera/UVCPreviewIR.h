@@ -22,6 +22,7 @@ typedef uvc_error_t (*diy)(uvc_device_handle_t *devh, uint8_t request_type, uint
                            unsigned int timeout);
 
 typedef uvc_error_t (*convFunc_t)(uvc_frame_t *in, uvc_frame_t *out);
+
 //S0发送指令函数
 typedef uvc_error_t (*paramset_func_u16)(uvc_device_handle_t *devh, uint16_t value);
 
@@ -112,7 +113,9 @@ private:
     pthread_mutex_t tinyC_send_order_mutex;//tinyc线程 互斥量
     int getTinyCDevicesStatus();//获取TinyC机芯的状态
     int getTinyCParams(void *returnData, diy func_diy);//获取tinyc 机芯参数。仅获取
-    int getTinyCParams_impl(void *reData, diy func_diy , unsigned char data[8],unsigned char data2[8]);
+    int
+    getTinyCParams_impl(void *reData, diy func_diy, unsigned char data[8], unsigned char data2[8]);
+
     int sendTinyCOrder(uint32_t *value, diy func_diy);// tinyc 打挡  获取数据 纯标识位 指令
     int sendTinyCParamsModification(float *value, diy func_diy, uint32_t mark);//tinyc 机芯参数 修改
     int getTinyCUserData(void *returnData, diy func_diy, int userMark);//读取用户区数据
@@ -123,14 +126,6 @@ private:
 
     void *tinyC_params;
     volatile int tinyC_mark;
-    //请求相关参数
-    volatile uint8_t tinyC_request_type;
-    volatile uint8_t tinyC_bRequest;
-    volatile uint16_t tinyC_wValue;
-    volatile uint16_t tinyC_wIndex;
-    volatile uint16_t tinyC_wLength;
-    unsigned char tinyC_data[8];
-    unsigned int tinyC_timeout;
 
 
     //TinyC 发送指令专用线程
@@ -176,6 +171,7 @@ private:
     draw_preview_one(uint8_t *frameData, ANativeWindow **window, convFunc_t func, int pixelBytes);
 
     inline const bool IsRotateMatrix_180() const;
+
     volatile bool isRotateMatrix_180 = false;//是否旋转180
     //旋转180度
     void rotateMatrix_180(short src_frameData[], short dst_frameData[], int width, int height);
@@ -217,14 +213,16 @@ private:
     //打挡策略  只有在确定出了预览图之后生效
     int general_block_strategy_frame_interval = 25 * 60 * 10;//十分钟
     int all_frame_count = 0;//总帧率计数器
- 	int newADValue;//现 打挡 AD值
- 	int oldADValue;//旧 打挡 AD值
- 	//so 打挡的值
- 	int s0_value_difference = 15;//打挡的差值
- 	//TinyC 当打策略
- 	int tinyC_frame_count = 0;
- 	int tinyC_block_order_interval = 25;//读取指令间隔
+    int newADValue;//现 打挡 AD值
+    int oldADValue;//旧 打挡 AD值
+    //so 打挡的值
+    int s0_value_difference = 15;//打挡的差值
+    //TinyC 当打策略
+    int tinyC_frame_count = 0;
+    int tinyC_block_order_interval = 25;//读取指令间隔
     int tinyC_block_value_difference = 5;//差值间隔
+
+    volatile int sendCount = 0;
 
 public:
     UVCPreviewIR();
@@ -252,6 +250,14 @@ public:
     bool snRightIsPreviewing();
 
     void setRotateMatrix_180(bool isRotate);//设置是否旋转180
+
+    //2022年5月17日16:46:17 设置机芯参数
+    bool setMachineSetting(int value,
+                            int mark);
+
+    //2022年5月17日16:46:17 获取机芯参数
+    float getMachineSetting(int flag, int value,
+                            int mark);
 
 /***************************录制*****************************/
 //	int setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format);//把当前数据回调给Java层

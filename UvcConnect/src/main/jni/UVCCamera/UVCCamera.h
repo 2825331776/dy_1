@@ -358,6 +358,12 @@ void whenShutRefresh() ;
 	bool snRightIsPreviewing();
 	//2022年5月10日16:11:42  设置是否旋转180度
 	void setRotateMatrix_180(bool isRotate);
+	//2022年5月17日16:46:17 设置机芯参数
+	bool setMachineSetting(int value,
+							 int mark);
+	//2022年5月17日16:46:17 获取机芯参数
+	float getMachineSetting(int flag, int value,
+							int mark);
 	//2022年4月7日11:53:52 吴长城 测试发送JNI指令
 	bool javaSendJniOrder(int status);
 

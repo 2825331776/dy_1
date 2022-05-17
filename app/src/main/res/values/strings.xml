@@ -38,7 +38,7 @@
     <string name="SettingLanguage">Language</string>
     <string name="SettingTemperatureUnit">Temperature Unit</string>
     <string name="SettingIsRecordAudio">Record with Audio</string>
-    <string name="setting_high_low_temp_gain_toggle_info">高低温增益模式</string>
+
     <string name="SettingCameraParams">Thermal Parameters</string>
     <string name="SettingCameraParams_Emittance">Emissivity</string>
     <string name="SettingCameraParams_Distance">Distance </string>
@@ -49,6 +49,9 @@
     <string name="SettingCameraParams_Reset">Default</string>
     <string name="setting_update">Upgrade</string>
     <string name="setting_check_version_info">App Version:%s</string>
+    <string name="setting_high_low_temp_gain_toggle_info">High and Low TEMP. Switch</string>
+    <string name="setting_high_gain">High</string>
+    <string name="setting_low_gain">Low</string>
 
     <string name="setting_language_chinese">Chinese</string>
     <string name="setting_language_english">English</string>

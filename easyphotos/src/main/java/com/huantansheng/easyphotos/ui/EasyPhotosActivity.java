@@ -666,14 +666,15 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 		if (albumModel.getAlbumItems().isEmpty()) {
 			if (Setting.isOnlyVideo()) {
 				Toast.makeText(getApplicationContext(), R.string.no_videos_easy_photos, Toast.LENGTH_LONG).show();
-				finish();
+//				finish();
 				return;
 			}
-			Toast.makeText(getApplicationContext(), R.string.no_photos_easy_photos, Toast.LENGTH_LONG).show();
-			if (Setting.isShowCamera)
-				launchCamera(Code.REQUEST_CAMERA);
-			else
-				finish();
+			//
+//			Toast.makeText(getApplicationContext(), R.string.no_photos_easy_photos, Toast.LENGTH_LONG).show();
+//			if (Setting.isShowCamera)
+//				launchCamera(Code.REQUEST_CAMERA);
+//			else
+//				finish();
 			return;
 		}
 

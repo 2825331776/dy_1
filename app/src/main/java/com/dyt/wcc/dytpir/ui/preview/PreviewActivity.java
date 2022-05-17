@@ -57,6 +57,7 @@ import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
 import com.dyt.wcc.dytpir.BuildConfig;
 import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.constans.DYConstants;
+import com.dyt.wcc.dytpir.constans.DYTRobotSingle;
 import com.dyt.wcc.dytpir.databinding.ActivityPreviewBinding;
 import com.dyt.wcc.dytpir.databinding.PopCompanyInfoBinding;
 import com.dyt.wcc.dytpir.databinding.PopHighlowcenterTraceBinding;
@@ -70,6 +71,7 @@ import com.dyt.wcc.dytpir.utils.ByteUtilsCC;
 import com.dyt.wcc.dytpir.utils.CreateBitmap;
 import com.dyt.wcc.dytpir.utils.LanguageUtils;
 import com.huantansheng.easyphotos.EasyPhotos;
+import com.huantansheng.easyphotos.ui.dialog.LoadingDialog;
 import com.king.app.dialog.AppDialog;
 import com.king.app.updater.AppUpdater;
 import com.king.app.updater.http.OkHttpManager;
@@ -134,6 +136,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//磁场传感器，加速度传感器 mMagneticSensor,
 	private Sensor                                  mAccelerometerSensor;
 	private AbstractUVCCameraHandler.CameraCallback cameraCallback;
+	private LoadingDialog loadingDialog;
 
 	private static final int     MSG_CHECK_UPDATE  = 1;
 	private static final int     MSG_CAMERA_PARAMS = 2;
@@ -258,7 +261,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						popSettingBinding.etCameraSettingReflect.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_reflect) * 1)));//反射温度 -10-40
 						popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_environment) * 1)));//环境温度 -10 -40
 
-						if (mPid == 1 && mVid == 5396) {
+						if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
 							popSettingBinding.etCameraSettingHumidity.setText(String.valueOf((int) (cameraParams.get(DYConstants.setting_humidity) * 100)));//湿度 0-100
 							//湿度设置
 							popSettingBinding.etCameraSettingHumidity.setOnEditorActionListener((v12, actionId, event) -> {
@@ -286,7 +289,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 								}
 								return true;
 							});
-						} else if (mPid == 22592 && mVid == 3034) {
+						} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
 
 						}
 
@@ -371,15 +374,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 								float value = inputValue2Temp(Integer.parseInt(v15.getText().toString()));//拿到的都是摄氏度
 								if (value > getBorderValue(120.0f) || value < getBorderValue(-20.0f)) {//带上 温度单位
 									showToast(getString(R.string.toast_range_float, getBorderValue(-20.0f), getBorderValue(120.0f)));
-									//									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(120.0f)+")");
 									return true;
 								}
 								if (mUvcCameraHandler != null) {
-									if (mPid == 1 && mVid == 5396) {
+									if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
 										sendS0Order(value, DYConstants.SETTING_REFLECT_INT);
-										//										mSendCommand.sendFloatCommand(DYConstants.SETTING_REFLECT_INT, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
-										//												20, 40, 60, 80, 120);
-									} else if (mPid == 22592 && mVid == 3034) {
+									} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
 										Log.e(TAG, "onEditorAction: 反射温度 set value = " + value);
 										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, (int) value, 1);
 									}
@@ -398,18 +398,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 									return true;
 								float value = inputValue2Temp(Float.parseFloat(v16.getText().toString()));
 								if (value > getBorderValue(20.0f) || value < getBorderValue(-20.0f)) {
-									//									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(20.0f)+")");
 									showToast(getString(R.string.toast_range_float, getBorderValue(-20.0f), getBorderValue(20.0f)));
 									return true;
 								}
-								//								byte[] iputEm = new byte[4];
-								//								ByteUtil.putFloat(iputEm,value,0);
 								if (mUvcCameraHandler != null) {
-									if (mPid == 1 && mVid == 5396) {
+									if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
 										sendS0Order(value, DYConstants.SETTING_CORRECTION_INT);
-										//										mSendCommand.sendFloatCommand(DYConstants.SETTING_CORRECTION_INT, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
-									} else if (mPid == 22592 && mVid == 3034) {//校正 TinyC
-										//										sp.edit().putFloat(DYConstants.setting_correction, value).apply();
+									} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {//校正 TinyC
 										mDataBinding.textureViewPreviewActivity.setTinyCCorrection(value);
 									}
 									sp.edit().putFloat(DYConstants.setting_correction, value).apply();
@@ -427,22 +422,16 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 									return true;
 								float value = inputValue2Temp(Integer.parseInt(v17.getText().toString()));
 								if (value > getBorderValue(50.0f) || value < getBorderValue(-20.0f)) {
-									//									showToast("取值范围("+getBorderValue(-20.0f)+"-"+getBorderValue(50.0f)+")");
 									showToast(getString(R.string.toast_range_float, getBorderValue(-20.0f), getBorderValue(50.0f)));
 									return true;
 								}
-								//								byte[] iputEm = new byte[4];
-								//								ByteUtil.putFloat(iputEm,value,0);
 								if (mUvcCameraHandler != null) {
-									if (mPid == 1 && mVid == 5396) {
+									if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
 										sendS0Order(value, DYConstants.SETTING_ENVIRONMENT_INT);
-										//										mSendCommand.sendFloatCommand(DYConstants.SETTING_ENVIRONMENT_INT, iputEm[0], iputEm[1], iputEm[2], iputEm[3],
-										//												20, 40, 60, 80, 120);
-									} else if (mPid == 22592 && mVid == 3034) {
+									} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
 										//										Log.e(TAG, "onEditorAction: 环境温度 set value = " + value);
 										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, (int) value, 2);
 									}
-									//									popSettingBinding.etCameraSettingFreeAirTemp.setText(String.format(Locale.US, "%f", value));
 									sp.edit().putFloat(DYConstants.setting_environment, value).apply();
 									showToast(R.string.toast_complete_FreeAirTemp);
 								}
@@ -492,11 +481,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						if (mUvcCameraHandler != null) {
 							new Thread(() -> {
 								//TinyC 断电保存
-								if (mPid == 22592 && mVid == 3034) {
+								if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
 									mUvcCameraHandler.tinySaveCameraParams();
 								}
 								//S0 断电保存
-								if (mPid == 1 && mVid == 5396) {
+								if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
 									setValue(UVCCamera.CTRL_ZOOM_ABS, 0x80ff);
 								}
 							}).start();
@@ -510,16 +499,64 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					});
 					//高低温增益切换
 					//tinyc set gain mode:Data_L = 0x0, low gain， Data_L = 0x1,  high gain
+					//拔出之后默认为低温模式。
 					popSettingBinding.switchHighlowGain.setSelectedTab(sp.getInt(DYConstants.GAIN_TOGGLE_SETTING, 0));
 					popSettingBinding.switchHighlowGain.setOnSwitchListener((position, tabText) -> {
-						if (doubleClick())return;
+//						if (doubleGainClick()) {
+//							return;
+//						}
 						sp.edit().putInt(DYConstants.GAIN_TOGGLE_SETTING, position).apply();
-						if (position == 0) {
-							mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8021),200); //最高200度
-							mHandler.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(),1500);
-						} else {
-							mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8020),200);
-							mHandler.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(),1500);
+						Log.e(TAG, "handleMessage: 111111111============" + position);
+						if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
+							if (position == 0) {
+								mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8021), 200); //最高200度
+							} else {
+								mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8020), 200);//最高599度
+							}
+							mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000), 1000);
+							mHandler.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), 1800);
+						}else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
+							loadingDialog.show();
+							if (position == 0) {
+								new Thread(new Runnable() {
+									@Override
+									public void run () {
+										mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS,1,1);
+									}
+								}).start();
+
+								mHandler.postDelayed(new Runnable() {
+									@Override
+									public void run () {
+										setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
+										runOnUiThread(new Runnable() {
+											@Override
+											public void run () {
+												loadingDialog.dismiss();
+											}
+										});
+									}
+								},2000);
+							} else {
+								new Thread(new Runnable() {
+									@Override
+									public void run () {
+										boolean status = mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS,0,0);
+									}
+								}).start();
+								mHandler.postDelayed(new Runnable() {
+									@Override
+									public void run () {
+										setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
+										runOnUiThread(new Runnable() {
+											@Override
+											public void run () {
+												loadingDialog.dismiss();
+											}
+										});
+									}
+								},2000);
+							}
 						}
 					});
 
@@ -924,6 +961,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			if (isDebug)
 				Log.e(TAG, " DD == onDisconnect: ");
 			runOnUiThread(() -> {
+				//拔出设备之后，重置为低温增益模式
+				sp.edit().putInt(DYConstants.GAIN_TOGGLE_SETTING, 0).apply();
 				//断开连接之时, 恢复UI
 				mDataBinding.toggleAreaCheck.setSelected(false);
 				mDataBinding.toggleHighTempAlarm.setSelected(false);
@@ -936,9 +975,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					mUvcCameraHandler.disWenKuan();
 					mUvcCameraHandler.fixedTempStripChange(false);
 				}
+				DYTApplication.setRobotSingle(DYTRobotSingle.NO_DEVICE);
 			});
 			mVid = 0;
 			mPid = 0;
+
 			if (mUvcCameraHandler != null) {
 				//				mUvcCameraHandler.removeCallback(cameraCallback);
 				mUvcCameraHandler.stopTemperaturing();
@@ -1056,6 +1097,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mDataBinding.textureViewPreviewActivity.openFeaturePoints(0);
 		mDataBinding.textureViewPreviewActivity.openFeaturePoints(1);
 		mDataBinding.textureViewPreviewActivity.openFeaturePoints(2);
+
+		if (mPid == 1 && mVid == 5396) {
+			DYTApplication.setRobotSingle(DYTRobotSingle.S0_256_196);
+		} else if (mPid == 22592 && mVid == 3034){
+			DYTApplication.setRobotSingle(DYTRobotSingle.TinYC_256_192);
+		}
 	}
 
 	private int setValue (final int flag, final int value) {//设置机芯参数,调用JNI层
@@ -1071,14 +1118,14 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private int toSettingDefault () {
 		Handler handler0 = new Handler();
 		defaultSettingReturn = -1;
-		if (mPid == 1 && mVid == 5396) {
+		if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
 			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_CORRECTION_DEFAULT_VALUE, DYConstants.SETTING_CORRECTION_INT), 0);
 
 			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE, DYConstants.SETTING_EMITTANCE_INT), 150);
 			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE, DYConstants.SETTING_HUMIDITY_INT), 300);
 			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE, DYConstants.SETTING_ENVIRONMENT_INT), 450);
 			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_REFLECT_DEFAULT_VALUE, DYConstants.SETTING_REFLECT_INT), 600);
-		} else if (mPid == 22592 && mVid == 3034) {
+		} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
 			handler0.postDelayed(() -> {
 				//					result = sendS0Order(DYConstants.SETTING_CORRECTION_DEFAULT_VALUE,DYConstants.SETTING_CORRECTION_INT);
 				defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE, 3);
@@ -1113,6 +1160,20 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	public static boolean doubleClick () {
 		long now = System.currentTimeMillis();
 		if (now - startTime < 1500) {
+			return true;
+		}
+		startTime = now;
+		return false;
+	}
+
+	/**
+	 * <p>判断是否连续点击</p>
+	 *
+	 * @return boolean
+	 */
+	public static boolean doubleGainClick () {
+		long now = System.currentTimeMillis();
+		if (now - startTime < 2000) {
 			return true;
 		}
 		startTime = now;
@@ -1210,6 +1271,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
 		configuration = getResources().getConfiguration();
 		metrics = getResources().getDisplayMetrics();
+		loadingDialog = LoadingDialog.get(mContext.get());
 
 		cameraCallback = new AbstractUVCCameraHandler.CameraCallback() {
 			@Override
@@ -1463,8 +1525,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	 */
 	private void initListener () {
 		//测试的 监听器
-		//						mDataBinding.btTest01.setVisibility(View.VISIBLE);
+		mDataBinding.btTest01.setVisibility(View.VISIBLE);
 		mDataBinding.btTest01.setOnClickListener(v -> {
+			mUvcCameraHandler.getMachineSetting(UVCCamera.CTRL_ZOOM_ABS,0,10);
+
 			//******************************MyNumberPicker***************************************
 
 			//****************************动画开始*************************************
@@ -2036,8 +2100,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	 * * 多余 8-9
 	 */
 	private void getTinyCCameraParams () {//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
-		byte[] tempParams = mUvcCameraHandler.getTinyCCameraParams(10);
-		byte[] tempisRight = mUvcCameraHandler.getTinyCCameraParams(10);
+		byte[] tempParams = mUvcCameraHandler.getTinyCCameraParams(20);
+		byte[] tempisRight = mUvcCameraHandler.getTinyCCameraParams(20);
 		cameraParams = ByteUtilsCC.tinyCByte2HashMap(tempParams);
 		if (!cameraParamsIsRight(cameraParams, tempParams, tempisRight)) {
 			getTinyCCameraParams();

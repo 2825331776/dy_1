@@ -323,7 +323,6 @@ int UVCPreviewIR::doTinyCOrder() {
  */
 int UVCPreviewIR::sendTinyCAllOrder(void *params, diy func_tinyc, int mark) {
     int ret = UVC_ERROR_IO;
-
 //    LOGE("=======sendTinyCAllOrder === lock==Thread id = %d===== mark = %d==" , gettid() , tinyC_mark);
 //    LOGE("=======mark === >%d=========" , mark);
     if (mark == 10) {//获去tinyc机芯参数列表
@@ -345,19 +344,6 @@ int UVCPreviewIR::sendTinyCAllOrder(void *params, diy func_tinyc, int mark) {
         ret = getTinyCUserData(params, func_tinyc, mark);
         pthread_mutex_unlock(&tinyC_send_order_mutex);
     }
-
-//    if (mark == 10){//获去tinyC机芯参数列表
-//        ret = getTinyCParams(params, func_tinyc);
-//    }
-//    else if (mark == 100){//纯指令， 打挡  切换返回数据流
-//        LOGE("=========mark == 100======= === %d=======" ,*((int*)params));
-//        ret = sendTinyCOrder((uint32_t*) params, uvc_diy_communicate);
-////        pthread_cond_signal(&tinyC_send_order_sync);
-//    }
-//    else if ( mark > 0 && mark < 10){//修改tinyC机芯参数
-//        ret = sendTinyCParamsModification((float*)(params),func_tinyc,mark);
-//    }
-
     LOGE("=======sendTinyCAllOrder === ret =====**** = %d====", ret);
 //    LOGE("=======sendTinyCAllOrder === unlock=Thread id ===%d=== mark = %d====" , gettid(), mark);
     RETURN(ret, int);
@@ -371,6 +357,85 @@ bool UVCPreviewIR::snRightIsPreviewing() {
     return isSnRight();
 }
 
+//2022年5月17日16:46:17 设置机芯参数
+bool UVCPreviewIR::setMachineSetting(int value, int mark) {
+    LOGE("============setMachineSetting============value ====>%d", value);
+    bool result = false;
+
+    unsigned char data_set[8] = {0x14, 0xc5, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00};
+    unsigned char flashId_get[2] = {5};
+    flashId_get[1] = 100;
+    int getData = flashId_get[1];
+//    unsigned char flashId2_get[2] = {100};
+    unsigned char data_get[8] = {0x14, 0x85, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00};
+    unsigned char data2[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02};
+
+    while (sendCount < 3 && (value != flashId_get[1])) {
+         uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data_get,
+                                  sizeof(data_get), 1000);
+        uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
+                                  1000);
+        if (getTinyCDevicesStatus()) {
+            LOGE("============getMachineSetting======get=order=========");
+            uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId_get,
+                                      sizeof(flashId_get),
+                                      1000);
+            getData = flashId_get[1];
+            LOGE("flashId_get 0 ==== %d", flashId_get[0]);
+            LOGE("flashId_get 1 ==== %d", flashId_get[1]);
+        }
+        if(getData != value){
+            data_set[6] = (value >> 8);
+            data_set[7] = (value & 0xff);
+            if (getTinyCDevicesStatus()) {
+                LOGE("============setMachineSetting======set=order=========");
+                uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data_set,
+                                          sizeof(data_set),
+                                          1000);
+                uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
+                                          1000);
+            }
+            if (sendCount != 0){
+                mark = mark -1;
+            }
+        }
+        sendCount++;
+    }
+    sendCount = 0;
+    result = (mark == value);
+
+    return result;
+}
+
+//2022年5月17日16:46:17 设置机芯参数
+float UVCPreviewIR::getMachineSetting(int flag, int value,
+                                      int mark) {
+    int ret = -1;
+    float result = 0;
+    //
+    unsigned char flashId[2] = {0};
+    unsigned char data[8] = {0x14, 0x85, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00};
+    unsigned char data2[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02};
+    ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data, sizeof(data), 1000);
+    ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
+                              1000);
+    if (getTinyCDevicesStatus()) {
+        ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId,
+                                  sizeof(flashId),
+                                  1000);
+        unsigned char flashId2[2] = {0};
+        LOGE("getMachineSetting =====flashId== %d", *flashId);
+        flashId2[0] = flashId[1];
+        flashId2[1] = flashId[0];
+        unsigned short *dd = (unsigned short *) flashId2;
+        LOGE("getMachineSetting =====dd== %d", *dd);
+        dd = NULL;
+        LOGE("getMachineSetting 0 ==== %d", flashId[0]);
+        LOGE("getMachineSetting 1 ==== %d", flashId[1]);
+    }
+    return result;
+}
+
 void UVCPreviewIR::setRotateMatrix_180(bool isRotate) {
     isRotateMatrix_180 = isRotate;
 }
@@ -378,30 +443,17 @@ void UVCPreviewIR::setRotateMatrix_180(bool isRotate) {
 int UVCPreviewIR::sendTinyCOrder(uint32_t *value, diy func_diy) {
     int ret = UVC_ERROR_IO;
 
-    tinyC_request_type = 0x41;
-    tinyC_bRequest = 0x45;
-    tinyC_wValue = 0x0078;
-    tinyC_wIndex = 0x1d00;
-
-    tinyC_data[2] = 0x00;
-    tinyC_data[3] = 0x00;
-    tinyC_data[4] = 0x00;
-    tinyC_data[5] = 0x00;
-    tinyC_data[6] = 0x00;
-    tinyC_data[7] = 0x00;
-
     if (*value == 32772) {//画面设置指令 0X8004 , 32773 == 0X8005
         //输出温度数据(AD值)
-        tinyC_data[0] = 0x0a;
-        tinyC_data[1] = 0x01;
-        ret = uvc_diy_communicate(mDeviceHandle, tinyC_request_type, tinyC_bRequest, tinyC_wValue,
-                                  tinyC_wIndex, tinyC_data, sizeof(tinyC_data), 1000);
+        unsigned char data[8] = {0x0a, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+        ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078,
+                                  0x1d00, data, sizeof(data), 1000);
     }
     if (*value == 32768) {//打挡指令 0X8000
-        tinyC_data[0] = 0x0d;
-        tinyC_data[1] = 0xc1;
-        ret = uvc_diy_communicate(mDeviceHandle, tinyC_request_type, tinyC_bRequest, tinyC_wValue,
-                                  tinyC_wIndex, tinyC_data, sizeof(tinyC_data), 1000);
+        LOGE("=======32768==========");
+        unsigned char data[8] = {0x0d, 0xc1, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+        ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078,
+                                  0x1d00, data, sizeof(data), 1000);
     }
     RETURN(ret, int);
 }
@@ -571,7 +623,6 @@ int UVCPreviewIR::getTinyCParams(void *rdata, diy func_diy) {
         LOGE("发射率 1 ==== %d", flashId[1]);
     }
 
-
     // 获取 反射温度（已成功）
     data[3] = 0x01;
     ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data, sizeof(data), 1000);
@@ -588,7 +639,6 @@ int UVCPreviewIR::getTinyCParams(void *rdata, diy func_diy) {
         LOGE("反射温度 0 ==== %d", flashId[0]);
         LOGE("反射温度 1 ==== %d", flashId[1]);
     }
-
 
     // 获取 大气温度（已成功）
     data[3] = 0x02;
@@ -607,7 +657,7 @@ int UVCPreviewIR::getTinyCParams(void *rdata, diy func_diy) {
         LOGE("大气温度 0 ==== %d", flashId[0]);
         LOGE("大气温度 1 ==== %d", flashId[1]);
     }
-
+    backData = NULL;
     RETURN(ret, int);
 }
 
@@ -1215,26 +1265,13 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         }
 //                        LOGE("===================flashId>>>>>>>>>%s<<<<<<<<<<<<<<<============" , TinyRobotSn);
                         *(tinyRobotSn + 15) = '\0';
-
-                        tinyC_request_type = 0x41;
-                        tinyC_bRequest = 0x45;
-                        tinyC_wValue = 0x0078;
-                        tinyC_wIndex = 0x1d00;
-
-                        tinyC_data[2] = 0x00;
-                        tinyC_data[3] = 0x00;
-                        tinyC_data[4] = 0x00;
-                        tinyC_data[5] = 0x00;
-                        tinyC_data[6] = 0x00;
-                        tinyC_data[7] = 0x00;
-                        //输出温度数据(AD值)
-                        tinyC_data[0] = 0x0a;
-                        tinyC_data[1] = 0x01;
+                        //输出AD值 数据
+                        unsigned char dataa[8] = {0x0a, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
                         if (mDeviceHandle) {
-                            ret = uvc_diy_communicate(mDeviceHandle, tinyC_request_type,
-                                                      tinyC_bRequest,
-                                                      tinyC_wValue, tinyC_wIndex, tinyC_data,
-                                                      sizeof(tinyC_data), 1000);
+                            ret = uvc_diy_communicate(mDeviceHandle, 0x41,
+                                                      0x45,
+                                                      0x0078, 0x1d00, dataa,
+                                                      sizeof(dataa), 1000);
                         }
 
 //                        pthread_mutex_lock(&tinyC_send_order_mutex);
@@ -1514,7 +1551,7 @@ inline const bool UVCPreviewIR::IsRotateMatrix_180() const { return isRotateMatr
 //图像 旋转180度  S0 机芯后面 四行参数不变，TinyC 全部都要改变
 void UVCPreviewIR::rotateMatrix_180(short src_frameData[], short dst_frameData[], int width,
                                     int height) {
-    LOGE("=============width ====%d========height=====%d=========", width, height);
+//    LOGE("=============width ====%d========height=====%d=========", width, height);
     for (int h = 0; h < height; h++) {
         for (int w = 0; w < width; w++) {
             dst_frameData[h * width + w] = src_frameData[(height - h - 1) * width +
