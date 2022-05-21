@@ -858,7 +858,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 					mPreviewSurface = new SurfaceTexture(mTexIds[0]);
 					mPreviewSurface.setDefaultBufferSize(mViewWidth, mViewHeight);
 					mPreviewSurface.setOnFrameAvailableListener(mHandler);
-					Log.e(TAG, "mHandler=" + mHandler);
+					Log.e(TAG, "mHandler=====" + mHandler);
 					// notify to caller thread that previewSurface is ready
 					mSync.notifyAll();
 				}
@@ -1053,22 +1053,29 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			public final ITemperatureCallback ahITemperatureCallback = new ITemperatureCallback() {
 				@Override
 				public void onReceiveTemperature (float[] temperature) {
+					Log.e(TAG, "onReceiveTemperature: ==============ahITemperatureCallback========right==============" + mSupportHeight);
 					// 回调的温度的长度为：256x192  + 10
-					System.arraycopy(temperature, 0, temperature1, 0, (mSupportHeight) * mSupportWidth + 10);
-					if (mPid == 22592 && mVid == 3034) {
-						temperature1[0] = temperature[0] + tinyCorrection;
-						temperature1[3] = temperature[3] + tinyCorrection;
-						temperature1[6] = temperature[6] + tinyCorrection;
-						for (int i = 0; i < mSupportHeight * mSupportWidth; i++) {
-							temperature1[10 + i] = temperature1[10 + i] + tinyCorrection;
+					if (temperature!=null && (temperature.length == (mSupportHeight) * mSupportWidth + 10)){
+						Log.e(TAG, "=====onReceiveTemperature: temperature.length == " + temperature.length);
+						System.arraycopy(temperature, 0, temperature1, 0, (mSupportHeight) * mSupportWidth + 10);
+						if (mPid == 22592 && mVid == 3034) {
+							temperature1[0] = temperature[0] + tinyCorrection;
+							temperature1[3] = temperature[3] + tinyCorrection;
+							temperature1[6] = temperature[6] + tinyCorrection;
+							for (int i = 0; i < mSupportHeight * mSupportWidth; i++) {
+								temperature1[10 + i] = temperature1[10 + i] + tinyCorrection;
+							}
+						} else if (mPid == 1 && mVid == 5396) {
+							if (isRotate_180){
+								S0_RotateMatrix_180_MaxMin(temperature1,mSupportWidth,mSupportHeight);
+							}
 						}
-					} else if (mPid == 1 && mVid == 5396) {
-						if (isRotate_180){
-							S0_RotateMatrix_180_MaxMin(temperature1,mSupportWidth,mSupportHeight);
-						}
+						maxtemperature = temperature[3];
+						mintemperature = temperature[6];
+						Log.e(TAG, "==========================temperature==================");
+					}else {
+						Log.e(TAG, "onReceiveTemperature: ===========temperature============不合理=======");
 					}
-					maxtemperature = temperature[3];
-					mintemperature = temperature[6];
 				}
 			};
 			//            public final TcpITemperatureCallback tcpAhITemperatureCallback = new TcpITemperatureCallback() {
@@ -1095,7 +1102,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			 * @return
 			 */
 			public ITemperatureCallback getTemperatureCallback () {
-				//Log.e(TAG, "获取UVC温度回调==== ");
+				Log.e(TAG, "========获取UVC温度回调===getTemperatureCallback= "+ahITemperatureCallback);
 				return ahITemperatureCallback;
 			}
 

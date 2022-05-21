@@ -945,7 +945,13 @@ public class UVCCamera {
 	}
 
 	//================================================================================
-
+	public void testJNi(){
+		if (mNativePtr != 0) {
+			nativeTestJNI(mNativePtr);
+		}else {
+			Log.e(TAG, "=========testJNi:  UVCCamera.java mNativePtr is == 0===================");
+		}
+	}
 	/**
 	 * this may not work well with some combination of camera and device
 	 *
@@ -1601,6 +1607,8 @@ public class UVCCamera {
 	private final native int nativeUpdateZoomLimit (final long id_camera);
 
 	private static final native int nativeSetZoom (final long id_camera, final int zoom);
+	//测试JNI 通道
+	private static final native void nativeTestJNI(final long id_camera);
 
 	private static final native int nativeGetZoom (final long id_camera);
 

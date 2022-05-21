@@ -147,7 +147,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 	private static final int MSG_SAVE_PICTURE            = 50;//截屏
 	private static final int MSG_SET_VERIFY_SN           = 55;//设置是否验证SN
 
-//	private static final int MSG_SWITCH_GAIN = 57;
+	//	private static final int MSG_SWITCH_GAIN = 57;
 	//    private static final int MSG_ISRECORDAUDIO = 37;//本来在这里新增一个 是否录制音频的开关。后面直接加到了 打开录制开关的参数里面
 
 	private final    WeakReference<CameraThread> mWeakThread;
@@ -616,7 +616,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 
 	//保存TinyC 机芯参数 指令
 	public void tinySaveCameraParams () {
-//		Message message = Message.obtain();
+		//		Message message = Message.obtain();
 		sendEmptyMessage(MSG_TINY_SAVE_CAMERA_PARAMS);
 	}
 
@@ -696,19 +696,31 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		return -10;
 	}
 
+	public void testJNi () {
+		checkReleased();
+		final CameraThread thread = mWeakThread.get();
+		final UVCCamera camera = (thread != null ? thread.mUVCCamera : null);
+		if (camera != null) {
+			camera.testJNi();
+		} else {
+			Log.e(TAG, "testJNi: CameraThread UVCCamera is null!!==========");
+		}
+	}
+
 	/**
 	 * 获取机芯设置参数 （全部）
+	 *
 	 * @param flag
 	 * @param value
 	 * @param mark
 	 * @return
 	 */
-	public byte[] getMachineSettingArray (final int flag, final int value, final int mark,int len) {
-		byte[] result= null;
+	public byte[] getMachineSettingArray (final int flag, final int value, final int mark, int len) {
+		byte[] result = null;
 		checkReleased();
 		final CameraThread thread = mWeakThread.get();
 		final UVCCamera camera = (thread != null ? thread.mUVCCamera : null);
-		if (camera!=null) {
+		if (camera != null) {
 			if (flag == UVCCamera.CTRL_ZOOM_ABS) {
 
 			} else if (flag == UVCCamera.CTRL_AE) {
@@ -720,40 +732,44 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		}
 		return result;
 	}
+
 	/**
 	 * 获取机芯设置参数 （单个）
+	 *
 	 * @param flag
 	 * @param value
 	 * @param mark
 	 * @return
 	 */
-	public float getMachineSetting (final int flag, final int value, final int mark ) {
+	public float getMachineSetting (final int flag, final int value, final int mark) {
 		float result = 0;
 		checkReleased();
 		final CameraThread thread = mWeakThread.get();
 		final UVCCamera camera = (thread != null ? thread.mUVCCamera : null);
-		if (camera!=null) {
+		if (camera != null) {
 			if (flag == UVCCamera.CTRL_ZOOM_ABS) {
-				result = camera.getMachineSetting( flag, value, mark);
+				result = camera.getMachineSetting(flag, value, mark);
 			}
 		}
 		return result;
 	}
+
 	/**
 	 * 设置机芯参数
+	 *
 	 * @param flag
 	 * @param value
 	 * @param mark
 	 * @return
 	 */
-	public boolean setMachineSetting (final int flag, final int value, final int mark ) {
+	public boolean setMachineSetting (final int flag, final int value, final int mark) {
 		boolean result = false;
 		checkReleased();
 		final CameraThread thread = mWeakThread.get();
 		final UVCCamera camera = (thread != null ? thread.mUVCCamera : null);
-		if (camera!=null) {
+		if (camera != null) {
 			if (flag == UVCCamera.CTRL_ZOOM_ABS) {
-				result = camera.setMachineSetting( flag, value, mark);
+				result = camera.setMachineSetting(flag, value, mark);
 			}
 		}
 		return result;
@@ -879,9 +895,9 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 			case MSG_SET_VERIFY_SN:
 				thread.setVerifySn();
 				break;
-//			case MSG_SWITCH_GAIN:
-//				thread.setMachineSetting
-//				break;
+			//			case MSG_SWITCH_GAIN:
+			//				thread.setMachineSetting
+			//				break;
 			case MSG_SET_TEMPRANGE:
 				int range = msg.arg1;
 				thread.handleSetTempRange(range);
@@ -1840,6 +1856,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 
 		// 开启温度数据回调
 		public void handleStartTemperaturing () {
+			Log.e(TAG, "handleStartTemperaturing: ================================" + cameraType);
 			if (DEBUG)
 				Log.v(TAG_THREAD, "handleStartTemperaturing:   cameraType === > " + cameraType);
 
@@ -1860,7 +1877,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 			//                mTcpClient.nativeStartTempCallback(0);
 			//            }
 			mWeakCameraView.get().setTemperatureCbing(true);
-
 		}
 
 		public void setVerifySn () {
@@ -1899,11 +1915,11 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 			if (DEBUG)
 				Log.v(TAG_THREAD, "handleStopTemperaturing:");
 
-			if (cameraType == 1) {
-				if ((mUVCCamera == null)) {
-					return;
-				}
+			//			if (cameraType == 1) {
+			if ((mUVCCamera == null)) {
+				return;
 			}
+			//			}
 			//            else {
 			//                if ((mTcpClient == null)) {
 			//                    return;
@@ -1911,9 +1927,9 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 			//            }
 			mIsTemperaturing = false;
 			mWeakCameraView.get().setTemperatureCbing(false);
-			if (cameraType == 1) {
-				mUVCCamera.stopTemp();
-			}
+			//			if (cameraType == 1) {
+			mUVCCamera.stopTemp();
+			//			}
 			//            else {
 			//                mTcpClient.nativeStopTmepCallback(1);
 			//            }

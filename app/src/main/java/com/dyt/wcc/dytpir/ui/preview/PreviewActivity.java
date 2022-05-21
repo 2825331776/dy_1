@@ -136,7 +136,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//磁场传感器，加速度传感器 mMagneticSensor,
 	private Sensor                                  mAccelerometerSensor;
 	private AbstractUVCCameraHandler.CameraCallback cameraCallback;
-	private LoadingDialog loadingDialog;
+	private LoadingDialog                           loadingDialog;
 
 	private static final int     MSG_CHECK_UPDATE  = 1;
 	private static final int     MSG_CAMERA_PARAMS = 2;
@@ -502,9 +502,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					//拔出之后默认为低温模式。
 					popSettingBinding.switchHighlowGain.setSelectedTab(sp.getInt(DYConstants.GAIN_TOGGLE_SETTING, 0));
 					popSettingBinding.switchHighlowGain.setOnSwitchListener((position, tabText) -> {
-//						if (doubleGainClick()) {
-//							return;
-//						}
+						//						if (doubleGainClick()) {
+						//							return;
+						//						}
 						sp.edit().putInt(DYConstants.GAIN_TOGGLE_SETTING, position).apply();
 						Log.e(TAG, "handleMessage: 111111111============" + position);
 						if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
@@ -515,20 +515,20 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 							}
 							mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000), 1000);
 							mHandler.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), 1800);
-						}else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
+						} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
 							loadingDialog.show();
 							if (position == 0) {
 								new Thread(new Runnable() {
 									@Override
 									public void run () {
-										mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS,1,1);
+										mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
 									}
 								}).start();
 
 								mHandler.postDelayed(new Runnable() {
 									@Override
 									public void run () {
-										setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
+										setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
 										runOnUiThread(new Runnable() {
 											@Override
 											public void run () {
@@ -536,18 +536,18 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 											}
 										});
 									}
-								},2000);
+								}, 2000);
 							} else {
 								new Thread(new Runnable() {
 									@Override
 									public void run () {
-										boolean status = mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS,0,0);
+										boolean status = mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 0, 0);
 									}
 								}).start();
 								mHandler.postDelayed(new Runnable() {
 									@Override
 									public void run () {
-										setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
+										setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
 										runOnUiThread(new Runnable() {
 											@Override
 											public void run () {
@@ -555,7 +555,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 											}
 										});
 									}
-								},2000);
+								}, 2000);
 							}
 						}
 					});
@@ -971,20 +971,22 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				mDataBinding.customSeekbarPreviewFragment.setPalette(sp.getInt(DYConstants.PALETTE_NUMBER, 1) - 1);
 				mDataBinding.customSeekbarPreviewFragment.invalidate();
 				mDataBinding.toggleFixedTempBar.setSelected(false);
-				if (mUvcCameraHandler != null) {
-					mUvcCameraHandler.disWenKuan();
-					mUvcCameraHandler.fixedTempStripChange(false);
-				}
-				DYTApplication.setRobotSingle(DYTRobotSingle.NO_DEVICE);
+
 			});
-			mVid = 0;
-			mPid = 0;
+
+			if (mUvcCameraHandler != null) {
+				mUvcCameraHandler.disWenKuan();
+				mUvcCameraHandler.fixedTempStripChange(false);
+			}
+			DYTApplication.setRobotSingle(DYTRobotSingle.NO_DEVICE);
 
 			if (mUvcCameraHandler != null) {
 				//				mUvcCameraHandler.removeCallback(cameraCallback);
-				mUvcCameraHandler.stopTemperaturing();
+				mUvcCameraHandler.stopTemperaturing();//2022年5月18日19:00:15 S0温度失常
 				mUvcCameraHandler.close();
 			}
+			mVid = 0;
+			mPid = 0;
 		}
 
 		@Override
@@ -1100,9 +1102,37 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 		if (mPid == 1 && mVid == 5396) {
 			DYTApplication.setRobotSingle(DYTRobotSingle.S0_256_196);
-		} else if (mPid == 22592 && mVid == 3034){
+		} else if (mPid == 22592 && mVid == 3034) {
 			DYTApplication.setRobotSingle(DYTRobotSingle.TinYC_256_192);
 		}
+
+		//初始化 设置为低温模式
+//		if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
+//			mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8021), 200); //最高200度
+//			mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000), 1000);
+//			mHandler.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), 1800);
+//		} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
+////			loadingDialog.show();
+//				new Thread(new Runnable() {
+//					@Override
+//					public void run () {
+//						mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
+//					}
+//				}).start();
+//
+//				mHandler.postDelayed(new Runnable() {
+//					@Override
+//					public void run () {
+//						setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
+//						runOnUiThread(new Runnable() {
+//							@Override
+//							public void run () {
+////								loadingDialog.dismiss();
+//							}
+//						});
+//					}
+//				}, 2000);
+//		}
 	}
 
 	private int setValue (final int flag, final int value) {//设置机芯参数,调用JNI层
@@ -1527,8 +1557,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		//测试的 监听器
 		mDataBinding.btTest01.setVisibility(View.VISIBLE);
 		mDataBinding.btTest01.setOnClickListener(v -> {
-			mUvcCameraHandler.getMachineSetting(UVCCamera.CTRL_ZOOM_ABS,0,10);
-
+//			mUvcCameraHandler.testJNi();
+			Log.e(TAG, "initListener: "+ mDataBinding.textureViewPreviewActivity.getTemperatureCallback());
 			//******************************MyNumberPicker***************************************
 
 			//****************************动画开始*************************************
@@ -1892,20 +1922,18 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				return;
 			//是否连续打开
 			if (mUvcCameraHandler.isOpened()) {
-				new Thread(new Runnable() {
-					@Override
-					public void run () {
-						if (mPid == 1 && mVid == 5396) {
-							getCameraParams();//
-						} else if (mPid == 22592 && mVid == 3034) {
+				if (mPid == 1 && mVid == 5396) {
+					getCameraParams();//
+				} else if (mPid == 22592 && mVid == 3034) {
+					new Thread(new Runnable() {
+						@Override
+						public void run () {
 							getTinyCCameraParams();
 						}
-						mHandler.sendEmptyMessage(MSG_CAMERA_PARAMS);
-					}
-				}).start();
-
+					}).start();
+				}
+				mHandler.sendEmptyMessage(MSG_CAMERA_PARAMS);
 			}
-
 		});
 		//公司信息弹窗   监听器使用的图表的监听器对象
 		mDataBinding.ivPreviewLeftCompanyInfo.setOnClickListener(v -> {
@@ -1963,7 +1991,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					//						if (isDebug)Log.e(TAG, "onChildToolsClick: " + position);
 					if (isDebug)
 						showToast("click position ");
-
 				}
 			}
 

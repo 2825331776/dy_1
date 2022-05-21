@@ -277,6 +277,10 @@ public:
     int setTemperatureCallback(JNIEnv *env, jobject temperature_callback_obj);//关联温度回调接口 的对象
     int getByteArrayTemperaturePara(uint8_t *para);//得到机芯参数
 
+
+    void testJNI();
+
+    void shutRefresh();
 };
 
 #endif /* UVCPREVIEW_H_ */

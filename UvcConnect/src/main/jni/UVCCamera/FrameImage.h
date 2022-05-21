@@ -73,7 +73,7 @@ private:
 	int mCurrentAndroidVersion;     //标志是否使用OpenCL加速渲染成图
 	/***********************温度************************************/
 	//温度线程
-	bool isNeedWriteTable;//是否刷新 温度对照表
+	volatile bool isNeedWriteTable;//是否刷新 温度对照表
 	bool isshowtemprange;//是否绘制温度范围的取值，否则绘制 最低温到最高温 的差异
 	float temperatureTable[16384];//存储温度对照表的 数组
 

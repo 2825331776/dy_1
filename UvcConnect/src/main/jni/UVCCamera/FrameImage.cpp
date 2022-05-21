@@ -34,7 +34,7 @@ FrameImage::FrameImage(uvc_device_handle_t *devh) {
     floatFpaTmp = correction = Refltmp = Airtmp = humi = emiss = distance = 0;
     cameraLens = 130;
     shutterFix = 0;
-    rangeMode = 400;//可更改
+    rangeMode = 120;//可更改
     mTemperatureCallbackObj = NULL;
 
     maxThumbAD = 0;
@@ -46,6 +46,10 @@ FrameImage::FrameImage(uvc_device_handle_t *devh) {
 FrameImage::~FrameImage() {
     ENTER();
     delete[] mBuffer;
+    mDeviceHandle = NULL;
+//    if (iTemperatureCallback.onReceiveTemperature){
+//        iTemperatureCallback.onReceiveTemperature = NULL;
+//    }
     EXIT();
 }
 
@@ -300,7 +304,8 @@ void SearchMaxMin(unsigned short *tempAD_data, int size, unsigned short *max, un
         }
     }
 }
-bool FrameImage::setIsWriteFile(int status){
+
+bool FrameImage::setIsWriteFile(int status) {
 //    if (!status){
 //        isWriteFile = true;
 //    } else{
@@ -599,6 +604,7 @@ void FrameImage::copyFrameTO292(const uint8_t *src, uint8_t *dest, const int wid
 //设置温度回调接口 对象及其回调的具体方法
 int FrameImage::setTemperatureCallback(JNIEnv *env, jobject temperature_callback_obj) {
     if (!env->IsSameObject(mTemperatureCallbackObj, temperature_callback_obj)) {
+        LOGE("=======mTemperatureCallbackObj, temperature_callback_obj============IsSameObject======00000========");
 //            LOGE("setTemperatureCallback !env->IsSameObject");
         iTemperatureCallback.onReceiveTemperature = NULL;
         if (mTemperatureCallbackObj) {
@@ -614,17 +620,19 @@ int FrameImage::setTemperatureCallback(JNIEnv *env, jobject temperature_callback
                 iTemperatureCallback.onReceiveTemperature = env->GetMethodID(clazz,
                                                                              "onReceiveTemperature",
                                                                              "([F)V");
-//                    LOGE("setTemperatureCallback !env->IsSameObject mTemperatureCallbackObj3");
+                LOGE("===============iTemperatureCallback.onReceiveTemperature============设置好对应函数====");
             } else {
                 LOGE("failed to get object class");
             }
             env->ExceptionClear();
             if (!iTemperatureCallback.onReceiveTemperature) {
-                LOGE("Can't find IFrameCallback#onFrame");
+                LOGE("Can't find iTemperatureCallback#onReceiveTemperature");
                 env->DeleteGlobalRef(temperature_callback_obj);
                 mTemperatureCallbackObj = temperature_callback_obj = NULL;
             }
         }
+    } else {
+        LOGE("=======mTemperatureCallbackObj, temperature_callback_obj============IsSameObject==============");
     }
     RETURN(0, int);
 }
@@ -636,10 +644,9 @@ int FrameImage::setTemperatureCallback(JNIEnv *env, jobject temperature_callback
 //查询温度对照表，将查询之后的具体数据回调给java层onReceiveTemperature函数
 void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
     //共用的指针。
+    LOGE("===========do_temperature_callback================mPid = %d =====================mVid=====%d===",
+         mPid, mVid);
     unsigned short *orgData = (unsigned short *) frameData;
-//    LOGE("========0 ======= %d",frameData[0]);
-//    LOGE("========1 ======= %d",frameData[1]);
-
     if (mPid == 1 && mVid == 5396) {
         unsigned short *fourLinePara = orgData + requestWidth * (requestHeight - 4);//后四行参数
         if (UNLIKELY(isNeedWriteTable)) {
@@ -649,7 +656,6 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
                               &floatFpaTmp, &correction, &Refltmp, &Airtmp, &humi, &emiss,
                               &distance,
                               cameraLens, shutterFix, rangeMode);
-
             isNeedFreshAD = true;
             isNeedWriteTable = false;
         }
@@ -658,17 +664,31 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
         //根据8004或者8005模式来查表，8005模式下仅输出以上注释的10个参数，8004模式下数据以上参数+全局温度数据
         thermometrySearch(requestWidth, requestHeight, temperatureTable, orgData, temperatureData,
                           rangeMode, OUTPUTMODE);
-//    LOGE("centerTmp:%.2f,maxTmp:%.2f,minTmp:%.2f,avgTmp:%.2f\n",temperatureData[0],temperatureData[3],temperatureData[6],temperatureData[9]);
+        LOGE("centerTmp:%.2f,maxTmp:%.2f,minTmp:%.2f,avgTmp:%.2f\n", temperatureData[0],
+             temperatureData[3], temperatureData[6], temperatureData[9]);
+
         jfloatArray mNCbTemper = env->NewFloatArray(requestWidth * (requestHeight - 4) + 10);
+
         /**
          *从mCbTemper 取出10+requestWidth*(requestHeight-4) 个长度的值给 mNCbTemper（这个值要传递给Java层）
          */
         env->SetFloatArrayRegion(mNCbTemper, 0, 10 + requestWidth * (requestHeight - 4), mCbTemper);
         if (mTemperatureCallbackObj != NULL) {
+            LOGE("========================mTemperatureCallbackObj == null=========================");
             //调用java层的 onReceiveTemperature ，传回mNCbTemper（整个图幅温度数据+ 后四行10个温度分析 的数据） 实参
             env->CallVoidMethod(mTemperatureCallbackObj, iTemperatureCallback.onReceiveTemperature,
                                 mNCbTemper);
             env->ExceptionClear();
+//            if (env->ExceptionCheck()) { /* 异常检查 */
+//                fourLinePara = NULL;
+//                temperatureData = NULL;
+//                env->DeleteLocalRef(mNCbTemper);
+//                LOGE("========================mTemperatureCallbackObj == ExceptionCheck====occur=====================");
+//                env->ExceptionClear();
+//                return;
+//            }
+        } else {
+            LOGE("========================mTemperatureCallbackObj == null1111=============================");
         }
         //固定温度条： 刷新 最大 最小AD的 ，S0通过查表刷新。
         if (isNeedFreshAD) {

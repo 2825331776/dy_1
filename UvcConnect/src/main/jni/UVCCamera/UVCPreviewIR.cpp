@@ -90,10 +90,12 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh, FrameImage *frameImage) {
 UVCPreviewIR::~UVCPreviewIR() {
 
     ENTER();
+//    stopPreview();
     SAFE_DELETE(mFrameImage);
     if (mDeviceHandle) {
         uvc_stop_streaming(mDeviceHandle);
     }
+    mDeviceHandle = NULL;
     mFrameImage = NULL;
     if (mPreviewWindow)
         ANativeWindow_release(mPreviewWindow);
@@ -1459,11 +1461,13 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
             }
             pthread_mutex_unlock(&preview_mutex);
 
+//            pthread_mutex_lock(&temperature_mutex);
             if (mIsTemperaturing)//绘制的时候唤醒温度绘制的线程
             {
-                //LOGE("do_preview1");
+//                LOGE("do_preview=========================唤醒温度回调线程===============");
                 pthread_cond_signal(&temperature_sync);
             }
+//            pthread_mutex_unlock(&temperature_mutex);
             //LOGE("do_preview4");
         }
 #if LOCAL_DEBUG
@@ -1926,6 +1930,7 @@ int UVCPreviewIR::setTemperatureCallback(JNIEnv *env, jobject temperature_callba
     pthread_mutex_lock(&temperature_mutex);
     {
         mFrameImage->setTemperatureCallback(env, temperature_callback_obj);
+        LOGE("setTemperatureCallback步骤10");
     }
     pthread_mutex_unlock(&temperature_mutex);
     RETURN(0, int);
@@ -1936,16 +1941,18 @@ int UVCPreviewIR::startTemp() {
     pthread_mutex_lock(&temperature_mutex);
     {
         if (isRunning() && (!mIsTemperaturing)) {
-            mIsTemperaturing = true; //LOGE("startTemp");
+            LOGE("startTemp=======isRunning&!mIsTemperaturing==========");
+            mIsTemperaturing = true;
         }
     }
     pthread_mutex_unlock(&temperature_mutex);
     //在这里开始传递测温数据
     if (pthread_create(&temperature_thread, NULL, temperature_thread_func, (void *) this) == 0) {
-        //LOGE("UVCPreviewIR::startTemp temperature_thread: pthread_create success");
+        LOGE("========UVCPreviewIR::startTemp temperature_thread: pthread_create success=====");
     } else {
-        //LOGE("UVCPreviewIR::startTemp temperature_thread: pthread_create failed");
+        LOGE("========UVCPreviewIR::startTemp temperature_thread: pthread_create failed======");
     }
+
     RETURN(0, int);
 }
 
@@ -1963,9 +1970,9 @@ int UVCPreviewIR::stopTemp() {
     }
     pthread_mutex_unlock(&temperature_mutex);
     if (pthread_join(temperature_thread, NULL) != EXIT_SUCCESS) {
-        LOGE("UVCPreviewIR::stopTemp temperature_thread: pthread_join failed");
+        LOGE("====UVCPreviewIR::stopTemp temperature_thread: pthread_join failed======");
     } else {
-        LOGE("UVCPreviewIR::stopTemp temperature_thread: pthread_join success");
+        LOGE("====UVCPreviewIR::stopTemp temperature_thread: pthread_join success=====");
     }
     RETURN(0, int);
 }
@@ -1994,27 +2001,30 @@ void UVCPreviewIR::do_temperature(JNIEnv *env) {
     ENTER();
     LOGE("do_temperature温度步骤3");
     ////LOGE("do_temperature mIsTemperaturing:%d",mIsTemperaturing);
+    LOGE("=====do_temperature=====isRunning===%d,IsTemperaturing===%d",isRunning(),mIsTemperaturing);
     for (; isRunning() && mIsTemperaturing;) {
+        LOGE("=====do_temperature=====for==both=== true============");
         pthread_mutex_lock(&temperature_mutex);
         {
-//            LOGE("do_temperature01");
+            LOGE("do_temperature========wait=======callback==========");
             pthread_cond_wait(&temperature_sync, &temperature_mutex);
 //            LOGE("do_temperature02");
             if (mIsTemperaturing) {
-                do_temperature_callback(env, HoldBuffer);
+                LOGE("do_temperature==============callback=====begin=====");
+//                do_temperature_callback(env, HoldBuffer);
+                mFrameImage->do_temperature_callback(env, HoldBuffer);
             }
 //            LOGE("do_temperature03");
         }
         pthread_mutex_unlock(&temperature_mutex);
     }
     pthread_cond_broadcast(&temperature_sync);
-//    LOGE("do_temperature EXIT");
-//    EXIT();
+    EXIT();
 }
 
 //读取原始数据holdbuffer .将原始YUV数据查表之后的温度数据回调。10+ 256*192
 void UVCPreviewIR::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
-//   LOGE("=========do_temperature_callback ======");
+   LOGE("=========do_temperature_callback ======");
     if (mPid == 1 && mVid == 5396) {
         mFrameImage->do_temperature_callback(env, frameData);
     } else if (mPid == 22592 && mVid == 3034) {
@@ -2053,4 +2063,19 @@ int UVCPreviewIR::getByteArrayTemperaturePara(uint8_t *para) {
         mFrameImage->getByteArrayTemperaturePara(para, HoldBuffer);
     }
     return true;
+}
+void UVCPreviewIR::shutRefresh(){
+    pthread_mutex_lock(&temperature_mutex);
+    if (mFrameImage){
+        mFrameImage->shutRefresh();
+    }
+    pthread_mutex_unlock(&temperature_mutex);
+}
+
+ void UVCPreviewIR::testJNI(){
+    LOGE("==========================testJNI=========================");
+//    temperature_thread
+//    if (temperature_thread = NULL){
+//
+//    }
 }
