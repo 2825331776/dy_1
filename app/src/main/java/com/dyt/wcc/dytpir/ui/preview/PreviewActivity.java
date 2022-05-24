@@ -16,6 +16,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -1537,7 +1538,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 //		mDataBinding.btTest01.setVisibility(View.VISIBLE);
 		mDataBinding.btTest01.setOnClickListener(v -> {
 			//******************************testJNi***************************************
-			//			mUvcCameraHandler.testJNi();
+						mUvcCameraHandler.testJNi(Build.MODEL);
 //			Log.e(TAG, "initListener: " + mDataBinding.textureViewPreviewActivity.getTemperatureCallback());
 
 

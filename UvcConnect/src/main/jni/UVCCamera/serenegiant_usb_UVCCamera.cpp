@@ -2091,11 +2091,12 @@ static jint nativeSendOrder(JNIEnv *env, jobject thiz,
 //    }
 //    RETURN(result, jint);
 //}
-static void nativeTestJNI(JNIEnv *env ,jobject thiz , ID_TYPE id_camera){
+static void nativeTestJNI(JNIEnv *env ,jobject thiz , ID_TYPE id_camera , jstring str){
     ENTER();
     UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
     if (LIKELY(camera)) {
-        camera->testJNI();
+        const char * phoneStr = env->GetStringUTFChars(str, 0);
+        camera->testJNI(phoneStr);
     }
     EXIT()
 }
@@ -2597,7 +2598,7 @@ static JNINativeMethod methods[] = {
         {"nativeUpdateZoomLimit",                   "(J)I",                                           (void *) nativeUpdateZoomLimit},
         {"nativeSetZoom",                           "(JI)I",                                          (void *) nativeSetZoom},
         {"nativeGetZoom",                           "(J)I",                                           (void *) nativeGetZoom},
-        {"nativeTestJNI",                           "(J)V",                                          (void *) nativeTestJNI},
+        {"nativeTestJNI",                           "(JLjava/lang/String;)V",                                          (void *) nativeTestJNI},
 
         {"nativeSendOrder",                         "(JFI)I",                                         (void *) nativeSendOrder},
 //    { "nativeSendOrder",					"(J)I", (void *) nativeSendOrder },

@@ -693,12 +693,12 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		return -10;
 	}
 
-	public void testJNi () {
+	public void testJNi (String str) {
 		checkReleased();
 		final CameraThread thread = mWeakThread.get();
 		final UVCCamera camera = (thread != null ? thread.mUVCCamera : null);
 		if (camera != null) {
-			camera.testJNi();
+			camera.testJNi(str);
 		} else {
 			Log.e(TAG, "testJNi: CameraThread UVCCamera is null!!==========");
 		}

@@ -278,7 +278,7 @@ public:
     int getByteArrayTemperaturePara(uint8_t *para);//得到机芯参数
 
 
-    void testJNI();
+    void testJNI(const char * phoneStr);
 
     void shutRefresh();
 };

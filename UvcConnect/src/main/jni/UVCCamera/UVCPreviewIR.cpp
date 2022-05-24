@@ -31,7 +31,7 @@ using namespace std;
 
 #define LOG_TAG "===UVCPREVIEW==="
 
-#define    LOCAL_DEBUG 0    // set 1 if you don't need debug log
+#define    LOCAL_DEBUG 1    // set 1 if you don't need debug log
 #define MAX_FRAME 4
 #define PREVIEW_PIXEL_BYTES 4    // RGBA/RGBX
 #define FRAME_POOL_SZ MAX_FRAME
@@ -1933,6 +1933,13 @@ int UVCPreviewIR::setTemperatureCallback(JNIEnv *env, jobject temperature_callba
     LOGE("setTemperatureCallback步骤9");
     pthread_mutex_lock(&temperature_mutex);
     {
+        FILE* outFile = NULL;
+        outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+        if(outFile != NULL)
+        {
+            fprintf(outFile, "               UVCPreviewIR::setTemperatureCallback\n");
+            fclose(outFile);
+        }
         mFrameImage->setTemperatureCallback(env, temperature_callback_obj);
         LOGE("setTemperatureCallback步骤10");
     }
@@ -2007,6 +2014,13 @@ void UVCPreviewIR::do_temperature(JNIEnv *env) {
     ////LOGE("do_temperature mIsTemperaturing:%d",mIsTemperaturing);
 //    LOGE("=====do_temperature=====isRunning===%d,IsTemperaturing===%d", isRunning(),
 //         mIsTemperaturing);
+    FILE* outFile = NULL;
+    outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+    if(outFile != NULL)
+    {
+        fprintf(outFile, "               UVCPreviewIR::do_temperature\n");
+        fclose(outFile);
+    }
     for (; isRunning() && mIsTemperaturing;) {
 //        LOGE("=====do_temperature=====for==both=== true============");
         pthread_mutex_lock(&temperature_mutex);
@@ -2078,8 +2092,8 @@ void UVCPreviewIR::shutRefresh() {
 //    pthread_mutex_unlock(&temperature_mutex);
 }
 
-void UVCPreviewIR::testJNI() {
-    LOGE("==========================testJNI=========================");
+void UVCPreviewIR::testJNI(const char * phoneStr) {
+    LOGE("==========================testJNI=======================%s==",phoneStr);
 //    temperature_thread
 //    if (temperature_thread = NULL){
 //

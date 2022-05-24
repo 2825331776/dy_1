@@ -48,7 +48,7 @@
 #include "Parameters.h"
 #include "libuvc_internal.h"
 
-#define    LOCAL_DEBUG 0
+#define    LOCAL_DEBUG 1
 
 //**********************************************************************
 //
@@ -2705,9 +2705,9 @@ int UVCCamera::getZoom() {
     }
     RETURN(0, int);
 }
-void UVCCamera::testJNI(){
+void UVCCamera::testJNI(const char * str){
     if (mPreview){
-        mPreview ->testJNI();
+        mPreview ->testJNI(str);
     }
 }
 
