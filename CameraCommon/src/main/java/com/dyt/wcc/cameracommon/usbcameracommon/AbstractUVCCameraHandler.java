@@ -50,7 +50,6 @@ import com.dyt.wcc.cameracommon.encoder.MediaVideoEncoder;
 import com.dyt.wcc.cameracommon.utils.ByteUtil;
 import com.dyt.wcc.cameracommon.widget.UVCCameraTextureView;
 import com.dyt.wcc.common.BuildConfig;
-import com.dyt.wcc.common.base.BaseApplication;
 import com.serenegiant.usb.IFrameCallback;
 import com.serenegiant.usb.ITemperatureCallback;
 import com.serenegiant.usb.USBMonitor;
@@ -1032,7 +1031,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		private final        WeakReference<UVCCameraTextureView>       mWeakCameraView;
 		private final        int                                       mEncoderType;
 		private final        Set<CameraCallback>                       mCallbacks = new CopyOnWriteArraySet<CameraCallback>();
-		private              int                                       mWidth, mHeight, mPreviewMode, mPalettetype;
+		private              int                                       mWidth, mHeight, mPreviewMode, mPalettetype;//mWidth mHeight 是返回数据的尺寸
 		private float                    mBandwidthFactor;
 		private int                      currentAndroidVersion;
 		private boolean                  mIsPreviewing;    // 是否初始化显示控件
@@ -1217,21 +1216,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 					if (DEBUG)
 						Log.e(TAG, "==================mSupportedSize==============" + mSupportedSize);
 
-					int find_str_postion = mSupportedSize.indexOf("384x292");
-					if (find_str_postion >= 0) {
-						mWidth = 384;
-						mHeight = 292;
-						if (DEBUG)
-							Log.e(TAG, "handleOpen: 384 DEVICE ");
-					}
-					find_str_postion = mSupportedSize.indexOf("240x184");
-					if (find_str_postion >= 0) {
-						mWidth = 240;
-						mHeight = 184;
-						if (DEBUG)
-							Log.e(TAG, "handleOpen: 240 DEVICE ");
-					}
-					find_str_postion = mSupportedSize.indexOf("256x196");
+					int find_str_postion = mSupportedSize.indexOf("256x196");
 					if (find_str_postion >= 0) {
 						mWidth = 256;
 						mHeight = 196;
@@ -1245,30 +1230,15 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 						if (DEBUG)
 							Log.e(TAG, "handleOpen: 256*192 DEVICE ");
 					}
-					find_str_postion = mSupportedSize.indexOf("640x516");
+					find_str_postion = mSupportedSize.indexOf("160x120");
 					if (find_str_postion >= 0) {
-						mWidth = 640;
-						mHeight = 516;
+						mWidth = 160;
+						mHeight = 120;
 						if (DEBUG)
-							Log.e(TAG, "handleOpen: 640 DEVICE ");
+							Log.e(TAG, "handleOpen: 160x120 DEVICE ");
 					}
-					if (DEBUG)
-						if (DEBUG)
-							Log.e(TAG, "supportedSize:" + (mUVCCamera != null ? mUVCCamera.getSupportedSize() : null));
 				}
-
-
 			}
-			//            else {
-			//                final TcpClient tcpClient;
-			//                tcpClient = new TcpClient();
-			//                tcpClient.nativeInitClientC();
-			//                //tcpClient.nativeStartClientSocket();
-			//                synchronized (mSync) {
-			//                    mTcpClient = tcpClient;
-			//                }
-			//            }
-
 		}
 
 		public void handleClose () {
@@ -1367,25 +1337,15 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 				Log.v(TAG_THREAD, "handleStartPreview:");
 
 			if (cameraType == 1) {
-				//by wp
-				//Log.e(TAG, "cameraType ================= 1" );
 				if ((mUVCCamera == null) || mIsPreviewing)
 					return;
-				//by wp
-				//Log.e(TAG, "handleStartPreview2 ");
 				try {
-					//by wp
-					//                    Log.e(TAG, "mPalettetype=" + mPalettetype);
-					mUVCCamera.setPreviewSize(mWidth, mHeight, 1, 26, mPreviewMode, mBandwidthFactor, currentAndroidVersion);
-					//                    Log.e(TAG, "will it fail");
-
-					//by wp
+					mUVCCamera.setPreviewSize(mWidth, mHeight, 1, 25, mPreviewMode, mBandwidthFactor, currentAndroidVersion);
 					//Log.e(TAG, "handleStartPreview3 mWidth: " + mWidth + "mHeight:" + mHeight);
 				} catch (final IllegalArgumentException e) {
 					callOnError(e);
 					return;
 				}
-
 
 				if (surface instanceof SurfaceHolder) {
 					Log.e(TAG, "================SurfaceHolder:");
@@ -1397,9 +1357,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 					Log.e(TAG, "================SurfaceTexture:");
 					mUVCCamera.setPreviewTexture((SurfaceTexture) surface);
 				}
-
-
-				//by wp
 				//Log.e(TAG, "handleStartPreview: startPreview1");
 				mUVCCamera.startPreview();
 
@@ -1425,11 +1382,8 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 				// 温度回调 接口
 				ITemperatureCallback mTempCb = mWeakCameraView.get().getTemperatureCallback();
 				mUVCCamera.setTemperatureCallback(mTempCb);//将温度回调的对象  发送到底层
-				mWeakCameraView.get().setTemperatureCbing(false);//测温开关
-				Boolean isT3 = BaseApplication.deviceName.contentEquals("T3") || BaseApplication.deviceName.contentEquals("DL13") || BaseApplication.deviceName.contentEquals("DV");
-				if (isT3) {
-					mWeakCameraView.get().setRotation(180);
-				}
+//				mWeakCameraView.get().setTemperatureCbing(false);//测温开关
+
 				mUVCCamera.updateCameraParams();
 				synchronized (mSync) {
 					mIsPreviewing = true;

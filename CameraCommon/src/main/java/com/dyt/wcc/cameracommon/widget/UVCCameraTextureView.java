@@ -900,7 +900,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			//            private boolean isAlarmRing = false;//      标记需要播放铃声
 			private float   mAlarmTemp      = 10000.0f;//标记的报警温度  摄氏度
 
-			private boolean isCbTemping  = false;    // 测温开关
+			private boolean isCbTemping  = true;    // 测温开关
 			private boolean isCamera2ing = false;
 
 
@@ -1053,10 +1053,10 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			public final ITemperatureCallback ahITemperatureCallback = new ITemperatureCallback() {
 				@Override
 				public void onReceiveTemperature (float[] temperature) {
-					Log.e(TAG, "onReceiveTemperature: ==============ahITemperatureCallback========right==============" + mSupportHeight);
+//					Log.e(TAG, "onReceiveTemperature: ==============ahITemperatureCallback========right==============" + mSupportHeight);
 					// 回调的温度的长度为：256x192  + 10
 					if (temperature!=null && (temperature.length == (mSupportHeight) * mSupportWidth + 10)){
-						Log.e(TAG, "=====onReceiveTemperature: temperature.length == " + temperature.length);
+//						Log.e(TAG, "=====onReceiveTemperature: temperature.length == " + temperature.length);
 						System.arraycopy(temperature, 0, temperature1, 0, (mSupportHeight) * mSupportWidth + 10);
 						if (mPid == 22592 && mVid == 3034) {
 							temperature1[0] = temperature[0] + tinyCorrection;
@@ -1072,7 +1072,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 						}
 						maxtemperature = temperature[3];
 						mintemperature = temperature[6];
-						Log.e(TAG, "==========================temperature==================");
+//						Log.e(TAG, "==========================temperature==================");
 					}else {
 						Log.e(TAG, "onReceiveTemperature: ===========temperature============不合理=======");
 					}

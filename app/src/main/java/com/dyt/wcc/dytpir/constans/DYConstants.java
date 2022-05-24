@@ -46,8 +46,8 @@ public class DYConstants {
 	public static final int SETTING_ENVIRONMENT_INT = 2 * 4;
 	public static final int SETTING_ENVIRONMENT_DEFAULT_VALUE = 27;
 
-	public static final int CAMERA_DATA_MODE_8004 = 0x8004;
-	public static final int CAMERA_DATA_MODE_8005 = 0x8005;
+	public static final int CAMERA_DATA_MODE_8004 = 0x8004;//数据流切换 0x8004
+	public static final int CAMERA_DATA_MODE_8005 = 0x8005;//数据流切换 0x8005
 
 //	public static final String HighLowTemp_Toggle_info = "highLowTemp_toggle";//高低温追踪 开关
 //	public static final String areaCheck_Toggle_info = "areaCheck_toggle";//框内细查 开关

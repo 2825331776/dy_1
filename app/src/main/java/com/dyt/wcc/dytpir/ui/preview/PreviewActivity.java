@@ -16,6 +16,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -457,7 +458,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					//显示设置的弹窗
 					settingPopWindows = new PopupWindow(pop_View, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 					settingPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-					settingPopWindows.setHeight(mDataBinding.clPreviewActivity.getHeight() / 3 * 2);
+					settingPopWindows.setHeight(mDataBinding.clPreviewActivity.getHeight() / 2 + DensityUtil.dp2px(mContext.get(), 10));
 					settingPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
 
 					settingPopWindows.setFocusable(true);
@@ -467,12 +468,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					//第四步：显示控件
 					if (oldRotation == 90 || oldRotation == 180) {
 						int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-						settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -(mDataBinding.clPreviewActivity.getHeight() / 3) + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+						settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
 						settingPopWindows.getContentView().setRotation(180);
 					}
 					if (oldRotation == 0 || oldRotation == 270) {
 						int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-						settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2, Gravity.CENTER);
+						settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
 						settingPopWindows.getContentView().setRotation(0);
 					}
 
@@ -714,7 +715,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				settingPopWindows.dismiss();
 				if (oldRotation == 0 || oldRotation == 270) {
 					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2, Gravity.CENTER);
+					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
 					settingPopWindows.getContentView().setRotation(0);
 				}
 			}
@@ -723,7 +724,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				companyPopWindows.dismiss();
 				if (oldRotation == 0 || oldRotation == 270) {
 					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -DensityUtil.dp2px(mContext.get(), 110), Gravity.CENTER);
+					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,  -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(),10), Gravity.CENTER);
 					companyPopWindows.getContentView().setRotation(0);
 				}
 			}
@@ -753,7 +754,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				settingPopWindows.dismiss();
 				if (oldRotation == 0 || oldRotation == 270) {
 					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2, Gravity.CENTER);
+					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
 					settingPopWindows.getContentView().setRotation(0);
 				}
 			}
@@ -762,7 +763,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				companyPopWindows.dismiss();
 				if (oldRotation == 0 || oldRotation == 270) {
 					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -DensityUtil.dp2px(mContext.get(), 110), Gravity.CENTER);
+					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,  -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(),10), Gravity.CENTER);
 					companyPopWindows.getContentView().setRotation(0);
 				}
 			}
@@ -796,7 +797,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				//第四步：显示控件
 				if (oldRotation == 90 || oldRotation == 180) {
 					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -(mDataBinding.clPreviewActivity.getHeight() / 3) + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
 					settingPopWindows.getContentView().setRotation(180);
 				}
 			}
@@ -805,7 +806,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				companyPopWindows.dismiss();
 				if (oldRotation == 90 || oldRotation == 180) {
 					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -DensityUtil.dp2px(mContext.get(), 275), Gravity.CENTER);
+					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(),10), Gravity.CENTER);
 					companyPopWindows.getContentView().setRotation(180);
 				}
 			}
@@ -838,7 +839,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				//第四步：显示控件
 				if (oldRotation == 90 || oldRotation == 180) {
 					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -(mDataBinding.clPreviewActivity.getHeight() / 3) + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
 					settingPopWindows.getContentView().setRotation(180);
 				}
 			}
@@ -847,7 +848,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				companyPopWindows.dismiss();
 				if (oldRotation == 90 || oldRotation == 180) {
 					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -DensityUtil.dp2px(mContext.get(), 275), Gravity.CENTER);
+					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(),10), Gravity.CENTER);
 					companyPopWindows.getContentView().setRotation(180);
 				}
 			}
@@ -924,8 +925,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			//			mDataBinding.textureViewPreviewActivity.onResume();
 			startPreview();
 
-			Handler handler = new Handler();
-			handler.postDelayed(() -> {
+			mHandler.postDelayed(() -> {
 				setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
 			}, 300);
 
@@ -971,6 +971,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				mDataBinding.customSeekbarPreviewFragment.setPalette(sp.getInt(DYConstants.PALETTE_NUMBER, 1) - 1);
 				mDataBinding.customSeekbarPreviewFragment.invalidate();
 				mDataBinding.toggleFixedTempBar.setSelected(false);
+				if (stt!=null){
+					stt.release();
+					stt = null;
+				}
 
 			});
 
@@ -996,6 +1000,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		}
 	};
 
+	private Surface stt;
 	/**
 	 * 打开连接 调用预览图像的设置
 	 */
@@ -1010,8 +1015,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			Log.e(TAG, "startPreview: 启动失败,getSurfaceTexture 为null.");
 			return;
 		}
-		Surface stt = new Surface(mDataBinding.textureViewPreviewActivity.getSurfaceTexture());
-		//		mDataBinding.textureViewPreviewActivity.bringToFront();
+		stt = new Surface(mDataBinding.textureViewPreviewActivity.getSurfaceTexture());
 
 		int mTextureViewWidth = mDataBinding.textureViewPreviewActivity.getWidth();
 		int mTextureViewHeight = mDataBinding.textureViewPreviewActivity.getHeight();
@@ -1089,7 +1093,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mUvcCameraHandler.startPreview(stt);
 		//tinyC 暂时关闭 温度回调功能
 		mUvcCameraHandler.startTemperaturing();//温度回调
-		//		mDataBinding.tvPreviewHint.setVisibility(View.INVISIBLE);
 
 		mDataBinding.dragTempContainerPreviewActivity.setBackgroundColor(getColor(R.color.bg_preview_otg_connect));
 		mDataBinding.dragTempContainerPreviewActivity.setConnect(true);
@@ -1298,6 +1301,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	@Override
 	protected void initView () {
+		Log.e(TAG, "initView: ==========================手机型号为：===" + Build.MODEL);
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
 		configuration = getResources().getConfiguration();
 		metrics = getResources().getDisplayMetrics();
@@ -1688,7 +1692,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			popPaletteChoice.paletteLayoutHeire.setOnClickListener(paletteChoiceListener);
 			popPaletteChoice.paletteLayoutBaire.setOnClickListener(paletteChoiceListener);
 			popPaletteChoice.paletteLayoutLenglan.setOnClickListener(paletteChoiceListener);
-			//				showPopWindows(view,20,10,20);
 			PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 			PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 			PLRPopupWindows.setHeight(mDataBinding.llContainerPreviewSeekbar.getHeight());
@@ -1951,8 +1954,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				//没有默认的发送邮件应用
 				startActivity(Intent.createChooser(emailIntent, getResources().getString(R.string.contactus_choice_email)));
 			});
-			//popupWindow.showAsDropDown(mDataBinding.flPreview,15,-popupWindow.getHeight()-20, Gravity.CENTER);
-			showPopWindows(view, 30, 15, 20);
+			showPopWindows(view);
 		});
 		//
 		mDataBinding.dragTempContainerPreviewActivity.setAddChildDataListener(new MeasureTempContainerView.onAddChildDataListener() {
@@ -2181,31 +2183,29 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	 * 显示pop弹窗
 	 *
 	 * @param view
-	 * @param widthMargin
-	 * @param XOffset
-	 * @param YOffset
 	 */
-	private void showPopWindows (View view, int widthMargin, int XOffset, int YOffset) {
-		Log.e(TAG, "showPopWindows: " + view.getHeight());
+	private void showPopWindows (View view) {
 		companyPopWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		companyPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-		//		Log.e(TAG, "showPopWindows: " + PLRPopupWindows.getHeight());
 		companyPopWindows.setHeight(DensityUtil.dp2px(mContext.get(), 105));
 		companyPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
-
+//		Log.e(TAG, "================showPopWindows: " + companyPopWindows.getHeight());
+//		Log.e(TAG, "================showPopWindows: " + mDataBinding.clPreviewActivity.getHeight());
 
 		companyPopWindows.setFocusable(false);
 		companyPopWindows.setOutsideTouchable(true);
 		companyPopWindows.setTouchable(true);
 
 		if (oldRotation == 90 || oldRotation == 180) {
+//			if (isDebug)Log.e(TAG, "==================showPopWindows: 90 /180");
 			int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-			companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -DensityUtil.dp2px(mContext.get(), 275), Gravity.CENTER);
+			companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(),10), Gravity.CENTER);
 			companyPopWindows.getContentView().setRotation(180);
 		}
 		if (oldRotation == 0 || oldRotation == 270) {
+//			if (isDebug)Log.e(TAG, "============showPopWindows: 0 /270");
 			int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-			companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -DensityUtil.dp2px(mContext.get(), 110), Gravity.CENTER);
+			companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,  -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(),10), Gravity.CENTER);
 			companyPopWindows.getContentView().setRotation(0);
 		}
 	}

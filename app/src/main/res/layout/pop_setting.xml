@@ -36,8 +36,8 @@
 
             <TextView
                 android:id="@+id/tv_general_info"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/SettingGeneral"
                 android:textColor="@color/bg_three_choice_one"
@@ -63,8 +63,8 @@
 
             <TextView
                 android:id="@+id/tv_language"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:gravity="center"
                 android:text="@string/SettingLanguage"
@@ -131,8 +131,8 @@
 
             <TextView
                 android:id="@+id/tv_temp_unit_choice_info"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:gravity="center"
                 android:text="@string/SettingTemperatureUnit"
@@ -156,8 +156,8 @@
             <!--            是否通过手机MIC录制声音-->
             <TextView
                 android:id="@+id/tv_record_audio_info"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:gravity="center"
                 android:text="@string/SettingIsRecordAudio"
@@ -182,8 +182,8 @@
             <!--     高低温增益模式 切换      -->
             <TextView
                 android:id="@+id/tv_high_low_temp_gain_info"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:gravity="center"
                 android:text="@string/setting_high_low_temp_gain_toggle_info"
@@ -217,8 +217,8 @@
             <!--            相机参数-->
             <TextView
                 android:id="@+id/tv_camera_setting"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:gravity="center"
                 android:text="@string/SettingCameraParams"
@@ -247,8 +247,8 @@
 
             <TextView
                 android:id="@+id/tv_camera_setting_emittance"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:gravity="center"
                 android:text="@string/SettingCameraParams_Emittance"
@@ -308,8 +308,8 @@
             <!--        humidity 湿度-->
             <TextView
                 android:id="@+id/tv_camera_setting_humidity"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:gravity="center"
                 android:singleLine="true"
@@ -418,8 +418,8 @@
             <!--校正-->
             <TextView
                 android:id="@+id/tv_camera_setting_revise"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:gravity="center"
                 android:singleLine="true"
@@ -475,8 +475,8 @@
             <!--        反射温度-->
             <TextView
                 android:id="@+id/tv_camera_setting_reflect"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:gravity="center"
                 android:singleLine="true"
@@ -532,8 +532,8 @@
             <!--        大气温度-->
             <TextView
                 android:id="@+id/tv_camera_setting_freeAirTemp"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:gravity="center"
                 android:singleLine="true"
@@ -588,8 +588,8 @@
             <!--           更新标题-->
             <TextView
                 android:id="@+id/tv_camera_update"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:gravity="center"
                 android:text="@string/setting_update"
@@ -602,9 +602,10 @@
             <TextView
                 android:id="@+id/tv_check_version_info"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/dimen_20dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:gravity="center"
+                android:textSize="@dimen/dimen_16sp"
                 android:text="@string/setting_check_version_info"
                 android:textColor="@color/white"
                 app:layout_constraintLeft_toRightOf="@id/gl_setting_title"

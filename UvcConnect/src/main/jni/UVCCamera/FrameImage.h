@@ -64,10 +64,6 @@ private:
 	int roThumb;
 	int frameWidth;
 	int frameHeight;
-//	pthread_mutex_t fixed_mutex;
-//	pthread_cond_t  fixed_cond;
-//	float tempData[16384];
-//	pthread_t  fixed_thread;
     int tinyCorrection = 0;
 
 	int mCurrentAndroidVersion;     //标志是否使用OpenCL加速渲染成图
@@ -147,13 +143,6 @@ public:
 //	int setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format);
 //	void do_capture_callback(JNIEnv *env, uint8_t *frame);
 
-
-	//视频录制的
-	/*static void *capture_thread_func(void *vptr_args);
-	void do_capture(JNIEnv *env);
-	void do_capture_surface(JNIEnv *env);
-	void do_capture_idle_loop(JNIEnv *env);
-	void do_capture_callback(JNIEnv *env, uint8_t *frame);*/
 };
 
 #endif //CAMERA_FRAMEIMAGE_H

@@ -80,7 +80,7 @@ void FrameImage::setResourcePath(const char *path) {
 //打快门 更新 温度对照表
 void FrameImage::shutRefresh() {
     isNeedWriteTable = true;
-//    LOGE("===================shutRefresh=============update isNeedWriteTable===============");
+    if (DEBUG)LOGE("===================shutRefresh=============update isNeedWriteTable===============");
 }
 
 //二分法查找
@@ -644,8 +644,8 @@ int FrameImage::setTemperatureCallback(JNIEnv *env, jobject temperature_callback
 //查询温度对照表，将查询之后的具体数据回调给java层onReceiveTemperature函数
 void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
     //共用的指针。
-    LOGE("===========do_temperature_callback================mPid = %d =====================mVid=====%d===",
-         mPid, mVid);
+//    LOGE("===========do_temperature_callback================mPid = %d =====================mVid=====%d===",
+//         mPid, mVid);
     unsigned short *orgData = (unsigned short *) frameData;
     if (mPid == 1 && mVid == 5396) {
         unsigned short *fourLinePara = orgData + requestWidth * (requestHeight - 4);//后四行参数
@@ -664,8 +664,8 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
         //根据8004或者8005模式来查表，8005模式下仅输出以上注释的10个参数，8004模式下数据以上参数+全局温度数据
         thermometrySearch(requestWidth, requestHeight, temperatureTable, orgData, temperatureData,
                           rangeMode, OUTPUTMODE);
-        LOGE("centerTmp:%.2f,maxTmp:%.2f,minTmp:%.2f,avgTmp:%.2f\n", temperatureData[0],
-             temperatureData[3], temperatureData[6], temperatureData[9]);
+//        LOGE("centerTmp:%.2f,maxTmp:%.2f,minTmp:%.2f,avgTmp:%.2f\n", temperatureData[0],
+//             temperatureData[3], temperatureData[6], temperatureData[9]);
 
         jfloatArray mNCbTemper = env->NewFloatArray(requestWidth * (requestHeight - 4) + 10);
 
@@ -674,7 +674,7 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
          */
         env->SetFloatArrayRegion(mNCbTemper, 0, 10 + requestWidth * (requestHeight - 4), mCbTemper);
         if (mTemperatureCallbackObj != NULL) {
-            LOGE("========================mTemperatureCallbackObj == null=========================");
+//            LOGE("========================mTemperatureCallbackObj == null=========================");
             //调用java层的 onReceiveTemperature ，传回mNCbTemper（整个图幅温度数据+ 后四行10个温度分析 的数据） 实参
             env->CallVoidMethod(mTemperatureCallbackObj, iTemperatureCallback.onReceiveTemperature,
                                 mNCbTemper);

@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#if 1    // set 1 if you don't need debug log
+#if 0    // set 1 if you don't need debug log
 #ifndef LOG_NDEBUG
 #define    LOG_NDEBUG        // w/o LOGV/LOGD/MARK
 #endif
@@ -31,7 +31,7 @@ using namespace std;
 
 #define LOG_TAG "===UVCPREVIEW==="
 
-#define    LOCAL_DEBUG 0
+#define    LOCAL_DEBUG 0    // set 1 if you don't need debug log
 #define MAX_FRAME 4
 #define PREVIEW_PIXEL_BYTES 4    // RGBA/RGBX
 #define FRAME_POOL_SZ MAX_FRAME
@@ -157,7 +157,6 @@ int UVCPreviewIR::setPreviewSize(int width, int height, int min_fps, int max_fps
                                                      requestWidth, requestHeight, requestMinFps,
                                                      requestMaxFps);
     }
-
     LOGE("setPreviewSize==========================over");
     mCurrentAndroidVersion = currentAndroidVersion;
     RETURN(result, int);
@@ -187,6 +186,9 @@ int UVCPreviewIR::setPreviewDisplay(ANativeWindow *preview_window) {
                                                      requestWidth, requestHeight - 4,
                                                      previewFormat);
                 } else if (mPid == 22592 && mVid == 3034) {
+                    ANativeWindow_setBuffersGeometry(mPreviewWindow,
+                                                     requestWidth, requestHeight, previewFormat);
+                } else {
                     ANativeWindow_setBuffersGeometry(mPreviewWindow,
                                                      requestWidth, requestHeight, previewFormat);
                 }
@@ -373,32 +375,32 @@ bool UVCPreviewIR::setMachineSetting(int value, int mark) {
     unsigned char data2[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02};
 
     while (sendCount < 3 && (value != flashId_get[1])) {
-         uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data_get,
-                                  sizeof(data_get), 1000);
+        uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data_get,
+                            sizeof(data_get), 1000);
         uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
-                                  1000);
+                            1000);
         if (getTinyCDevicesStatus()) {
             LOGE("============getMachineSetting======get=order=========");
             uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId_get,
-                                      sizeof(flashId_get),
-                                      1000);
+                                sizeof(flashId_get),
+                                1000);
             getData = flashId_get[1];
             LOGE("flashId_get 0 ==== %d", flashId_get[0]);
             LOGE("flashId_get 1 ==== %d", flashId_get[1]);
         }
-        if(getData != value){
+        if (getData != value) {
             data_set[6] = (value >> 8);
             data_set[7] = (value & 0xff);
             if (getTinyCDevicesStatus()) {
                 LOGE("============setMachineSetting======set=order=========");
                 uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data_set,
-                                          sizeof(data_set),
-                                          1000);
+                                    sizeof(data_set),
+                                    1000);
                 uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
-                                          1000);
+                                    1000);
             }
-            if (sendCount != 0){
-                mark = mark -1;
+            if (sendCount != 0) {
+                mark = mark - 1;
             }
         }
         sendCount++;
@@ -825,11 +827,9 @@ int UVCPreviewIR::prepare_preview(uvc_stream_ctrl_t *ctrl) {
     if (mPid == 1 && mVid == 5396) {
         RgbaOutBuffer = new unsigned char[requestWidth * (requestHeight - 4) * 4];
         RgbaHoldBuffer = new unsigned char[requestWidth * (requestHeight - 4) * 4];
-//        backUpBuffer = new unsigned char[frameWidth * (frameHeight) * 4];
     } else if (mPid == 22592 && mVid == 3034) {
         RgbaOutBuffer = new unsigned char[requestWidth * (requestHeight) * 4];
         RgbaHoldBuffer = new unsigned char[requestWidth * (requestHeight) * 4];
-//        backUpBuffer = new unsigned char[frameWidth * (frameHeight) * 4];
     }
     backUpBuffer = new unsigned char[frameWidth * (frameHeight) * 4];
     picOutBuffer = new unsigned char[requestWidth * (requestHeight) * 2];
@@ -1130,14 +1130,11 @@ string DecryptionAES(const string &strSrc) //AES解密
  */
 void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
     ENTER();
-    //uvc_stop_streaming(mDeviceHandle);
     LOGI("======================do_preview======================");
     uvc_error_t result = uvc_start_streaming_bandwidth(mDeviceHandle, ctrl,
                                                        uvc_preview_frame_callback, (void *) this,
                                                        requestBandwidth, 0);
     if (LIKELY(!result)) {
-        //pthread_create(&capture_thread, NULL, capture_thread_func, (void *)this);
-        //pthread_create(&temperature_thread, NULL, temperature_thread_func, (void *)this);
 #if LOCAL_DEBUG
         LOGI("Streaming...");
 #endif
@@ -1344,6 +1341,14 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     int splitSize = split_result.size();
 //                    LOGE("==================configs.txt split size == %d=========",splitSize);
 
+                    FILE* outFile = NULL;
+                    outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+                    if(outFile != NULL)
+                    {
+                        fprintf(outFile, "%s", "                UVCCamera::do_preview\n");
+                        fprintf(outFile, "                UVCCamera::do_preview==Sn=%s\n", dytTinyCSn);
+                        fclose(outFile);
+                    }
                     //遍历 结果 是否 符合筛选
                     for (int i = 0; i < splitSize; i++) {
 //                       LOGE("=============split_result=== %s =====",split_result[i].c_str());
@@ -1999,18 +2004,19 @@ void *UVCPreviewIR::temperature_thread_func(void *vptr_args) {
 
 void UVCPreviewIR::do_temperature(JNIEnv *env) {
     ENTER();
-    LOGE("do_temperature温度步骤3");
+//    LOGE("do_temperature温度步骤3");
     ////LOGE("do_temperature mIsTemperaturing:%d",mIsTemperaturing);
-    LOGE("=====do_temperature=====isRunning===%d,IsTemperaturing===%d",isRunning(),mIsTemperaturing);
+//    LOGE("=====do_temperature=====isRunning===%d,IsTemperaturing===%d", isRunning(),
+//         mIsTemperaturing);
     for (; isRunning() && mIsTemperaturing;) {
-        LOGE("=====do_temperature=====for==both=== true============");
+//        LOGE("=====do_temperature=====for==both=== true============");
         pthread_mutex_lock(&temperature_mutex);
         {
-            LOGE("do_temperature========wait=======callback==========");
+//            LOGE("do_temperature========wait=======callback==========");
             pthread_cond_wait(&temperature_sync, &temperature_mutex);
 //            LOGE("do_temperature02");
             if (mIsTemperaturing) {
-                LOGE("do_temperature==============callback=====begin=====");
+//                LOGE("do_temperature==============callback=====begin=====");
 //                do_temperature_callback(env, HoldBuffer);
                 mFrameImage->do_temperature_callback(env, HoldBuffer);
             }
@@ -2024,7 +2030,7 @@ void UVCPreviewIR::do_temperature(JNIEnv *env) {
 
 //读取原始数据holdbuffer .将原始YUV数据查表之后的温度数据回调。10+ 256*192
 void UVCPreviewIR::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
-   LOGE("=========do_temperature_callback ======");
+    LOGE("=========do_temperature_callback ======");
     if (mPid == 1 && mVid == 5396) {
         mFrameImage->do_temperature_callback(env, frameData);
     } else if (mPid == 22592 && mVid == 3034) {
@@ -2064,15 +2070,16 @@ int UVCPreviewIR::getByteArrayTemperaturePara(uint8_t *para) {
     }
     return true;
 }
-void UVCPreviewIR::shutRefresh(){
+
+void UVCPreviewIR::shutRefresh() {
     pthread_mutex_lock(&temperature_mutex);
-    if (mFrameImage){
+    if (mFrameImage) {
         mFrameImage->shutRefresh();
     }
     pthread_mutex_unlock(&temperature_mutex);
 }
 
- void UVCPreviewIR::testJNI(){
+void UVCPreviewIR::testJNI() {
     LOGE("==========================testJNI=========================");
 //    temperature_thread
 //    if (temperature_thread = NULL){

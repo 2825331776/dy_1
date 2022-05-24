@@ -213,7 +213,7 @@ static jint nativeConnect(JNIEnv *env, jobject thiz,
     const char *c_usbfs = env->GetStringUTFChars(usbfs_str, JNI_FALSE);
     if (LIKELY(camera && (fd > 0))) {
 //		libusb_set_debug(NULL, LIBUSB_LOG_LEVEL_DEBUG);
-        LOGE("nativeConnect:vid:%d,pid:%d", vid, pid);
+//        LOGE("nativeConnect:vid:%d,pid:%d", vid, pid);
         result = camera->connect(vid, pid, fd, busNum, devAddr, c_usbfs);
     }
     env->ReleaseStringUTFChars(usbfs_str, c_usbfs);
