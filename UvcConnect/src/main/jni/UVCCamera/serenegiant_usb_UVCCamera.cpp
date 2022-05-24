@@ -181,7 +181,6 @@ static jint nativeSetVerifySn(JNIEnv *env, jobject thiz, ID_TYPE id_camera, jint
 }
 
 static ID_TYPE nativeCreate(JNIEnv *env, jobject thiz) {
-
     ENTER();
     UVCCamera *camera = new UVCCamera();
     setField_long(env, thiz, "mNativePtr", reinterpret_cast<ID_TYPE>(camera));

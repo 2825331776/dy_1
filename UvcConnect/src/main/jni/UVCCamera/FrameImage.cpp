@@ -628,7 +628,8 @@ int FrameImage::setTemperatureCallback(JNIEnv *env, jobject temperature_callback
             if (!iTemperatureCallback.onReceiveTemperature) {
                 LOGE("Can't find iTemperatureCallback#onReceiveTemperature");
                 env->DeleteGlobalRef(temperature_callback_obj);
-                mTemperatureCallbackObj = temperature_callback_obj = NULL;
+                mTemperatureCallbackObj = NULL;
+                temperature_callback_obj = NULL;
             }
         }
     } else {

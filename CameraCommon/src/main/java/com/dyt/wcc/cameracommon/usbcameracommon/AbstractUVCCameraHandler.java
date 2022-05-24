@@ -384,8 +384,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		//	if (!((surface instanceof SurfaceHolder) || (surface instanceof Surface) || (surface instanceof SurfaceTexture))) {
 		//		throw new IllegalArgumentException("surface should be one of SurfaceHolder, Surface or SurfaceTexture");
 		//	}
-		//by wp
-		//Log.e(TAG, "MSG=========== MSG_PREVIEW_START" )
 		sendMessage(obtainMessage(MSG_PREVIEW_START, surface));
 	}
 
@@ -1119,7 +1117,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 
 		public AbstractUVCCameraHandler getHandler () {
 			if (DEBUG)
-				Log.v(TAG_THREAD, "getHandler:");
+				Log.e(TAG_THREAD, "getHandler:");
 			synchronized (mSync) {
 				if (mHandler == null)
 					try {
@@ -1194,7 +1192,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		public void handleOpen (final USBMonitor.UsbControlBlock ctrlBlock) {
 			if (DEBUG)
 				Log.v(TAG_THREAD, "handleOpen:");
-			//	handleClose();
 			if (cameraType == 1) {
 				try {
 					final UVCCamera camera;
@@ -1740,22 +1737,20 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 
 
 		public void handleStartRecording (boolean isRecordAudio) {
-			Log.e(TAG_THREAD, "handleStartRecording:");
+//			Log.e(TAG_THREAD, "handleStartRecording:");
 			try {
 				if ((mUVCCamera == null) || (mMuxer != null) || (!isTemperaturing()))
 					return;
 				final MediaMuxerWrapper muxer = new MediaMuxerWrapper(".mp4");    // if you record audio only, ".m4a" is also OK.
 				MediaVideoBufferEncoder videoEncoder = null;
-				Log.e(TAG_THREAD, " =================mEncoderType=========================    " + mEncoderType);
+//				Log.e(TAG_THREAD, " =================mEncoderType=========================    " + mEncoderType);
 				switch (mEncoderType) {
 					case 1:    // for video capturing using MediaVideoEncoder
-						//new MediaVideoEncoder(muxer, getWidth(), getHeight(), mMediaEncoderListener);
-						Log.e(TAG_THREAD, "===========case 1:========================:");
+//						Log.e(TAG_THREAD, "===========case 1:========================:");
 						new MediaVideoEncoder(muxer, mWeakCameraView.get().getWidth(), mWeakCameraView.get().getHeight(), mMediaEncoderListener);
 						break;
 					case 2:    // for video capturing using MediaVideoBufferEncoder
 						videoEncoder = new MediaVideoBufferEncoder(muxer, getWidth(), getHeight(), mMediaEncoderListener);
-						//videoEncoder = new MediaVideoBufferEncoder(muxer, 384, 288, mMediaEncoderListener);
 						break;
 					// case 0:	// for video capturing using MediaSurfaceEncoder
 					default:
@@ -1764,13 +1759,13 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 				}
 				if (isRecordAudio) {
 					//for audio capturing
-					Log.e(TAG, "=============new MediaAudioEncoder=========== ");
+//					Log.e(TAG, "=============new MediaAudioEncoder=========== ");
 					new MediaAudioEncoder(muxer, mMediaEncoderListener);
 				}
 				muxer.prepare();
 				muxer.startRecording();
 				if (videoEncoder != null) {
-					Log.e(TAG, "setFrameCallback ");
+//					Log.e(TAG, "setFrameCallback ");
 					//                    mUVCCamera.setFrameCallback(mIFrameCallback, UVCCamera.PIXEL_FORMAT_YUV);
 				}
 				synchronized (mSync) {
@@ -1780,27 +1775,9 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 				callOnStartRecording();
 			} catch (final IOException e) {
 				callOnError(e);
-				Log.e(TAG, "startCapture error =====:", e);
+//				Log.e(TAG, "startCapture error =====:", e);
 			}
 		}
-
-		//        // Tcp发送指令
-		//        public void handleSetDevMsg(int msgCode) {
-		//            if (mTcpClient == null) {
-		//                return;
-		//            }
-		//            int code1 = msgCode / 100;
-		//            int code2 = msgCode % 100;
-		//            int[] codes = new int[6];
-		//            codes[0] = Integer.parseInt("AD", 16);
-		//            codes[1] = Integer.parseInt("BA", 16);
-		//            codes[2] = Integer.parseInt("06", 16);
-		//            codes[3] = Integer.parseInt((code1 + ""), 16);
-		//            codes[4] = Integer.parseInt((code2 + ""), 16);
-		//            codes[5] = Integer.parseInt("CC", 16);
-		//            mTcpClient.nativeTcpSend(codes);
-		//        }
-
 		public void handleSetPalette (int paletteCode) {
 			//            if (mTcpClient == null) {
 			//                return;

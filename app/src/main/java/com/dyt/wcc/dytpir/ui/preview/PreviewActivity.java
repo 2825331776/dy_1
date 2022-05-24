@@ -16,7 +16,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -604,12 +603,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				Log.e(TAG, "onPause: 停止温度回调");
 		}
 		mSensorManager.unregisterListener(sensorEventListener, mAccelerometerSensor);
-		//		mSensorManager.unregisterListener(sensorEventListener, mMagneticSensor);
-		//解决去图库 拔出机芯闪退 2022年3月24日11:03:49
-		//		if (mUvcCameraHandler!=null){
-		//			mUvcCameraHandler.stopPreview();
-		//		}
-		//		mDataBinding.textureViewPreviewActivity.onResume();
 		super.onPause();
 	}
 
@@ -623,14 +616,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				mUsbMonitor.unregister();
 			}
 		}
-		//		if (mDataBinding.textureViewPreviewActivity!=null)
-		//		mDataBinding.textureViewPreviewActivity.onPause();
-		//		if (mUvcCameraHandler!=null){
-		//			mUvcCameraHandler.stopTemperaturing();
-		//		}
-		//		if (mDataBinding.textureViewPreviewActivity != null){
-		//			mDataBinding.textureViewPreviewActivity.onPause();
-		//		}
 		if (mUvcCameraHandler != null) {
 			mUvcCameraHandler.close();
 		}
@@ -724,7 +709,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				companyPopWindows.dismiss();
 				if (oldRotation == 0 || oldRotation == 270) {
 					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,  -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(),10), Gravity.CENTER);
+					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
 					companyPopWindows.getContentView().setRotation(0);
 				}
 			}
@@ -763,7 +748,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				companyPopWindows.dismiss();
 				if (oldRotation == 0 || oldRotation == 270) {
 					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,  -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(),10), Gravity.CENTER);
+					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
 					companyPopWindows.getContentView().setRotation(0);
 				}
 			}
@@ -806,7 +791,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				companyPopWindows.dismiss();
 				if (oldRotation == 90 || oldRotation == 180) {
 					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(),10), Gravity.CENTER);
+					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
 					companyPopWindows.getContentView().setRotation(180);
 				}
 			}
@@ -848,7 +833,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				companyPopWindows.dismiss();
 				if (oldRotation == 90 || oldRotation == 180) {
 					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(),10), Gravity.CENTER);
+					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
 					companyPopWindows.getContentView().setRotation(180);
 				}
 			}
@@ -922,24 +907,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			}
 
 			mUvcCameraHandler.open(ctrlBlock);
-			//			mDataBinding.textureViewPreviewActivity.onResume();
 			startPreview();
 
 			mHandler.postDelayed(() -> {
 				setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
 			}, 300);
-
-			//			timerEveryTime = new Timer();
-			//			timerEveryTime.scheduleAtFixedRate(new TimerTask() {
-			//				@Override
-			//				public void run () {
-			//					setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);//每隔一分钟打一次快门
-			//					if (mUvcCameraHandler != null)
-			//						mUvcCameraHandler.whenShutRefresh();
-			//					if (isDebug)
-			//						Log.e(TAG, "每隔60s执行一次操作");
-			//				}
-			//			}, 500, 600000);
 		}
 
 		@Override
@@ -971,7 +943,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				mDataBinding.customSeekbarPreviewFragment.setPalette(sp.getInt(DYConstants.PALETTE_NUMBER, 1) - 1);
 				mDataBinding.customSeekbarPreviewFragment.invalidate();
 				mDataBinding.toggleFixedTempBar.setSelected(false);
-				if (stt!=null){
+				if (stt != null) {
 					stt.release();
 					stt = null;
 				}
@@ -986,8 +958,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 			if (mUvcCameraHandler != null) {
 				//				mUvcCameraHandler.removeCallback(cameraCallback);
-				mUvcCameraHandler.stopTemperaturing();//2022年5月18日19:00:15 S0温度失常
+//				mUvcCameraHandler.stopTemperaturing();//2022年5月18日19:00:15 S0温度失常
 				mUvcCameraHandler.close();
+			}else {
+				Log.e(TAG, "onDisconnect: ==============mUvcCameraHandler == null========");
 			}
 			mVid = 0;
 			mPid = 0;
@@ -1001,6 +975,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	};
 
 	private Surface stt;
+
 	/**
 	 * 打开连接 调用预览图像的设置
 	 */
@@ -1110,32 +1085,32 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		}
 
 		//初始化 设置为低温模式
-//		if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
-//			mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8021), 200); //最高200度
-//			mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000), 1000);
-//			mHandler.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), 1800);
-//		} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
-////			loadingDialog.show();
-//				new Thread(new Runnable() {
-//					@Override
-//					public void run () {
-//						mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
-//					}
-//				}).start();
-//
-//				mHandler.postDelayed(new Runnable() {
-//					@Override
-//					public void run () {
-//						setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
-//						runOnUiThread(new Runnable() {
-//							@Override
-//							public void run () {
-////								loadingDialog.dismiss();
-//							}
-//						});
-//					}
-//				}, 2000);
-//		}
+		//		if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
+		//			mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8021), 200); //最高200度
+		//			mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000), 1000);
+		//			mHandler.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), 1800);
+		//		} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
+		////			loadingDialog.show();
+		//				new Thread(new Runnable() {
+		//					@Override
+		//					public void run () {
+		//						mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
+		//					}
+		//				}).start();
+		//
+		//				mHandler.postDelayed(new Runnable() {
+		//					@Override
+		//					public void run () {
+		//						setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
+		//						runOnUiThread(new Runnable() {
+		//							@Override
+		//							public void run () {
+		////								loadingDialog.dismiss();
+		//							}
+		//						});
+		//					}
+		//				}, 2000);
+		//		}
 	}
 
 	private int setValue (final int flag, final int value) {//设置机芯参数,调用JNI层
@@ -1301,7 +1276,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	@Override
 	protected void initView () {
-		Log.e(TAG, "initView: ==========================手机型号为：===" + Build.MODEL);
+//		Log.e(TAG, "initView: ==========================手机型号为：===" + Build.MODEL);
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
 		configuration = getResources().getConfiguration();
 		metrics = getResources().getDisplayMetrics();
@@ -1559,11 +1534,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	 */
 	private void initListener () {
 		//测试的 监听器
-		mDataBinding.btTest01.setVisibility(View.VISIBLE);
+//		mDataBinding.btTest01.setVisibility(View.VISIBLE);
 		mDataBinding.btTest01.setOnClickListener(v -> {
-//			mUvcCameraHandler.testJNi();
-			Log.e(TAG, "initListener: "+ mDataBinding.textureViewPreviewActivity.getTemperatureCallback());
-			//******************************MyNumberPicker***************************************
+			//******************************testJNi***************************************
+			//			mUvcCameraHandler.testJNi();
+//			Log.e(TAG, "initListener: " + mDataBinding.textureViewPreviewActivity.getTemperatureCallback());
+
 
 			//****************************动画开始*************************************
 			//读取一张图片到某个控件，然后把图片缩小 给相册这个按钮。透明度逐渐变低
@@ -1865,8 +1841,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				mDataBinding.textureViewPreviewActivity.openFeaturePoints(2);
 
 				//打挡  并 刷新温度对照表
-				setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
-				mUvcCameraHandler.whenShutRefresh();
+				mHandler.postDelayed(() -> {
+					setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
+				},200);
+				mHandler.postDelayed(() -> {
+					mUvcCameraHandler.whenShutRefresh();
+				},500);
 			}
 		});
 		//拍照按钮
@@ -2189,23 +2169,23 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		companyPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 		companyPopWindows.setHeight(DensityUtil.dp2px(mContext.get(), 105));
 		companyPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
-//		Log.e(TAG, "================showPopWindows: " + companyPopWindows.getHeight());
-//		Log.e(TAG, "================showPopWindows: " + mDataBinding.clPreviewActivity.getHeight());
+		//		Log.e(TAG, "================showPopWindows: " + companyPopWindows.getHeight());
+		//		Log.e(TAG, "================showPopWindows: " + mDataBinding.clPreviewActivity.getHeight());
 
 		companyPopWindows.setFocusable(false);
 		companyPopWindows.setOutsideTouchable(true);
 		companyPopWindows.setTouchable(true);
 
 		if (oldRotation == 90 || oldRotation == 180) {
-//			if (isDebug)Log.e(TAG, "==================showPopWindows: 90 /180");
+			//			if (isDebug)Log.e(TAG, "==================showPopWindows: 90 /180");
 			int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-			companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(),10), Gravity.CENTER);
+			companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
 			companyPopWindows.getContentView().setRotation(180);
 		}
 		if (oldRotation == 0 || oldRotation == 270) {
-//			if (isDebug)Log.e(TAG, "============showPopWindows: 0 /270");
+			//			if (isDebug)Log.e(TAG, "============showPopWindows: 0 /270");
 			int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-			companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,  -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(),10), Gravity.CENTER);
+			companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
 			companyPopWindows.getContentView().setRotation(0);
 		}
 	}

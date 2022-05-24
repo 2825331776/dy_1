@@ -1078,23 +1078,6 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 					}
 				}
 			};
-			//            public final TcpITemperatureCallback tcpAhITemperatureCallback = new TcpITemperatureCallback() {
-			//                @Override
-			//                public void onReceiveTemperature(float[] temperature) {
-			//                    Log.e(TAG, "获取Tcp全幅温度函数====w="+mSuportWidth+"==h="+mSuportHeight);
-			//                    //Log.e(TAG, "ITemperatureCallback center");
-			//                    //Log.e(TAG, "ITemperatureCallback center"+temperature[0]);
-			//                    if (UnitTemperature == 0) {
-			//                        System.arraycopy(temperature, 0, temperature1, 0, (mSuportHeight - 4) * mSuportWidth + 10);
-			//                        maxtemperature = temperature[3];
-			//                        mintemperature = temperature[6];
-			//                    } else {
-			//                        for (int i = 6; i < ((mSuportHeight - 4) * mSuportWidth + 10); i++) {
-			//                            temperature1[i] = temperature[i] * 1.8f + 32;
-			//                        }
-			//                    }
-			//                }
-			//            };
 
 			/**
 			 * JNI获取的温度回调到Java层
@@ -1102,7 +1085,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			 * @return
 			 */
 			public ITemperatureCallback getTemperatureCallback () {
-				Log.e(TAG, "========获取UVC温度回调===getTemperatureCallback= "+ahITemperatureCallback);
+//				Log.e(TAG, "========获取UVC温度回调===getTemperatureCallback= "+ahITemperatureCallback);
 				return ahITemperatureCallback;
 			}
 
@@ -1115,8 +1098,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 				mSupportWidth = w;
 				widthRatio = mSupportWidth * 1.0f / icon.getWidth();
 				heightRatio = (mSupportHeight) * 1.0f / icon.getHeight();//数据写死了
-				Log.i(TAG, "widthRatio=" + widthRatio);
-				Log.i(TAG, "heightRatio=" + heightRatio);
+//				Log.i(TAG, "widthRatio=" + widthRatio);
+//				Log.i(TAG, "heightRatio=" + heightRatio);
 			}
 
 			public void setVertices (float scale) {

@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UVCCamera {
-	private static final boolean DEBUG         = true;    // TODO set false when releasing
+	private static final boolean DEBUG         = false;    // TODO set false when releasing
 	private static final String  TAG           = UVCCamera.class.getSimpleName();
 	private static final String  DEFAULT_USBFS = "/dev/bus/usb";
 
@@ -128,8 +128,8 @@ public class UVCCamera {
 	}
 
 	private   UsbControlBlock mCtrlBlock;
-	protected long            mControlSupports;            // カメラコントロールでサポートしている機能フラグ
-	protected long            mProcSupports;                // プロセッシングユニットでサポートしている機能フラグ
+	protected long            mControlSupports;            // 相机控制支持的功能标志
+	protected long            mProcSupports;                // 处理单元支持的功能标志
 	protected int             mCurrentFrameFormat = FRAME_FORMAT_MJPEG;
 	protected int             mCurrentWidth       = DEFAULT_PREVIEW_WIDTH, mCurrentHeight = DEFAULT_PREVIEW_HEIGHT;
 	protected float      mCurrentBandwidthFactor = DEFAULT_BANDWIDTH;
@@ -177,8 +177,8 @@ public class UVCCamera {
 	// until here
 
 	/**
-	 * the sonctructor of this class should be call within the thread that has a looper
-	 * (UI thread or a thread that called Looper.prepare)
+	 * the constructor of this class should be call within the thread that has a looper。这个类的构造函数应该在有looper的线程中调用
+	 * (UI thread or a thread that called Looper.prepare)（UI 线程或调用 Looper.prepare 的线程）
 	 */
 	public UVCCamera (int platform) {
 		this.platform = platform;
@@ -188,7 +188,7 @@ public class UVCCamera {
 
 	/**
 	 * connect to a UVC camera
-	 * USB permission is necessary before this method is called
+	 * USB permission is necessary before this method is called。调用此方法之前需要 USB 权限
 	 *
 	 * @param ctrlBlock
 	 */

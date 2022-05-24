@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#if 0    // set 1 if you don't need debug log
+#if 1    // set 1 if you don't need debug log
 #ifndef LOG_NDEBUG
 #define    LOG_NDEBUG        // w/o LOGV/LOGD/MARK
 #endif
@@ -131,16 +131,16 @@ inline const bool UVCPreviewIR::isSnRight() const { return snIsRight; }
 int UVCPreviewIR::setPreviewSize(int width, int height, int min_fps, int max_fps, int mode,
                                  float bandwidth, int currentAndroidVersion) {
     ENTER();
-    LOGE("=========>requestWidth  == %d,width  == %d,requestHeight  == %d,height  == %d,requestMode  == %d, mode == %d",
-         requestWidth, width, requestHeight, height, requestMode, mode);
+//    LOGE("=========>requestWidth  == %d,width  == %d,requestHeight  == %d,height  == %d,requestMode  == %d, mode == %d",
+//         requestWidth, width, requestHeight, height, requestMode, mode);
     //LOGE("setPreviewSize");
-    LOGE("=========== %d==============bandwidth========%f==========", width, bandwidth);
+//    LOGE("=========== %d==============bandwidth========%f==========", width, bandwidth);
     LOGE("setPreviewSize步骤6");
     int result = 0;
     if ((requestWidth != width) || (requestHeight != height) || (requestMode != mode)) {
 //        mFrameImage添加一个函数初始化绘制需要的值
-        LOGE("requestWidth  == %d,width  == %d,requestHeight  == %d,height  == %d,requestMode  == %d, mode == %d",
-             requestWidth, width, requestHeight, height, requestMode, mode);
+//        LOGE("requestWidth  == %d,width  == %d,requestHeight  == %d,height  == %d,requestMode  == %d, mode == %d",
+//             requestWidth, width, requestHeight, height, requestMode, mode);
         mFrameImage->setPreviewSize(width, height, mode);
         requestWidth = width;
         requestHeight = height;
@@ -150,14 +150,14 @@ int UVCPreviewIR::setPreviewSize(int width, int height, int min_fps, int max_fps
         requestBandwidth = bandwidth;
         uvc_stream_ctrl_t ctrl;
 
-        LOGE("uvc_get_stream_ctrl_format_size_fps ==  ===2222222222");
+//        LOGE("uvc_get_stream_ctrl_format_size_fps ==  ===2222222222");
         result = uvc_get_stream_ctrl_format_size_fps(mDeviceHandle, &ctrl,
                                                      !requestMode ? UVC_FRAME_FORMAT_YUYV
                                                                   : UVC_FRAME_FORMAT_MJPEG,
                                                      requestWidth, requestHeight, requestMinFps,
                                                      requestMaxFps);
     }
-    LOGE("setPreviewSize==========================over");
+//    LOGE("setPreviewSize==========================over");
     mCurrentAndroidVersion = currentAndroidVersion;
     RETURN(result, int);
 }
@@ -971,8 +971,8 @@ std::vector<std::string> split(std::string str, std::string pattern) {
 void *UVCPreviewIR::DecryptSN(void *userSn, void *robotSn, void *returnData) {
     unsigned char *sn = (unsigned char *) userSn;
     unsigned char *ir_sn = (unsigned char *) robotSn;
-    LOGE("==========用户区：==sn ====> %s", sn);
-    LOGE("==========机  器：===ir_sn ====> %s", ir_sn);
+//    LOGE("==========用户区：==sn ====> %s", sn);
+//    LOGE("==========机  器：===ir_sn ====> %s", ir_sn);
 //    for (int i = 0; i < 15; i++) {
 //        if (*ir_sn == '\0'){
 //            *ir_sn = '0';
@@ -982,12 +982,12 @@ void *UVCPreviewIR::DecryptSN(void *userSn, void *robotSn, void *returnData) {
     unsigned char *ir_sn_h = (unsigned char *) robotSn + 2;
 //    unsigned char* ir_sn_24 = new unsigned char[4];
 //    mempcpy(ir_sn_24,ir_sn_h,4);
-    LOGE("=============ir_sn_h ====> %s", ir_sn_h);
+//    LOGE("=============ir_sn_h ====> %s", ir_sn_h);
 //    LOGE("=============ir_sn_24 ====> %s",ir_sn_24);
 
 //    int  sn_sum = atoi((char *)ir_sn_24)%127;
     int sn_sum = atoi((char *) ir_sn_h) % 127;
-    LOGE("======sn_sum========》%d", sn_sum);
+//    LOGE("======sn_sum========》%d", sn_sum);
     char strs[sn_length];
 //    for (int i = 0; i < strlen(sn); i++) {
 //        LOGE(" >>>DecryptSN sn ======= > %d",(int)sn[i]);
@@ -1130,7 +1130,7 @@ string DecryptionAES(const string &strSrc) //AES解密
  */
 void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
     ENTER();
-    LOGI("======================do_preview======================");
+//    LOGI("======================do_preview======================");
     uvc_error_t result = uvc_start_streaming_bandwidth(mDeviceHandle, ctrl,
                                                        uvc_preview_frame_callback, (void *) this,
                                                        requestBandwidth, 0);
@@ -1158,7 +1158,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 }
 
                 if (isCopyPicturing()) {//判断截屏
-                    LOGE("======mutex===========");
+//                    LOGE("======mutex===========");
                     memset(picOutBuffer, 0, 256 * 196 * 2);
                     memcpy(picOutBuffer, HoldBuffer, 256 * 196 * 2);
                     mIsCopyPicture = false;
@@ -1279,8 +1279,6 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
 //                        *(tinyUserSn+15) = '\0';
                         DecryptSN(TinyUserSN, tinyC_UserSn_sixLast, dytSn);
                         *(dytSn + 15) = '\0';
-//                        snIsRight = true;
-
                     } else if (mVid == 5396 && mPid == 1)//S0机芯
                     {
                         //***********************S0机芯 384*288 分辨率 读取SN号**********************
@@ -1315,6 +1313,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         //释放用到的指针资源
                         fourLinePara = NULL;
                     }
+
                     //读取配置文件的 加密SN
                     FILE *inFile = NULL;
                     inFile = fopen(
@@ -1335,7 +1334,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         }
                         fclose(inFile);
                     }
-                    LOGE("==============%s==============", dytTinyCSn);
+//                    LOGE("==============%s==============", dytTinyCSn);
                     //切割结果
                     std::vector<std::string> split_result = split(fileStore, ";");
                     int splitSize = split_result.size();
@@ -1367,7 +1366,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         }
                         if (flag) {
 //                            LOGE("=============SN匹配成功========");
-                            snIsRight = snIsRight | 1;
+                            snIsRight = true;
                         } else {
 //                            LOGE("==============SN匹配不成功========");
                             snIsRight = snIsRight | 0;
@@ -1416,7 +1415,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             //打挡指令
                             uvc_set_zoom_abs(mDeviceHandle, 0x8000);
                             oldADValue = newADValue;
-//                            mFrameImage->shutRefresh();
+//                            if (mFrameImage)mFrameImage->shutRefresh();
                             all_frame_count = 0;
                         }
 //                        LOGE("=====newADValue==%d====oldADValue===%d",newADValue,oldADValue);
@@ -1966,7 +1965,7 @@ int UVCPreviewIR::stopTemp() {
     pthread_mutex_lock(&temperature_mutex);
     {
         if (isRunning() && mIsTemperaturing) {
-            LOGE("stopTemp");
+//            LOGE("stopTemp");
             mIsTemperaturing = false;
             pthread_cond_signal(&temperature_sync);
             pthread_cond_wait(&temperature_sync,
@@ -2072,11 +2071,11 @@ int UVCPreviewIR::getByteArrayTemperaturePara(uint8_t *para) {
 }
 
 void UVCPreviewIR::shutRefresh() {
-    pthread_mutex_lock(&temperature_mutex);
+//    pthread_mutex_lock(&temperature_mutex);
     if (mFrameImage) {
         mFrameImage->shutRefresh();
     }
-    pthread_mutex_unlock(&temperature_mutex);
+//    pthread_mutex_unlock(&temperature_mutex);
 }
 
 void UVCPreviewIR::testJNI() {

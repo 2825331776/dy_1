@@ -64,8 +64,8 @@ UVCCamera::UVCCamera()
           mContext(NULL),
           mDevice(NULL),
           mDeviceHandle(NULL),
-          mStatusCallback(NULL),
-          mButtonCallback(NULL),
+//          mStatusCallback(NULL),
+//          mButtonCallback(NULL),
           mPreview(NULL),
           mFrameImage(NULL),
           mCtrlSupports(0),
@@ -146,8 +146,8 @@ void UVCCamera::clearCameraParams() {
 //added by wupei,这一部分的信号连接也是通过fd实现的
 int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const char *usbfs) {
     ENTER();
-    LOGE("UVCCamera connect vid:%d,pid:%d,fd:%d,busnum: %d, devaddr: %d", vid, pid, fd, busnum,
-         devaddr);
+//    LOGE("UVCCamera connect vid:%d,pid:%d,fd:%d,busnum: %d, devaddr: %d", vid, pid, fd, busnum,
+//         devaddr);
     uvc_error_t result = UVC_ERROR_BUSY;
     if (!mDeviceHandle && fd) {
         if (mUsbFs)
@@ -184,22 +184,50 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
                 mFd = fd;
                 mVid = vid;
                 mPid = pid;
-                mStatusCallback = new UVCStatusCallback(mDeviceHandle);
-                mButtonCallback = new UVCButtonCallback(mDeviceHandle);
+//                mStatusCallback = new UVCStatusCallback(mDeviceHandle);
+//                mButtonCallback = new UVCButtonCallback(mDeviceHandle);
                 LOGE("vid=============%d  , pid=================%d", vid, pid);
                 mFrameImage = new FrameImage(mDeviceHandle);
                 mPreview = new UVCPreviewIR(mDeviceHandle, mFrameImage);
                 mPreview->setVidPid(mVid, mPid);
                 mFrameImage->setVidPid(mVid, mPid);
+
+                time_t t;
+                struct tm *tmp;
+
+                char buf2[64];
+                /* 获取时间 */
+                time(&t);
+                tmp = localtime(&t);
+                /* 转化时间 */
+                strftime(buf2, 64, "=========当前时间: %Y-%m-%d %H:%M:%S", tmp);
+                LOGE("=========%s\n", buf2);
+
+
+                FILE* outFile = NULL;
+                outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+                if(outFile != NULL)
+                {
+                    fprintf(outFile, "%s\n", buf2);
+                    fprintf(outFile, "%s\n", "                UVCCamera::connect");
+                    fclose(outFile);
+                }
             } else {
                 // open出来なかった時
-                LOGE("could not open camera:err=%d", result);
+//                LOGE("could not open camera:err=%d", result);
                 uvc_unref_device(mDevice);
 //				SAFE_DELETE(mDevice);	// 参照カウンタが0ならuvc_unref_deviceでmDeviceがfreeされるから不要 XXX クラッシュ, 既に破棄されているのを再度破棄しようとしたからみたい
                 mDevice = NULL;
                 mDeviceHandle = NULL;
                 close(fd);
 
+                FILE* outFile = NULL;
+                outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+                if(outFile != NULL)
+                {
+                    fprintf(outFile, "             UVCCamera::connect. could not open camera:err=%d\n",result);
+                    fclose(outFile);
+                }
             }
         } else {
             LOGE("could not find camera:err=%d", result);
@@ -216,6 +244,7 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
 int UVCCamera::release() {
     ENTER();
     // 相机关闭过程
+//    stopPreview();
     if (LIKELY(mDeviceHandle)) {
         MARK("如果相机是打开的，请打开它。");
         // 丢弃状态回调对象
@@ -251,12 +280,26 @@ int UVCCamera::release() {
         LOGE("UVCCamera::release() 9");
         mUsbFs = NULL;
     }
+    FILE* outFile = NULL;
+    outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+    if(outFile != NULL)
+    {
+        fprintf(outFile, "%s\n\n", "                UVCCamera::release over");
+        fclose(outFile);
+    }
     RETURN(0, int);
 }
 
 int UVCCamera::setVerifySn(int isVerify) {
     int result = EXIT_FAILURE;
     if (LIKELY(mPreview)) {
+        FILE* outFile = NULL;
+        outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+        if(outFile != NULL)
+        {
+            fprintf(outFile, "%s", "                UVCCamera::setIsVerifySn\n");
+            fclose(outFile);
+        }
         result = mPreview->setIsVerifySn();
     }
     RETURN(result, int);
@@ -265,18 +308,18 @@ int UVCCamera::setVerifySn(int isVerify) {
 int UVCCamera::setStatusCallback(JNIEnv *env, jobject status_callback_obj) {
     ENTER();
     int result = EXIT_FAILURE;
-    if (mStatusCallback) {
-        result = mStatusCallback->setCallback(env, status_callback_obj);
-    }
+//    if (mStatusCallback) {
+//        result = mStatusCallback->setCallback(env, status_callback_obj);
+//    }
     RETURN(result, int);
 }
 
 int UVCCamera::setButtonCallback(JNIEnv *env, jobject button_callback_obj) {
     ENTER();
     int result = EXIT_FAILURE;
-    if (mButtonCallback) {
-        result = mButtonCallback->setCallback(env, button_callback_obj);
-    }
+//    if (mButtonCallback) {
+//        result = mButtonCallback->setCallback(env, button_callback_obj);
+//    }
     RETURN(result, int);
 }
 
@@ -299,6 +342,13 @@ int UVCCamera::setPreviewSize(int width, int height, int min_fps, int max_fps, i
         LOGE("will it fail5555");
         result = mPreview->setPreviewSize(width, height, min_fps, max_fps, mode, bandwidth,
                                           currentAndroidVersion);
+        FILE* outFile = NULL;
+        outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+        if(outFile != NULL)
+        {
+            fprintf(outFile, "%s", "                UVCCamera::setPreviewSize\n");
+            fclose(outFile);
+        }
         LOGE("will it fail6666");
     }
     RETURN(result, int);
@@ -308,6 +358,13 @@ int UVCCamera::setPreviewDisplay(ANativeWindow *preview_window) {
     ENTER();
     int result = EXIT_FAILURE;
     if (mPreview) {
+        FILE* outFile = NULL;
+        outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+        if(outFile != NULL)
+        {
+            fprintf(outFile, "%s", "                UVCCamera::setPreviewDisplay\n");
+            fclose(outFile);
+        }
         result = mPreview->setPreviewDisplay(preview_window);
     }
     RETURN(result, int);
@@ -397,8 +454,8 @@ int UVCCamera::getCameraParams(uint8_t *para) {
 
 void UVCCamera::whenShutRefresh() {
     ENTER();
-    if (mDeviceHandle) {
-        return mFrameImage->shutRefresh();
+    if (mPreview) {
+        return mPreview->shutRefresh();
     }
     EXIT();
 }
@@ -1308,7 +1365,7 @@ int UVCCamera::updateExposureModeLimit(int &min, int &max, int &def) {
     RETURN(ret, int);
 }
 
-// 露出をセット
+// 设置曝光
 int UVCCamera::setExposureMode(int mode) {
     ENTER();
     int r = UVC_ERROR_ACCESS;
@@ -2581,7 +2638,7 @@ int UVCCamera::sendOrder(float value, int mark) {
  * @return
  */
 bool UVCCamera::snRightIsPreviewing() {
-    LOGE("==========================snRightIsPreviewing==================================");
+//    LOGE("==========================snRightIsPreviewing==================================");
     if (mPreview) {
         return mPreview->snRightIsPreviewing();
     }
@@ -2623,7 +2680,6 @@ bool UVCCamera::javaSendJniOrder(int status) {
 int UVCCamera::setZoom(int zoom) {
     ENTER();
     int ret = UVC_ERROR_IO;
-    //if (mCtrlSupports & CTRL_ZOOM_ABS) {
     if (mPid == 1 && mVid == 5396) {
         LOGE("==========mPid=1===,= mVid=5396==========");
         ret = internalSetCtrlValue(mZoom, zoom, uvc_set_zoom_abs);
@@ -2648,6 +2704,11 @@ int UVCCamera::getZoom() {
         }
     }
     RETURN(0, int);
+}
+void UVCCamera::testJNI(){
+    if (mPreview){
+        mPreview ->testJNI();
+    }
 }
 
 //======================================================================
