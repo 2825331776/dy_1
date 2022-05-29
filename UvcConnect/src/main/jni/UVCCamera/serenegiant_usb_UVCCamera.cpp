@@ -396,7 +396,7 @@ static jint nativeSetFrameCallback(JNIEnv *env, jobject thiz,
     ENTER();
     UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
     if (LIKELY(camera)) {
-        jobject frame_callback_obj = env->NewGlobalRef(jIFrameCallback);
+//        jobject frame_callback_obj = env->NewGlobalRef(jIFrameCallback);
 //		result = camera->setFrameCallback(env, frame_callback_obj, pixel_format);//2021-8-11 16:30:24   吴长城注释
     }
     RETURN(result, jint);

@@ -80,7 +80,8 @@ void FrameImage::setResourcePath(const char *path) {
 //打快门 更新 温度对照表
 void FrameImage::shutRefresh() {
     isNeedWriteTable = true;
-    if (DEBUG)LOGE("===================shutRefresh=============update isNeedWriteTable===============");
+    if (DEBUG)
+        LOGE("===================shutRefresh=============update isNeedWriteTable===============");
 }
 
 //二分法查找
@@ -264,24 +265,13 @@ void FrameImage::setPreviewSize(int width, int height, int mode) {
         frameWidth = requestWidth;
         frameHeight = requestHeight - 4;
     } else if (mPid == 22592 && mVid == 3034) {
+        LOGE("================init=====requestWidth==%d=====requestHeight==%d========",
+             requestWidth, requestHeight);
         mBuffer = new unsigned char[requestWidth * (requestHeight) * 4];
         frameWidth = requestWidth;
         frameHeight = requestHeight;
     }
-    switch (requestWidth) {
-        case 384:
-            amountPixels = requestWidth * (4 - 1);
-            break;
-        case 240:
-            amountPixels = requestWidth * (4 - 3);
-            break;
-        case 256:
-            amountPixels = requestWidth * (4 - 3);
-            break;
-        case 640:
-            amountPixels = requestWidth * (4 - 1);
-            break;
-    }
+    amountPixels = requestWidth * (4 - 3);
 }
 
 /**
@@ -438,7 +428,8 @@ unsigned char *FrameImage::onePreviewData(uint8_t *frameData) {
             }
         }
     }
-//    LOGE(" === areasize == %d  ", areasize);
+//    LOGE(" === frameWidth == %d   frameHeight == %d  ", frameWidth,frameHeight);
+//    LOGE(" === requestWidth == %d   requestHeight == %d  ", requestWidth,requestHeight);
 
     //框内细查 先绘制灰度图,根据原有的ad值
     if (mIsAreachecked) {
@@ -521,6 +512,8 @@ unsigned char *FrameImage::onePreviewData(uint8_t *frameData) {
                 }
             }
         } else {//非框内细查，非固定温度条
+//            LOGE("FrameImage======frameWidth===%d ,frameHeight===%d,requestWidth====%d,requestHeight===%d",
+                 frameWidth, frameHeight, requestWidth, requestHeight);
             for (int i = 0; i < frameHeight; i++) {
                 for (int j = 0; j < frameWidth; j++) {
                     //黑白：灰度值0-254单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
@@ -558,7 +551,7 @@ unsigned char *FrameImage::onePreviewData(uint8_t *frameData) {
  */
 void FrameImage::copyFrame(const uint8_t *src, uint8_t *dest, const int width, int height,
                            const int stride_src, const int stride_dest) {
-//    LOGE("===================copyFrame========================");
+//    LOGE("===================copyFrame=====width==%d====height====%d=========",width,height);
     memcpy(dest, src, width * height);//一次性拷贝完所有的数据  。从src 中拷贝 width*height 个字节到 dest 中
 }
 
@@ -651,7 +644,7 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
     if (mPid == 1 && mVid == 5396) {
         unsigned short *fourLinePara = orgData + requestWidth * (requestHeight - 4);//后四行参数
         if (UNLIKELY(isNeedWriteTable)) {
-//        LOGE("===================isNeedWriteTable================update temperatureTable===============");
+            LOGE("===================isNeedWriteTable================update temperatureTable===============");
             //根据后四行参数，填充整个的温度对照表 rangeMode设置的固定120
             thermometryT4Line(requestWidth, requestHeight, temperatureTable, fourLinePara,
                               &floatFpaTmp, &correction, &Refltmp, &Airtmp, &humi, &emiss,
@@ -665,6 +658,7 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
         //根据8004或者8005模式来查表，8005模式下仅输出以上注释的10个参数，8004模式下数据以上参数+全局温度数据
         thermometrySearch(requestWidth, requestHeight, temperatureTable, orgData, temperatureData,
                           rangeMode, OUTPUTMODE);
+        LOGE("=====temperatureData======= %f", temperatureData[8000]);
 //        LOGE("centerTmp:%.2f,maxTmp:%.2f,minTmp:%.2f,avgTmp:%.2f\n", temperatureData[0],
 //             temperatureData[3], temperatureData[6], temperatureData[9]);
 
@@ -675,7 +669,10 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
          */
         env->SetFloatArrayRegion(mNCbTemper, 0, 10 + requestWidth * (requestHeight - 4), mCbTemper);
         if (mTemperatureCallbackObj != NULL) {
-//            LOGE("========================mTemperatureCallbackObj == null=========================");
+            LOGE("========================mTemperatureCallbackObj===!= null=========================");
+            if (iTemperatureCallback.onReceiveTemperature == NULL) {
+                LOGE("========================iTemperatureCallback.onReceiveTemperature == null=========================");
+            }
             //调用java层的 onReceiveTemperature ，传回mNCbTemper（整个图幅温度数据+ 后四行10个温度分析 的数据） 实参
             env->CallVoidMethod(mTemperatureCallbackObj, iTemperatureCallback.onReceiveTemperature,
                                 mNCbTemper);
@@ -689,7 +686,7 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
 //                return;
 //            }
         } else {
-            LOGE("========================mTemperatureCallbackObj == null1111=============================");
+            LOGE("========================mTemperatureCallbackObj====null=============================");
         }
         //固定温度条： 刷新 最大 最小AD的 ，S0通过查表刷新。
         if (isNeedFreshAD) {

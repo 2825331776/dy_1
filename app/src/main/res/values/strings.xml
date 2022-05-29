@@ -1,7 +1,11 @@
 <resources>
+    <!--关于页面-->
     <string name="CompanyName">Shenzhen Dianyang Technology Co., Ltd.</string>
     <string name="CompanyWebsite_info">WebSite: </string>
     <string name="CompanyWebsite">www.dyt-ir.com</string>
+    <string name="contactUs">Contact us: </string>
+    <string name="ContactEmail">service@dianytech.com</string>
+
     <string name="app_name">DytSpectrumOwl</string>
     <string name="Gallery">Gallery</string>
     <string name="Welcome">Welcome</string>
@@ -21,11 +25,10 @@
     <string name="AlarmTempInput">Input</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">OK</string>
-    <!--关于页面-->
+
     <string name="check_updates">Upgrade</string>
     <string name="VersionName">Version: </string>
-    <string name="contactUs">Contact us: </string>
-    <string name="ContactEmail">service@dianytech.com</string>
+
     <string name="contactus_email_head">mailto: </string>
     <string name="contactus_choice_email">usable email App lists：</string>
     <string name="pop_about_privacy_policy">privacy policy</string>

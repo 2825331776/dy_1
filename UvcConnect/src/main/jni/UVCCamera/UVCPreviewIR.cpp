@@ -173,7 +173,6 @@ int UVCPreviewIR::setPreviewDisplay(ANativeWindow *preview_window) {
                 ANativeWindow_release(mPreviewWindow);
             mPreviewWindow = preview_window;
             if (LIKELY(mPreviewWindow)) {
-                //requestHeight-4  for camera
                 /**
                  * 更改窗口缓冲区的格式和大小。宽度和高度控制缓冲区中像素的数量，
                  * 而不是屏幕上窗口的尺寸。 如果这些与窗口的物理大小不同，
@@ -186,11 +185,13 @@ int UVCPreviewIR::setPreviewDisplay(ANativeWindow *preview_window) {
                                                      requestWidth, requestHeight - 4,
                                                      previewFormat);
                 } else if (mPid == 22592 && mVid == 3034) {
-                    ANativeWindow_setBuffersGeometry(mPreviewWindow,
-                                                     requestWidth, requestHeight, previewFormat);
-                } else {
-                    ANativeWindow_setBuffersGeometry(mPreviewWindow,
-                                                     requestWidth, requestHeight, previewFormat);
+//                    int status = ANativeWindow_setBuffersGeometry(mPreviewWindow,
+//                                                     requestWidth, requestHeight, previewFormat);
+//                    if (status){
+//                        LOGE("=============设置失败====================");
+//                    } else{
+//                        LOGE("=============设置成功====================");
+//                    }
                 }
             }
         }
@@ -721,6 +722,7 @@ int UVCPreviewIR::stopPreview() {
     if (LIKELY(b)) {
         mIsCapturing = false;
         mIsRunning = false;
+//        clearDisplay();
 //        pthread_cond_signal(&capture_sync);
 
 //        pthread_cond_signal(&tinyC_send_order_sync);
@@ -828,10 +830,12 @@ int UVCPreviewIR::prepare_preview(uvc_stream_ctrl_t *ctrl) {
         RgbaOutBuffer = new unsigned char[requestWidth * (requestHeight - 4) * 4];
         RgbaHoldBuffer = new unsigned char[requestWidth * (requestHeight - 4) * 4];
     } else if (mPid == 22592 && mVid == 3034) {
+        LOGE("================init=2222====requestWidth==%d=====requestHeight==%d========",
+             requestWidth, requestHeight);
         RgbaOutBuffer = new unsigned char[requestWidth * (requestHeight) * 4];
         RgbaHoldBuffer = new unsigned char[requestWidth * (requestHeight) * 4];
     }
-    backUpBuffer = new unsigned char[frameWidth * (frameHeight) * 4];
+    backUpBuffer = new unsigned char[requestWidth * (requestHeight) * 4];
     picOutBuffer = new unsigned char[requestWidth * (requestHeight) * 2];
 //    picRgbaOutBuffer=new unsigned char[requestWidth*(requestHeight-4)*4];
 
@@ -854,30 +858,31 @@ int UVCPreviewIR::prepare_preview(uvc_stream_ctrl_t *ctrl) {
         if (LIKELY(!result)) {
             frameWidth = frame_desc->wWidth;
             frameHeight = frame_desc->wHeight;
-            LOGE("frameSize=(%d,%d)@%s", frameWidth, frameHeight,
+            LOGE("==========frameSize=(%d,%d)@%s========", frameWidth, frameHeight,
                  (!requestMode ? "YUYV" : "MJPEG"));//frameSize=(256,196)@YUYV
-            pthread_mutex_lock(&preview_mutex);
-            if (LIKELY(mPreviewWindow)) {
-                if (mPid == 1 && mVid == 5396) {
-                    ANativeWindow_setBuffersGeometry(mPreviewWindow,
-                                                     frameWidth, frameHeight - 4,
-                                                     previewFormat);//ir软件384*292中，实质384*288图像数据，4行其他数据
-                } else if (mPid == 22592 && mVid == 3034) {
-                    ANativeWindow_setBuffersGeometry(mPreviewWindow,
-                                                     frameWidth, frameHeight,
-                                                     previewFormat);//ir软件384*292中，实质384*288图像数据，4行其他数据
-                }
-//                ANativeWindow_setBuffersGeometry(mPreviewWindow,
-//                                                 frameWidth, frameHeight-4, previewFormat);//ir软件384*292中，实质384*288图像数据，4行其他数据
-                //LOGE("ANativeWindow_setBuffersGeometry:(%d,%d)", frameWidth, frameHeight);
+//            pthread_mutex_lock(&preview_mutex);
+//            if (LIKELY(mPreviewWindow)) {
+            if (mPid == 1 && mVid == 5396) {
+                ANativeWindow_setBuffersGeometry(mPreviewWindow,
+                                                 frameWidth, frameHeight - 4,
+                                                 previewFormat);//ir软件256*196中，实质256*192图像数据，4行其他数据
+            } else if (mPid == 22592 && mVid == 3034) {
+                ANativeWindow_setBuffersGeometry(mPreviewWindow,
+                                                 frameWidth, frameHeight, previewFormat);
+//                    ANativeWindow_setBuffersGeometry(mPreviewWindow,
+//                                                     frameWidth, frameHeight,
+//                                                     previewFormat);//ir软件256*192 160*120中，实质256*192 160*120图像数据
             }
-            pthread_mutex_unlock(&preview_mutex);
+//                LOGE("=======UVCPreviewIR::prepare_preview======getWidth===%d,======getHeight===%d====",ANativeWindow_getWidth(mPreviewWindow),ANativeWindow_getHeight(mPreviewWindow));
+//                //LOGE("ANativeWindow_setBuffersGeometry:(%d,%d)", frameWidth, frameHeight);
+//            }
+//            pthread_mutex_unlock(&preview_mutex);
         } else {
             frameWidth = requestWidth;
             frameHeight = requestHeight;
         }
         frameMode = requestMode;
-        frameBytes = frameWidth * frameHeight * (!requestMode ? 2 : 4);
+        frameBytes = frameWidth * frameHeight * 2;
         LOGE(" frameBytes ==== %d  , requestMode ========  %d", frameBytes, requestMode);
         previewBytes = frameWidth * frameHeight * PREVIEW_PIXEL_BYTES;
     } else {
@@ -1159,8 +1164,8 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
 
                 if (isCopyPicturing()) {//判断截屏
 //                    LOGE("======mutex===========");
-                    memset(picOutBuffer, 0, 256 * 196 * 2);
-                    memcpy(picOutBuffer, HoldBuffer, 256 * 196 * 2);
+                    memset(picOutBuffer, 0, frameWidth * frameHeight * 2);
+                    memcpy(picOutBuffer, HoldBuffer, frameWidth * frameHeight * 2);
                     mIsCopyPicture = false;
                     signal_save_picture_thread();
                 }
@@ -1279,6 +1284,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
 //                        *(tinyUserSn+15) = '\0';
                         DecryptSN(TinyUserSN, tinyC_UserSn_sixLast, dytSn);
                         *(dytSn + 15) = '\0';
+                        snIsRight = true;
                     } else if (mVid == 5396 && mPid == 1)//S0机芯
                     {
                         //***********************S0机芯 384*288 分辨率 读取SN号**********************
@@ -1340,14 +1346,14 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     int splitSize = split_result.size();
 //                    LOGE("==================configs.txt split size == %d=========",splitSize);
 
-                    FILE* outFile = NULL;
-                    outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
-                    if(outFile != NULL)
-                    {
-                        fprintf(outFile, "%s", "                UVCCamera::do_preview\n");
-                        fprintf(outFile, "                UVCCamera::do_preview==Sn=%s\n", dytTinyCSn);
-                        fclose(outFile);
-                    }
+//                    FILE* outFile = NULL;
+//                    outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+//                    if(outFile != NULL)
+//                    {
+//                        fprintf(outFile, "%s", "                UVCCamera::do_preview\n");
+//                        fprintf(outFile, "                UVCCamera::do_preview==Sn=%s\n", dytTinyCSn);
+//                        fclose(outFile);
+//                    }
                     //遍历 结果 是否 符合筛选
                     for (int i = 0; i < splitSize; i++) {
 //                       LOGE("=============split_result=== %s =====",split_result[i].c_str());
@@ -1465,6 +1471,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
             }
             pthread_mutex_unlock(&preview_mutex);
 
+//            LOGE("=============mIsTemperaturing==唤醒温度回调线程=%d==========",mIsTemperaturing);
 //            pthread_mutex_lock(&temperature_mutex);
             if (mIsTemperaturing)//绘制的时候唤醒温度绘制的线程
             {
@@ -1496,6 +1503,8 @@ void
 UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_args, size_t hold_bytes) {
     UVCPreviewIR *preview = reinterpret_cast<UVCPreviewIR *>(vptr_args);
     //判断hold_bytes 不小于preview.frameBytes则跳转到 后面正常运行     UNLIKELY期待值大几率为false时,等价于if(value)
+//    LOGE("==now===uvc_preview_frame_callback hold_bytes ===> %d < preview->frameBytes  ==== > %d",
+//         hold_bytes, preview->frameBytes);
     if (UNLIKELY(hold_bytes < preview->frameBytes)) {   //有手机两帧才返回一帧的数据。
         LOGE("uvc_preview_frame_callback hold_bytes ===> %d < preview->frameBytes  ==== > %d",
              hold_bytes, preview->frameBytes);
@@ -1537,16 +1546,220 @@ void UVCPreviewIR::signal_save_picture_thread() {
 //void UVCPreviewIR::signal_tiny_send_order() {
 //    pthread_cond_signal(&tinyC_send_order_sync);
 //}
+typedef unsigned char BYTE;
+typedef unsigned short WORD;
+typedef unsigned int DWORD;
+typedef int LONG;
+
+typedef struct {
+    WORD bfType;
+    DWORD bfSize;
+    WORD bfReserved1;
+    WORD bfReserved2;
+    DWORD bfOffBits;
+} BMP_FILE_HEADER;
+typedef struct {
+    DWORD biSize;
+    LONG biWidth;
+    LONG biHeight;
+    WORD biPlanes;
+    WORD biBitCount;
+    DWORD biCompression;
+    DWORD biSizeImage;
+    LONG biXPelsPerMeter;
+    LONG biYPelsPerMeter;
+    DWORD biClrUsed;
+    DWORD biClrImportant;
+} BMP_INFO_HEADER;
+#define BITS_PER_PIXCEL 24
+#define FORMAT_RGBA 4
+#define FORMAT_RGB  3
+
+void UVCPreviewIR::rgbaToBmpFile(const char *pFileName, unsigned char *pRgbaData, const int nWidth,
+                                 const int nHeight, const int format) {
+    BMP_FILE_HEADER bmpHeader;
+    BMP_INFO_HEADER bmpInfo;
+
+    FILE *fp = NULL;
+    char *pBmpSource = NULL;
+    char *pBmpData = NULL;
+
+    int i = 0, j = 0;
+
+    //4 bytes pack. must be 4 times per line。
+    int bytesPerLine = (nWidth * BITS_PER_PIXCEL + 31) / 32 * 4;
+    int pixcelBytes = bytesPerLine * nHeight;
+
+    bmpHeader.bfType = 0x4D42;
+    bmpHeader.bfReserved1 = 0;
+    bmpHeader.bfReserved2 = 0;
+    bmpHeader.bfOffBits = sizeof(BMP_FILE_HEADER) + sizeof(BMP_INFO_HEADER);
+    bmpHeader.bfSize = bmpHeader.bfOffBits + pixcelBytes;
+
+    bmpInfo.biSize = sizeof(BMP_INFO_HEADER);
+    bmpInfo.biWidth = nWidth;
+    /** 这样图片才不会倒置 */
+    bmpInfo.biHeight = -nHeight;
+    bmpInfo.biPlanes = 1;
+    bmpInfo.biBitCount = BITS_PER_PIXCEL;
+    bmpInfo.biCompression = 0;
+    bmpInfo.biSizeImage = pixcelBytes;
+    bmpInfo.biXPelsPerMeter = 100;
+    bmpInfo.biYPelsPerMeter = 100;
+    bmpInfo.biClrUsed = 0;
+    bmpInfo.biClrImportant = 0;
+
+
+    /** convert in memort, then write to file. */
+    pBmpSource = (char *) malloc(pixcelBytes);
+    if (!pBmpSource) {
+//        return -1;
+    }
+
+    /** open file */
+    fp = fopen(pFileName, "wb+");
+    if (!fp) {
+//        return -1;
+    }
+
+    fwrite(&bmpHeader, sizeof(BMP_FILE_HEADER), 1, fp);
+    fwrite(&bmpInfo, sizeof(BMP_INFO_HEADER), 1, fp);
+    /** Here you should consider color format. RGBA ? RGB? BGR?
+        Param format is RGBA, format for file is BGR */
+    pBmpData = pBmpSource;
+    for (i = 0; i < nHeight; i++) {
+        for (j = 0; j < nWidth; j++) {
+            pBmpData[0] = pRgbaData[2];
+            pBmpData[1] = pRgbaData[1];
+            pBmpData[2] = pRgbaData[0];
+            pRgbaData += format;
+            pBmpData += FORMAT_RGB;
+        }
+        //pack for 4 bytes
+        pBmpData += (bytesPerLine - nWidth * FORMAT_RGB);
+    }
+    fwrite(pBmpSource, pixcelBytes, 1, fp);
+
+    /** close and release。 */
+    fclose(fp);
+    free(pBmpSource);
+
+//    return 0;
+}
+
+//#pragma pack(2)//必须得写，否则sizeof得不到正确的结果
+//typedef unsigned char  BYTE;
+//typedef unsigned short WORD;
+//typedef unsigned long  DWORD;
+//typedef long    LONG;
+//typedef struct {
+//    WORD    bfType;
+//    DWORD   bfSize;
+//    WORD    bfReserved1;
+//    WORD    bfReserved2;
+//    DWORD   bfOffBits;
+//} BITMAPFILEHEADER;
+//
+//typedef struct {
+//    DWORD      biSize;
+//    LONG       biWidth;
+//    LONG       biHeight;
+//    WORD       biPlanes;
+//    WORD       biBitCount;
+//    DWORD      biCompression;
+//    DWORD      biSizeImage;
+//    LONG       biXPelsPerMeter;
+//    LONG       biYPelsPerMeter;
+//    DWORD      biClrUsed;
+//    DWORD      biClrImportant;
+//} BITMAPINFOHEADER;
+//
+//void saveBitmap(int w, int h,unsigned char *pData,int nDatasize )
+//{
+//
+//    // Define BMP Size
+//    const int height = w;
+//    const int width = h;
+//    const int size = nDatasize;
+//    double x, y;
+//    int index;
+//
+//    // Part.1 Create Bitmap File Header
+//    BITMAPFILEHEADER fileHeader;
+//
+//    fileHeader.bfType = 0x4D42;
+//    fileHeader.bfReserved1 = 0;
+//    fileHeader.bfReserved2 = 0;
+//    fileHeader.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + size;
+//    fileHeader.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+//
+//    // Part.2 Create Bitmap Info Header
+//    BITMAPINFOHEADER bitmapHeader = { 0 };
+//
+//    bitmapHeader.biSize = sizeof(BITMAPINFOHEADER);
+//    bitmapHeader.biHeight = -height;
+//    bitmapHeader.biWidth = width;
+//    bitmapHeader.biPlanes = 1;
+//    bitmapHeader.biBitCount = 32;
+//    bitmapHeader.biSizeImage = size;
+//    bitmapHeader.biCompression = 0; //BI_RGB
+//
+//
+//    // Write to file
+//    FILE *output = fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/output.bmp", "wb");
+//
+//    if (output == NULL)
+//    {
+//        LOGE("Cannot open file!\n");
+//    }
+//    else
+//    {
+//        fwrite(&fileHeader, sizeof(BITMAPFILEHEADER), 1, output);
+//        fwrite(&bitmapHeader, sizeof(BITMAPINFOHEADER), 1, output);
+//        fwrite(pData, size, 1, output);
+//        fclose(output);
+//    }
+//}
 
 //绘制每一帧的图像
 void
 UVCPreviewIR::draw_preview_one(uint8_t *frameData, ANativeWindow **window, convFunc_t convert_func,
                                int pixcelBytes) {
-
     if (LIKELY(*window)) {
         if (mCurrentAndroidVersion == 0) {
             if (mFrameImage) {
                 RgbaHoldBuffer = mFrameImage->onePreviewData(frameData);
+//                if (torgbaToBmpFile_count < 1) {
+//                    LOGE("===================rgbaToBmpFile=======================");
+//                    rgbaToBmpFile(
+//                            "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/firstBmp_256.bmp",
+//                            RgbaHoldBuffer, 256, 192, FORMAT_RGBA);
+////                    saveBitmap();
+//                    torgbaToBmpFile_count++;
+//                }
+//                unsigned char * d1 = RgbaHoldBuffer;
+//                for (int i = 0; i < 120; i++) {
+//                    for (int j = 0; j < 160; j++) {
+////                        if(i>5){
+////                            *d1 = 0;
+////                            d1++;
+////                            *d1 = 255;
+////                            d1++;
+////                        }else{
+//                            *d1 = 255;
+//                            d1++;
+//                            *d1 = 0;
+//                            d1++;
+////                        }
+//
+//
+//                        *d1 = 0;
+//                        d1++;
+//                        *d1 = 0;
+//                        d1++;
+//                    }
+//                }
+//                d1 = NULL;
             }
         }
         copyToSurface(RgbaHoldBuffer, window);
@@ -1577,9 +1790,11 @@ int UVCPreviewIR::copyToSurface(uint8_t *frameData, ANativeWindow **window) {
     if (LIKELY(*window)) {
         ANativeWindow_Buffer buffer;
         if (LIKELY(ANativeWindow_lock(*window, &buffer, NULL) == 0)) {
+//            LOGE("====ANativeWindow_Buffer==width=%d==,height==%d====",buffer.width,buffer.height);
             // source = frame data
+//            LOGE("=======UVCPreviewIR::copyToSurface=========getWidth===%d,======getHeight===%d====",ANativeWindow_getWidth(*window),ANativeWindow_getHeight(*window));
             const uint8_t *src = frameData;
-            const int src_w = requestWidth * PREVIEW_PIXEL_BYTES;//256*4  代表一行 颜色 的RBGA值
+            const int src_w = frameWidth * PREVIEW_PIXEL_BYTES;//256*4  代表一行 颜色 的RBGA值
             const int src_step = src_w; //一次绘制一行？
             // destination = Surface(ANativeWindow)
             uint8_t *dest = (uint8_t *) buffer.bits;
@@ -1591,7 +1806,7 @@ int UVCPreviewIR::copyToSurface(uint8_t *frameData, ANativeWindow **window) {
             const int h = frameHeight < buffer.height ? frameHeight : buffer.height;//取两者的最小值
             //LOGE("copyToSurface");
             // transfer from frame data to the Surface
-            //LOGE("copyToSurface:w:%d,h,%d",w,h);
+//            LOGE("copyToSurface:w:%d,h,%d",w,h);
             mFrameImage->copyFrame(src, dest, w, h, src_step, dest_step);
 //            copyFrame(src, dest, w, h, src_step, dest_step);
             src = NULL;
@@ -1933,13 +2148,13 @@ int UVCPreviewIR::setTemperatureCallback(JNIEnv *env, jobject temperature_callba
     LOGE("setTemperatureCallback步骤9");
     pthread_mutex_lock(&temperature_mutex);
     {
-        FILE* outFile = NULL;
-        outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
-        if(outFile != NULL)
-        {
-            fprintf(outFile, "               UVCPreviewIR::setTemperatureCallback\n");
-            fclose(outFile);
-        }
+//        FILE* outFile = NULL;
+//        outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+//        if(outFile != NULL)
+//        {
+//            fprintf(outFile, "               UVCPreviewIR::setTemperatureCallback\n");
+//            fclose(outFile);
+//        }
         mFrameImage->setTemperatureCallback(env, temperature_callback_obj);
         LOGE("setTemperatureCallback步骤10");
     }
@@ -2014,13 +2229,13 @@ void UVCPreviewIR::do_temperature(JNIEnv *env) {
     ////LOGE("do_temperature mIsTemperaturing:%d",mIsTemperaturing);
 //    LOGE("=====do_temperature=====isRunning===%d,IsTemperaturing===%d", isRunning(),
 //         mIsTemperaturing);
-    FILE* outFile = NULL;
-    outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
-    if(outFile != NULL)
-    {
-        fprintf(outFile, "               UVCPreviewIR::do_temperature\n");
-        fclose(outFile);
-    }
+//    FILE* outFile = NULL;
+//    outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+//    if(outFile != NULL)
+//    {
+//        fprintf(outFile, "               UVCPreviewIR::do_temperature\n");
+//        fclose(outFile);
+//    }
     for (; isRunning() && mIsTemperaturing;) {
 //        LOGE("=====do_temperature=====for==both=== true============");
         pthread_mutex_lock(&temperature_mutex);
@@ -2092,8 +2307,8 @@ void UVCPreviewIR::shutRefresh() {
 //    pthread_mutex_unlock(&temperature_mutex);
 }
 
-void UVCPreviewIR::testJNI(const char * phoneStr) {
-    LOGE("==========================testJNI=======================%s==",phoneStr);
+void UVCPreviewIR::testJNI(const char *phoneStr) {
+    LOGE("==========================testJNI=======================%s==", phoneStr);
 //    temperature_thread
 //    if (temperature_thread = NULL){
 //

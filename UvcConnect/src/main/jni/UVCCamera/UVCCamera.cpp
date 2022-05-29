@@ -204,14 +204,14 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
                 LOGE("=========%s\n", buf2);
 
 
-                FILE* outFile = NULL;
-                outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
-                if(outFile != NULL)
-                {
-                    fprintf(outFile, "%s\n", buf2);
-                    fprintf(outFile, "%s\n", "                UVCCamera::connect");
-                    fclose(outFile);
-                }
+//                FILE* outFile = NULL;
+//                outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+//                if(outFile != NULL)
+//                {
+//                    fprintf(outFile, "%s\n", buf2);
+//                    fprintf(outFile, "%s\n", "                UVCCamera::connect");
+//                    fclose(outFile);
+//                }
             } else {
                 // open出来なかった時
 //                LOGE("could not open camera:err=%d", result);
@@ -221,13 +221,13 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
                 mDeviceHandle = NULL;
                 close(fd);
 
-                FILE* outFile = NULL;
-                outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
-                if(outFile != NULL)
-                {
-                    fprintf(outFile, "             UVCCamera::connect. could not open camera:err=%d\n",result);
-                    fclose(outFile);
-                }
+//                FILE* outFile = NULL;
+//                outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+//                if(outFile != NULL)
+//                {
+//                    fprintf(outFile, "             UVCCamera::connect. could not open camera:err=%d\n",result);
+//                    fclose(outFile);
+//                }
             }
         } else {
             LOGE("could not find camera:err=%d", result);
@@ -244,7 +244,6 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
 int UVCCamera::release() {
     ENTER();
     // 相机关闭过程
-//    stopPreview();
     if (LIKELY(mDeviceHandle)) {
         MARK("如果相机是打开的，请打开它。");
         // 丢弃状态回调对象
@@ -280,26 +279,26 @@ int UVCCamera::release() {
         LOGE("UVCCamera::release() 9");
         mUsbFs = NULL;
     }
-    FILE* outFile = NULL;
-    outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
-    if(outFile != NULL)
-    {
-        fprintf(outFile, "%s\n\n", "                UVCCamera::release over");
-        fclose(outFile);
-    }
+//    FILE* outFile = NULL;
+//    outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+//    if(outFile != NULL)
+//    {
+//        fprintf(outFile, "%s\n\n", "                UVCCamera::release over");
+//        fclose(outFile);
+//    }
     RETURN(0, int);
 }
 
 int UVCCamera::setVerifySn(int isVerify) {
     int result = EXIT_FAILURE;
     if (LIKELY(mPreview)) {
-        FILE* outFile = NULL;
-        outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
-        if(outFile != NULL)
-        {
-            fprintf(outFile, "%s", "                UVCCamera::setIsVerifySn\n");
-            fclose(outFile);
-        }
+//        FILE* outFile = NULL;
+//        outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+//        if(outFile != NULL)
+//        {
+//            fprintf(outFile, "%s", "                UVCCamera::setIsVerifySn\n");
+//            fclose(outFile);
+//        }
         result = mPreview->setIsVerifySn();
     }
     RETURN(result, int);
@@ -342,13 +341,15 @@ int UVCCamera::setPreviewSize(int width, int height, int min_fps, int max_fps, i
         LOGE("will it fail5555");
         result = mPreview->setPreviewSize(width, height, min_fps, max_fps, mode, bandwidth,
                                           currentAndroidVersion);
-        FILE* outFile = NULL;
-        outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
-        if(outFile != NULL)
-        {
-            fprintf(outFile, "%s", "                UVCCamera::setPreviewSize\n");
-            fclose(outFile);
-        }
+        LOGE("==UVCCamera===width=%d===height=%d===min_fps=%d===max_fps=%d===mode=%d====bandwidth=%f,currentAndroidVersion=%d",
+             width, height, min_fps, max_fps, mode, bandwidth, currentAndroidVersion);
+//        FILE* outFile = NULL;
+//        outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+//        if(outFile != NULL)
+//        {
+//            fprintf(outFile, "%s", "                UVCCamera::setPreviewSize\n");
+//            fclose(outFile);
+//        }
         LOGE("will it fail6666");
     }
     RETURN(result, int);
@@ -358,13 +359,13 @@ int UVCCamera::setPreviewDisplay(ANativeWindow *preview_window) {
     ENTER();
     int result = EXIT_FAILURE;
     if (mPreview) {
-        FILE* outFile = NULL;
-        outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
-        if(outFile != NULL)
-        {
-            fprintf(outFile, "%s", "                UVCCamera::setPreviewDisplay\n");
-            fclose(outFile);
-        }
+//        FILE* outFile = NULL;
+//        outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
+//        if(outFile != NULL)
+//        {
+//            fprintf(outFile, "%s", "                UVCCamera::setPreviewDisplay\n");
+//            fclose(outFile);
+//        }
         result = mPreview->setPreviewDisplay(preview_window);
     }
     RETURN(result, int);
@@ -2645,34 +2646,36 @@ bool UVCCamera::snRightIsPreviewing() {
     return false;
 }
 
-void UVCCamera::setRotateMatrix_180(bool isRotate){
+void UVCCamera::setRotateMatrix_180(bool isRotate) {
     if (mPreview) {
         mPreview->setRotateMatrix_180(isRotate);
     }
 }
+
 bool UVCCamera::setMachineSetting(int value,
-                        int mark){
+                                  int mark) {
     bool result = false;
     if (mPreview) {
-        result = mPreview->setMachineSetting( value, mark);
+        result = mPreview->setMachineSetting(value, mark);
     }
     return result;
 }
+
 float UVCCamera::getMachineSetting(int flag, int value,
-                                   int mark){
+                                   int mark) {
     float result = 0;
     if (mPreview) {
-        result =  mPreview->getMachineSetting(flag, value, mark);
+        result = mPreview->getMachineSetting(flag, value, mark);
     }
     return result;
 }
 
 //2022年4月7日11:53:52 吴长城 测试发送JNI指令
 bool UVCCamera::javaSendJniOrder(int status) {
-    LOGE("==========================javaSendJniOrder============%d======================",status);
-	if (mFrameImage){
-		return mFrameImage->setIsWriteFile(status);
-	}
+    LOGE("==========================javaSendJniOrder============%d======================", status);
+    if (mFrameImage) {
+        return mFrameImage->setIsWriteFile(status);
+    }
     return false;
 }
 
@@ -2705,9 +2708,10 @@ int UVCCamera::getZoom() {
     }
     RETURN(0, int);
 }
-void UVCCamera::testJNI(const char * str){
-    if (mPreview){
-        mPreview ->testJNI(str);
+
+void UVCCamera::testJNI(const char *str) {
+    if (mPreview) {
+        mPreview->testJNI(str);
     }
 }
 
