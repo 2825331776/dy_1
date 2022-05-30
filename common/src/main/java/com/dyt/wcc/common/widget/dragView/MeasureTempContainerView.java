@@ -92,6 +92,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 	private static final int RECTANGLE_MAX_NUMBER = 3;
 
 	private int screenWidth, screenHeight;//屏幕的宽高
+	private int mFrameWidth = 0, mFrameHeight = 0;
 	private int startPressX, startPressY, endPressX, endPressY;
 	private int addWidgetMarginX, addWidgetMarginY;
 	private int minAddWidgetWidth, minAddWidgetHeight;//添加控件的最小宽高  约束添加的线和矩形
@@ -173,6 +174,16 @@ public class MeasureTempContainerView extends RelativeLayout {
 		isRotate = rotate;
 	}
 
+	/**
+	 * 设置数据源 frame的 宽高
+	 * @param frameWidth frame 宽度
+	 * @param frameHeight frame 高度
+	 */
+	public void setFrameWH(final int frameWidth , final int frameHeight){
+		this.mFrameWidth = frameWidth;
+		this.mFrameHeight = frameHeight;
+	}
+
 	public MyCustomRangeSeekBar getmSeekBar () {
 		return mSeekBar;
 	}
@@ -209,10 +220,10 @@ public class MeasureTempContainerView extends RelativeLayout {
 		int areaIndex = 0;
 		for (MeasureEntity child : userAddData) {
 			if (child.getType() == 3) {
-				areaData[4 * areaIndex] = (int) (child.getOtherTemp().getStartPointX() / screenWidth * 256);
-				areaData[4 * areaIndex + 1] = (int) (child.getOtherTemp().getEndPointX() / screenWidth * 256);
-				areaData[4 * areaIndex + 2] = (int) (child.getOtherTemp().getStartPointY() / screenHeight * 192);
-				areaData[4 * areaIndex + 3] = (int) (child.getOtherTemp().getEndPointY() / screenHeight * 192);
+				areaData[4 * areaIndex] = (int) (child.getOtherTemp().getStartPointX() / screenWidth * mFrameWidth);
+				areaData[4 * areaIndex + 1] = (int) (child.getOtherTemp().getEndPointX() / screenWidth * mFrameWidth);
+				areaData[4 * areaIndex + 2] = (int) (child.getOtherTemp().getStartPointY() / screenHeight * mFrameHeight);
+				areaData[4 * areaIndex + 3] = (int) (child.getOtherTemp().getEndPointY() / screenHeight * mFrameHeight);
 				areaIndex++;
 			}
 		}
@@ -344,7 +355,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 		drawTempMode = -1;
 		userAddData = new CopyOnWriteArrayList<>();
 		userAddView = new CopyOnWriteArrayList<>();//初始化 子view 集合
-		tempSource = new float[256 * 196 + 10];
+		tempSource = new float[mFrameWidth * 196 + 10];
 		minAddWidgetWidth = minAddWidgetHeight = DensityUtil.dp2px(mContext.get(), 70);//最小为50个dp
 		mDataNearByUnit = DensityUtil.dp2px(mContext.get(), 5);
 	}
@@ -389,8 +400,8 @@ public class MeasureTempContainerView extends RelativeLayout {
 		screenWidth = getWidth();
 		screenHeight = getHeight();
 
-		WRatio = 256 * 1.0f / screenWidth;
-		HRatio = 192 * 1.0f / screenHeight;
+		WRatio = mFrameWidth * 1.0f / screenWidth;
+		HRatio = mFrameHeight * 1.0f / screenHeight;
 
 		MeasureTempSpecificView child;
 		for (int index = 0; index < getChildCount(); index++) {
@@ -463,7 +474,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 	//更新点的温度
 	private float updatePointTemp (float x, float y) {
 		//数据源上的坐标
-		int index = (10 + (int) (y * HRatio) * 256 + (int) (x * WRatio));
+		int index = (10 + (int) (y * HRatio) * mFrameWidth + (int) (x * WRatio));
 		return tempSource[index];
 	}
 
@@ -496,11 +507,11 @@ public class MeasureTempContainerView extends RelativeLayout {
 		if (type == 3) {
 			for (int i = startY; i < endY; i++) {//高度遍历
 				for (int j = startX; j < endX; j++) {//宽度遍历
-					if (tempSource[(LRMinTempX + (LRMinTempY * 256) + 10)] > tempSource[j + (i * 256) + 10]) {
+					if (tempSource[(LRMinTempX + (LRMinTempY * mFrameWidth) + 10)] > tempSource[j + (i * mFrameWidth) + 10]) {
 						LRMinTempX = j;
 						LRMinTempY = i;
 					}
-					if (tempSource[(LRMaxTempX + (LRMaxTempY * 256) + 10)] < tempSource[j + (i * 256) + 10]) {
+					if (tempSource[(LRMaxTempX + (LRMaxTempY * mFrameWidth) + 10)] < tempSource[j + (i * mFrameWidth) + 10]) {
 						LRMaxTempX = j;
 						LRMaxTempY = i;
 					}
@@ -516,11 +527,11 @@ public class MeasureTempContainerView extends RelativeLayout {
 			int pointy = startY;//临时存储 最高温 最低温的Y值
 			for (int j = startX; j <= endX; j++) {//宽度遍历
 				pointy = Math.round(k * j + b);
-				if (tempSource[(j + (pointy * 256) + 10)] <= tempSource[(LRMinTempX + (LRMinTempY * 256) + 10)]) {
+				if (tempSource[(j + (pointy * mFrameWidth) + 10)] <= tempSource[(LRMinTempX + (LRMinTempY * mFrameWidth) + 10)]) {
 					LRMinTempX = j;
 					LRMinTempY = pointy;
 				}
-				if (tempSource[(j + (pointy * 256) + 10)] >= tempSource[(LRMaxTempX + (LRMaxTempY * 256) + 10)]) {
+				if (tempSource[(j + (pointy * mFrameWidth) + 10)] >= tempSource[(LRMaxTempX + (LRMaxTempY * mFrameWidth) + 10)]) {
 					LRMaxTempX = j;
 					LRMaxTempY = pointy;
 				}
@@ -529,11 +540,11 @@ public class MeasureTempContainerView extends RelativeLayout {
 		tempWidget.setMinTempX((LRMinTempX / WRatio));
 		tempWidget.setMinTempY((LRMinTempY / HRatio));
 		//线  和 矩形的  最高最低温  都是带单位及 单位符号的 String 类型
-		tempWidget.setMinTemp(getTempStrByMode(tempSource[(LRMinTempX + (LRMinTempY * 256) + 10)]));
+		tempWidget.setMinTemp(getTempStrByMode(tempSource[(LRMinTempX + (LRMinTempY * mFrameWidth) + 10)]));
 		tempWidget.setMaxTempX((LRMaxTempX / WRatio));
 		tempWidget.setMaxTempY((LRMaxTempY / HRatio));
 		//线  和 矩形的  最高最低温  都是带单位及 单位符号的 String 类型
-		tempWidget.setMaxTemp(getTempStrByMode(tempSource[(LRMaxTempX + (LRMaxTempY * 256) + 10)]));
+		tempWidget.setMaxTemp(getTempStrByMode(tempSource[(LRMaxTempX + (LRMaxTempY * mFrameWidth) + 10)]));
 	}
 
 	//返回绘制的模式drawTempMode
@@ -1202,7 +1213,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 							if (userAddData.get(i).getType() == 1) {
 								isAboveHighTemp = isAboveHighTemp | (updatePointTemp(userAddData.get(i).getPointTemp().getStartPointX(), userAddData.get(i).getPointTemp().getStartPointY()) > valueHighTempAlarm);
 							} else {
-								isAboveHighTemp = isAboveHighTemp | (tempSource[(int) ((userAddData.get(i).getOtherTemp().getMaxTempX() * WRatio) + ((userAddData.get(i).getOtherTemp().getMaxTempY() * HRatio) * 256) + 10)] > valueHighTempAlarm);
+								isAboveHighTemp = isAboveHighTemp | (tempSource[(int) ((userAddData.get(i).getOtherTemp().getMaxTempX() * WRatio) + ((userAddData.get(i).getOtherTemp().getMaxTempY() * HRatio) * mFrameWidth) + 10)] > valueHighTempAlarm);
 							}
 						}
 					} else {

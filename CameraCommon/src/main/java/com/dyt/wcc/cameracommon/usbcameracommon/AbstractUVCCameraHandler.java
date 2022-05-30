@@ -50,6 +50,7 @@ import com.dyt.wcc.cameracommon.encoder.MediaVideoEncoder;
 import com.dyt.wcc.cameracommon.utils.ByteUtil;
 import com.dyt.wcc.cameracommon.widget.UVCCameraTextureView;
 import com.dyt.wcc.common.BuildConfig;
+import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
 import com.serenegiant.usb.IFrameCallback;
 import com.serenegiant.usb.ITemperatureCallback;
 import com.serenegiant.usb.USBMonitor;
@@ -1049,6 +1050,11 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		 */
 		private UVCCamera                mUVCCamera;
 		/**
+		 * 持有的 MeasureTempContainerView
+		 */
+		private WeakReference<MeasureTempContainerView> mContainerView ;
+
+		/**
 		 * muxer for audio/video recording
 		 */
 		private MediaMuxerWrapper        mMuxer;
@@ -1078,7 +1084,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		 * @param temperatureCallback 温度回调函数
 		 * @param androidVersion      用户初始化Camera
 		 */
-		CameraThread (final Class<? extends AbstractUVCCameraHandler> clazz, final Activity parent, final UVCCameraTextureView cameraView, final int encoderType, final int width, final int height, final int format, final float bandwidthFactor, ITemperatureCallback temperatureCallback, int androidVersion) {
+		CameraThread (final Class<? extends AbstractUVCCameraHandler> clazz, final Activity parent, final UVCCameraTextureView cameraView, final int encoderType, final int width, final int height, final int format, final float bandwidthFactor, ITemperatureCallback temperatureCallback, final MeasureTempContainerView containerview,int androidVersion) {
 
 			super("CameraThread");
 			//by wp
@@ -1102,6 +1108,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 			mWeakParent = new WeakReference<Activity>(parent);
 			mWeakCameraView = new WeakReference<UVCCameraTextureView>(cameraView);
 			//            loadShutterSound(parent);
+			mContainerView = new WeakReference<>(containerview) ;
 			Log.e(TAG, "CameraThread: ================end");
 		}
 
@@ -1214,6 +1221,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 						Log.e(TAG, "==================mSupportedSize==============" + mSupportedSize);
 
 					int find_str_postion = mSupportedSize.indexOf("256x196");
+//					Log.e(TAG, "handleOpen: find_str_postion" +find_str_postion);
 					if (find_str_postion >= 0) {
 						mWidth = 256;
 						mHeight = 196;
@@ -1221,6 +1229,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 							Log.e(TAG, "handleOpen: 256*196 DEVICE ");
 					}
 					find_str_postion = mSupportedSize.indexOf("256x192");
+//					Log.e(TAG, "handleOpen: find_str_postion" +find_str_postion);
 					if (find_str_postion >= 0) {
 						mWidth = 256;
 						mHeight = 192;
@@ -1228,11 +1237,12 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 							Log.e(TAG, "handleOpen: 256*192 DEVICE ");
 					}
 					find_str_postion = mSupportedSize.indexOf("160x120");
+//					Log.e(TAG, "handleOpen: find_str_postion" +find_str_postion);
 					if (find_str_postion >= 0) {
 						mWidth = 160;
 						mHeight = 120;
 						if (DEBUG)
-							Log.e(TAG, "handleOpen: 160x120 DEVICE ");
+							Log.e(TAG, "handleOpen: 160*120 DEVICE ");
 					}
 				}
 			}
@@ -1337,6 +1347,11 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 				if ((mUVCCamera == null) || mIsPreviewing)
 					return;
 				try {
+					//判断是否有 MeasureTempContainerView ,有的话设置 mFrameWidth 和 mFrameHeight
+					if (mContainerView.get()!=null){
+						mContainerView.get().setFrameWH(mWidth,mHeight);
+					}
+
 					mUVCCamera.setPreviewSize(mWidth, mHeight, 1, 25, mPreviewMode, mBandwidthFactor, currentAndroidVersion);
 					//Log.e(TAG, "handleStartPreview3 mWidth: " + mWidth + "mHeight:" + mHeight);
 				} catch (final IllegalArgumentException e) {

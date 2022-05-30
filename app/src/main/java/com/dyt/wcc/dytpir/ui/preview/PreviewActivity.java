@@ -904,7 +904,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			mPid = device.getProductId();
 
 			if (mUvcCameraHandler == null || mUvcCameraHandler.isReleased()) {
-				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null, 0);
+				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null,mDataBinding.dragTempContainerPreviewActivity, 0);
 			}
 
 			mUvcCameraHandler.open(ctrlBlock);
@@ -1517,7 +1517,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				mDataBinding.dragTempContainerPreviewActivity.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
 				mDataBinding.dragTempContainerPreviewActivity.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0));
 
-				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null, 0);
+				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null,mDataBinding.dragTempContainerPreviewActivity, 0);
 
 				//					fl = mDataBinding.flPreview;
 

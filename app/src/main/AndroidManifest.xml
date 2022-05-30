@@ -58,10 +58,6 @@
                 android:resource="@xml/dy_device_filter" />
         </activity>
 
-        <activity
-            android:name=".ui.gallery.GalleryActivity"
-            android:exported="false" />
-
         <service android:name=".ui.preview.record.MediaProjectionService" />
 
         <provider

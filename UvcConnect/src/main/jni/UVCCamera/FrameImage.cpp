@@ -513,7 +513,7 @@ unsigned char *FrameImage::onePreviewData(uint8_t *frameData) {
             }
         } else {//非框内细查，非固定温度条
 //            LOGE("FrameImage======frameWidth===%d ,frameHeight===%d,requestWidth====%d,requestHeight===%d",
-                 frameWidth, frameHeight, requestWidth, requestHeight);
+//                 frameWidth, frameHeight, requestWidth, requestHeight);
             for (int i = 0; i < frameHeight; i++) {
                 for (int j = 0; j < frameWidth; j++) {
                     //黑白：灰度值0-254单通道。 paletteIronRainbow：（0-254）×3三通道。两个都是255，所以使用254
@@ -551,8 +551,12 @@ unsigned char *FrameImage::onePreviewData(uint8_t *frameData) {
  */
 void FrameImage::copyFrame(const uint8_t *src, uint8_t *dest, const int width, int height,
                            const int stride_src, const int stride_dest) {
-//    LOGE("===================copyFrame=====width==%d====height====%d=========",width,height);
-    memcpy(dest, src, width * height);//一次性拷贝完所有的数据  。从src 中拷贝 width*height 个字节到 dest 中
+    for (int i = 0; i < height; i++) {
+        memcpy(dest, src, width);
+        dest += stride_dest;
+        src += stride_src;
+    }
+//    memcpy(dest, src, width * height);//一次性拷贝完所有的数据  。从src 中拷贝 width*height 个字节到 dest 中
 }
 
 //具体如何去复制 数据到对应的控件引用上

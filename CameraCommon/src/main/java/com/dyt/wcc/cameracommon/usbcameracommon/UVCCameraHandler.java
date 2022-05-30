@@ -26,6 +26,7 @@ package com.dyt.wcc.cameracommon.usbcameracommon;
 import android.app.Activity;
 
 import com.dyt.wcc.cameracommon.widget.UVCCameraTextureView;
+import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
 import com.serenegiant.usb.ITemperatureCallback;
 import com.serenegiant.usb.UVCCamera;
 
@@ -101,8 +102,8 @@ public class UVCCameraHandler extends AbstractUVCCameraHandler {
 	 */
 	public static final UVCCameraHandler createHandler(
 			final Activity parent, final UVCCameraTextureView cameraView,
-			final int encoderType, final int width, final int height, final int format, ITemperatureCallback temperatureCallback, int androidVersion) {
-		return createHandler(parent, cameraView, encoderType, width, height, format, UVCCamera.DEFAULT_BANDWIDTH,temperatureCallback,androidVersion);
+			final int encoderType, final int width, final int height, final int format, ITemperatureCallback temperatureCallback,final MeasureTempContainerView containerView, int androidVersion) {
+		return createHandler(parent, cameraView, encoderType, width, height, format, UVCCamera.DEFAULT_BANDWIDTH,temperatureCallback,containerView,androidVersion);
 	}
 
 
@@ -122,9 +123,10 @@ public class UVCCameraHandler extends AbstractUVCCameraHandler {
 	 */
 	public static final UVCCameraHandler createHandler(
 			final Activity parent, final UVCCameraTextureView cameraView,
-			final int encoderType, final int width, final int height, final int format, final float bandwidthFactor, ITemperatureCallback temperatureCallback, int androidVersion) {
+			final int encoderType, final int width, final int height, final int format, final float bandwidthFactor, ITemperatureCallback temperatureCallback,
+			final MeasureTempContainerView containerView,int androidVersion) {
 //		Log.e(TAG, "createHandler:  123 === " + System.currentTimeMillis());
-		final CameraThread thread = new CameraThread(UVCCameraHandler.class, parent, cameraView, encoderType, width, height, format, bandwidthFactor,temperatureCallback,androidVersion);
+		final CameraThread thread = new CameraThread(UVCCameraHandler.class, parent, cameraView, encoderType, width, height, format, bandwidthFactor,temperatureCallback,containerView,androidVersion);
 
 
 		thread.start();

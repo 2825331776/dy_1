@@ -1184,7 +1184,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			//更新点的温度
 			private float updatePointTemp (float x, float y) {
 				//数据源上的坐标
-				int index = (10 + (int) (y * heightRatio) * 256 + (int) (x * widthRatio));
+				int index = (10 + (int) (y * heightRatio) * mSupportWidth + (int) (x * widthRatio));
 				return temperature1[index];
 			}
 
@@ -1203,7 +1203,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 							if (mMeasureTempContainerView.getUserAddData().get(i).getType() == 1) {
 								isAlarm = isAlarm | (updatePointTemp(mMeasureTempContainerView.getUserAddData().get(i).getPointTemp().getStartPointX(), mMeasureTempContainerView.getUserAddData().get(i).getPointTemp().getStartPointY()) > mAlarmTemp);
 							} else {
-								isAlarm = isAlarm | (temperature1[(int) ((mMeasureTempContainerView.getUserAddData().get(i).getOtherTemp().getMaxTempX() * widthRatio) + ((mMeasureTempContainerView.getUserAddData().get(i).getOtherTemp().getMaxTempY() * heightRatio) * 256) + 10)] > mAlarmTemp);
+								isAlarm = isAlarm | (temperature1[(int) ((mMeasureTempContainerView.getUserAddData().get(i).getOtherTemp().getMaxTempX() * widthRatio) + ((mMeasureTempContainerView.getUserAddData().get(i).getOtherTemp().getMaxTempY() * heightRatio) * mSupportWidth) + 10)] > mAlarmTemp);
 							}
 						}
 					} else {

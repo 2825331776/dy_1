@@ -185,13 +185,13 @@ int UVCPreviewIR::setPreviewDisplay(ANativeWindow *preview_window) {
                                                      requestWidth, requestHeight - 4,
                                                      previewFormat);
                 } else if (mPid == 22592 && mVid == 3034) {
-//                    int status = ANativeWindow_setBuffersGeometry(mPreviewWindow,
-//                                                     requestWidth, requestHeight, previewFormat);
-//                    if (status){
-//                        LOGE("=============设置失败====================");
-//                    } else{
-//                        LOGE("=============设置成功====================");
-//                    }
+                    int status = ANativeWindow_setBuffersGeometry(mPreviewWindow,
+                                                     requestWidth, requestHeight, previewFormat);
+                    if (status){
+                        LOGE("=============设置失败====================");
+                    } else{
+                        LOGE("=============设置成功====================");
+                    }
                 }
             }
         }
@@ -1284,7 +1284,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
 //                        *(tinyUserSn+15) = '\0';
                         DecryptSN(TinyUserSN, tinyC_UserSn_sixLast, dytSn);
                         *(dytSn + 15) = '\0';
-                        snIsRight = true;
+//                        snIsRight = true;
                     } else if (mVid == 5396 && mPid == 1)//S0机芯
                     {
                         //***********************S0机芯 384*288 分辨率 读取SN号**********************
