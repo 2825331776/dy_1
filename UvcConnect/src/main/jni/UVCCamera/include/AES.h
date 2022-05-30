@@ -13,6 +13,13 @@
 #include <cstring>
 #include <string>
 #define BLOCK_SIZE 16
+
+#include "Base64.h"
+
+#include "android/log.h"
+#define LOG_TAG "===jpegext==="
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+
 using namespace std;
 
 class AES
@@ -55,6 +62,9 @@ private:
     int tk[MAX_KC];
     int a[MAX_BC];
     int t[MAX_BC];
+
+    const char g_key[17] = "dyt1101c";
+    const char g_iv[17] = "dyt0526cdyt0526c";//ECB MODE不需要关心chain，可以填空
 private:
     void Xor(char* buff, char const* chain);
     void DefEncryptBlock(char const* in, char* result);
@@ -62,6 +72,9 @@ private:
     void EncryptBlock(char const* in, char* result);
     void DecryptBlock(char const* in, char* result);
 public:
+    string EncryptionAES(const string &strSrc);
+    string DecryptionAES(const string &strSrc);
+
     void MakeKey(char const* key, char const* chain, int keylength =
     DEFAULT_BLOCK_SIZE, int blockSize = DEFAULT_BLOCK_SIZE);
     void Encrypt(char const* in, char* result, size_t n, int iMode = ECB);

@@ -8,6 +8,9 @@
 #include "objectarray.h"
 #include "cstring"
 
+#include "AES.h"
+//#include "Base64.h"
+#include "jpegext.h"
 
 #define DEFAULT_PREVIEW_WIDTH 640
 #define DEFAULT_PREVIEW_HEIGHT 480

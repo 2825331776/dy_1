@@ -82,19 +82,20 @@ set_target_properties(libusb100
         ${my_lib_path}/${ANDROID_ABI}/libusb100.so)
 
 #add_library()方法的第一个参数 给第三方库 起的一个别名，随意命名
-add_library(dyjpegext
+add_library(dytjpegaec
         #表明这个库是动态库 .so 静态库 .a
         SHARED
         #指明是导入库
         IMPORTED)
 
 #set_target_properties()第一个参数是 第三方库的名称/别名
-set_target_properties(dyjpegext
+set_target_properties(dytjpegaec
         #指明配置导入第三方库的路径
         PROPERTIES IMPORTED_LOCATION
         #设置路径,CMAKE_CURRENT_SOURCE_DIR 就是当前CMakeLists的路径main/cpp
         #/../代表回溯一层 main/
-        ${my_lib_path}/${ANDROID_ABI}/libDYTjpegext.so)
+        ${my_lib_path}/${ANDROID_ABI}/libDYTJpegAes.so)
+
 
 find_library(log-lib log)
 
@@ -113,19 +114,13 @@ set(SRC_LISTS
         utilbase.cpp
         UVCCamera.cpp
         UVCPreviewIR.cpp
-
         FrameImage.cpp
-
         UVCButtonCallback.cpp
         UVCStatusCallback.cpp
         Parameters.cpp
         time_cal.cpp
         serenegiant_usb_UVCCamera.cpp
-        AES.cpp
-        Base64.cpp
-
         )
-
 
 add_library( # Sets the name of the library.  设置库的名称。
              UVCCamera
@@ -145,7 +140,7 @@ target_link_libraries(UVCCamera libthermometry)
 target_link_libraries(UVCCamera libsimplePictureProcessing)
 target_link_libraries(UVCCamera ${log-lib})
 target_link_libraries(UVCCamera android)
-target_link_libraries(UVCCamera dyjpegext)#通过jpegext.cpp源文件生成 这个.so库,然后引用进来
+target_link_libraries(UVCCamera dytjpegaec)#通过jpegext.cpp源文件生成 这个.so库,然后引用进来
 
 
 # 设置生成的so动态库最后输出的路径，set后面两个参数，
