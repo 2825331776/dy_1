@@ -9,7 +9,6 @@
 #include "cstring"
 
 #include "AES.h"
-//#include "Base64.h"
 #include "jpegext.h"
 
 #define DEFAULT_PREVIEW_WIDTH 640
@@ -227,8 +226,6 @@ private:
 
     volatile int sendCount = 0;
 
-    int torgbaToBmpFile_count = 0;
-    static void rgbaToBmpFile(const char *pFileName, unsigned char* pRgbaData, const int nWidth, const int nHeight, const int format);
 public:
     UVCPreviewIR();
 

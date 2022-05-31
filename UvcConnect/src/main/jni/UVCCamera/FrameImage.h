@@ -1,6 +1,3 @@
-//
-// Created by stefa on 2021/5/6.
-//
 
 #ifndef CAMERA_FRAMEIMAGE_H
 #define CAMERA_FRAMEIMAGE_H

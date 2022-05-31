@@ -1,7 +1,3 @@
-//
-// Created by stefa on 2022/1/6.
-//
-//
 //#ifndef UVCCAMERAX_AES_H
 //#define UVCCAMERAX_AES_H
 
@@ -64,7 +60,7 @@ private:
     int t[MAX_BC];
 
     const char g_key[17] = "dyt1101c";
-    const char g_iv[17] = "dyt0526cdyt0526c";//ECB MODE不需要关心chain，可以填空
+    const char g_iv[17] = "dyt0526cdyt0526c";
 private:
     void Xor(char* buff, char const* chain);
     void DefEncryptBlock(char const* in, char* result);

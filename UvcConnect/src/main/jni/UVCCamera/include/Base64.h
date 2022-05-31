@@ -1,6 +1,3 @@
-//
-// Created by stefa on 2022/1/6.
-//
 
 //#ifndef UVCCAMERAX_BASE64_H
 //#define UVCCAMERAX_BASE64_H

@@ -886,34 +886,6 @@ int UVCPreviewIR::prepare_preview(uvc_stream_ctrl_t *ctrl) {
     RETURN(result, int);
 }
 
-//加密 标识符
-char *UVCPreviewIR::EncryptTag(char *tag) {
-    int tagLength = strlen(tag);
-    char tagChar[tagLength];
-    strcpy(tagChar, tag);
-
-    for (int i = 0; i < tagLength; ++i) {
-//        if (tagChar[i] >= 65 && tagChar[i] < 90){
-        tagChar[i] = tagChar[i] - 25;
-//        }
-    }
-    strcpy(tag, tagChar);
-    return tag;
-}
-
-//解密标识符
-char *UVCPreviewIR::DecryptTag(char *tag) {
-    int tagLength = strlen(tag);
-    char tagChar[tagLength];
-    for (int i = 0; i < tagLength; ++i) {
-//        if (tagChar[i] >= 65 && tagChar[i] < 90){
-        tagChar[i] = tagChar[i] + 25;
-//        }
-    }
-    strcpy(tag, tagChar);
-    return tag;
-}
-
 /**
  * 替换函数
  * @param base
@@ -988,7 +960,7 @@ void *UVCPreviewIR::DecryptSN(void *userSn, void *robotSn, void *returnData) {
 //    int  sn_sum = atoi((char *)ir_sn_24)%127;
     int sn_sum = atoi((char *) ir_sn_h) % 127;
 //    LOGE("======sn_sum========》%d", sn_sum);
-    char strs[sn_length];
+    char strs[15];
 //    for (int i = 0; i < strlen(sn); i++) {
 //        LOGE(" >>>DecryptSN sn ======= > %d",(int)sn[i]);
 //    }
@@ -1049,80 +1021,7 @@ void *UVCPreviewIR::DecryptSN(void *userSn, void *robotSn, void *returnData) {
     return returnData;
 }
 
-////DYTCA10D DYTCA10Q DYTCA10L
-//const char g_key[17] = "dyt1101c";
-//const char g_iv[17] = "dyt0526cdyt0526c";//ECB MODE不需要关心chain，可以填空
-//string EncryptionAES(const string &strSrc) //AES加密
-//{
-//    size_t length = strSrc.length();
-//    int block_num = length / BLOCK_SIZE + 1;
-//    //明文
-//    char *szDataIn = new char[block_num * BLOCK_SIZE + 1];
-//    memset(szDataIn, 0x00, block_num * BLOCK_SIZE + 1);
-//    strcpy(szDataIn, strSrc.c_str());
-//
-//    //进行PKCS7Padding填充。
-//    int k = length % BLOCK_SIZE;
-//    int j = length / BLOCK_SIZE;
-//    int padding = BLOCK_SIZE - k;
-//    for (int i = 0; i < padding; i++) {
-//        szDataIn[j * BLOCK_SIZE + k + i] = padding;
-//    }
-//    szDataIn[block_num * BLOCK_SIZE] = '\0';
-//
-//    //加密后的密文
-//    char *szDataOut = new char[block_num * BLOCK_SIZE + 1];
-//    memset(szDataOut, 0, block_num * BLOCK_SIZE + 1);
-//
-//    //进行进行AES的CBC模式加密
-//    AES aes;
-//    aes.MakeKey(g_key, g_iv, 16, 16);
-//    aes.Encrypt(szDataIn, szDataOut, block_num * BLOCK_SIZE, AES::CBC);
-//    string str = base64_encode((unsigned char *) szDataOut,
-//                               block_num * BLOCK_SIZE);
-//    delete[] szDataIn;
-//    delete[] szDataOut;
-//
-//    return str;
-//}
-//
-//string DecryptionAES(const string &strSrc) //AES解密
-//{
-//    string strData = base64_decode(strSrc);
-//    size_t length = strData.length();
-//    //密文
-//    char *szDataIn = new char[length + 1];
-//    memcpy(szDataIn, strData.c_str(), length + 1);
-//    //明文
-//    char *szDataOut = new char[length + 1];
-//    memcpy(szDataOut, strData.c_str(), length + 1);
-//
-//    //进行AES的CBC模式解密
-//    AES aes;
-//    aes.MakeKey(g_key, g_iv, 16, 16);
-//    aes.Decrypt(szDataIn, szDataOut, length, AES::CBC);
-//
-//    //去PKCS7Padding填充
-//    if (0x00 < szDataOut[length - 1] <= 0x16) {
-//        int tmp = szDataOut[length - 1];
-//        for (int i = length - 1; i >= length - tmp; i--) {
-//            if (szDataOut[i] != tmp) {
-//                memset(szDataOut, 0, length);
-//                LOGE("去填充失败！解密出错！！");
-////                cout << "去填充失败！解密出错！！" << endl;
-//                break;
-//            } else
-//                szDataOut[i] = 0;
-//        }
-//    }
-////    szDataIn = NULL;
-////    szDataOut = NULL;
-//    string strDest(szDataOut);
-////    mempcpy(szDataOut,returnData,15);
-//    delete[] szDataIn;
-//    delete[] szDataOut;
-//    return strDest;
-//}
+
 
 /**
  *
@@ -1279,7 +1178,6 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
 //                        *(tinyUserSn+15) = '\0';
                         DecryptSN(TinyUserSN, tinyC_UserSn_sixLast, dytSn);
                         *(dytSn + 15) = '\0';
-                        snIsRight = true;
                     } else if (mVid == 5396 && mPid == 1)//S0机芯
                     {
                         //***********************S0机芯 384*288 分辨率 读取SN号**********************
@@ -1367,10 +1265,10 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             }
                         }
                         if (flag) {
-//                            LOGE("=============SN匹配成功========");
+                            LOGE("=============sn解码成功========");
                             snIsRight = true;
                         } else {
-//                            LOGE("==============SN匹配不成功========");
+                            LOGE("==============sn解码失败========");
                             snIsRight = snIsRight | 0;
                         }
                         delete[]decryptionChild;
@@ -1542,106 +1440,7 @@ void UVCPreviewIR::signal_save_picture_thread() {
 //void UVCPreviewIR::signal_tiny_send_order() {
 //    pthread_cond_signal(&tinyC_send_order_sync);
 //}
-typedef unsigned char BYTE;
-typedef unsigned short WORD;
-typedef unsigned int DWORD;
-typedef int LONG;
 
-typedef struct {
-    WORD bfType;
-    DWORD bfSize;
-    WORD bfReserved1;
-    WORD bfReserved2;
-    DWORD bfOffBits;
-} BMP_FILE_HEADER;
-typedef struct {
-    DWORD biSize;
-    LONG biWidth;
-    LONG biHeight;
-    WORD biPlanes;
-    WORD biBitCount;
-    DWORD biCompression;
-    DWORD biSizeImage;
-    LONG biXPelsPerMeter;
-    LONG biYPelsPerMeter;
-    DWORD biClrUsed;
-    DWORD biClrImportant;
-} BMP_INFO_HEADER;
-#define BITS_PER_PIXCEL 24
-#define FORMAT_RGBA 4
-#define FORMAT_RGB  3
-
-void UVCPreviewIR::rgbaToBmpFile(const char *pFileName, unsigned char *pRgbaData, const int nWidth,
-                                 const int nHeight, const int format) {
-    BMP_FILE_HEADER bmpHeader;
-    BMP_INFO_HEADER bmpInfo;
-
-    FILE *fp = NULL;
-    char *pBmpSource = NULL;
-    char *pBmpData = NULL;
-
-    int i = 0, j = 0;
-
-    //4 bytes pack. must be 4 times per line。
-    int bytesPerLine = (nWidth * BITS_PER_PIXCEL + 31) / 32 * 4;
-    int pixcelBytes = bytesPerLine * nHeight;
-
-    bmpHeader.bfType = 0x4D42;
-    bmpHeader.bfReserved1 = 0;
-    bmpHeader.bfReserved2 = 0;
-    bmpHeader.bfOffBits = sizeof(BMP_FILE_HEADER) + sizeof(BMP_INFO_HEADER);
-    bmpHeader.bfSize = bmpHeader.bfOffBits + pixcelBytes;
-
-    bmpInfo.biSize = sizeof(BMP_INFO_HEADER);
-    bmpInfo.biWidth = nWidth;
-    /** 这样图片才不会倒置 */
-    bmpInfo.biHeight = -nHeight;
-    bmpInfo.biPlanes = 1;
-    bmpInfo.biBitCount = BITS_PER_PIXCEL;
-    bmpInfo.biCompression = 0;
-    bmpInfo.biSizeImage = pixcelBytes;
-    bmpInfo.biXPelsPerMeter = 100;
-    bmpInfo.biYPelsPerMeter = 100;
-    bmpInfo.biClrUsed = 0;
-    bmpInfo.biClrImportant = 0;
-
-
-    /** convert in memort, then write to file. */
-    pBmpSource = (char *) malloc(pixcelBytes);
-    if (!pBmpSource) {
-//        return -1;
-    }
-
-    /** open file */
-    fp = fopen(pFileName, "wb+");
-    if (!fp) {
-//        return -1;
-    }
-
-    fwrite(&bmpHeader, sizeof(BMP_FILE_HEADER), 1, fp);
-    fwrite(&bmpInfo, sizeof(BMP_INFO_HEADER), 1, fp);
-    /** Here you should consider color format. RGBA ? RGB? BGR?
-        Param format is RGBA, format for file is BGR */
-    pBmpData = pBmpSource;
-    for (i = 0; i < nHeight; i++) {
-        for (j = 0; j < nWidth; j++) {
-            pBmpData[0] = pRgbaData[2];
-            pBmpData[1] = pRgbaData[1];
-            pBmpData[2] = pRgbaData[0];
-            pRgbaData += format;
-            pBmpData += FORMAT_RGB;
-        }
-        //pack for 4 bytes
-        pBmpData += (bytesPerLine - nWidth * FORMAT_RGB);
-    }
-    fwrite(pBmpSource, pixcelBytes, 1, fp);
-
-    /** close and release。 */
-    fclose(fp);
-    free(pBmpSource);
-
-//    return 0;
-}
 
 //#pragma pack(2)//必须得写，否则sizeof得不到正确的结果
 //typedef unsigned char  BYTE;
@@ -1725,14 +1524,6 @@ UVCPreviewIR::draw_preview_one(uint8_t *frameData, ANativeWindow **window, convF
         if (mCurrentAndroidVersion == 0) {
             if (mFrameImage) {
                 RgbaHoldBuffer = mFrameImage->onePreviewData(frameData);
-//                if (torgbaToBmpFile_count < 1) {
-//                    LOGE("===================rgbaToBmpFile=======================");
-//                    rgbaToBmpFile(
-//                            "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/firstBmp_256.bmp",
-//                            RgbaHoldBuffer, 256, 192, FORMAT_RGBA);
-////                    saveBitmap();
-//                    torgbaToBmpFile_count++;
-//                }
 //                unsigned char * d1 = RgbaHoldBuffer;
 //                for (int i = 0; i < 120; i++) {
 //                    for (int j = 0; j < 160; j++) {

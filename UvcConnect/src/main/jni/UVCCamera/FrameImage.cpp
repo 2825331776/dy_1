@@ -1,6 +1,3 @@
-//
-// Created by stefa on 2021/5/6.
-//
 
 #include "FrameImage.h"
 #include "pthread.h"
@@ -662,7 +659,7 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
         //根据8004或者8005模式来查表，8005模式下仅输出以上注释的10个参数，8004模式下数据以上参数+全局温度数据
         thermometrySearch(requestWidth, requestHeight, temperatureTable, orgData, temperatureData,
                           rangeMode, OUTPUTMODE);
-        LOGE("=====temperatureData======= %f", temperatureData[8000]);
+//        LOGE("=====temperatureData======= %f", temperatureData[8000]);
 //        LOGE("centerTmp:%.2f,maxTmp:%.2f,minTmp:%.2f,avgTmp:%.2f\n", temperatureData[0],
 //             temperatureData[3], temperatureData[6], temperatureData[9]);
 
@@ -673,10 +670,10 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
          */
         env->SetFloatArrayRegion(mNCbTemper, 0, 10 + requestWidth * (requestHeight - 4), mCbTemper);
         if (mTemperatureCallbackObj != NULL) {
-            LOGE("========================mTemperatureCallbackObj===!= null=========================");
-            if (iTemperatureCallback.onReceiveTemperature == NULL) {
-                LOGE("========================iTemperatureCallback.onReceiveTemperature == null=========================");
-            }
+//            LOGE("========================mTemperatureCallbackObj===!= null=========================");
+//            if (iTemperatureCallback.onReceiveTemperature == NULL) {
+//                LOGE("========================iTemperatureCallback.onReceiveTemperature == null=========================");
+//            }
             //调用java层的 onReceiveTemperature ，传回mNCbTemper（整个图幅温度数据+ 后四行10个温度分析 的数据） 实参
             env->CallVoidMethod(mTemperatureCallbackObj, iTemperatureCallback.onReceiveTemperature,
                                 mNCbTemper);
