@@ -33,18 +33,18 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 	private              LayoutInflater                    mInflater;
 	private              MyOnItemClickListener             onItemClickListener;
 
-	public interface MyOnItemClickListener{
-		void itemClickListener(int position );
+	public interface MyOnItemClickListener {
+		void itemClickListener (int position);
 	}
 
 	public void setOnItemClickListener (MyOnItemClickListener itemClickListener) {
 		this.onItemClickListener = itemClickListener;
 	}
 
-	public GalleryAdapter (Context context, CopyOnWriteArrayList<GalleryBean>data) {
-			this.mContext = context;
-			this.photoList = data;
-			mInflater = LayoutInflater.from(mContext);
+	public GalleryAdapter (Context context, CopyOnWriteArrayList<GalleryBean> data) {
+		this.mContext = context;
+		this.photoList = data;
+		mInflater = LayoutInflater.from(mContext);
 	}
 
 	@NonNull
@@ -53,7 +53,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 		return new GalleryHolder(mInflater.inflate(R.layout.item_photo_gallery, parent, false));
 	}
 
-	public static String stringForTime(int timeMs) {
+	public static String stringForTime (int timeMs) {
 		if (timeMs <= 0 || timeMs >= 24 * 60 * 60 * 1000) {
 			return "00:00";
 		}
@@ -74,7 +74,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 	public void onBindViewHolder (@NonNull GalleryHolder holder, int position) {
 		if (photoList.get(position).getType() == 0) {
 			holder.ivItemPlayVideo.setVisibility(View.GONE);
-		}else {
+		} else {
 			holder.ivItemPlayVideo.setVisibility(View.VISIBLE);
 			holder.tvItemVideoLength.setVisibility(View.VISIBLE);
 			holder.tvItemVideoLength.setTextColor(mContext.getResources().getColor(R.color.white));
@@ -106,13 +106,14 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 	public int getItemCount () {
 		return photoList.size();
 	}
-	static class GalleryHolder extends RecyclerView.ViewHolder{
+
+	static class GalleryHolder extends RecyclerView.ViewHolder {
 		final ImageView        ivItemPhoto;
-		final ImageView         ivItemCheck;
+		final ImageView        ivItemCheck;
 		final ImageView        ivItemPlayVideo;
-		final TextView  tvItemVideoLength;
+		final TextView         tvItemVideoLength;
 		final ConstraintLayout cl_item_container;//整个item 父布局
-		final LinearLayout ll_main_gallery_item;//选中框的父布局
+		final LinearLayout     ll_main_gallery_item;//选中框的父布局
 
 
 		public GalleryHolder (@NonNull View itemView) {

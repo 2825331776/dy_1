@@ -68,6 +68,7 @@ public class DYConstants {
 	//下载更新api
 	public static final String UPDATE_CHECK_INFO = "http://114.115.130.132:8080/dytfile/getVersion?objPath=files/Apks/H2/";
 	public static final String UPDATE_DOWNLOAD_API = "http://114.115.130.132:8080/dytfile/downloadGET?fileName=Apks/H2/";
+	public static final String UPDATE_DOWNLOAD_BASE = "http://114.115.130.132:8080/dytfile/downloadGET?fileName=Apks/";
 
 	// tinyc 机芯的 距离点64个， 大气温度 温度点14个 ，湿度 等级4个
 	public static final float [] TINYC_DISTANCE = {0.25f, 0.30f, 0.35f, 0.40f, 0.45f, 0.50f, 0.55f, 0.60f, 0.65f, 0.70f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.00f, 1.05f,

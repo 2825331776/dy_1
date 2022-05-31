@@ -55,9 +55,9 @@ import com.dyt.wcc.common.widget.MyCustomRangeSeekBar;
 import com.dyt.wcc.common.widget.dragView.DrawLineRectHint;
 import com.dyt.wcc.common.widget.dragView.MeasureEntity;
 import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
-import com.dyt.wcc.dytpir.BuildConfig;
 import com.dyt.wcc.dytpir.R;
 import com.dyt.wcc.dytpir.constans.DYConstants;
+import com.dyt.wcc.dytpir.constans.DYTApplication;
 import com.dyt.wcc.dytpir.constans.DYTRobotSingle;
 import com.dyt.wcc.dytpir.databinding.ActivityPreviewBinding;
 import com.dyt.wcc.dytpir.databinding.PopCompanyInfoBinding;
@@ -65,21 +65,21 @@ import com.dyt.wcc.dytpir.databinding.PopHighlowcenterTraceBinding;
 import com.dyt.wcc.dytpir.databinding.PopPaletteChoiceBinding;
 import com.dyt.wcc.dytpir.databinding.PopSettingBinding;
 import com.dyt.wcc.dytpir.databinding.PopTempModeChoiceBinding;
-import com.dyt.wcc.dytpir.ui.DYTApplication;
 import com.dyt.wcc.dytpir.ui.gallery.GlideEngine;
 import com.dyt.wcc.dytpir.utils.AssetCopyer;
 import com.dyt.wcc.dytpir.utils.ByteUtilsCC;
 import com.dyt.wcc.dytpir.utils.CreateBitmap;
 import com.dyt.wcc.dytpir.utils.LanguageUtils;
+import com.dyt.wcc.dytpir.widget.MyNumberPicker;
 import com.huantansheng.easyphotos.EasyPhotos;
 import com.huantansheng.easyphotos.ui.dialog.LoadingDialog;
 import com.king.app.dialog.AppDialog;
 import com.king.app.updater.AppUpdater;
 import com.king.app.updater.http.OkHttpManager;
 import com.permissionx.guolindev.PermissionX;
+import com.serenegiant.common.BuildConfig;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
-import com.zhihu.matisse.Matisse;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -587,10 +587,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	@Override
 	protected void onActivityResult (int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
-			//mAdapter.setData(Matisse.obtainResult(data), Matisse.obtainPathResult(data));
-			Log.e("OnActivityResult ", String.valueOf(Matisse.obtainOriginalState(data)));
-		}
+//		if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
+//		}
 	}
 
 	@Override
@@ -1283,6 +1281,63 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		metrics = getResources().getDisplayMetrics();
 		loadingDialog = LoadingDialog.get(mContext.get());
 
+		PermissionX.init(PreviewActivity.this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE,
+				Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA,
+				Manifest.permission.RECORD_AUDIO)
+				.onExplainRequestReason((scope, deniedList) ->
+						scope.showRequestReasonDialog(deniedList, ""+getString(R.string.toast_base_permission_explain),
+								""+getString(R.string.confirm), ""+getString(R.string.cancel)))
+				.onForwardToSettings((scope, deniedList) ->
+						scope.showForwardToSettingsDialog(deniedList, ""+getString(R.string.toast_base_permission_tosetting),
+								""+getString(R.string.confirm), ""+getString(R.string.cancel)))
+				.request((allGranted, grantedList, deniedList) -> {
+					if (allGranted) {//基本权限被授予之后才能初始化监听器。
+						mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);//
+						//					if (isDebug)Log.e(TAG, "onResult: mFontSize ==========> " + mFontSize);
+						//					Log.e(TAG, "initView:  ==444444= " + System.currentTimeMillis());
+						AssetCopyer.copyAllAssets(DYTApplication.getInstance(), mContext.get().getExternalFilesDir(null).getAbsolutePath());
+						//		Log.e(TAG,"===========getExternalFilesDir=========="+this.getExternalFilesDir(null).getAbsolutePath());
+						palettePath = mContext.get().getExternalFilesDir(null).getAbsolutePath();
+						//					Log.e(TAG, "initView:  ==333333= " + System.currentTimeMillis());
+						CreateBitmap createBitmap = new CreateBitmap();
+						try {
+							tiehong = createBitmap.GenerateBitmap(mContext.get(), "1.dat");
+							caihong = createBitmap.GenerateBitmap(mContext.get(), "2.dat");
+							hongre = createBitmap.GenerateBitmap(mContext.get(), "3.dat");
+							heire = createBitmap.GenerateBitmap(mContext.get(), "4.dat");
+							baire = createBitmap.GenerateBitmap(mContext.get(), "5.dat");
+							lenglan = createBitmap.GenerateBitmap(mContext.get(), "6.dat");
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						List<Bitmap> bitmaps = new ArrayList<>();
+						bitmaps.add(tiehong);
+						bitmaps.add(caihong);
+						bitmaps.add(hongre);
+						bitmaps.add(heire);
+						bitmaps.add(baire);
+						bitmaps.add(lenglan);
+						//		Log.e(TAG, "initView:  ==222222= " + System.currentTimeMillis());
+						mDataBinding.customSeekbarPreviewFragment.setmProgressBarSelectBgList(bitmaps);
+						//		Log.e(TAG, "initView: sp.get Palette_Number = " + sp.getInt(DYConstants.PALETTE_NUMBER,0));
+						mDataBinding.customSeekbarPreviewFragment.setPalette(sp.getInt(DYConstants.PALETTE_NUMBER, 1) - 1);
+						initListener();
+
+						initRecord();
+
+						mDataBinding.dragTempContainerPreviewActivity.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
+						mDataBinding.dragTempContainerPreviewActivity.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0));
+
+						mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null,mDataBinding.dragTempContainerPreviewActivity, 0);
+
+						//					fl = mDataBinding.flPreview;
+
+						mUsbMonitor = new USBMonitor(mContext.get(), onDeviceConnectListener);
+					} else {
+						showToast(mContext.get().getResources().getString(R.string.toast_dont_have_permission));
+					}
+				});
+
 		cameraCallback = new AbstractUVCCameraHandler.CameraCallback() {
 			@Override
 			public void onOpen () {
@@ -1479,53 +1534,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		//		}
 		//		Log.e("TAG","sb.toString()----:"+sb.toString());
 
-		PermissionX.init(this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO).onExplainRequestReason((scope, deniedList) -> scope.showRequestReasonDialog(deniedList, getResources().getString(R.string.toast_base_permission_explain), getResources().getString(R.string.confirm), getResources().getString(R.string.cancel))).onForwardToSettings((scope, deniedList) -> scope.showForwardToSettingsDialog(deniedList, getResources().getString(R.string.toast_base_permission_tosetting), getResources().getString(R.string.confirm), getResources().getString(R.string.cancel))).request((allGranted, grantedList, deniedList) -> {
-			if (allGranted) {//基本权限被授予之后才能初始化监听器。
-				mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);//
-				//					if (isDebug)Log.e(TAG, "onResult: mFontSize ==========> " + mFontSize);
-				//					Log.e(TAG, "initView:  ==444444= " + System.currentTimeMillis());
-				AssetCopyer.copyAllAssets(DYTApplication.getInstance(), mContext.get().getExternalFilesDir(null).getAbsolutePath());
-				//		Log.e(TAG,"===========getExternalFilesDir=========="+this.getExternalFilesDir(null).getAbsolutePath());
-				palettePath = mContext.get().getExternalFilesDir(null).getAbsolutePath();
-				//					Log.e(TAG, "initView:  ==333333= " + System.currentTimeMillis());
-				CreateBitmap createBitmap = new CreateBitmap();
-				try {
-					tiehong = createBitmap.GenerateBitmap(mContext.get(), "1.dat");
-					caihong = createBitmap.GenerateBitmap(mContext.get(), "2.dat");
-					hongre = createBitmap.GenerateBitmap(mContext.get(), "3.dat");
-					heire = createBitmap.GenerateBitmap(mContext.get(), "4.dat");
-					baire = createBitmap.GenerateBitmap(mContext.get(), "5.dat");
-					lenglan = createBitmap.GenerateBitmap(mContext.get(), "6.dat");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				List<Bitmap> bitmaps = new ArrayList<>();
-				bitmaps.add(tiehong);
-				bitmaps.add(caihong);
-				bitmaps.add(hongre);
-				bitmaps.add(heire);
-				bitmaps.add(baire);
-				bitmaps.add(lenglan);
-				//		Log.e(TAG, "initView:  ==222222= " + System.currentTimeMillis());
-				mDataBinding.customSeekbarPreviewFragment.setmProgressBarSelectBgList(bitmaps);
-				//		Log.e(TAG, "initView: sp.get Palette_Number = " + sp.getInt(DYConstants.PALETTE_NUMBER,0));
-				mDataBinding.customSeekbarPreviewFragment.setPalette(sp.getInt(DYConstants.PALETTE_NUMBER, 1) - 1);
-				initListener();
-
-				initRecord();
-
-				mDataBinding.dragTempContainerPreviewActivity.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
-				mDataBinding.dragTempContainerPreviewActivity.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0));
-
-				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null,mDataBinding.dragTempContainerPreviewActivity, 0);
-
-				//					fl = mDataBinding.flPreview;
-
-				mUsbMonitor = new USBMonitor(mContext.get(), onDeviceConnectListener);
-			} else {
-				showToast(getResources().getString(R.string.toast_dont_have_permission));
-			}
-		});
 	}
 
 	private MyNumberPicker myNumberPicker;

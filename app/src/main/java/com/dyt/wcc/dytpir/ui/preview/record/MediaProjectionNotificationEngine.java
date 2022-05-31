@@ -8,11 +8,11 @@ import android.app.Notification;
  */
 public interface MediaProjectionNotificationEngine {
 
-    /**
-     * 获取 Notification
-     *
-     * @return Notification
-     */
-    Notification getNotification();
+	/**
+	 * 获取 Notification
+	 *
+	 * @return Notification
+	 */
+	Notification getNotification ();
 
 }

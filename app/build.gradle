@@ -68,8 +68,8 @@ android {
         //放入渠道特有的 资源，需要替换对应的资源时，在 productFlavors 的渠道名称{} 里的 manifestPlaceholders
         //加上 替换的资源为那个名称
         web.res.srcDirs = ['src/main/res-huawei']
-        huawei.res.srcDirs = ['src/main/res-huawei']
-        xiaomi.res.srcDirs = ['src/main/res-xiaomi']
+        phone.res.srcDirs = ['src/main/res-huawei']
+        common.res.srcDirs = ['src/main/res-xiaomi']
     }
 
     flavorDimensions "theb"
@@ -89,11 +89,11 @@ android {
             buildConfigField "String", "ENVIRONMENT", '"web"'
             // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE: "web"
-                                    , app_name   : "webDD"
-                                    , app_icon   : "@mipmap/delete_all"]
+                                    , app_name   : "webUse"]
+            //, app_icon   : "@mipmap/delete_all"
         }
         //华为
-        huawei {
+        phone {
             // 每个环境包名不同
             dimension "theb"
             applicationId rootProject.ext.envInfo.phone.applicationId
@@ -104,14 +104,14 @@ android {
 //            resValue "string", "app_name", "huawei"
 //            resValue "bool", "auto_updates", 'false'
             // 动态修改 常量 字段
-            buildConfigField "String", "ENVIRONMENT", '"huawei"'
+            buildConfigField "String", "ENVIRONMENT", '"phone"'
             // 修改 AndroidManifest.xml 里渠道变量
-            manifestPlaceholders = [CHANNEL_VALUE: "huawei"
-                                    , app_name   : "huaweiheihei"
-                                    , app_icon   : "@mipmap/delete_all"]
+            manifestPlaceholders = [CHANNEL_VALUE: "phone"
+                                    , app_name   : "phoneUse"]
+            // , app_icon   : "@mipmap/delete_all"
         }
         //小米
-        xiaomi {
+        common {
             // 每个环境包名不同
             dimension "theb"
             applicationId rootProject.ext.envInfo.phone.applicationId
@@ -122,11 +122,11 @@ android {
 //            resValue "string", "app_name", "xiaomi"
 //            resValue "bool", "auto_updates", 'false'
             // 动态修改 常量 字段
-            buildConfigField "String", "ENVIRONMENT", '"xiaomi"'
+            buildConfigField "String", "ENVIRONMENT", '"common"'
             // 修改 AndroidManifest.xml 里渠道变量
-            manifestPlaceholders = [CHANNEL_VALUE: "xiaomi"
-                                    , app_name   : "xiaomihahaha"
-                                    , app_icon   : "@mipmap/delete_all"]
+            manifestPlaceholders = [CHANNEL_VALUE: "common"
+                                    , app_name   : "commonApk"]
+            //, app_icon   : "@mipmap/delete_all"
         }
     }
 

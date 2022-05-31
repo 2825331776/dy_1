@@ -8,20 +8,20 @@ import android.graphics.Bitmap;
  */
 public abstract class ScreenCaptureCallback {
 
-    /**
-     * 成功
-     *
-     * @param bitmap 截图后的Bitmap
-     */
-    public void onSuccess(Bitmap bitmap) {
+	/**
+	 * 成功
+	 *
+	 * @param bitmap 截图后的Bitmap
+	 */
+	public void onSuccess (Bitmap bitmap) {
 
-    }
+	}
 
-    /**
-     * 失败
-     */
-    public void onFail() {
+	/**
+	 * 失败
+	 */
+	public void onFail () {
 
-    }
+	}
 
 }

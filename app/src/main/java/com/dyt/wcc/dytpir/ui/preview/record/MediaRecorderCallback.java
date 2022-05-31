@@ -8,22 +8,26 @@ import java.io.File;
  */
 public abstract class MediaRecorderCallback {
 
-    /**
-     * 成功
-     * @param file 录制后的File
-     */
-    public void onSuccess(File file) {
+	/**
+	 * 成功
+	 *
+	 * @param file 录制后的File
+	 */
+	public void onSuccess (File file) {
 
-    }
-    /**
-     * 失败
-     */
-    public void onFail() {
+	}
 
-    }
+	/**
+	 * 失败
+	 */
+	public void onFail () {
 
-    public void onStartCounting(){}
+	}
 
-    public void onStopCounting(){}
+	public void onStartCounting () {
+	}
+
+	public void onStopCounting () {
+	}
 
 }

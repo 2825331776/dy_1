@@ -22,7 +22,7 @@
  * Files in the jni/libjpeg, jni/libusb, jin/libuvc, jni/rapidjson folder may have a different license, see the respective files.
 */
 
-#define LOG_TAG "UVCCamera"
+
 #if 1    // デバッグ情報を出さない時1
 #ifndef LOG_NDEBUG
 #define    LOG_NDEBUG        // LOGV/LOGD/MARKを出力しない時
@@ -48,7 +48,8 @@
 #include "Parameters.h"
 #include "libuvc_internal.h"
 
-#define    LOCAL_DEBUG 1
+#define    LOCAL_DEBUG 0
+#define LOG_TAG "UVCCamera"
 
 //**********************************************************************
 //

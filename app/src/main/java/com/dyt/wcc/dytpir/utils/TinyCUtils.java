@@ -53,7 +53,7 @@ public class TinyCUtils {
 	 * @return 大气透过率 的值
 	 */
 	public static short getLUT (float at, float hmi, float distance, short[] tau_data) {
-//		float reValue = 0.0f;
+		//		float reValue = 0.0f;
 		Log.e("===LUT===", "===before===getLUT: hmi =" + hmi + " at =" + at + " distance =" + distance);
 		//判断传入的 大气温度 是否符合要求
 		int ATPosition = 0, HMIPosition = 0, DISTANCEPosition = 0;
@@ -114,7 +114,7 @@ public class TinyCUtils {
 		} else {
 			return (tau_data[index]);
 		}
-//				int status = Libirtemp.read_tau(tau_data, hmi, at, distance, returnData);
+		//				int status = Libirtemp.read_tau(tau_data, hmi, at, distance, returnData);
 		//		Log.e("===LUT===", "getLUT: ===" + (int) returnData[0] + " == status == " + status);
 		//		reValue = (float) returnData[0];
 

@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#if 1    // set 1 if you don't need debug log
+#if 0    // set 1 if you don't need debug log
 #ifndef LOG_NDEBUG
 #define    LOG_NDEBUG        // w/o LOGV/LOGD/MARK
 #endif
@@ -26,7 +26,7 @@ using namespace std;
 
 #include <vector>
 
-#define    LOCAL_DEBUG 1    // set 1 if you don't need debug log
+#define    LOCAL_DEBUG 0    // set 1 if you don't need debug log
 #define MAX_FRAME 4
 #define PREVIEW_PIXEL_BYTES 4    // RGBA/RGBX
 #define FRAME_POOL_SZ MAX_FRAME
@@ -1611,8 +1611,8 @@ int UVCPreviewIR::copyToSurface(uint8_t *frameData, ANativeWindow **window) {
         result = -1;
     }
     //LOGE("copyToSurface6");
-//    return result;
-    RETURN(result, int);
+    return result;
+//    RETURN(result, int);
 }
 /*************************************预览 结束****************************************************/
 

@@ -11,27 +11,30 @@ import android.net.Uri;
  */
 public class GalleryBean {
 	//Uri地址
-	private Uri uriAddress;
+	private Uri     uriAddress;
 	//绝对地址
-	private String AbsoluteAddress;
+	private String  AbsoluteAddress;
 	//类型
-	private int type;
+	private int     type;
 	//是否被选中
-	private boolean isSelect ;
+	private boolean isSelect;
 	//视频时长
-	private int videoDuration ;
+	private int     videoDuration;
 	//文件的最后修改日期
-	private long createDate;
+	private long    createDate;
 
 	public long getCreateDate () {
 		return createDate;
 	}
+
 	public void setCreateDate (long createDate) {
 		this.createDate = createDate;
 	}
+
 	public int getVideoDuration () {
 		return videoDuration;
 	}
+
 	public void setVideoDuration (int videoDuration) {
 		this.videoDuration = videoDuration;
 	}
