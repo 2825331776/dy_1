@@ -19,11 +19,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.Fragment;
 
-import com.permissionx.guolindev.PermissionX;
-import com.permissionx.guolindev.callback.RequestCallback;
-
 import java.lang.ref.WeakReference;
-import java.util.List;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -89,14 +85,14 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
 		return result;
 	}
 
-	protected void requestPermissions(String ... permissions){
-		PermissionX.init(this).permissions(permissions).request(new RequestCallback() {
-			@Override
-			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
-
-			}
-		});
-	}
+//	protected void requestPermissions(String ... permissions){
+//		PermissionX.init(this).permissions(permissions).request(new RequestCallback() {
+//			@Override
+//			public void onResult (boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+//
+//			}
+//		});
+//	}
 
 
 }

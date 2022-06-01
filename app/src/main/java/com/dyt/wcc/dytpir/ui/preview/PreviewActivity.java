@@ -16,7 +16,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -42,6 +41,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
 
 import com.dyt.wcc.cameracommon.encoder.MediaMuxerWrapper;
@@ -71,16 +71,18 @@ import com.dyt.wcc.dytpir.utils.ByteUtilsCC;
 import com.dyt.wcc.dytpir.utils.CreateBitmap;
 import com.dyt.wcc.dytpir.utils.LanguageUtils;
 import com.dyt.wcc.dytpir.widget.MyNumberPicker;
+import com.hjq.permissions.OnPermissionCallback;
+import com.hjq.permissions.XXPermissions;
 import com.huantansheng.easyphotos.EasyPhotos;
 import com.huantansheng.easyphotos.ui.dialog.LoadingDialog;
 import com.king.app.dialog.AppDialog;
 import com.king.app.updater.AppUpdater;
 import com.king.app.updater.http.OkHttpManager;
-import com.permissionx.guolindev.PermissionX;
 import com.serenegiant.common.BuildConfig;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -93,6 +95,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+//@RuntimePermissions
 public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//jni测试按钮状态记录
 	//	private final int jni_status = 0;
@@ -587,8 +590,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	@Override
 	protected void onActivityResult (int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-//		if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
-//		}
+		//		if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
+		//		}
 	}
 
 	@Override
@@ -597,9 +600,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			Log.e(TAG, "onPause: ");
 
 		if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()) {
-			mUvcCameraHandler.stopTemperaturing();
-			if (BuildConfig.DEBUG)
-				Log.e(TAG, "onPause: 停止温度回调");
+//			mUvcCameraHandler.stopTemperaturing();
+//			if (BuildConfig.DEBUG)
+//				Log.e(TAG, "onPause: 停止温度回调");
 		}
 		mSensorManager.unregisterListener(sensorEventListener, mAccelerometerSensor);
 		super.onPause();
@@ -642,6 +645,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		super.onCreate(savedInstanceState);
 		if (isDebug)
 			Log.e(TAG, "onCreate: ");
+		//		PreviewActivityPermissionsDispatcher.showCameraWithPermissionCheck(this);
 	}
 
 	@Override
@@ -902,7 +906,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			mPid = device.getProductId();
 
 			if (mUvcCameraHandler == null || mUvcCameraHandler.isReleased()) {
-				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null,mDataBinding.dragTempContainerPreviewActivity, 0);
+				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null, mDataBinding.dragTempContainerPreviewActivity, 0);
 			}
 
 			mUvcCameraHandler.open(ctrlBlock);
@@ -911,6 +915,21 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			mHandler.postDelayed(() -> {
 				setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
 			}, 300);
+
+			if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
+				mHandler.postDelayed(new Runnable() {
+					@Override
+					public void run () {
+						mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
+					}
+				}, 5000);
+				mHandler.postDelayed(new Runnable() {
+					@Override
+					public void run () {
+						setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
+					}
+				}, 6000);
+			}
 		}
 
 		@Override
@@ -957,9 +976,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 			if (mUvcCameraHandler != null) {
 				//				mUvcCameraHandler.removeCallback(cameraCallback);
-//				mUvcCameraHandler.stopTemperaturing();//2022年5月18日19:00:15 S0温度失常
+				//				mUvcCameraHandler.stopTemperaturing();//2022年5月18日19:00:15 S0温度失常
 				mUvcCameraHandler.close();
-			}else {
+			} else {
 				Log.e(TAG, "onDisconnect: ==============mUvcCameraHandler == null========");
 			}
 			mVid = 0;
@@ -1275,68 +1294,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	@Override
 	protected void initView () {
-//		Log.e(TAG, "initView: ==========================手机型号为：===" + Build.MODEL);
+		//		Log.e(TAG, "initView: ==========================手机型号为：===" + Build.MODEL);
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
 		configuration = getResources().getConfiguration();
 		metrics = getResources().getDisplayMetrics();
 		loadingDialog = LoadingDialog.get(mContext.get());
-
-		PermissionX.init(PreviewActivity.this).permissions(Manifest.permission.READ_EXTERNAL_STORAGE,
-				Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA,
-				Manifest.permission.RECORD_AUDIO)
-				.onExplainRequestReason((scope, deniedList) ->
-						scope.showRequestReasonDialog(deniedList, ""+getString(R.string.toast_base_permission_explain),
-								""+getString(R.string.confirm), ""+getString(R.string.cancel)))
-				.onForwardToSettings((scope, deniedList) ->
-						scope.showForwardToSettingsDialog(deniedList, ""+getString(R.string.toast_base_permission_tosetting),
-								""+getString(R.string.confirm), ""+getString(R.string.cancel)))
-				.request((allGranted, grantedList, deniedList) -> {
-					if (allGranted) {//基本权限被授予之后才能初始化监听器。
-						mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);//
-						//					if (isDebug)Log.e(TAG, "onResult: mFontSize ==========> " + mFontSize);
-						//					Log.e(TAG, "initView:  ==444444= " + System.currentTimeMillis());
-						AssetCopyer.copyAllAssets(DYTApplication.getInstance(), mContext.get().getExternalFilesDir(null).getAbsolutePath());
-						//		Log.e(TAG,"===========getExternalFilesDir=========="+this.getExternalFilesDir(null).getAbsolutePath());
-						palettePath = mContext.get().getExternalFilesDir(null).getAbsolutePath();
-						//					Log.e(TAG, "initView:  ==333333= " + System.currentTimeMillis());
-						CreateBitmap createBitmap = new CreateBitmap();
-						try {
-							tiehong = createBitmap.GenerateBitmap(mContext.get(), "1.dat");
-							caihong = createBitmap.GenerateBitmap(mContext.get(), "2.dat");
-							hongre = createBitmap.GenerateBitmap(mContext.get(), "3.dat");
-							heire = createBitmap.GenerateBitmap(mContext.get(), "4.dat");
-							baire = createBitmap.GenerateBitmap(mContext.get(), "5.dat");
-							lenglan = createBitmap.GenerateBitmap(mContext.get(), "6.dat");
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						List<Bitmap> bitmaps = new ArrayList<>();
-						bitmaps.add(tiehong);
-						bitmaps.add(caihong);
-						bitmaps.add(hongre);
-						bitmaps.add(heire);
-						bitmaps.add(baire);
-						bitmaps.add(lenglan);
-						//		Log.e(TAG, "initView:  ==222222= " + System.currentTimeMillis());
-						mDataBinding.customSeekbarPreviewFragment.setmProgressBarSelectBgList(bitmaps);
-						//		Log.e(TAG, "initView: sp.get Palette_Number = " + sp.getInt(DYConstants.PALETTE_NUMBER,0));
-						mDataBinding.customSeekbarPreviewFragment.setPalette(sp.getInt(DYConstants.PALETTE_NUMBER, 1) - 1);
-						initListener();
-
-						initRecord();
-
-						mDataBinding.dragTempContainerPreviewActivity.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
-						mDataBinding.dragTempContainerPreviewActivity.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0));
-
-						mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null,mDataBinding.dragTempContainerPreviewActivity, 0);
-
-						//					fl = mDataBinding.flPreview;
-
-						mUsbMonitor = new USBMonitor(mContext.get(), onDeviceConnectListener);
-					} else {
-						showToast(mContext.get().getResources().getString(R.string.toast_dont_have_permission));
-					}
-				});
 
 		cameraCallback = new AbstractUVCCameraHandler.CameraCallback() {
 			@Override
@@ -1350,7 +1312,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 			@Override
 			public void onStartPreview () {
-
 			}
 
 			@Override
@@ -1380,7 +1341,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					runOnUiThread(() -> {
 						//拍照成功，并显示动画效果
 						mDataBinding.ivSaveImgAnimator.setVisibility(View.VISIBLE);
-
 						//							mDataBinding.ivSaveImgAnimator.bringToFront();
 						Bitmap bitmap = BitmapFactory.decodeFile(picPath);
 						mDataBinding.ivSaveImgAnimator.setImageBitmap(bitmap);
@@ -1392,24 +1352,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						// 所以组合动画的下面两行设置是无效的， 以后设置的为准
 						setAnimation.setRepeatMode(Animation.RESTART);
 						setAnimation.setRepeatCount(1);// 设置了循环一次,但无效
-						//
-						////				// 旋转动画
-						////				Animation rotate = new RotateAnimation(0,360,Animation.RELATIVE_TO_SELF,
-						////						0.5f,Animation.RELATIVE_TO_SELF,0.5f);
-						////				rotate.setDuration(1000);
-						////				rotate.setRepeatMode(Animation.RESTART);
-						////				rotate.setRepeatCount(Animation.INFINITE);
-						//
-						//				 平移动画
-						//							Animation translate = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_SELF,0f,
-						//									Animation.ABSOLUTE, mDataBinding.ivPreviewLeftGallery.getX(),
-						//									TranslateAnimation.RELATIVE_TO_SELF,0f,
-						//									Animation.ABSOLUTE,(mDataBinding.ivPreviewLeftGallery.getY()
-						//									+ mDataBinding.ivPreviewLeftGallery.getHeight()));
-						//							translate.setDuration(500);
-						//							translate.setStartOffset(0);
-						//
-						//				// 透明度动画
+						// 透明度动画
 						Animation alpha = new AlphaAnimation(1, 0f);
 						alpha.setDuration(500);
 						alpha.setStartOffset(0);
@@ -1421,8 +1364,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						//
 						//				// 将创建的子动画添加到组合动画里
 						setAnimation.addAnimation(alpha);
-						//				setAnimation.addAnimation(rotate);
-						//							setAnimation.addAnimation(translate);
 						setAnimation.addAnimation(scale1);
 						//				// 使用
 						mDataBinding.ivSaveImgAnimator.startAnimation(setAnimation);
@@ -1495,60 +1436,87 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mSensorManager = (SensorManager) mContext.get().getSystemService(Context.SENSOR_SERVICE);
 		mAccelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-		//		//获取当前设备支持的传感器列表
-		//		List<Sensor> allSensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
-		//		StringBuilder sb = new StringBuilder();
-		//		sb.append("当前设备支持传感器数：" + allSensors.size() + "   分别是：\n\n");
-		//		for(Sensor s:allSensors){
-		//			switch (s.getType()){
-		//				case Sensor.TYPE_ACCELEROMETER:
-		//					sb.append("加速度传感器(Accelerometer sensor)" + "\n");
-		//					break;
-		//				case Sensor.TYPE_GYROSCOPE:
-		//					sb.append("陀螺仪传感器(Gyroscope sensor)" + "\n");
-		//					break;
-		//				case Sensor.TYPE_LIGHT:
-		//					sb.append("光线传感器(Light sensor)" + "\n");
-		//					break;
-		//				case Sensor.TYPE_MAGNETIC_FIELD:
-		//					sb.append("磁场传感器(Magnetic field sensor)" + "\n");
-		//					break;
-		//				case Sensor.TYPE_ORIENTATION:
-		//					sb.append("方向传感器(Orientation sensor)" + "\n");
-		//					break;
-		//				case Sensor.TYPE_PRESSURE:
-		//					sb.append("气压传感器(Pressure sensor)" + "\n");
-		//					break;
-		//				case Sensor.TYPE_PROXIMITY:
-		//					sb.append("距离传感器(Proximity sensor)" + "\n");
-		//					break;
-		//				case Sensor.TYPE_TEMPERATURE:
-		//					sb.append("温度传感器(Temperature sensor)" + "\n");
-		//					break;
-		//				default:
-		//					sb.append("其他传感器" + "\n");
-		//					break;
-		//			}
-		//			sb.append("设备名称：" + s.getName() + "\n 设备版本：" + s.getVersion() + "\n 供应商："
-		//					+ s.getVendor() + "\n\n");
-		//		}
-		//		Log.e("TAG","sb.toString()----:"+sb.toString());
+		XXPermissions.with(this).permission(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO).request(new OnPermissionCallback() {
+			@Override
+			public void onGranted (List<String> permissions, boolean all) {
+				if (all) {
+					mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);//
+					//					if (isDebug)Log.e(TAG, "onResult: mFontSize ==========> " + mFontSize);
+					AssetCopyer.copyAllAssets(DYTApplication.getInstance(), mContext.get().getExternalFilesDir(null).getAbsolutePath());
+					//		Log.e(TAG,"===========getExternalFilesDir=========="+this.getExternalFilesDir(null).getAbsolutePath());
+					palettePath = mContext.get().getExternalFilesDir(null).getAbsolutePath();
+					CreateBitmap createBitmap = new CreateBitmap();
+					try {
+						tiehong = createBitmap.GenerateBitmap(mContext.get(), "1.dat");
+						caihong = createBitmap.GenerateBitmap(mContext.get(), "2.dat");
+						hongre = createBitmap.GenerateBitmap(mContext.get(), "3.dat");
+						heire = createBitmap.GenerateBitmap(mContext.get(), "4.dat");
+						baire = createBitmap.GenerateBitmap(mContext.get(), "5.dat");
+						lenglan = createBitmap.GenerateBitmap(mContext.get(), "6.dat");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					List<Bitmap> bitmaps = new ArrayList<>();
+					bitmaps.add(tiehong);
+					bitmaps.add(caihong);
+					bitmaps.add(hongre);
+					bitmaps.add(heire);
+					bitmaps.add(baire);
+					bitmaps.add(lenglan);
+					//		Log.e(TAG, "initView:  ==222222= " + System.currentTimeMillis());
+					mDataBinding.customSeekbarPreviewFragment.setmProgressBarSelectBgList(bitmaps);
+					//		Log.e(TAG, "initView: sp.get Palette_Number = " + sp.getInt(DYConstants.PALETTE_NUMBER,0));
+					mDataBinding.customSeekbarPreviewFragment.setPalette(sp.getInt(DYConstants.PALETTE_NUMBER, 1) - 1);
+					initListener();
+
+					initRecord();
+
+					mDataBinding.dragTempContainerPreviewActivity.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
+					mDataBinding.dragTempContainerPreviewActivity.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0));
+
+					mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null, mDataBinding.dragTempContainerPreviewActivity, 0);
+
+					mUsbMonitor = new USBMonitor(mContext.get(), onDeviceConnectListener);
+				} else {
+					new AlertDialog.Builder(PreviewActivity.this).setMessage(R.string.toast_base_permission_explain).setPositiveButton(R.string.confirm, (dialog, button) -> XXPermissions.startPermissionActivity(PreviewActivity.this, permissions)).setNegativeButton(R.string.cancel, (dialog, button) -> showToast(getString(R.string.toast_dont_have_permission))).show();
+				}
+			}
+
+			@Override
+			public void onDenied (List<String> permissions, boolean never) {
+				showToast(getString(R.string.toast_dont_have_permission));
+			}
+		});
+
 
 	}
 
 	private MyNumberPicker myNumberPicker;
+
+	//android获取一个用于打开PDF文件的intent
+	public Intent getPdfFileIntent(String Path)
+	{
+		File file = new File(Path);
+		Intent intent = new Intent("android.intent.action.VIEW");
+		intent.addCategory("android.intent.category.DEFAULT");
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		Uri uri = FileProvider.getUriForFile(mContext.get(), "com.dyt.wcc.dytpir.FileProvider", file);
+		intent.setDataAndType(uri, "application/pdf");
+		return intent;
+	}
 
 	/**
 	 * 初始化界面的监听器
 	 */
 	private void initListener () {
 		//测试的 监听器
-//		mDataBinding.btTest01.setVisibility(View.VISIBLE);
+		mDataBinding.btTest01.setVisibility(View.VISIBLE);
 		mDataBinding.btTest01.setOnClickListener(v -> {
 			//******************************testJNi***************************************
-						mUvcCameraHandler.testJNi(Build.MODEL);
-//			Log.e(TAG, "initListener: " + mDataBinding.textureViewPreviewActivity.getTemperatureCallback());
+//			mUvcCameraHandler.testJNi(Build.MODEL);
+			//			Log.e(TAG, "initListener: " + mDataBinding.textureViewPreviewActivity.getTemperatureCallback());
 
+			startActivity(getPdfFileIntent("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/ColorChanges.pdf"));
 
 			//****************************动画开始*************************************
 			//读取一张图片到某个控件，然后把图片缩小 给相册这个按钮。透明度逐渐变低
@@ -1852,10 +1820,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				//打挡  并 刷新温度对照表
 				mHandler.postDelayed(() -> {
 					setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
-				},200);
+				}, 200);
 				mHandler.postDelayed(() -> {
 					mUvcCameraHandler.whenShutRefresh();
-				},500);
+				}, 500);
 			}
 		});
 		//拍照按钮

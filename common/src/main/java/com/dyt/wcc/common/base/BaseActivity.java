@@ -48,6 +48,8 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 //		mToast.setGravity();
 		initView();
 	}
+
+
 	////设置绑定布局
 	protected abstract int bindingLayout();
 	//初始化控件

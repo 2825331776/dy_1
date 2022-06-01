@@ -83,18 +83,16 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh, FrameImage *frameImage) {
 }
 
 UVCPreviewIR::~UVCPreviewIR() {
-
     ENTER();
-//    stopPreview();
-    SAFE_DELETE(mFrameImage);
     if (mDeviceHandle) {
         uvc_stop_streaming(mDeviceHandle);
     }
     mDeviceHandle = NULL;
-    mFrameImage = NULL;
     if (mPreviewWindow)
         ANativeWindow_release(mPreviewWindow);
     mPreviewWindow = NULL;
+    SAFE_DELETE(mFrameImage);
+//    mFrameImage = NULL;
     pthread_mutex_destroy(&preview_mutex);
     pthread_cond_destroy(&preview_sync);
     pthread_mutex_destroy(&screenShot_mutex);
@@ -359,7 +357,7 @@ bool UVCPreviewIR::snRightIsPreviewing() {
 
 //2022年5月17日16:46:17 设置机芯参数
 bool UVCPreviewIR::setMachineSetting(int value, int mark) {
-    LOGE("============setMachineSetting============value ====>%d", value);
+//    LOGE("============setMachineSetting============value ====>%d", value);
     bool result = false;
 
     unsigned char data_set[8] = {0x14, 0xc5, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00};
@@ -376,19 +374,19 @@ bool UVCPreviewIR::setMachineSetting(int value, int mark) {
         uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
                             1000);
         if (getTinyCDevicesStatus()) {
-            LOGE("============getMachineSetting======get=order=========");
+//            LOGE("============getMachineSetting======get=order=========");
             uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId_get,
                                 sizeof(flashId_get),
                                 1000);
             getData = flashId_get[1];
-            LOGE("flashId_get 0 ==== %d", flashId_get[0]);
-            LOGE("flashId_get 1 ==== %d", flashId_get[1]);
+//            LOGE("flashId_get 0 ==== %d", flashId_get[0]);
+//            LOGE("flashId_get 1 ==== %d", flashId_get[1]);
         }
         if (getData != value) {
             data_set[6] = (value >> 8);
             data_set[7] = (value & 0xff);
             if (getTinyCDevicesStatus()) {
-                LOGE("============setMachineSetting======set=order=========");
+//                LOGE("============setMachineSetting======set=order=========");
                 uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data_set,
                                     sizeof(data_set),
                                     1000);
@@ -403,7 +401,6 @@ bool UVCPreviewIR::setMachineSetting(int value, int mark) {
     }
     sendCount = 0;
     result = (mark == value);
-
     return result;
 }
 
@@ -1265,10 +1262,10 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             }
                         }
                         if (flag) {
-                            LOGE("=============sn解码成功========");
+//                            LOGE("=============sn解码成功========");
                             snIsRight = true;
                         } else {
-                            LOGE("==============sn解码失败========");
+//                            LOGE("==============sn解码失败========");
                             snIsRight = snIsRight | 0;
                         }
                         delete[]decryptionChild;

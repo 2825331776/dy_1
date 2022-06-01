@@ -1,22 +1,22 @@
-ext{
+ext {
     projectVersions = [
             //编译及其构建版本
-            compileSdkV     :30,
-            buildToolsV     :"30.0.3",
+            compileSdkV  : 30,
+            buildToolsV  : "30.0.3",
             //支持的sdk范围21-29
-            minSdkV         :23,
-            targetSdkV      :27,
+            minSdkV      : 23,
+            targetSdkV   : 27,
             //版本号和名字
-            VCode           :20,
-            VName           :"1.0.20",
+            VCode        : 20,
+            VName        : "1.0.20",
 
-            supportV        :"27.0.0",
+            supportV     : "27.0.0",
             applicationId: "com.dyt.wcc.dytpir"
     ]
 
     // 多渠道产品信息
     envInfo = [
-            web: [
+            web  : [
                     // 应用 id
                     applicationId: "com.dyt.wcc.dytpir",
                     // 构建版本号
@@ -24,7 +24,7 @@ ext{
                     // 版本名称
                     versionName  : "1.0.1",
             ],
-            phone : [
+            phone: [
                     // 应用 id
                     applicationId: "com.dyt.wcc.dytpir",
                     // 构建版本号
@@ -47,33 +47,42 @@ ext{
     def lifecycle_version = "2.3.1"
     def navigation_version = "2.3.5"
 
-    def permissionX_version = "1.5.0"
+//    def permissionX_version = "1.5.0"
     def glide_version = "4.12.0"
+
+//    def PermissionsDispatcher_version = "4.9.2"
+//    def permissionsDispatcher_processor_version = "4.9.2"
+
+    def  XXPermissions_version = "13.6"
 
 
     projectDependencies = [
             //common
-            appcompat               :"androidx.appcompat:appcompat:$appcompat_version",
-            material                :"com.google.android.material:material:$material_version",
-            constraintlayout        :"androidx.constraintlayout:constraintlayout:$constraintLayout_version",
-            junit                   :"junit:junit:$junit_version",
-            extjunit                :"androidx.test.ext:junit:$extJunit_version",
-            espresso                :"androidx.test.espresso:espresso-core:$espresso_version",
+            appcompat                      : "androidx.appcompat:appcompat:$appcompat_version",
+            material                       : "com.google.android.material:material:$material_version",
+            constraintlayout               : "androidx.constraintlayout:constraintlayout:$constraintLayout_version",
+            junit                          : "junit:junit:$junit_version",
+            extjunit                       : "androidx.test.ext:junit:$extJunit_version",
+            espresso                       : "androidx.test.espresso:espresso-core:$espresso_version",
 
             // navigation_fragment
-            navigation_fragment     :"androidx.navigation:navigation-fragment:$navigation_version",
-            navigation_ui           :"androidx.navigation:navigation-ui:$navigation_version",
+            navigation_fragment            : "androidx.navigation:navigation-fragment:$navigation_version",
+            navigation_ui                  : "androidx.navigation:navigation-ui:$navigation_version",
             //viewModel
-            lifecycle_viewmodel     :"androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version",
+            lifecycle_viewmodel            : "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version",
             // LiveData
-            lifecycle_livedata      :"androidx.lifecycle:lifecycle-livedata:$lifecycle_version",
+            lifecycle_livedata             : "androidx.lifecycle:lifecycle-livedata:$lifecycle_version",
             // Lifecycles only (without ViewModel or LiveData)
-            lifecycle_runtime       :"androidx.lifecycle:lifecycle-runtime:$lifecycle_version",
+            lifecycle_runtime              : "androidx.lifecycle:lifecycle-runtime:$lifecycle_version",
+            //permissionX
+//            permissionX                    : "com.guolindev.permissionx:permissionx:$permissionX_version",
+            //permissionsDispatcher
+//            permissionsDispatcher          : "com.github.permissions-dispatcher:permissionsdispatcher:${PermissionsDispatcher_version}",
+//            permissionsDispatcher_processor: "com.github.permissions-dispatcher:permissionsdispatcher-processor:${PermissionsDispatcher_version}",
+            xxPremissions :"com.github.getActivity:XXPermissions:${XXPermissions_version}",
             //
-            permissionX             :"com.guolindev.permissionx:permissionx:$permissionX_version",
-            //
-            glide                   :"com.github.bumptech.glide:glide:${glide_version}",
-            glide_compiler          :"com.github.bumptech.glide:compiler:${glide_version}"
+            glide                          : "com.github.bumptech.glide:glide:${glide_version}",
+            glide_compiler                 : "com.github.bumptech.glide:compiler:${glide_version}"
     ]
 
 

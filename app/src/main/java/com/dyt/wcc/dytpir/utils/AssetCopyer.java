@@ -59,7 +59,7 @@ public class AssetCopyer {
 				file.mkdirs();
 				for (String fileName : fileNames) {
 					//                    Log.e(TAG, "copyAssetsToDst: fileName======== > " + fileName);
-					if ("".equals(srcPath) && fileName.contains("dat") || (fileName.contains("configs")) || (fileName.contains(".bin"))) {
+					if ("".equals(srcPath) && fileName.contains("dat") || (fileName.contains("configs")) || (fileName.contains(".pdf"))) {
 						//                        Log.e(TAG, "copyAssetsToDst: fileName===NO=endsWith=dat=== > " + fileName);
 						//                        copyAssetsToDst(context,srcPath + "/" + fileName,dstPath+"/"+fileName);
 						//                    }else{

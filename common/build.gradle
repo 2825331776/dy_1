@@ -56,5 +56,11 @@ dependencies {
 
     api libraries.glide
     api libraries.glide_compiler
-    api libraries.permissionX
+//   permissionX
+//    api libraries.perpermissionX
+
+//    api libraries.permissionsDispatcher
+//    annotationProcessor libraries.permissionsDispatcher_processor
+
+    api libraries.xxPremissions
 }
