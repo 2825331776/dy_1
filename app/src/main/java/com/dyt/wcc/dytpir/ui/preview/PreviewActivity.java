@@ -574,7 +574,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						builder.setSingleChoiceItems(DYConstants.languageArray, sp.getInt(DYConstants.LANGUAGE_SETTING, 0), (dialog, which) -> {
 							if (which != sp.getInt(DYConstants.LANGUAGE_SETTING, 0)) {
 								sp.edit().putInt(DYConstants.LANGUAGE_SETTING, which).apply();
-								PLRPopupWindows.dismiss();
+								if (settingPopWindows!=null)settingPopWindows.dismiss();
 								toSetLanguage(which);
 							}
 							dialog.dismiss();
@@ -610,7 +610,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	@Override
 	public void onStop () {
-
 		if (isDebug)
 			Log.e(TAG, "onStop: ");
 		if (mUsbMonitor != null) {
@@ -645,7 +644,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		super.onCreate(savedInstanceState);
 		if (isDebug)
 			Log.e(TAG, "onCreate: ");
-		//		PreviewActivityPermissionsDispatcher.showCameraWithPermissionCheck(this);
 	}
 
 	@Override
@@ -1228,7 +1226,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			return;
 		}
 		LanguageUtils.updateLanguage(context, locale);//更新语言参数
-		Intent intent = new Intent(context, PreviewActivity.class);
+		Intent intent = new Intent(this, PreviewActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		context.startActivity(intent);
 		//		finish();
@@ -1517,12 +1515,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			//			Log.e(TAG, "initListener: " + mDataBinding.textureViewPreviewActivity.getTemperatureCallback());
 
 			startActivity(getPdfFileIntent("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/ColorChanges.pdf"));
-
+//			startActivity(getPdfFileIntent("/storage/emulated/0/Android/22.pdf"));
 			//****************************动画开始*************************************
 			//读取一张图片到某个控件，然后把图片缩小 给相册这个按钮。透明度逐渐变低
 			//				Animator animator = new ObjectAnimator();
 			//				Animation animation = new TranslateAnimation();
-
 
 			//************************检测当前语言设置********************************
 			//				if (isDebug){
@@ -1541,62 +1538,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			//				}
 			//				Log.e(TAG, "onClick: " + dd);
 			//				mUvcCameraHandler.startTemperaturing();
-
 			//*****************************************************************
-			//				Button bt = null;
-			//				bt.setText("111");
-			//				new Thread(new Runnable() {
-			//					@Override
-			//					public void run () {
-			//						AssetManager am = getAssets();
-			//						InputStream is;
-			//						try {
-			//							is = am.open("tau_H.bin");
-			//							int length = is.available();
-			//							tau_data = new byte[length];
-			//							if (is.read(tau_data) != length) {
-			//								Log.d(TAG, "read file fail ");
-			//							}
-			//							Log.d(TAG, "read file lenth " + length);
-			//						} catch (IOException e) {
-			//							e.printStackTrace();
-			//						}
-			//						//						for (byte data : tau_data) {
-			//						//							Log.i(TAG, "run: tau_data => " + data);
-			//						//						}
-			////						String binPath = mContext.get().getExternalFilesDir(null).getAbsolutePath() + File.separator+ "tau_H.bin";
-			////						Log.e(TAG, "run:binPath =  "+ binPath);
-			////						File file = new File(binPath);
-			////						Log.e(TAG, "run: "+file.exists());
-			////						char [] path = binPath.toCharArray();
-			////						Log.e(TAG, "run:  path [] =" + Arrays.toString(path));
-			////						char [] data = TinyCUtils.toChar(tau_data);
-			//						short[] shortArrayData = TinyCUtils.byte2Short(tau_data);
-			//						float hum = 100;
-			//						float oldTemp = 100;
-			//						float distance = 100;
-			////						char [] re = new char[4];
-			////						Libirtemp.read_tau(data,hum,oldTemp, distance,re);
-			////						Log.e(TAG, "run: ======re =" + Arrays.toString(re));
-			//						short value = TinyCUtils.getLUT(oldTemp, hum, distance, shortArrayData);
-			//						Log.e(TAG, "run: ======value =" + value);
-			////						Log.e(TAG, "run:  a 1= > " + (int) (re[0]));
-			////						Log.e(TAG, "run:  a 2= > " + (int) (re[1]));
-			////						Log.e(TAG, "run:  a 3= > " + (int) (re[2]));
-			////						Log.e(TAG, "run:  a 4= > " + (int) (re[3]));
-			////						for (int a : re) {
-			////							Log.e(TAG, "run:  a = > " + (int) a);
-			////						}
-			////						runOnUiThread(new Runnable() {
-			////							@Override
-			////							public void run () {
-			////								Toast.makeText(PreviewActivity.this, "read nuc success" + tau_data.length, Toast.LENGTH_SHORT).show();
-			////							}
-			////						});
-			//					}
-			//				}).start();
-			//				setValue(UVCCamera.CTRL_ZOOM_ABS,0x8000);
-
 		});
 		//
 		/**

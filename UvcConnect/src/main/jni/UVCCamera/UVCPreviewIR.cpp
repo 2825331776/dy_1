@@ -87,11 +87,14 @@ UVCPreviewIR::~UVCPreviewIR() {
     if (mDeviceHandle) {
         uvc_stop_streaming(mDeviceHandle);
     }
+    LOGE("====1=====");
     mDeviceHandle = NULL;
     if (mPreviewWindow)
         ANativeWindow_release(mPreviewWindow);
     mPreviewWindow = NULL;
+    LOGE("====2=====");
     SAFE_DELETE(mFrameImage);
+    LOGE("====3=====");
 //    mFrameImage = NULL;
     pthread_mutex_destroy(&preview_mutex);
     pthread_cond_destroy(&preview_sync);
@@ -104,6 +107,7 @@ UVCPreviewIR::~UVCPreviewIR() {
 
 //    pthread_cond_destroy(&tinyC_send_order_sync);
     pthread_mutex_destroy(&tinyC_send_order_mutex);
+    LOGE("====4=====");
     EXIT();
 }
 
