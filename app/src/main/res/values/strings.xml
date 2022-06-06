@@ -1,12 +1,15 @@
 <resources>
     <!--关于页面-->
-    <string name="CompanyName">Shenzhen Dianyang Technology Co., Ltd.</string>
+    <string name="CompanyName">Shenzhen NOYAFA ELECTRONIC Co., Ltd.</string>
     <string name="CompanyWebsite_info">WebSite: </string>
-    <string name="CompanyWebsite">www.dyt-ir.com</string>
-    <string name="contactUs">Contact us: </string>
-    <string name="ContactEmail">service@dianytech.com</string>
+    <string name="CompanyWebsite">www.noyafa.com</string>
+    <string name="About_tel_info">Tel：</string>
+    <string name="About_tel_content">0086–755–2778 6545</string>
+    <string name="ContactEmail">sale@nayafa.com</string>
+    <string name="About_Main_business_info">E-mail：</string>
+    <string name="About_Main_business_content">sale@noyafa.com</string>
 
-    <string name="app_name">DytSpectrumOwl</string>
+    <string name="app_name">NOYAFA</string>
     <string name="Gallery">Gallery</string>
     <string name="Welcome">Welcome</string>
     <string name="MediaBrowser">Gallery</string>

@@ -71,7 +71,7 @@ import java.text.DecimalFormat;
 public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 		implements TextureView.SurfaceTextureListener, CameraViewInterface {
 
-	private static final boolean DEBUG = false;    // TODO set false on release
+	private static final boolean DEBUG = true;    // TODO set false on release
 	private static final String  TAG   = "UVCCameraTextureView";
 
 
@@ -835,13 +835,13 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 				if (DEBUG)
 					Log.i(TAG, "RenderThread#updatePreviewSurface:");
 				synchronized (mSync) {
-					if (mPreviewSurface != null) {
-						if (DEBUG)
-							Log.d(TAG, "updatePreviewSurface:release mPreviewSurface");
-						mPreviewSurface.setOnFrameAvailableListener(null);
-						mPreviewSurface.release();
-						mPreviewSurface = null;
-					}
+//					if (mPreviewSurface != null) {
+//						if (DEBUG)
+//							Log.d(TAG, "updatePreviewSurface:release mPreviewSurface");
+//						mPreviewSurface.setOnFrameAvailableListener(null);
+//						mPreviewSurface.release();//释放之后，旋转就出错
+//						mPreviewSurface = null;
+//					}
 					mEglSurface.makeCurrent();
 					//           if (mTexId >= 0) {
 					//				mDrawer.deleteTex(mTexId);
@@ -858,7 +858,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 					mPreviewSurface = new SurfaceTexture(mTexIds[0]);
 					mPreviewSurface.setDefaultBufferSize(mViewWidth, mViewHeight);
 					mPreviewSurface.setOnFrameAvailableListener(mHandler);
-					Log.e(TAG, "mHandler=====" + mHandler);
+					if (DEBUG)Log.e(TAG, "mHandler=====" + mHandler);
 					// notify to caller thread that previewSurface is ready
 					mSync.notifyAll();
 				}

@@ -18,7 +18,7 @@ android {
     buildToolsVersion versions.buildToolsV
 
     defaultConfig {
-        applicationId "com.dyt.wcc.dytpir"
+        applicationId "com.dyt.wcc.jms"
         minSdkVersion versions.minSdkV
         targetSdkVersion versions.targetSdkV
         versionCode versions.VCode
@@ -180,7 +180,7 @@ android {
                 if (outputFile != null && outputFile.name.endsWith('.apk')) {
 //                    def fileName = "DytSpectrumOwl"+ "_${variant.flavorName}_${variant.buildType.name}_v${variant.productFlavors[0].versionName}" +
 //                            "_b${variant.productFlavors[0].versionCode}_${releasePackageTime()}.apk"
-                    def fileName = "DytSpectrumOwl" + "_${variant.buildType.name}_v${variant.productFlavors[0].versionName}" +
+                    def fileName = "DytNOYAFA" + "_${variant.buildType.name}_v${variant.productFlavors[0].versionName}" +
                             "_b${variant.productFlavors[0].versionCode}_${releasePackageTime()}.apk"
                     outputFileName = fileName
                 }

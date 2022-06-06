@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#if 0    // set 1 if you don't need debug log
+#if 1    // set 1 if you don't need debug log
 #ifndef LOG_NDEBUG
 #define    LOG_NDEBUG        // w/o LOGV/LOGD/MARK
 #endif
@@ -26,7 +26,7 @@ using namespace std;
 
 #include <vector>
 
-#define    LOCAL_DEBUG 0    // set 1 if you don't need debug log
+#define    LOCAL_DEBUG 1    // set 1 if you don't need debug log
 #define MAX_FRAME 4
 #define PREVIEW_PIXEL_BYTES 4    // RGBA/RGBX
 #define FRAME_POOL_SZ MAX_FRAME
@@ -1217,7 +1217,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     //读取配置文件的 加密SN
                     FILE *inFile = NULL;
                     inFile = fopen(
-                            "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/configs.txt",
+                            "/storage/emulated/0/Android/data/com.dyt.wcc.jms/files/configs.txt",
                             "a+");
                     //存储文件流数据 的指针
                     char *fileStore;

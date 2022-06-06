@@ -48,7 +48,7 @@
 #include "Parameters.h"
 #include "libuvc_internal.h"
 
-#define    LOCAL_DEBUG 0
+#define    LOCAL_DEBUG 1
 #define LOG_TAG "UVCCamera"
 
 //**********************************************************************
@@ -251,7 +251,7 @@ int UVCCamera::release() {
         //丢弃预览对象
         LOGE("UVCCamera::release() 0");
 //		SAFE_DELETE(mFrameImage);
-        SAFE_DELETE(mPreview);
+
         LOGE("UVCCamera::release() 1");
         // 相机close
         uvc_close(mDeviceHandle);
@@ -277,9 +277,12 @@ int UVCCamera::release() {
         mPid = 0;
         mVid = 0;
         free(mUsbFs);
-        LOGE("UVCCamera::release() 9");
+
         mUsbFs = NULL;
     }
+
+    SAFE_DELETE(mPreview);
+    LOGE("UVCCamera::release() 9");
 //    FILE* outFile = NULL;
 //    outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
 //    if(outFile != NULL)
