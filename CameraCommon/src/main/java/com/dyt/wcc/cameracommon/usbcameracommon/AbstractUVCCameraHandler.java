@@ -1288,7 +1288,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 					mUVCCamera = null;
 				}
 				if (camera != null) {
-					//                    camera.stopPreview();
+//					camera.stopPreview();
 					mIsPreviewing = false;
 					camera.destroy();
 					callOnClose();

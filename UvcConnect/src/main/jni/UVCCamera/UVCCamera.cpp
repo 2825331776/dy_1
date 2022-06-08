@@ -174,7 +174,7 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
             // カメラのopen処理
 
             result = uvc_open(mDevice, &mDeviceHandle);
-            LOGE("result: uvc_open ==  %d", result);
+//            LOGE("result: uvc_open ==  %d", result);
 //			LOGE("mDevice: %s",mDevice);
 //			LOGE("mDeviceHandle: %s",mDeviceHandle);
             if (LIKELY(!result)) {
@@ -214,7 +214,6 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
 //                    fclose(outFile);
 //                }
             } else {
-                // open出来なかった時
 //                LOGE("could not open camera:err=%d", result);
                 uvc_unref_device(mDevice);
 //				SAFE_DELETE(mDevice);	// 参照カウンタが0ならuvc_unref_deviceでmDeviceがfreeされるから不要 XXX クラッシュ, 既に破棄されているのを再度破棄しようとしたからみたい
@@ -254,7 +253,7 @@ int UVCCamera::release() {
 
         LOGE("UVCCamera::release() 1");
         // 相机close
-        uvc_close(mDeviceHandle);
+       uvc_close(mDeviceHandle);
         LOGE("UVCCamera::release() 2");
         mDeviceHandle = NULL;
     }
@@ -265,14 +264,10 @@ int UVCCamera::release() {
         LOGE("UVCCamera::release() 4");
         mDevice = NULL;
     }
-    // 清除相机功能标志
-    LOGE("UVCCamera::release() 5");
-    clearCameraParams();
-    LOGE("UVCCamera::release() 6");
     if (mUsbFs) {
-        LOGE("UVCCamera::release() 7");
+        LOGE("UVCCamera::release() 5");
         close(mFd);
-        LOGE("UVCCamera::release() 8");
+        LOGE("UVCCamera::release() 6");
         mFd = 0;
         mPid = 0;
         mVid = 0;
@@ -280,8 +275,11 @@ int UVCCamera::release() {
 
         mUsbFs = NULL;
     }
-
     SAFE_DELETE(mPreview);
+    LOGE("UVCCamera::release() 7");
+    // 清除相机功能标志
+    LOGE("UVCCamera::release() 8");
+    clearCameraParams();
     LOGE("UVCCamera::release() 9");
 //    FILE* outFile = NULL;
 //    outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");

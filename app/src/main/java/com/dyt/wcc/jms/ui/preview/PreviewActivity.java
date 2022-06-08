@@ -12,7 +12,6 @@ import android.graphics.Paint;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
 import android.os.Bundle;
@@ -54,6 +53,7 @@ import com.dyt.wcc.common.widget.MyCustomRangeSeekBar;
 import com.dyt.wcc.common.widget.dragView.DrawLineRectHint;
 import com.dyt.wcc.common.widget.dragView.MeasureEntity;
 import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
+import com.dyt.wcc.jms.BuildConfig;
 import com.dyt.wcc.jms.R;
 import com.dyt.wcc.jms.constans.DYConstants;
 import com.dyt.wcc.jms.constans.DYTApplication;
@@ -77,7 +77,6 @@ import com.huantansheng.easyphotos.ui.dialog.LoadingDialog;
 import com.king.app.dialog.AppDialog;
 import com.king.app.updater.AppUpdater;
 import com.king.app.updater.http.OkHttpManager;
-import com.serenegiant.common.BuildConfig;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 
@@ -130,9 +129,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private int                                     maxIndex = 0;
 	private List<UpdateObj>                         updateObjList;
 	//传感器
-	private SensorManager                           mSensorManager;
-	//磁场传感器，加速度传感器 mMagneticSensor,
-	private Sensor                                  mAccelerometerSensor;
 	private AbstractUVCCameraHandler.CameraCallback cameraCallback;
 	private LoadingDialog                           loadingDialog;
 
@@ -857,10 +853,17 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		switch (language) {
 			case -1:
 				if (locale_language.equals("zh")) {
+					language = 0;
 					sp.edit().putInt(DYConstants.LANGUAGE_SETTING, 0).apply();
+					configuration.locale = Locale.SIMPLIFIED_CHINESE;
+					configuration.setLayoutDirection(Locale.SIMPLIFIED_CHINESE);
 				} else {
+					language = 1;
 					sp.edit().putInt(DYConstants.LANGUAGE_SETTING, 1).apply();
+					configuration.locale = Locale.ENGLISH;
+					configuration.setLayoutDirection(Locale.ENGLISH);
 				}
+				getResources().updateConfiguration(configuration, metrics);
 				break;
 			case 0:
 				sp.edit().putInt(DYConstants.LANGUAGE_SETTING, 0).apply();
@@ -1393,15 +1396,22 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		};
 
 		locale_language = Locale.getDefault().getLanguage();
-		//		if(isDebug)Log.e(TAG, "initView: ===============locale_language==============" + locale_language);
+//		if(isDebug)Log.e(TAG, "initView: ===============locale_language==============" + locale_language);
 		language = sp.getInt(DYConstants.LANGUAGE_SETTING, -1);
 		switch (language) {
 			case -1:
 				if (locale_language.equals("zh")) {
+					language = 0;
 					sp.edit().putInt(DYConstants.LANGUAGE_SETTING, 0).apply();
+					configuration.locale = Locale.SIMPLIFIED_CHINESE;
+					configuration.setLayoutDirection(Locale.SIMPLIFIED_CHINESE);
 				} else {
+					language = 1;
 					sp.edit().putInt(DYConstants.LANGUAGE_SETTING, 1).apply();
+					configuration.locale = Locale.ENGLISH;
+					configuration.setLayoutDirection(Locale.ENGLISH);
 				}
+				getResources().updateConfiguration(configuration, metrics);
 				break;
 			case 0:
 				sp.edit().putInt(DYConstants.LANGUAGE_SETTING, 0).apply();
@@ -1436,8 +1446,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		screenHeight = dm.heightPixels;
 		mSendCommand = new SendCommand();
 
-		mSensorManager = (SensorManager) mContext.get().getSystemService(Context.SENSOR_SERVICE);
-		mAccelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
 		XXPermissions.with(this).permission(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO).request(new OnPermissionCallback() {
 			@Override

@@ -86,6 +86,7 @@ UVCPreviewIR::~UVCPreviewIR() {
     ENTER();
     if (mDeviceHandle) {
         uvc_stop_streaming(mDeviceHandle);
+//        SAFE_DELETE(mDeviceHandle)
     }
     LOGE("====1=====");
     mDeviceHandle = NULL;
