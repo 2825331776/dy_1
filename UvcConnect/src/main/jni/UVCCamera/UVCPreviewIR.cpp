@@ -62,6 +62,7 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh, FrameImage *frameImage) {
     mIsCopyPicture = false;
     OutPixelFormat = 3;
     mTypeOfPalette = 1;
+    is_first_run = true;
 
 
     pthread_cond_init(&preview_sync, NULL);
@@ -88,6 +89,7 @@ UVCPreviewIR::~UVCPreviewIR() {
         uvc_stop_streaming(mDeviceHandle);
 //        SAFE_DELETE(mDeviceHandle)
     }
+    is_first_run = true;
     LOGE("====1=====");
     mDeviceHandle = NULL;
     if (mPreviewWindow)
@@ -184,10 +186,11 @@ int UVCPreviewIR::setPreviewDisplay(ANativeWindow *preview_window) {
                                                      previewFormat);
                 } else if (mPid == 22592 && mVid == 3034) {
                     int status = ANativeWindow_setBuffersGeometry(mPreviewWindow,
-                                                     requestWidth, requestHeight, previewFormat);
-                    if (status){
+                                                                  requestWidth, requestHeight,
+                                                                  previewFormat);
+                    if (status) {
                         LOGE("=============设置失败====================");
-                    } else{
+                    } else {
                         LOGE("=============设置成功====================");
                     }
                 }
@@ -360,52 +363,76 @@ bool UVCPreviewIR::snRightIsPreviewing() {
     return isSnRight();
 }
 
-//2022年5月17日16:46:17 设置机芯参数
+/**
+ * 2022年5月17日16:46:17 设置TinyC增益模式：低增益对应最高200℃ 高增益最高599.9℃
+ * @param value 1低增益 0高增益
+ * @param mark  标记位
+ * @return  是否设置成功
+ */
 bool UVCPreviewIR::setMachineSetting(int value, int mark) {
-//    LOGE("============setMachineSetting============value ====>%d", value);
+//    pthread_mutex_lock(&tinyC_send_order_mutex);
+    LOGE("============setMachineSetting============value ====>%d", value);
     bool result = false;
+    unsigned char data_set_gain[8] = {0x14, 0xc5, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00};
+    unsigned char data_get_gain[8] = {0x14, 0x85, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00};
 
-    unsigned char data_set[8] = {0x14, 0xc5, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00};
-    unsigned char flashId_get[2] = {5};
-    flashId_get[1] = 100;
-    int getData = flashId_get[1];
-//    unsigned char flashId2_get[2] = {100};
-    unsigned char data_get[8] = {0x14, 0x85, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00};
-    unsigned char data2[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02};
 
-    while (sendCount < 3 && (value != flashId_get[1])) {
-        uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data_get,
-                            sizeof(data_get), 1000);
-        uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
-                            1000);
+    unsigned char flashId_get[2];
+    flashId_get[1] = 0x5;
+    flashId_get[0] = 0x5;
+    int machine_gain_get = flashId_get[1];//从机芯读取的 高低温增益模式。0代表低增益，高温度。1代表高增益，低温度。
+    unsigned char data_gain[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02};
+
+
+    while (sendCount < 100 && (value != machine_gain_get) && !result) {
         if (getTinyCDevicesStatus()) {
-//            LOGE("============getMachineSetting======get=order=========");
+            uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data_get_gain,
+                                sizeof(data_get_gain), 1000);
+            uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data_gain,
+                                sizeof(data_gain),
+                                1000);
+            //获取机芯的 高低温增益模式
+
             uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId_get,
                                 sizeof(flashId_get),
                                 1000);
-            getData = flashId_get[1];
-//            LOGE("flashId_get 0 ==== %d", flashId_get[0]);
-//            LOGE("flashId_get 1 ==== %d", flashId_get[1]);
-        }
-        if (getData != value) {
-            data_set[6] = (value >> 8);
-            data_set[7] = (value & 0xff);
-            if (getTinyCDevicesStatus()) {
-//                LOGE("============setMachineSetting======set=order=========");
-                uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data_set,
-                                    sizeof(data_set),
+            machine_gain_get = flashId_get[1];
+            LOGE("============获取TinyC 机芯的 高低温增益模式。=machine_gain_get=%d==flashId_get[1]=====",
+                 machine_gain_get);
+//        } else {
+//            LOGE("=======setMachineSetting====获取高低温增益 状态不对==============");
+//        }
+
+            //如果设置的值 与 增益不匹配，切换
+            if (machine_gain_get != value) {
+                data_set_gain[6] = (value >> 8);
+                data_set_gain[7] = (value & 0xff);
+//            if (getTinyCDevicesStatus()) {
+//                LOGE("============setMachineSetting======set=order====value=%d====", value);
+                uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data_set_gain,
+                                    sizeof(data_set_gain),
                                     1000);
-                uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
+                uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data_gain,
+                                    sizeof(data_gain),
                                     1000);
+//            } else {
+//                LOGE("=======setMachineSetting=====设置机芯高低温增益状态不对==============");
+//            }
+            } else {
+                LOGE("============设置机芯高低温增益成功==============");
+//                result = true;
+                return true;
             }
-            if (sendCount != 0) {
-                mark = mark - 1;
-            }
+            sendCount++;
         }
-        sendCount++;
     }
     sendCount = 0;
-    result = (mark == value);
+    //打挡指令。
+//    unsigned char data_refresh[8] = {0x0d, 0xc1, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+//    uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078,
+//                        0x1d00, data_refresh, sizeof(data_refresh), 1000);
+//    setTinySaveCameraParams();
+//    pthread_mutex_unlock(&tinyC_send_order_mutex);
     return result;
 }
 
@@ -589,7 +616,7 @@ int UVCPreviewIR::getTinyCDevicesStatus() {
                 ret = 1;
                 break;
             } else if ((status & 0xFC) != 0x00) {
-                RETURN(ret, int)
+//                RETURN(ret, int)
             }
         }
     }
@@ -1024,7 +1051,6 @@ void *UVCPreviewIR::DecryptSN(void *userSn, void *robotSn, void *returnData) {
 }
 
 
-
 /**
  *
  * @param ctrl Control block, processed using {uvc_probe_stream_ctrl} or {uvc_get_stream_ctrl_format_size}
@@ -1252,8 +1278,9 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     //遍历 结果 是否 符合筛选
                     for (int i = 0; i < splitSize; i++) {
 //                       LOGE("=============split_result=== %s =====",split_result[i].c_str());
-                        AES aes ;
-                        string decryptionSplitChild = aes.DecryptionAES(split_result[i]).substr(0, 8);
+                        AES aes;
+                        string decryptionSplitChild = aes.DecryptionAES(split_result[i]).substr(0,
+                                                                                                8);
 //                         LOGE("============decryptionSplitChild=%s=======",decryptionSplitChild.c_str());
 ////                       unsigned char* decryptionChild = decryptionSplitChild.c_str();
                         unsigned char *decryptionChild = new unsigned char[8];
@@ -1317,7 +1344,6 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             //打挡指令
                             uvc_set_zoom_abs(mDeviceHandle, 0x8000);
                             oldADValue = newADValue;
-//                            if (mFrameImage)mFrameImage->shutRefresh();
                             all_frame_count = 0;
                         }
 //                        LOGE("=====newADValue==%d====oldADValue===%d",newADValue,oldADValue);
@@ -1325,12 +1351,23 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     }
                     //TinyC 打挡策略
                     if (mPid == 22592 && mVid == 3034) {
+                        //自动调整tinyc机芯到 低温模式
+                        if (is_first_run) {
+//                        LOGE("===================is_first_run=======================begin==");
+                            if (setMachineSetting(1, 1)) {
+                                is_first_run = false;
+                            } else {
+                                LOGE("===================is_first_run=======设置默认低增益模式失败===还会再次设置=======");
+                            }
+                        }
+
                         tinyC_frame_count++;
                         if (tinyC_frame_count > tinyC_block_order_interval) {
                             //获取指令。
                             unsigned char reData[2] = {0};
                             unsigned char data[8] = {0x0d, 0x8b, 0x00, 0x00, 0x00, 0x00, 0x00,
                                                      0x02};
+
                             if (mDeviceHandle) {
                                 uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d00, data,
                                                     sizeof(data),
@@ -1368,13 +1405,11 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
             pthread_mutex_unlock(&preview_mutex);
 
 //            LOGE("=============mIsTemperaturing==唤醒温度回调线程=%d==========",mIsTemperaturing);
-//            pthread_mutex_lock(&temperature_mutex);
             if (mIsTemperaturing)//绘制的时候唤醒温度绘制的线程
             {
 //                LOGE("do_preview=========================唤醒温度回调线程===============");
                 pthread_cond_signal(&temperature_sync);
             }
-//            pthread_mutex_unlock(&temperature_mutex);
             //LOGE("do_preview4");
         }
 #if LOCAL_DEBUG
@@ -1683,6 +1718,7 @@ void UVCPreviewIR::fixedTempStripChange(bool state) {
  */
 void UVCPreviewIR::setTinySaveCameraParams() {
 //		保存设置
+//    pthread_mutex_lock(&tinyC_send_order_mutex);
     int ret = UVC_ERROR_IO;
     unsigned char data[8] = {0x14, 0x85, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00};
     data[0] = 0x01;
@@ -1695,6 +1731,7 @@ void UVCPreviewIR::setTinySaveCameraParams() {
     data[7] = 0x00;
     ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d00, data, sizeof(data), 1000);
     LOGE("======== 保存设置 ============ ret === %d ==================", ret);
+//    pthread_mutex_unlock(&tinyC_send_order_mutex);
 }
 
 void UVCPreviewIR::savePicDefineData() {

@@ -378,10 +378,10 @@ public class SwitchMultiButton extends View {
      * @param mSelectedTab
      * @return
      */
-    public SwitchMultiButton setSelectedTab(int mSelectedTab) {
+    public SwitchMultiButton setSelectedTab(int mSelectedTab , boolean needListener) {
         this.mSelectedTab = mSelectedTab;
         invalidate();
-        if (onSwitchListener != null) {
+        if (onSwitchListener != null && needListener) {
             onSwitchListener.onSwitch(mSelectedTab, mTabTexts[mSelectedTab]);
         }
         return this;

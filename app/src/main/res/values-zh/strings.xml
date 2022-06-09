@@ -9,8 +9,6 @@
     <string name="About_Main_business_info">主营：</string>
     <string name="About_Main_business_content">热成像仪、测距仪、寻线仪、光纤测试仪</string>
 
-
-
     <string name="app_name">精明鼠</string>
     <string name="Gallery">相册</string>
     <string name="Welcome">欢迎</string>
@@ -53,7 +51,8 @@
     <string name="setting_high_low_temp_gain_toggle_info">高低温切换</string>
     <string name="setting_high_gain">高温</string>
     <string name="setting_low_gain">低温</string>
-
+    <string name="toast_setting_HL_swtich_success">高低温切换成功</string>
+    <string name="toast_setting_HL_swtich_fail">高低温切换失败</string>
 
     <string name="setting_language_chinese">中文</string>
     <string name="setting_language_english">英语</string>

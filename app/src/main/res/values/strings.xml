@@ -58,6 +58,8 @@
     <string name="setting_high_low_temp_gain_toggle_info">High and Low TEMP. Switch</string>
     <string name="setting_high_gain">High</string>
     <string name="setting_low_gain">Low</string>
+    <string name="toast_setting_HL_swtich_success">High and low temperature switch successfully.</string>
+    <string name="toast_setting_HL_swtich_fail">High and low temperature switching failed.</string>
 
     <string name="setting_language_chinese">Chinese</string>
     <string name="setting_language_english">English</string>

@@ -437,7 +437,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					}
 					int temp_unit = sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0);
 					//第三步：初始化自定义控件 温度单位 设置
-					popSettingBinding.switchChoiceTempUnit.setText(DYConstants.tempUnit).setSelectedTab(temp_unit).setOnSwitchListener((position, tabText) -> {//切换 温度单位 监听器
+					popSettingBinding.switchChoiceTempUnit.setText(DYConstants.tempUnit).setSelectedTab(temp_unit,false).setOnSwitchListener((position, tabText) -> {//切换 温度单位 监听器
 						mDataBinding.dragTempContainerPreviewActivity.setTempSuffix(position);
 						sp.edit().putInt(DYConstants.TEMP_UNIT_SETTING, position).apply();
 						//切换 温度单位 需要更改 输入框的 单位
@@ -487,7 +487,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						}
 					});
 					//录制声音
-					popSettingBinding.switchChoiceRecordAudio.setSelectedTab(sp.getInt(DYConstants.RECORD_AUDIO_SETTING, 1));
+					popSettingBinding.switchChoiceRecordAudio.setSelectedTab(sp.getInt(DYConstants.RECORD_AUDIO_SETTING, 1),false);
 					popSettingBinding.switchChoiceRecordAudio.setOnSwitchListener((position, tabText) -> {
 						sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING, position).apply();
 						//						if (isDebug)Log.e(TAG, "onSwitch: " + "=============================");
@@ -495,7 +495,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					//高低温增益切换
 					//tinyc set gain mode:Data_L = 0x0, low gain， Data_L = 0x1,  high gain
 					//拔出之后默认为低温模式。
-					popSettingBinding.switchHighlowGain.setSelectedTab(sp.getInt(DYConstants.GAIN_TOGGLE_SETTING, 0));
+					popSettingBinding.switchHighlowGain.setSelectedTab(sp.getInt(DYConstants.GAIN_TOGGLE_SETTING, 0),false);
 					popSettingBinding.switchHighlowGain.setOnSwitchListener((position, tabText) -> {
 						//						if (doubleGainClick()) {
 						//							return;
@@ -512,49 +512,49 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 							mHandler.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), 1800);
 						} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
 							loadingDialog.show();
+
 							if (position == 0) {
 								new Thread(new Runnable() {
 									@Override
 									public void run () {
-										mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
-									}
-								}).start();
-
-								mHandler.postDelayed(new Runnable() {
-									@Override
-									public void run () {
-										setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
+										final boolean isSuccess = mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
 										runOnUiThread(new Runnable() {
 											@Override
 											public void run () {
+												if (!isSuccess){
+//													showToast(getString(R.string.toast_setting_HL_swtich_success));
+//												}else {
+//													showToast(getString(R.string.toast_setting_HL_swtich_fail));
+													popSettingBinding.switchHighlowGain.setSelectedTab(1,false);
+												}
 												loadingDialog.dismiss();
 											}
 										});
 									}
-								}, 2000);
+								}).start();
+
 							} else {
 								new Thread(new Runnable() {
 									@Override
 									public void run () {
-										boolean status = mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 0, 0);
-									}
-								}).start();
-								mHandler.postDelayed(new Runnable() {
-									@Override
-									public void run () {
-										setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
+										final boolean isSuccess = mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 0, 0);
 										runOnUiThread(new Runnable() {
 											@Override
 											public void run () {
+												if (!isSuccess){
+//													showToast(getString(R.string.toast_setting_HL_swtich_success));
+//												}else {
+//													showToast(getString(R.string.toast_setting_HL_swtich_fail));
+													popSettingBinding.switchHighlowGain.setSelectedTab(0,false);
+												}
 												loadingDialog.dismiss();
 											}
 										});
 									}
-								}, 2000);
+								}).start();
 							}
 						}
 					});
-
 
 					// 切换语言 spinner
 					popSettingBinding.btShowChoiceLanguage.setText(DYConstants.languageArray[sp.getInt(DYConstants.LANGUAGE_SETTING, 0)]);
@@ -911,31 +911,28 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
 			}, 300);
 
-			if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
-				mHandler.postDelayed(new Runnable() {
-					@Override
-					public void run () {
-						mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
-					}
-				}, 5000);
-
-				mHandler.postDelayed(new Runnable() {
-					@Override
-					public void run () {
-						setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
-					}
-				}, 6000);
-
-				mHandler.postDelayed(new Runnable() {
-					@Override
-					public void run () {
-						if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
-							mUvcCameraHandler.tinySaveCameraParams();
-					}
-				}, 6500);
-
-
-			}
+			//6.5s之后给 机芯强制设置为 低温模式（测试 发现不是所有设备都生效）
+//			if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
+//				mHandler.postDelayed(new Runnable() {
+//					@Override
+//					public void run () {
+//						mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
+//					}
+//				}, 5000);
+//				mHandler.postDelayed(new Runnable() {
+//					@Override
+//					public void run () {
+//						setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
+//					}
+//				}, 6000);
+//				mHandler.postDelayed(new Runnable() {
+//					@Override
+//					public void run () {
+//						if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
+//							mUvcCameraHandler.tinySaveCameraParams();
+//					}
+//				}, 6500);
+//			}
 		}
 
 		@Override
@@ -1107,42 +1104,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		} else if (mPid == 22592 && mVid == 3034) {
 			DYTApplication.setRobotSingle(DYTRobotSingle.TinYC_256_192);
 		}
-
-		//初始化 设置为低温模式
-		//		if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
-		//			mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8021), 200); //最高200度
-		//			mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000), 1000);
-		//			mHandler.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), 1800);
-		//		} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
-		////			loadingDialog.show();
-		//				new Thread(new Runnable() {
-		//					@Override
-		//					public void run () {
-		//						mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
-		//					}
-		//				}).start();
-		//
-		//				mHandler.postDelayed(new Runnable() {
-		//					@Override
-		//					public void run () {
-		//						setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
-		//						runOnUiThread(new Runnable() {
-		//							@Override
-		//							public void run () {
-		////								loadingDialog.dismiss();
-		//							}
-		//						});
-		//					}
-		//				}, 2000);
-		//		}
 	}
 
 	private int setValue (final int flag, final int value) {//设置机芯参数,调用JNI层
 		return mUvcCameraHandler != null ? mUvcCameraHandler.setValue(flag, value) : 0;
 	}
-
-	//	private static final int REQUEST_CODE_UNKNOWN_APP = 10085;
-
 
 	/**
 	 * 设置机芯参数 为默认值

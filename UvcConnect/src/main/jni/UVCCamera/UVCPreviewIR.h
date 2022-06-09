@@ -131,6 +131,8 @@ private:
 
     void *tinyC_params;
     volatile int tinyC_mark;
+    //表示是否是第一次连接。
+    volatile bool is_first_run ;
 
 
     //TinyC 发送指令专用线程
