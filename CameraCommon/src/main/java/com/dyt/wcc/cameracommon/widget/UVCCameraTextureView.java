@@ -858,7 +858,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 					mPreviewSurface = new SurfaceTexture(mTexIds[0]);
 					mPreviewSurface.setDefaultBufferSize(mViewWidth, mViewHeight);
 					mPreviewSurface.setOnFrameAvailableListener(mHandler);
-					if (DEBUG)Log.e(TAG, "mHandler=====" + mHandler);
+//					if (DEBUG)Log.e(TAG, "mHandler=====" + mHandler);
 					// notify to caller thread that previewSurface is ready
 					mSync.notifyAll();
 				}

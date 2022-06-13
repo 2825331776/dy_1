@@ -9,6 +9,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Build;
+import android.os.LocaleList;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
@@ -37,6 +39,29 @@ public class LanguageUtils {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public static ContextWrapper wrap (Context context) {
+		Resources res = context.getResources();
+		Configuration configuration = res.getConfiguration();
+		//获得你想切换的语言，可以用SharedPreferences保存读取
+		Locale newLocale = Locale.getDefault();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			configuration.setLocale(newLocale);
+			LocaleList localeList = new LocaleList(newLocale);
+			LocaleList.setDefault(localeList);
+			configuration.setLocales(localeList);
+			context = context.createConfigurationContext(configuration);
+		}
+		//		else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+		//			configuration.setLocale(newLocale);
+		//			context = context.createConfigurationContext(configuration);
+		//		}
+		else {
+			configuration.locale = newLocale;
+			res.updateConfiguration(configuration, res.getDisplayMetrics());
+		}
+		return new ContextWrapper(context);
 	}
 
 	/**
@@ -94,8 +119,13 @@ public class LanguageUtils {
 	 * @return
 	 */
 	private static String getPrefAppLocaleLanguage () {
-		SharedPreferences sp = DYTApplication.getInstance().getSharedPreferences(DYConstants.SPTAG, Context.MODE_PRIVATE);
-		return sp.getString(DYConstants.LANGUAGE_SETTING, "");
+		SharedPreferences sp = DYTApplication.getInstance().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
+		if (sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, -1) == 0) {
+			return "zh";
+		} else {
+			return "en";
+		}
+		//		return sp.getString(DYConstants.LANGUAGE_SETTING, "");
 	}
 
 	/**
@@ -105,14 +135,19 @@ public class LanguageUtils {
 	 */
 	public static Locale getPrefAppLocale () {
 		String appLocaleLanguage = getPrefAppLocaleLanguage();
-		if (!TextUtils.isEmpty(appLocaleLanguage)) {
-			if (SYSTEM_LANGUAGE_TGA.equals(appLocaleLanguage)) { //系统语言则返回null
-				return null;
-			} else {
-				return Locale.forLanguageTag(appLocaleLanguage);
-			}
+//		if (!TextUtils.isEmpty(appLocaleLanguage)) {
+//			if (SYSTEM_LANGUAGE_TGA.equals(appLocaleLanguage)) { //系统语言则返回null
+//				return null;
+//			} else {
+//				return Locale.forLanguageTag(appLocaleLanguage);
+//			}
+//		}
+//		return Locale.SIMPLIFIED_CHINESE; // 为空，默认是简体中文
+		if ("zh".equals(appLocaleLanguage)){
+			return Locale.SIMPLIFIED_CHINESE;
+		}else {
+			return Locale.ENGLISH;
 		}
-		return Locale.SIMPLIFIED_CHINESE; // 为空，默认是简体中文
 	}
 
 	/**
@@ -131,7 +166,7 @@ public class LanguageUtils {
 	 * @param language
 	 */
 	public static void saveAppLocaleLanguage (String language) {
-		SharedPreferences sp = DYTApplication.getInstance().getSharedPreferences(DYConstants.SPTAG, Context.MODE_PRIVATE);
+		SharedPreferences sp = DYTApplication.getInstance().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor edit = sp.edit();
 		edit.putString(DYConstants.LANGUAGE_SETTING, language);
 		edit.apply();

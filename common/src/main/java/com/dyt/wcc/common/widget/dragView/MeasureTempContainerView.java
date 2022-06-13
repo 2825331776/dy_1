@@ -355,10 +355,11 @@ public class MeasureTempContainerView extends RelativeLayout {
 		drawTempMode = -1;
 		userAddData = new CopyOnWriteArrayList<>();
 		userAddView = new CopyOnWriteArrayList<>();//初始化 子view 集合
-		tempSource = new float[mFrameWidth * 196 + 10];
+		tempSource = new float[mFrameWidth * (mFrameHeight + 4) + 10];
 		minAddWidgetWidth = minAddWidgetHeight = DensityUtil.dp2px(mContext.get(), 70);//最小为50个dp
 		mDataNearByUnit = DensityUtil.dp2px(mContext.get(), 5);
 	}
+
 
 	/**
 	 * @param canvas 画布
@@ -504,7 +505,8 @@ public class MeasureTempContainerView extends RelativeLayout {
 		if ((LRMinTempX < 0 || LRMinTempY < 0)) {
 			return;
 		}
-		if (type == 3) {
+		if (tempSource!=null && tempSource.length > 10){
+			if (type == 3) {
 			for (int i = startY; i < endY; i++) {//高度遍历
 				for (int j = startX; j < endX; j++) {//宽度遍历
 					if (tempSource[(LRMinTempX + (LRMinTempY * mFrameWidth) + 10)] > tempSource[j + (i * mFrameWidth) + 10]) {
@@ -545,6 +547,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 		tempWidget.setMaxTempY((LRMaxTempY / HRatio));
 		//线  和 矩形的  最高最低温  都是带单位及 单位符号的 String 类型
 		tempWidget.setMaxTemp(getTempStrByMode(tempSource[(LRMaxTempX + (LRMaxTempY * mFrameWidth) + 10)]));
+		}
 	}
 
 	//返回绘制的模式drawTempMode

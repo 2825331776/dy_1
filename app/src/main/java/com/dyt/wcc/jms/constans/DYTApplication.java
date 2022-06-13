@@ -1,6 +1,7 @@
 package com.dyt.wcc.jms.constans;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ import com.tencent.bugly.crashreport.CrashReport;
  */
 public class DYTApplication extends BaseApplication {
 
+	private static final String      TAG         = "DYTApplication";
 	//	private AppViewModel appViewModel;//全局唯一ViewModel
 	@NonNull
 	public static  DYTApplication instance;
@@ -44,6 +46,15 @@ public class DYTApplication extends BaseApplication {
 		CrashReport.initCrashReport(getApplicationContext(), "253f40d84b", false);
 		//监听activity生命周期
 		registerActivityLifecycleCallbacks();
+	}
+
+	@Override
+	protected void attachBaseContext (Context base) {
+//		if (instance != null) {
+//		}else{
+//			SharedPreferences sp = instance.getSharedPreferences(DYConstants.SP_NAME,Context.MODE_PRIVATE);
+			super.attachBaseContext(LanguageUtils.wrap(base));
+//		}
 	}
 
 	private void registerActivityLifecycleCallbacks () {

@@ -370,7 +370,6 @@ bool UVCPreviewIR::snRightIsPreviewing() {
  * @return  是否设置成功
  */
 bool UVCPreviewIR::setMachineSetting(int value, int mark) {
-//    pthread_mutex_lock(&tinyC_send_order_mutex);
     LOGE("============setMachineSetting============value ====>%d", value);
     bool result = false;
     unsigned char data_set_gain[8] = {0x14, 0xc5, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00};
@@ -384,55 +383,70 @@ bool UVCPreviewIR::setMachineSetting(int value, int mark) {
     unsigned char data_gain[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02};
 
 
-    while (sendCount < 100 && (value != machine_gain_get) && !result) {
-        if (getTinyCDevicesStatus()) {
+    while (sendCount < 50 && (value != machine_gain_get) && !result && LIKELY(mDeviceHandle)) {
+        if (mark == -1) {
             uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data_get_gain,
                                 sizeof(data_get_gain), 1000);
             uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data_gain,
                                 sizeof(data_gain),
                                 1000);
             //获取机芯的 高低温增益模式
-
             uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId_get,
                                 sizeof(flashId_get),
                                 1000);
             machine_gain_get = flashId_get[1];
             LOGE("============获取TinyC 机芯的 高低温增益模式。=machine_gain_get=%d==flashId_get[1]=====",
                  machine_gain_get);
-//        } else {
-//            LOGE("=======setMachineSetting====获取高低温增益 状态不对==============");
-//        }
-
             //如果设置的值 与 增益不匹配，切换
             if (machine_gain_get != value) {
                 data_set_gain[6] = (value >> 8);
                 data_set_gain[7] = (value & 0xff);
-//            if (getTinyCDevicesStatus()) {
-//                LOGE("============setMachineSetting======set=order====value=%d====", value);
                 uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data_set_gain,
                                     sizeof(data_set_gain),
                                     1000);
                 uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data_gain,
                                     sizeof(data_gain),
                                     1000);
-//            } else {
-//                LOGE("=======setMachineSetting=====设置机芯高低温增益状态不对==============");
-//            }
             } else {
                 LOGE("============设置机芯高低温增益成功==============");
-//                result = true;
                 return true;
             }
             sendCount++;
+        } else {
+            if (getTinyCDevicesStatus()) {
+                uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data_get_gain,
+                                    sizeof(data_get_gain), 1000);
+                uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data_gain,
+                                    sizeof(data_gain),
+                                    1000);
+                //获取机芯的 高低温增益模式
+
+                uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId_get,
+                                    sizeof(flashId_get),
+                                    1000);
+                machine_gain_get = flashId_get[1];
+                LOGE("============获取TinyC 机芯的 高低温增益模式。=machine_gain_get=%d==flashId_get[1]=====",
+                     machine_gain_get);
+
+                //如果设置的值 与 增益不匹配，切换
+                if (machine_gain_get != value) {
+                    data_set_gain[6] = (value >> 8);
+                    data_set_gain[7] = (value & 0xff);
+                    uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x9d00, data_set_gain,
+                                        sizeof(data_set_gain),
+                                        1000);
+                    uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data_gain,
+                                        sizeof(data_gain),
+                                        1000);
+                } else {
+                    LOGE("============设置机芯高低温增益成功==============");
+                    return true;
+                }
+                sendCount++;
+            }
         }
     }
     sendCount = 0;
-    //打挡指令。
-//    unsigned char data_refresh[8] = {0x0d, 0xc1, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-//    uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078,
-//                        0x1d00, data_refresh, sizeof(data_refresh), 1000);
-//    setTinySaveCameraParams();
-//    pthread_mutex_unlock(&tinyC_send_order_mutex);
     return result;
 }
 
@@ -620,6 +634,7 @@ int UVCPreviewIR::getTinyCDevicesStatus() {
             }
         }
     }
+    LOGE("===========ret ======%d",ret);
     RETURN(ret, int)
 }
 
@@ -1354,10 +1369,10 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         //自动调整tinyc机芯到 低温模式
                         if (is_first_run) {
 //                        LOGE("===================is_first_run=======================begin==");
-                            if (setMachineSetting(1, 1)) {
+                            if (setMachineSetting(1, -1)) {
                                 is_first_run = false;
                             } else {
-                                LOGE("===================is_first_run=======设置默认低增益模式失败===还会再次设置=======");
+//                                LOGE("===================is_first_run=======设置默认低增益模式失败===还会再次设置=======");
                             }
                         }
 

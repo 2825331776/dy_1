@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -19,6 +20,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -145,11 +147,21 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 	}
 
 	LoadingDialog loadingDialog;
+	private DisplayMetrics metrics;
+	private Configuration  configuration;
+	private String         locale_language;
+	private int            language   = -1;//语言的 索引下标
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_easy_photos);
+		configuration = getApplicationContext().getResources().getConfiguration();
+		metrics = getResources().getDisplayMetrics();
+		locale_language = Locale.getDefault().getLanguage();
+		Log.e(TAG, "onCreate: =app=="+ configuration.locale.getDisplayLanguage());
+		Log.e(TAG, "onCreate: ==="+Locale.getDefault().getDisplayLanguage());
+
 		hideActionBar();
 		adaptationStatusBar();
 		loadingDialog = LoadingDialog.get(this);

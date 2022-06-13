@@ -1,9 +1,13 @@
 package com.dyt.wcc.common.base;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.LocaleList;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,6 +23,7 @@ import androidx.databinding.ViewDataBinding;
 import com.dyt.wcc.common.utils.KeyboardsUtils;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -35,11 +40,15 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 	protected boolean                isDebug = true;
 	protected Toast                  mToast;
 	protected int mRotation;
+//	protected SharedPreferences mBaseActivitySp;
 
 	@Override
 	protected void onCreate (@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mDataBinding = DataBindingUtil.setContentView(this,bindingLayout());//绑定布局
+//		onCreateLanguageStr = getResources().getConfiguration().locale.getLanguage();
+//		Log.e(TAG, "onCreate: =====onCreateLanguageStr===" + onCreateLanguageStr);
+
 
 		this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -49,6 +58,9 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 		initView();
 	}
 
+//	//实现一个当前获取sp返回 local.xxx.getLanguage();
+//	protected String onCreateLanguageStr = "";
+	protected abstract String getLanguageStr();
 
 	////设置绑定布局
 	protected abstract int bindingLayout();
@@ -102,12 +114,52 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 		}
 		return super.dispatchTouchEvent(ev);
 	}
+	public ContextWrapper wrap (Context context) {
+		Resources res = context.getResources();
+		Configuration configuration = res.getConfiguration();
+		//获得你想切换的语言，可以用SharedPreferences保存读取
+		Locale newLocale = new Locale(getLanguageStr());
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			configuration.setLocale(newLocale);
+			LocaleList localeList = new LocaleList(newLocale);
+			LocaleList.setDefault(localeList);
+			configuration.setLocales(localeList);
+			context = context.createConfigurationContext(configuration);
+		}
+		else {
+			configuration.locale = newLocale;
+			res.updateConfiguration(configuration, res.getDisplayMetrics());
+		}
+		return new ContextWrapper(context);
+	}
 
 
+
+//	@Override
+//	protected void attachBaseContext(Context newBase) {
+//		if (isSupportMultiLanguage()) {
+//			String language = LanguageSp.getLanguage(newBase);
+//			Context context = LanguageUtil.attachBaseContext(newBase, language);
+//			final Configuration configuration = context.getResources().getConfiguration();
+//			final ContextThemeWrapper wrappedContext = new ContextThemeWrapper(context,
+//					R.style.Theme_AppCompat_Empty) {
+//				@Override
+//				public void applyOverrideConfiguration(Configuration overrideConfiguration) {
+//					if (overrideConfiguration != null) {
+//						overrideConfiguration.setTo(configuration);
+//					}
+//					super.applyOverrideConfiguration(overrideConfiguration);
+//				}
+//			};
+//			super.attachBaseContext(wrappedContext);
+//		} else {
+//			super.attachBaseContext(newBase);
+//		}
+//	}
 	@Override
 	protected void attachBaseContext (Context newBase) {
 //		mContext = newBase;
-		super.attachBaseContext(newBase);
+		super.attachBaseContext(wrap(newBase));
 	}
 
 	@Override
