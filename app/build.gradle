@@ -152,6 +152,9 @@ android {
             zipAlignEnabled false
             // 不移除无用的resource文件
             shrinkResources false
+
+            // 混淆文件位置
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         release {
@@ -163,7 +166,7 @@ android {
 //            versionNameSuffix "-relase"
             // 不开启混淆
             minifyEnabled false
-            // 开启ZipAlign优化
+            // 开启ZipAlign优化     四字节对齐（zipAlignEnabled）：开启四字节对齐可以减少应用在运行时的内存消耗
             zipAlignEnabled false
             // 移除无用的resource文件
             shrinkResources false

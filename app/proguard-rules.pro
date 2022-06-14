@@ -25,7 +25,7 @@
 -ignorewarnings
 #---------------------------------基本指令区----------------------------------
 -optimizationpasses 5
--dontskipnonpubliclibraryclassmembers
+#-dontskipnonpubliclibraryclassmembers
 #-printmapping proguardMapping.txt
 -optimizations !code/simplification/cast,!field/*,!class/merging/*
 -keepattributes *Annotation*,InnerClasses
@@ -38,15 +38,13 @@
 -ignorewarnings
 # 保留我们使用的四大组件，自定义的Application等等这些类不被混淆
 # 因为这些子类都有可能被外部调用
--keep public class * extends android.app.Activity
--keep public class * extends android.app.Appliction
+-keep public class * extends androidx.appcompat.app.AppCompatActivity
 -keep public class * extends android.app.Service
 -keep public class * extends android.content.BroadcastReceiver
 -keep public class * extends android.content.ContentProvider
 -keep public class * extends android.app.backup.BackupAgentHelper
 -keep public class * extends android.preference.Preference
 -keep public class * extends android.view.View
--keep public class com.android.vending.licensing.ILicensingService
 # 保留support下的所有类及其内部类
 -keep class android.support.** {*;}
 
@@ -66,11 +64,6 @@
 
 # 保留R下面的资源
 -keep class **.R$* {*;}
-
-# 保留本地native方法不被混淆
--keepclasseswithmembernames class * {
-    native <methods>;
-}
 
 # 保留在Activity中的方法参数是view的方法，
 # 这样以来我们在layout中写的onClick就不会被影响
@@ -117,11 +110,7 @@
     void *(**On*Listener);
 }
 
-#***********************************自定义保留类*************************************
--dontwarn com.serenegiant.usb.**
--keep public class com.serenegiant.usb.**{*;}
 
-#**********************************************************************
 
 #第三方类库 Bugly
 -dontwarn com.tencent.bugly.**
@@ -140,8 +129,8 @@
 #  *** rewind();
 #}
 
-# easyphotos 库的混淆处理
--keep class com.huantansheng.easyphotos.models.** { *; }
+## easyphotos 库的混淆处理
+#-keep class com.huantansheng.easyphotos.models.** { *; }
 
 #更新 混淆
 -dontwarn com.king.app.updater.**
@@ -157,6 +146,7 @@
 #更新弹窗 混淆
 -dontwarn com.king.app.dialog.**
 -keep class com.king.app.dialog.**{ *;}
+
 
 -keepclassmembers enum * {
     public static **[] values();

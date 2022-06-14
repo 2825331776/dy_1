@@ -1144,14 +1144,14 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         data[5] = (dwStartAddr & 0x000000ff);
                         data[6] = (dataLen >> 8);
                         data[7] = (dataLen & 0xff);
-                        if (mDeviceHandle) {
+                        if (LIKELY(mDeviceHandle)) {
                             ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d00,
                                                       data,
                                                       sizeof(data), 1000);
                         }
                         unsigned char status;
                         for (int index = 0; index < 1000; index++) {
-                            if (mDeviceHandle) {
+                            if (LIKELY(mDeviceHandle)) {
                                 uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x0200,
                                                     &status,
                                                     1, 1000);
@@ -1164,7 +1164,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                                 }
                             }
                         }
-                        if (mDeviceHandle) {
+                        if (LIKELY(mDeviceHandle)) {
                             ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d08,
                                                       readData, 15, 1000);
                         }
@@ -1179,14 +1179,14 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         data2[5] = 0x10;
                         data2[6] = 0x00;
                         data2[7] = 0x10;
-                        if (mDeviceHandle) {
+                        if (LIKELY(mDeviceHandle)) {
                             ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d00,
                                                       data2,
                                                       sizeof(data2), 1000);
                         }
                         unsigned char status1;
                         for (int index = 0; index < 1000; index++) {
-                            if (mDeviceHandle) {
+                            if (LIKELY(mDeviceHandle)) {
                                 uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x0200,
                                                     &status1,
                                                     1, 1000);
@@ -1200,7 +1200,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                                 }
                             }
                         }
-                        if (mDeviceHandle) {
+                        if (LIKELY(mDeviceHandle)) {
                             ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d08,
                                                       flashId, 15, 1000);
                         }
@@ -1208,7 +1208,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         *(tinyRobotSn + 15) = '\0';
                         //输出AD值 数据
                         unsigned char dataa[8] = {0x0a, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-                        if (mDeviceHandle) {
+                        if (LIKELY(mDeviceHandle)) {
                             ret = uvc_diy_communicate(mDeviceHandle, 0x41,
                                                       0x45,
                                                       0x0078, 0x1d00, dataa,
@@ -1369,10 +1369,11 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         //自动调整tinyc机芯到 低温模式
                         if (is_first_run) {
 //                        LOGE("===================is_first_run=======================begin==");
-                            if (setMachineSetting(1, -1)) {
+                            if (setMachineSetting(1, 1)) {
                                 is_first_run = false;
                             } else {
-//                                LOGE("===================is_first_run=======设置默认低增益模式失败===还会再次设置=======");
+                                LOGE("===================is_first_run=======设置默认低增益模式失败===还会再次设置=======");
+                                continue;
                             }
                         }
 
@@ -1383,7 +1384,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             unsigned char data[8] = {0x0d, 0x8b, 0x00, 0x00, 0x00, 0x00, 0x00,
                                                      0x02};
 
-                            if (mDeviceHandle) {
+                            if (LIKELY(mDeviceHandle)) {
                                 uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d00, data,
                                                     sizeof(data),
                                                     1000);
@@ -1406,7 +1407,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             //打挡指令
                             unsigned char data[8] = {0x0d, 0xc1, 0x00, 0x00, 0x00, 0x00, 0x00,
                                                      0x00};
-                            if (mDeviceHandle) {
+                            if (LIKELY(mDeviceHandle)) {
                                 uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078,
                                                     0x1d00, data, sizeof(data), 1000);
                             }
@@ -1418,7 +1419,6 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 mIsComputed = true;
             }
             pthread_mutex_unlock(&preview_mutex);
-
 //            LOGE("=============mIsTemperaturing==唤醒温度回调线程=%d==========",mIsTemperaturing);
             if (mIsTemperaturing)//绘制的时候唤醒温度绘制的线程
             {
@@ -1481,7 +1481,9 @@ UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_args, si
 
 void UVCPreviewIR::signal_receive_frame_data() {
     //唤醒 preview_thread    线程
-    pthread_cond_signal(&preview_sync);
+    if (LIKELY(mDeviceHandle)){
+        pthread_cond_signal(&preview_sync);
+    }
 }
 
 void UVCPreviewIR::signal_save_picture_thread() {

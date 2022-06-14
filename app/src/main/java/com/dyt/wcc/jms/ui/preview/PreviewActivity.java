@@ -1241,29 +1241,29 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		}
 	}
 
-//	@Override
-//	protected void attachBaseContext (Context newBase) {
-//		//		mContext = newBase;
-//		super.attachBaseContext(wrap(newBase));
-//	}
-//
-//	private ContextWrapper wrap (Context context) {
-//		Resources res = context.getResources();
-//		Configuration configuration = res.getConfiguration();
-//		//获得你想切换的语言，可以用SharedPreferences保存读取
-//		Locale newLocale = new Locale(getLanguageStr());
-//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//			configuration.setLocale(newLocale);
-//			LocaleList localeList = new LocaleList(newLocale);
-//			LocaleList.setDefault(localeList);
-//			configuration.setLocales(localeList);
-//			context = context.createConfigurationContext(configuration);
-//		} else {
-//			configuration.locale = newLocale;
-//			res.updateConfiguration(configuration, res.getDisplayMetrics());
-//		}
-//		return new ContextWrapper(context);
-//	}
+	//	@Override
+	//	protected void attachBaseContext (Context newBase) {
+	//		//		mContext = newBase;
+	//		super.attachBaseContext(wrap(newBase));
+	//	}
+	//
+	//	private ContextWrapper wrap (Context context) {
+	//		Resources res = context.getResources();
+	//		Configuration configuration = res.getConfiguration();
+	//		//获得你想切换的语言，可以用SharedPreferences保存读取
+	//		Locale newLocale = new Locale(getLanguageStr());
+	//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+	//			configuration.setLocale(newLocale);
+	//			LocaleList localeList = new LocaleList(newLocale);
+	//			LocaleList.setDefault(localeList);
+	//			configuration.setLocales(localeList);
+	//			context = context.createConfigurationContext(configuration);
+	//		} else {
+	//			configuration.locale = newLocale;
+	//			res.updateConfiguration(configuration, res.getDisplayMetrics());
+	//		}
+	//		return new ContextWrapper(context);
+	//	}
 
 	//	@Override
 	//	public void onConfigurationChanged (@NonNull Configuration newConfig) {
@@ -1393,48 +1393,37 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			}
 		};
 
-		//		locale_language = Locale.getDefault().getLanguage();
-		//		if (isDebug)
-		//			Log.e(TAG, "initView: ===============locale_language==============" + locale_language);
-		language_index = sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, -1);
-		language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING, "zh");
-		switch (language_index) {
-			case -1:
-				if ("zh".equals(language_local_str)) {
-					language_index = 0;
-					LanguageUtils.updateLanguage(mContext.get(),Locale.SIMPLIFIED_CHINESE);
-//					configuration.setLocale(Locale.SIMPLIFIED_CHINESE);
-//					configuration.setLayoutDirection(Locale.SIMPLIFIED_CHINESE);
-				} else {
-					language_index = 1;
-					LanguageUtils.updateLanguage(mContext.get(),Locale.ENGLISH);
-//					configuration.setLocale(Locale.ENGLISH);
-//					configuration.setLayoutDirection(Locale.ENGLISH);
-				}
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, language_index).apply();
-//				getResources().updateConfiguration(configuration, metrics);
-				break;
-			case 0:
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 0).apply();
-				configuration.setLocale(Locale.SIMPLIFIED_CHINESE);
-				configuration.setLayoutDirection(Locale.SIMPLIFIED_CHINESE);
-				getResources().updateConfiguration(configuration, metrics);
-				break;
-			default:
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 1).apply();
-				configuration.setLocale(Locale.ENGLISH);
-				configuration.setLayoutDirection(Locale.ENGLISH);
-				getResources().updateConfiguration(configuration, metrics);
-				break;
-		}
 
-		if (sp.getInt(DYConstants.FIRST_RUN, 1) == 0) {
+		if (sp.getInt(DYConstants.FIRST_RUN, -1) == -1) {
 			isFirstRun = true;
 			sp.edit().putInt(DYConstants.FIRST_RUN, 1).apply();
 		}
 		if (isFirstRun) {//第一次打开应用
 			//默认不打开音频录制
 			sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING, 1).apply();
+
+			language_local_str = Locale.getDefault().getLanguage();
+			//		if (isDebug)
+			Log.e(TAG, "initView: ===============language_local_str==============" + language_local_str);
+			language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING, Locale.getDefault().getLanguage());
+			language_index = sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, -1);
+			if ("zh".equals(language_local_str)) {
+				language_index = 0;
+			} else {
+				language_index = 1;
+			}
+			switch (language_index) {
+				case 0:
+					LanguageUtils.updateLanguage(mContext.get(), Locale.SIMPLIFIED_CHINESE);
+					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 0).apply();
+					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+					break;
+				case 1:
+					LanguageUtils.updateLanguage(mContext.get(), Locale.ENGLISH);
+					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 1).apply();
+					sp.edit().putString(DYConstants.LANGUAGE_SETTING,language_local_str).apply();
+					break;
+			}
 		}
 
 		highTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_high);
@@ -1803,6 +1792,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 				mDataBinding.btPreviewLeftRecord.setSelected(!mDataBinding.btPreviewLeftRecord.isSelected());
 			} else {
+				stopTimer();
 				showToast(getResources().getString(R.string.toast_need_connect_camera));
 			}
 		});
@@ -1829,9 +1819,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			if (!mUvcCameraHandler.snRightIsPreviewing()) {
 				return;
 			}
+			//是否连续打开
 			if (doubleClick())
 				return;
-			//是否连续打开
 			if (mUvcCameraHandler.isOpened()) {
 				if (mPid == 1 && mVid == 5396) {
 					getCameraParams();//
@@ -2044,8 +2034,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	 * * 发射率 0-1      emittance  取值 ： （0 -1）
 	 * * 反射温度 2-3     reflect  取值 ： （-20 - 120）
 	 * * 环境温度 4-5     environment  取值 ： （-20 - 50）
-	 * * 湿度 6-7         humidity  取值 ： （0 - 100）
-	 * * 多余 8-9
+	 * * 湿度 6-7         humidity  取值 ： （0 - 100） 弃用
+	 * * 多余 8-9             弃用
 	 */
 	private void getTinyCCameraParams () {//得到返回机芯的参数，128位。返回解析保存在cameraParams 中
 		byte[] tempParams = mUvcCameraHandler.getTinyCCameraParams(20);

@@ -43,7 +43,7 @@ public class DYTApplication extends BaseApplication {
 	public void onCreate () {
 		super.onCreate();
 		instance = this;
-		CrashReport.initCrashReport(getApplicationContext(), "253f40d84b", false);
+		CrashReport.initCrashReport(getApplicationContext(), "af50f10806", false);
 		//监听activity生命周期
 		registerActivityLifecycleCallbacks();
 	}
