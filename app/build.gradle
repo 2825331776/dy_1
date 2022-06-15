@@ -194,7 +194,6 @@ android {
 }
 
 dependencies {
-
     //2022年4月8日15:21:31 导入TinyC 的SDK库 arr
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
@@ -204,17 +203,13 @@ dependencies {
     implementation project(path: ':CameraCommon')
     //引用 easyphotos 库
     implementation project(path: ':easyphotos')
-    //引用 matisse 图片库
-    implementation project(path: ':matisse')
 
-//    implementation project(path: ':LibUvcCamera')
     implementation project(path: ':UvcConnect')
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
 
     implementation "com.github.bumptech.glide:okhttp3-integration:4.12.0"
-
     //okhttp
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
 

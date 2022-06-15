@@ -634,7 +634,7 @@ int UVCPreviewIR::getTinyCDevicesStatus() {
             }
         }
     }
-    LOGE("===========ret ======%d",ret);
+    LOGE("===========ret ======%d", ret);
     RETURN(ret, int)
 }
 
@@ -1481,7 +1481,7 @@ UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_args, si
 
 void UVCPreviewIR::signal_receive_frame_data() {
     //唤醒 preview_thread    线程
-    if (LIKELY(mDeviceHandle)){
+    if (LIKELY(mDeviceHandle)) {
         pthread_cond_signal(&preview_sync);
     }
 }

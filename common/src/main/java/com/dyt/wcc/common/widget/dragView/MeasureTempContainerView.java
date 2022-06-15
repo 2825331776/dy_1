@@ -176,10 +176,11 @@ public class MeasureTempContainerView extends RelativeLayout {
 
 	/**
 	 * 设置数据源 frame的 宽高
-	 * @param frameWidth frame 宽度
+	 *
+	 * @param frameWidth  frame 宽度
 	 * @param frameHeight frame 高度
 	 */
-	public void setFrameWH(final int frameWidth , final int frameHeight){
+	public void setFrameWH (final int frameWidth, final int frameHeight) {
 		this.mFrameWidth = frameWidth;
 		this.mFrameHeight = frameHeight;
 	}
@@ -369,18 +370,35 @@ public class MeasureTempContainerView extends RelativeLayout {
 	private void lineFeed (Canvas canvas, String str, int heigth) {
 		int lineWidth = partScreenWidth;
 		//计算当前宽度(width)能显示多少个汉字
-		int subIndex = testPaint.breakText(str, 0, str.length(), true, lineWidth, null);
+		int oneLineMaxIndex = testPaint.breakText(str, 0, str.length(), false, lineWidth, null);
 		//截取可以显示的汉字
-		String mytext = str.substring(0, subIndex);
+		String[] splitStr = str.split(" ");
+		//		Log.e(TAG, "============lineFeed: ===beginStr.length========" + splitStr.length);
+		String oneLineStr = str.substring(0, oneLineMaxIndex);
+		if (splitStr.length > 1) {
+			StringBuilder sb = new StringBuilder();
+			for (String s : splitStr) {
+				if (sb.length() < oneLineMaxIndex) {
+					sb.append(s).append(" ");
+				}
+			}
+			oneLineStr = sb.toString();
+		}
+//		Log.e(TAG, "lineFeed: ===============oneLineStr.length()==" + oneLineStr.length() +" str.length()======" + str.length());
 
-		testPaint.getTextBounds(mytext, 0, mytext.length(), OTGRect);
+		testPaint.getTextBounds(oneLineStr, 0, oneLineStr.length(), OTGRect);
 		OTGTextLength = OTGRect.width();
 
-		canvas.drawText(mytext, (screenWidth - OTGTextLength) / 2.0f, heigth, testPaint);
+		canvas.drawText(oneLineStr, (screenWidth - OTGTextLength) / 2.0f, heigth, testPaint);
 		//计算剩下的汉字
-		String ss = str.substring(subIndex, str.length());
-		if (ss.length() > 0) {
-			lineFeed(canvas, ss, heigth + (int) testPaint.getTextSize() + 10);
+		String lastStr = "";
+		if ( str.length()>= oneLineStr.length()){
+			lastStr = str.substring(oneLineStr.length(), str.length());
+		}else {
+			lastStr = str.substring(str.length(), str.length());
+		}
+		if (lastStr.length() > 0) {
+			lineFeed(canvas, lastStr, heigth + (int) testPaint.getTextSize() + 10);
 		}
 	}
 
@@ -388,7 +406,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 	protected void onDraw (Canvas canvas) {
 		if (!isConnect) {
 			if (partScreenWidth <= 0) {
-				partScreenWidth = screenWidth / 2;
+				partScreenWidth = screenWidth / 3 * 2;
 			}
 			lineFeed(canvas, mContext.get().getString(R.string.preview_hint_not_connect), screenHeight / 2 - (int) testPaint.descent());
 		}
@@ -505,48 +523,48 @@ public class MeasureTempContainerView extends RelativeLayout {
 		if ((LRMinTempX < 0 || LRMinTempY < 0)) {
 			return;
 		}
-		if (tempSource!=null && tempSource.length > 10){
+		if (tempSource != null && tempSource.length > 10) {
 			if (type == 3) {
-			for (int i = startY; i < endY; i++) {//高度遍历
-				for (int j = startX; j < endX; j++) {//宽度遍历
-					if (tempSource[(LRMinTempX + (LRMinTempY * mFrameWidth) + 10)] > tempSource[j + (i * mFrameWidth) + 10]) {
+				for (int i = startY; i < endY; i++) {//高度遍历
+					for (int j = startX; j < endX; j++) {//宽度遍历
+						if (tempSource[(LRMinTempX + (LRMinTempY * mFrameWidth) + 10)] > tempSource[j + (i * mFrameWidth) + 10]) {
+							LRMinTempX = j;
+							LRMinTempY = i;
+						}
+						if (tempSource[(LRMaxTempX + (LRMaxTempY * mFrameWidth) + 10)] < tempSource[j + (i * mFrameWidth) + 10]) {
+							LRMaxTempX = j;
+							LRMaxTempY = i;
+						}
+					}
+				}
+			}
+			if (type == 2) {
+				//斜率
+				float k = ((float) endY - startY) / (endX - startX);
+				float b = startY - k * startX;
+				//			Log.e(TAG, "updateLRTemp:  b===== > " + b + " startX  == > " + startX + " startY ==>  " + startY);
+				//			Log.e(TAG, "updateLRTemp: kkk =====>  " + k  + " === " + Math.round(k) );
+				int pointy = startY;//临时存储 最高温 最低温的Y值
+				for (int j = startX; j <= endX; j++) {//宽度遍历
+					pointy = Math.round(k * j + b);
+					if (tempSource[(j + (pointy * mFrameWidth) + 10)] <= tempSource[(LRMinTempX + (LRMinTempY * mFrameWidth) + 10)]) {
 						LRMinTempX = j;
-						LRMinTempY = i;
+						LRMinTempY = pointy;
 					}
-					if (tempSource[(LRMaxTempX + (LRMaxTempY * mFrameWidth) + 10)] < tempSource[j + (i * mFrameWidth) + 10]) {
+					if (tempSource[(j + (pointy * mFrameWidth) + 10)] >= tempSource[(LRMaxTempX + (LRMaxTempY * mFrameWidth) + 10)]) {
 						LRMaxTempX = j;
-						LRMaxTempY = i;
+						LRMaxTempY = pointy;
 					}
 				}
 			}
-		}
-		if (type == 2) {
-			//斜率
-			float k = ((float) endY - startY) / (endX - startX);
-			float b = startY - k * startX;
-			//			Log.e(TAG, "updateLRTemp:  b===== > " + b + " startX  == > " + startX + " startY ==>  " + startY);
-			//			Log.e(TAG, "updateLRTemp: kkk =====>  " + k  + " === " + Math.round(k) );
-			int pointy = startY;//临时存储 最高温 最低温的Y值
-			for (int j = startX; j <= endX; j++) {//宽度遍历
-				pointy = Math.round(k * j + b);
-				if (tempSource[(j + (pointy * mFrameWidth) + 10)] <= tempSource[(LRMinTempX + (LRMinTempY * mFrameWidth) + 10)]) {
-					LRMinTempX = j;
-					LRMinTempY = pointy;
-				}
-				if (tempSource[(j + (pointy * mFrameWidth) + 10)] >= tempSource[(LRMaxTempX + (LRMaxTempY * mFrameWidth) + 10)]) {
-					LRMaxTempX = j;
-					LRMaxTempY = pointy;
-				}
-			}
-		}
-		tempWidget.setMinTempX((LRMinTempX / WRatio));
-		tempWidget.setMinTempY((LRMinTempY / HRatio));
-		//线  和 矩形的  最高最低温  都是带单位及 单位符号的 String 类型
-		tempWidget.setMinTemp(getTempStrByMode(tempSource[(LRMinTempX + (LRMinTempY * mFrameWidth) + 10)]));
-		tempWidget.setMaxTempX((LRMaxTempX / WRatio));
-		tempWidget.setMaxTempY((LRMaxTempY / HRatio));
-		//线  和 矩形的  最高最低温  都是带单位及 单位符号的 String 类型
-		tempWidget.setMaxTemp(getTempStrByMode(tempSource[(LRMaxTempX + (LRMaxTempY * mFrameWidth) + 10)]));
+			tempWidget.setMinTempX((LRMinTempX / WRatio));
+			tempWidget.setMinTempY((LRMinTempY / HRatio));
+			//线  和 矩形的  最高最低温  都是带单位及 单位符号的 String 类型
+			tempWidget.setMinTemp(getTempStrByMode(tempSource[(LRMinTempX + (LRMinTempY * mFrameWidth) + 10)]));
+			tempWidget.setMaxTempX((LRMaxTempX / WRatio));
+			tempWidget.setMaxTempY((LRMaxTempY / HRatio));
+			//线  和 矩形的  最高最低温  都是带单位及 单位符号的 String 类型
+			tempWidget.setMaxTemp(getTempStrByMode(tempSource[(LRMaxTempX + (LRMaxTempY * mFrameWidth) + 10)]));
 		}
 	}
 
@@ -633,8 +651,8 @@ public class MeasureTempContainerView extends RelativeLayout {
 		endPressY = Math.max(0, Math.min(endPressY, screenHeight));
 
 
-//		Log.e(TAG, "reviseCoordinate:  Math" + " SX = > " + startPressX + " SY => " + startPressY + " , EX = > " + endPressX + " EY = > " + endPressY);
-//		Log.e(TAG, "reviseCoordinate: minAddWidgetWidth " + minAddWidgetWidth + " minAddWidgetHeight " + minAddWidgetHeight);
+		//		Log.e(TAG, "reviseCoordinate:  Math" + " SX = > " + startPressX + " SY => " + startPressY + " , EX = > " + endPressX + " EY = > " + endPressY);
+		//		Log.e(TAG, "reviseCoordinate: minAddWidgetWidth " + minAddWidgetWidth + " minAddWidgetHeight " + minAddWidgetHeight);
 
 		return true;
 	}
@@ -985,6 +1003,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 	 * 分发的条件：当前事件 是否在子View集合内？或已选中子View中？或数据源的感应区？（在感应区时：分发给子View去 本容器添加子View，TextureView移除此View）。
 	 * 则交给子View 的 dispatchTouchEvent 处理
 	 * 以上都不满足则由 当前容器的onTouchEvent 处理，在此之前给所有控件设置为未选中状态 。
+	 *
 	 * @param ev 事件
 	 * @return ViewGroup 事件拦截：返回true 则交给当前的 onTouchEvent 方法 ；
 	 * 返回 false/super.onInterceptTouchEvent(ev) 都交给 子 View/ViewGroup 的 #dispatchTouchEvent方法分发
@@ -1007,7 +1026,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 		if (drawTempMode == -1) {
 			//判定事件 是否在  已选中子View
 			if (pressInSelectView(ev)) {
-//				Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and pressInSelectView ============: ");
+				//				Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and pressInSelectView ============: ");
 				/**
 				 * 可能存在响应级高于 自身的 未选中view 在事件处。
 				 */
@@ -1036,16 +1055,16 @@ public class MeasureTempContainerView extends RelativeLayout {
 				//				}
 				return super.onInterceptTouchEvent(ev);
 			} else {// 事件 不在 已选中的View 中，交给当前的 onTouchEvent处理
-//				Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and pressInSelectView ====NO========: ");
+				//				Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and pressInSelectView ====NO========: ");
 				//				if (mTimer!=null) mTimer.cancel();
 				setAllChildUnSelect();
 				//				mChildToolsClickListener.onRectChangedListener();
 				//存在 按下事件在 数据源感应区，但 弹起事件不在 感应区，此时 子view变成了 选中状态。
 				// 如何保证 500ms之内 事件都在同一个子View 内 则触发 选中事件。
 				if (pressInUserAddData(ev) != null) {
-//					Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and press DONT InSelectView ===But in Data !!!========: ");
+					//					Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and press DONT InSelectView ===But in Data !!!========: ");
 
-//					Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and press DONT InSelectView ===But in Data !!!======getX==: " + ev.getX());
+					//					Log.e(TAG, "DragTempContainer onInterceptTouchEvent drawTempMode = -1 and press DONT InSelectView ===But in Data !!!======getX==: " + ev.getX());
 					return super.onInterceptTouchEvent(ev);
 				}
 
