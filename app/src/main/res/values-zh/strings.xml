@@ -1,15 +1,15 @@
 <resources>
     <!--关于页面-->
-    <string name="CompanyName">深圳市诺方舟电子有限公司</string>
+    <string name="CompanyName">深圳点扬科技有限公司</string>
     <string name="CompanyWebsite_info">网址:</string>
-    <string name="CompanyWebsite">www.jingmingshu.cn</string>
+    <string name="CompanyWebsite">www.dianytech.com</string>
     <string name="About_tel_info">电话:</string>
     <string name="About_tel_content">0755–27220204</string>
-    <string name="ContactEmail">sale@noyafa.com</string>
+    <string name="ContactEmail">service@dianytech.com</string>
     <string name="About_Main_business_info">主营：</string>
     <string name="About_Main_business_content">热成像仪、测距仪、寻线仪、光纤测试仪</string>
 
-    <string name="app_name">精明鼠</string>
+    <string name="app_name">点扬红外</string>
     <string name="Gallery">相册</string>
     <string name="Welcome">欢迎</string>
 
