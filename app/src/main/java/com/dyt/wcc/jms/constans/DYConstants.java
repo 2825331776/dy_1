@@ -58,7 +58,7 @@ public class DYConstants {
 
 	//	public static final String SPTAG = "Main";
 
-	public static final String SP_NAME              = "DYT_IR_SP";
+	public static final String SP_NAME              = "DYT_IR_SP_JMS";
 	public static final String RECORD_AUDIO_SETTING = "record_audio_setting";
 	public static final String GAIN_TOGGLE_SETTING  = "gain_toggle_setting";
 	public static final String FIRST_RUN            = "first_run";//是否第一次打开应用， 第一打开时，int 值为 0.以后为1
