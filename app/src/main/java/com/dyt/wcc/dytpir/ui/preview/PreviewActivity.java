@@ -65,6 +65,7 @@ import com.dyt.wcc.dytpir.databinding.PopPaletteChoiceBinding;
 import com.dyt.wcc.dytpir.databinding.PopSettingBinding;
 import com.dyt.wcc.dytpir.databinding.PopTempModeChoiceBinding;
 import com.dyt.wcc.dytpir.ui.gallery.GlideEngine;
+import com.dyt.wcc.dytpir.ui.pdfPreview.PdfActivity;
 import com.dyt.wcc.dytpir.utils.AssetCopyer;
 import com.dyt.wcc.dytpir.utils.ByteUtilsCC;
 import com.dyt.wcc.dytpir.utils.CreateBitmap;
@@ -131,6 +132,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//传感器
 	private AbstractUVCCameraHandler.CameraCallback cameraCallback;
 	private LoadingDialog                           loadingDialog;
+
+
 
 	private static final int     MSG_CHECK_UPDATE  = 1;
 	private static final int     MSG_CAMERA_PARAMS = 2;
@@ -1421,7 +1424,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				case 1:
 					LanguageUtils.updateLanguage(mContext.get(), Locale.ENGLISH);
 					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 1).apply();
-					sp.edit().putString(DYConstants.LANGUAGE_SETTING,language_local_str).apply();
+					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
 					break;
 			}
 		}
@@ -1500,9 +1503,16 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		Intent intent = new Intent("android.intent.action.VIEW");
 		intent.addCategory("android.intent.category.DEFAULT");
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		Uri uri = FileProvider.getUriForFile(mContext.get(), "com.dyt.wcc.jms.FileProvider", file);
+		Uri uri = FileProvider.getUriForFile(mContext.get(), "com.dyt.wcc.dytpir.FileProvider", file);
 		intent.setDataAndType(uri, "application/pdf");
 		return intent;
+//		Intent i = new Intent(Intent.ACTION_VIEW);
+//		i.addCategory(Intent.CATEGORY_DEFAULT);
+//		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//		Uri uri = Uri.fromFile(new File(Path));
+//		i.setDataAndType(uri, "application/pdf");
+//
+//		return i;
 	}
 
 	/**
@@ -1510,14 +1520,61 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	 */
 	private void initListener () {
 		//测试的 监听器
-		//		mDataBinding.btTest01.setVisibility(View.VISIBLE);
+		mDataBinding.btTest01.setVisibility(View.VISIBLE);
 		mDataBinding.btTest01.setOnClickListener(v -> {
 			//******************************testJNi***************************************
 			//			mUvcCameraHandler.testJNi(Build.MODEL);
 			//			Log.e(TAG, "initListener: " + mDataBinding.textureViewPreviewActivity.getTemperatureCallback());
+			//******************************************如何打开PDF文档******************************
+//			String MenuUrl = "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/SLReadMeCN.pdf";
+//			String googleUrl = "http://docs.google.com/gview?embedded=true&url=";
+//			Log.d(TAG, googleUrl + MenuUrl);
+//			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(googleUrl + MenuUrl));
+//			startActivity(browserIntent);
 
-			startActivity(getPdfFileIntent("/storage/emulated/0/Android/data/com.dyt.wcc.jsm/files/ColorChanges.pdf"));
-			//			startActivity(getPdfFileIntent("/storage/emulated/0/Android/22.pdf"));
+			startActivity(new Intent(PreviewActivity.this, PdfActivity.class));
+
+			//			File file = new File("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/SLReadMeCN.pdf");
+			//
+			//			ParcelFileDescriptor pdfFile = null;
+			//			try {
+			//				pdfFile = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY); //以只读的方式打开文件
+			//			} catch (FileNotFoundException e) {
+			//				e.printStackTrace();
+			//			}
+			//
+			//			PdfRenderer renderer = null;
+			//			try {
+			//				renderer = new PdfRenderer(pdfFile);//用上面的pdfFile新建PdfRenderer对象
+			//			} catch (IOException e) {
+			//				e.printStackTrace();
+			//			}
+			//
+			//			final int pageCount = renderer.getPageCount();//获取pdf的页码数
+			//			Bitmap[] bitmaps = new Bitmap[pageCount];//新建一个bmp数组用于存放pdf页面
+			//
+			//			WindowManager wm = this.getWindowManager();//获取屏幕的高和宽，以决定pdf的高和宽
+			//			float width = wm.getDefaultDisplay().getWidth();
+			//			float height = wm.getDefaultDisplay().getHeight();
+			//
+			//			for (int i = 0; i < pageCount; i++) {//这里用循环把pdf所有的页面都写入bitmap数组，真正使用的时候最好不要这样，
+			//				//因为一本pdf的书会有很多页，一次性全部打开会非常消耗内存，我打开一本两百多页的书就消耗了1.8G的内存，而且打开速度很慢。
+			//				//真正使用的时候要采用动态加载，用户看到哪页才加载附近的几页。而且最好使用多线程在后台打开。
+			//
+			//				PdfRenderer.Page page = renderer.openPage(i);//根据i的变化打开每一页
+			//				bitmap_pdf = Bitmap.createBitmap((int) (width), (int) (page.getHeight() * width / page.getWidth()), Bitmap.Config.ARGB_8888);//根据屏幕的高宽缩放生成bmp对象
+			//				page.render(bitmap_pdf, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);//将pdf的内容写入bmp中
+			//
+			//				bitmaps[i] = bitmap_pdf;//将pdf的bmp图像存放进数组中。
+			//
+			//				// close the page
+			//				page.close();
+			//			}
+			//
+			//			// close the renderer
+			//			renderer.close();
+			//			mDataBinding.ivPreviewPdf.setImageBitmap(bitmap_pdf);
+//						startActivity(getPdfFileIntent("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/SLReadMeCN.pdf"));
 			//****************************动画开始*************************************
 			//读取一张图片到某个控件，然后把图片缩小 给相册这个按钮。透明度逐渐变低
 			//				Animator animator = new ObjectAnimator();

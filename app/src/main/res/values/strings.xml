@@ -85,7 +85,7 @@
     <string name="toast_complete_Humidity">Humidity setting complete</string>
 
 
-<!--    更新操作-->
+    <!--    更新操作-->
     <string name="toast_downloading_background">Downloading in the background…</string>
     <string name="pop_version">The latest version:</string>
     <string name="toast_already_latest_version">already the latest version</string>

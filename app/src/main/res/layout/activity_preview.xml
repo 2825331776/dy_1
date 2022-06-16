@@ -229,6 +229,13 @@
                 app:layout_constraintBottom_toBottomOf="@id/textureView_preview_activity"
                 app:layout_constraintLeft_toLeftOf="@id/textureView_preview_activity" />
 
+            <ImageView
+                android:id="@+id/iv_preview_pdf"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_width="@dimen/dimen_200dp"
+                android:layout_height="match_parent"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
         <!--        </FrameLayout>-->
 

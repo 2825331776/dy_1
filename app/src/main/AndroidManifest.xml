@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dyt.wcc.dytpir">
-
     <!-- <uses-permission android:name="android.permission.MANAGE_DOCUMENTS"/> -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" /> <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-<!--    安装包更新-->
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-<!--    Bugly-->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- 安装包更新 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- Bugly -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_LOGS" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" /> <!-- Android usb 主机模式 -->
-
     <uses-feature
         android:name="android.hardware.usb.host"
         android:required="true" /> <!-- 告诉系统需要的OpenGL ES的版本为 2.0（用于过滤）  true代表是必须的，不写也是代表必须的。false代表非必须 -->
@@ -30,34 +26,42 @@
         android:required="true" />
 
     <application
-        android:name="com.dyt.wcc.dytpir.constans.DYTApplication"
+        android:name=".constans.DYTApplication"
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher_dy_round"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:hardwareAccelerated = "true"
         android:theme="@style/MyTheme">
         <activity
-            android:name="com.dyt.wcc.dytpir.ui.preview.PreviewActivity"
+            android:name=".ui.pdfPreview.PdfActivity"
             android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.preview.PreviewActivity"
+            android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
+            android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/MyTheme"
-            android:windowSoftInputMode="adjustPan|adjustResize|stateHidden"
-            android:exported="true" >
+            android:windowSoftInputMode="adjustPan|adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
+
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/dy_device_filter" />
         </activity>
 
-        <service android:name="com.dyt.wcc.dytpir.ui.preview.record.MediaProjectionService" />
+        <service android:name=".ui.preview.record.MediaProjectionService" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -67,7 +71,7 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
-        </provider> <!-- <provider -->
+        </provider>
     </application>
 
 </manifest>
