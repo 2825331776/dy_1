@@ -58,6 +58,7 @@
             app:layout_constraintTop_toTopOf="@id/tv_website" />
 
         <!--       Tel-->
+        <!--        胜利定制版 隐藏-->
         <TextView
             android:id="@+id/tv_about_tel_info"
             android:layout_width="wrap_content"
@@ -67,6 +68,7 @@
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="@dimen/dimen_16sp"
+            android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="@id/tv_website"
             app:layout_constraintTop_toBottomOf="@id/tv_website" />
 
@@ -87,6 +89,7 @@
             app:layout_constraintTop_toTopOf="@id/tv_about_tel_info" />
 
         <!--        主营 链接-->
+        <!--        胜利定制版 改为联系我们-->
         <TextView
             android:id="@+id/tv_about_Main_business_info"
             android:layout_width="wrap_content"
@@ -107,6 +110,7 @@
             android:layout_marginStart="@dimen/dimen_5dp"
             android:text="@string/About_Main_business_content"
             android:textAllCaps="false"
+            android:autoLink="email"
             android:textColor="@color/white"
             android:textColorLink="@color/white"
             android:textIsSelectable="true"
@@ -115,6 +119,19 @@
             app:layout_constraintLeft_toRightOf="@id/tv_about_Main_business_info"
             app:layout_constraintTop_toTopOf="@id/tv_about_Main_business_info" />
 
+        <!--        使用说明文档-->
+        <TextView
+            android:id="@+id/tv_about_main_user_manual_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:autoLink="all"
+            android:layout_marginBottom="@dimen/dimen_10dp"
+            android:text="@string/about_main_user_manual"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintLeft_toLeftOf="@id/tv_company_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_about_Main_business_info" />
 
         <!--        隐私条款 链接-->
         <TextView

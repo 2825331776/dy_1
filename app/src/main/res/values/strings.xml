@@ -1,15 +1,16 @@
 <resources>
     <!--关于页面-->
-    <string name="CompanyName">Shenzhen Dianyang Technology Co., Ltd.</string>
+    <string name="CompanyName">Shenzhen Yisheng Victor Technology Co., Ltd</string>
     <string name="CompanyWebsite_info">WebSite: </string>
-    <string name="CompanyWebsite">www.dyt-ir.com</string>
+    <string name="CompanyWebsite">www.china-victor.com</string>
     <string name="About_tel_info">Tel：</string>
     <string name="About_tel_content">0086–755–2778 6545</string>
-    <string name="ContactEmail">service@dianytech.com</string>
-    <string name="About_Main_business_info">E-mail：</string>
-    <string name="About_Main_business_content">sale@noyafa.com</string>
+    <string name="ContactEmail">victor@china-victor.com</string>
+    <string name="About_Main_business_info">Contact us：</string>
+    <string name="About_Main_business_content">victor@china-victor.com</string>
+    <string name="about_main_user_manual">User manual</string>
 
-    <string name="app_name">DytSpectrumOwl</string>
+    <string name="app_name">VICTOR</string>
     <string name="Gallery">Gallery</string>
     <string name="Welcome">Welcome</string>
     <string name="MediaBrowser">Gallery</string>

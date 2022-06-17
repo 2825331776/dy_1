@@ -7,18 +7,18 @@ ext {
             minSdkV      : 23,
             targetSdkV   : 27,
             //版本号和名字
-            VCode        : 80,
-            VName        : "1.1.0",
+            VCode        : 101,
+            VName        : "1.1.1",
 
             supportV     : "27.0.0",
-            applicationId: "com.dyt.wcc.dytpir"
+            applicationId: "com.dyt.wcc.victor"
     ]
 
     // 多渠道产品信息
     envInfo = [
             web  : [
                     // 应用 id
-                    applicationId: "com.dyt.wcc.dytpir",
+                    applicationId: "com.dyt.wcc.victor",
                     // 构建版本号
                     versionCode  : 1,
                     // 版本名称
@@ -26,7 +26,7 @@ ext {
             ],
             phone: [
                     // 应用 id
-                    applicationId: "com.dyt.wcc.dytpir",
+                    applicationId: "com.dyt.wcc.victor",
                     // 构建版本号
                     versionCode  : 1,
                     // 版本名称

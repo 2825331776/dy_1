@@ -1,15 +1,16 @@
 <resources>
     <!--关于页面-->
-    <string name="CompanyName">深圳点扬科技有限公司</string>
+    <string name="CompanyName">深圳市驿生胜利科技有限公司</string>
     <string name="CompanyWebsite_info">网址:</string>
-    <string name="CompanyWebsite">www.dianytech.com</string>
+    <string name="CompanyWebsite">www.china-victor.com</string>
     <string name="About_tel_info">电话:</string>
     <string name="About_tel_content">0755–27220204</string>
-    <string name="ContactEmail">service@dianytech.com</string>
-    <string name="About_Main_business_info">主营：</string>
-    <string name="About_Main_business_content">热成像仪、测距仪、寻线仪、光纤测试仪</string>
+    <string name="ContactEmail">victor@china-victor.com</string>
+    <string name="About_Main_business_info">联系我们：</string>
+    <string name="About_Main_business_content">victor@china-victor.com</string>
+    <string name="about_main_user_manual">用户手册</string>
 
-    <string name="app_name">点扬红外</string>
+    <string name="app_name">胜利热像</string>
     <string name="Gallery">相册</string>
     <string name="Welcome">欢迎</string>
 

@@ -463,18 +463,20 @@ float UVCPreviewIR::getMachineSetting(int flag, int value,
     ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d08, data2, sizeof(data2),
                               1000);
     if (getTinyCDevicesStatus()) {
-        ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId,
-                                  sizeof(flashId),
-                                  1000);
-        unsigned char flashId2[2] = {0};
-        LOGE("getMachineSetting =====flashId== %d", *flashId);
-        flashId2[0] = flashId[1];
-        flashId2[1] = flashId[0];
-        unsigned short *dd = (unsigned short *) flashId2;
-        LOGE("getMachineSetting =====dd== %d", *dd);
-        dd = NULL;
-        LOGE("getMachineSetting 0 ==== %d", flashId[0]);
-        LOGE("getMachineSetting 1 ==== %d", flashId[1]);
+        if (LIKELY(mDeviceHandle)) {
+            ret = uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x1d10, flashId,
+                                      sizeof(flashId),
+                                      1000);
+            unsigned char flashId2[2] = {0};
+            LOGE("getMachineSetting =====flashId== %d", *flashId);
+            flashId2[0] = flashId[1];
+            flashId2[1] = flashId[0];
+            unsigned short *dd = (unsigned short *) flashId2;
+            LOGE("getMachineSetting =====dd== %d", *dd);
+            dd = NULL;
+            LOGE("getMachineSetting 0 ==== %d", flashId[0]);
+            LOGE("getMachineSetting 1 ==== %d", flashId[1]);
+        }
     }
     return result;
 }
@@ -489,14 +491,18 @@ int UVCPreviewIR::sendTinyCOrder(uint32_t *value, diy func_diy) {
     if (*value == 32772) {//画面设置指令 0X8004 , 32773 == 0X8005
         //输出温度数据(AD值)
         unsigned char data[8] = {0x0a, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-        ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078,
-                                  0x1d00, data, sizeof(data), 1000);
+        if (LIKELY(mDeviceHandle)) {
+            ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078,
+                                      0x1d00, data, sizeof(data), 1000);
+        }
     }
     if (*value == 32768) {//打挡指令 0X8000
         LOGE("=======32768==========");
         unsigned char data[8] = {0x0d, 0xc1, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-        ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078,
-                                  0x1d00, data, sizeof(data), 1000);
+        {
+            ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078,
+                                      0x1d00, data, sizeof(data), 1000);
+        }
     }
     RETURN(ret, int);
 }
@@ -624,13 +630,15 @@ int UVCPreviewIR::getTinyCDevicesStatus() {
     int ret = 0;
     unsigned char status = 0;
     for (int index = 0; index < 1000; index++) {
-        uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x0200, &status, 1, 1000);
-        if ((status & 0x01) == 0x00) {
-            if ((status & 0x02) == 0x00) {
-                ret = 1;
-                break;
-            } else if ((status & 0xFC) != 0x00) {
+        if (LIKELY(mDeviceHandle)) {
+            uvc_diy_communicate(mDeviceHandle, 0xc1, 0x44, 0x0078, 0x0200, &status, 1, 1000);
+            if ((status & 0x01) == 0x00) {
+                if ((status & 0x02) == 0x00) {
+                    ret = 1;
+                    break;
+                } else if ((status & 0xFC) != 0x00) {
 //                RETURN(ret, int)
+                }
             }
         }
     }
@@ -1259,7 +1267,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     //读取配置文件的 加密SN
                     FILE *inFile = NULL;
                     inFile = fopen(
-                            "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/configs.txt",
+                            "/storage/emulated/0/Android/data/com.dyt.wcc.victor/files/configs.txt",
                             "a+");
                     //存储文件流数据 的指针
                     char *fileStore;
