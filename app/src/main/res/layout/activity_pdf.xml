@@ -1,24 +1,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-
-    </data>
+    <data></data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/m_root_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/black">
-
-        <!--    <ImageView-->
-        <!--        android:id="@+id/iv_preview_back"-->
-        <!--        app:layout_constraintTop_toTopOf="parent"-->
-        <!--        app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--        android:src="@color/teal_200"-->
-        <!--        android:layout_marginStart="@dimen/dimen_40dp"-->
-        <!--        android:layout_width="@dimen/dimen_30dp"-->
-        <!--        android:layout_height="@dimen/dimen_30dp"/>-->
 
         <ImageView
             android:id="@+id/iv_preview_back_pdf"
@@ -43,7 +32,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:gravity="center"
-            android:text="title"
+            android:text="11111111111111111111111111"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="@id/iv_preview_back_pdf"
             app:layout_constraintLeft_toRightOf="@id/m_back_line_pdf"
@@ -63,17 +52,27 @@
             android:id="@+id/pdfViewPager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@id/m_back_line_top"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/m_back_line_top" />
 
-        <!--        <androidx.recyclerview.widget.RecyclerView-->
-        <!--            android:id="@+id/rv_pdf"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="0dp"-->
-        <!--            android:background="@color/white"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/m_back_line_top" />-->
+        <ImageView
+            android:id="@+id/iv_left"
+            android:layout_width="@dimen/dimen_30dp"
+            android:layout_height="@dimen/dimen_100dp"
+            android:src="@drawable/ic_page_left"
+            app:layout_constraintBottom_toBottomOf="@id/pdfViewPager"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@id/pdfViewPager" />
 
+        <ImageView
+            android:id="@+id/iv_right"
+            android:layout_width="@dimen/dimen_30dp"
+            android:layout_height="@dimen/dimen_100dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_page_right"
+            app:layout_constraintBottom_toBottomOf="@id/pdfViewPager"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/pdfViewPager" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

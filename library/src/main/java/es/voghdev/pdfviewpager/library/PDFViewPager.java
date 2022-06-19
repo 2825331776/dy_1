@@ -38,6 +38,7 @@ public class PDFViewPager extends ViewPager {
 
     public PDFViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
+        Log.e(TAG, "============PDFViewPager: ========1111========");
         this.context = context;
         init(attrs);
     }
