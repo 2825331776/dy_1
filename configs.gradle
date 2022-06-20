@@ -11,14 +11,14 @@ ext {
             VName        : "1.1.1",
 
             supportV     : "27.0.0",
-            applicationId: "com.dyt.wcc.victor"
+            applicationId: "com.dyt.wcc.dypir"
     ]
 
     // 多渠道产品信息
     envInfo = [
             web  : [
                     // 应用 id
-                    applicationId: "com.dyt.wcc.victor",
+                    applicationId: "com.dyt.wcc.dypir",
                     // 构建版本号
                     versionCode  : 1,
                     // 版本名称
@@ -26,7 +26,7 @@ ext {
             ],
             phone: [
                     // 应用 id
-                    applicationId: "com.dyt.wcc.victor",
+                    applicationId: "com.dyt.wcc.dypir",
                     // 构建版本号
                     versionCode  : 1,
                     // 版本名称

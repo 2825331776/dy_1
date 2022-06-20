@@ -67,15 +67,15 @@ android {
         // 然后这里指向的资源路径，是渠道特有的资源，总而言之，就是这里的资源会覆盖，正常 res 目录下的资源
         //放入渠道特有的 资源，需要替换对应的资源时，在 productFlavors 的渠道名称{} 里的 manifestPlaceholders
         //加上 替换的资源为那个名称
-        web.res.srcDirs = ['src/main/res-huawei']
-        phone.res.srcDirs = ['src/main/res-huawei']
-        common.res.srcDirs = ['src/main/res-xiaomi']
+        DYPir.res.srcDirs = ['src/main/res']
+//        JMSPir.res.srcDirs = ['src/main/res-jms']
+//        VICTORPir.res.srcDirs = ['src/main/res-victor']
     }
 
     flavorDimensions "theb"
     productFlavors {
-//        //开发环境
-        web {
+//        //开发环境，点扬红外
+        DYPir {
 //              // 每个环境包名不同
             dimension "theb"
             applicationId rootProject.ext.projectVersions.applicationId
@@ -86,48 +86,48 @@ android {
 //            resValue "string", "app_name", "web"
 //            resValue "bool", "auto_updates", 'false'
             // 动态修改 常量 字段
-            buildConfigField "String", "ENVIRONMENT", '"web"'
+            buildConfigField "String", "ENVIRONMENT", '"DYPir"'
             // 修改 AndroidManifest.xml 里渠道变量
-            manifestPlaceholders = [CHANNEL_VALUE: "web"
-                                    , app_name   : "webUse"]
+            manifestPlaceholders = [CHANNEL_VALUE: "DYPir"
+                                    , app_name   : "DytSpectrumOwl"]
             //, app_icon   : "@mipmap/delete_all"
         }
-        //华为
-        phone {
-            // 每个环境包名不同
-            dimension "theb"
-            applicationId rootProject.ext.projectVersions.applicationId
-            versionCode rootProject.ext.projectVersions.VCode
-            versionName rootProject.ext.projectVersions.VName
-            // 动态添加 string.xml 字段；
-            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
-//            resValue "string", "app_name", "huawei"
-//            resValue "bool", "auto_updates", 'false'
-            // 动态修改 常量 字段
-            buildConfigField "String", "ENVIRONMENT", '"phone"'
-            // 修改 AndroidManifest.xml 里渠道变量
-            manifestPlaceholders = [CHANNEL_VALUE: "phone"
-                                    , app_name   : "phoneUse"]
-            // , app_icon   : "@mipmap/delete_all"
-        }
-        //小米
-        common {
-            // 每个环境包名不同
-            dimension "theb"
-            applicationId rootProject.ext.projectVersions.applicationId
-            versionCode rootProject.ext.projectVersions.VCode
-            versionName rootProject.ext.projectVersions.VName
-            // 动态添加 string.xml 字段；
-            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
-//            resValue "string", "app_name", "xiaomi"
-//            resValue "bool", "auto_updates", 'false'
-            // 动态修改 常量 字段
-            buildConfigField "String", "ENVIRONMENT", '"common"'
-            // 修改 AndroidManifest.xml 里渠道变量
-            manifestPlaceholders = [CHANNEL_VALUE: "common"
-                                    , app_name   : "commonApk"]
-            //, app_icon   : "@mipmap/delete_all"
-        }
+        //精明鼠   NOYAFA
+//        JMSPir {
+//            // 每个环境包名不同
+//            dimension "theb"
+//            applicationId rootProject.ext.projectVersions.applicationId
+//            versionCode rootProject.ext.projectVersions.VCode
+//            versionName rootProject.ext.projectVersions.VName
+//            // 动态添加 string.xml 字段；
+//            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
+////            resValue "string", "app_name", "huawei"
+////            resValue "bool", "auto_updates", 'false'
+//            // 动态修改 常量 字段
+//            buildConfigField "String", "ENVIRONMENT", '"JMSPir"'
+//            // 修改 AndroidManifest.xml 里渠道变量
+//            manifestPlaceholders = [CHANNEL_VALUE: "JMSPir"
+//                                    , app_name   : "NOYAFA"]
+//            // , app_icon   : "@mipmap/delete_all"
+//        }
+//        //驿生胜利  VICTOR
+//        VICTORPir {
+//            // 每个环境包名不同
+//            dimension "theb"
+//            applicationId rootProject.ext.projectVersions.applicationId
+//            versionCode rootProject.ext.projectVersions.VCode
+//            versionName rootProject.ext.projectVersions.VName
+//            // 动态添加 string.xml 字段；
+//            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
+////            resValue "string", "app_name", "xiaomi"
+////            resValue "bool", "auto_updates", 'false'
+//            // 动态修改 常量 字段
+//            buildConfigField "String", "ENVIRONMENT", '"VICTORPir"'
+//            // 修改 AndroidManifest.xml 里渠道变量
+//            manifestPlaceholders = [CHANNEL_VALUE: "VICTORPir"
+//                                    , app_name   : "VICTOR"]
+//            //, app_icon   : "@mipmap/delete_all"
+//        }
     }
 
     //移除lint检测的error
@@ -183,7 +183,7 @@ android {
                 if (outputFile != null && outputFile.name.endsWith('.apk')) {
 //                    def fileName = "DytSpectrumOwl"+ "_${variant.flavorName}_${variant.buildType.name}_v${variant.productFlavors[0].versionName}" +
 //                            "_b${variant.productFlavors[0].versionCode}_${releasePackageTime()}.apk"
-                    def fileName = "DytNOYAFA" + "_${variant.buildType.name}_v${variant.productFlavors[0].versionName}" +
+                    def fileName = "${variant.productFlavors[0].manifestPlaceholders.app_name}" + "_${variant.buildType.name}_v${variant.productFlavors[0].versionName}" +
                             "_b${variant.productFlavors[0].versionCode}_${releasePackageTime()}.apk"
                     outputFileName = fileName
                 }
@@ -204,7 +204,7 @@ dependencies {
     //引用 easyphotos 库
     implementation project(path: ':easyphotos')
     //引用第三方 pdf查看库
-    implementation project(path: ':library')
+//    implementation project(path: ':library')
 
     implementation project(path: ':UvcConnect')
     implementation 'androidx.appcompat:appcompat:1.2.0'

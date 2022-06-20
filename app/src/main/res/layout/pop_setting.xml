@@ -619,7 +619,6 @@
                 android:background="@drawable/bg_setting_language_toggle"
                 android:gravity="center"
                 android:text="@string/check_updates"
-                android:visibility="gone"
                 android:textAllCaps="false"
                 android:textColor="@color/black"
                 android:textSize="@dimen/dimen_16sp"
