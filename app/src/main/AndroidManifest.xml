@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.dyt.wcc.dypir">
+    package="com.dyt.wcc.dytpir">
     <!-- <uses-permission android:name="android.permission.MANAGE_DOCUMENTS"/> -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -26,7 +26,7 @@
         android:required="true" />
 
     <application
-        android:name="com.dyt.wcc.dypir.constans.DYTApplication"
+        android:name="com.dyt.wcc.dytpir.constans.DYTApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher_dy_foreground"
@@ -34,7 +34,7 @@
         android:supportsRtl="true"
         android:theme="@style/MyTheme">
         <activity
-            android:name="com.dyt.wcc.dypir.ui.preview.PreviewActivity"
+            android:name="com.dyt.wcc.dytpir.ui.preview.PreviewActivity"
             android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
             android:exported="true"
             android:launchMode="singleTop"
@@ -55,11 +55,11 @@
                 android:resource="@xml/dy_device_filter" />
         </activity>
 
-        <service android:name="com.dyt.wcc.dypir.ui.preview.record.MediaProjectionService" />
+        <service android:name="com.dyt.wcc.dytpir.ui.preview.record.MediaProjectionService" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.dyt.wcc.dypir.FileProvider"
+            android:authorities="com.dyt.wcc.dytpir.FileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

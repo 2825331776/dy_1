@@ -1267,7 +1267,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     //读取配置文件的 加密SN
                     FILE *inFile = NULL;
                     inFile = fopen(
-                            "/storage/emulated/0/Android/data/com.dyt.wcc.dypir/files/configs.txt",
+                            "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/configs.txt",
                             "a+");
                     //存储文件流数据 的指针
                     char *fileStore;

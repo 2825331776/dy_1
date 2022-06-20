@@ -67,7 +67,7 @@ android {
         // 然后这里指向的资源路径，是渠道特有的资源，总而言之，就是这里的资源会覆盖，正常 res 目录下的资源
         //放入渠道特有的 资源，需要替换对应的资源时，在 productFlavors 的渠道名称{} 里的 manifestPlaceholders
         //加上 替换的资源为那个名称
-        DYPir.res.srcDirs = ['src/main/res']
+        DYTPir.res.srcDirs = ['src/main/res']
 //        JMSPir.res.srcDirs = ['src/main/res-jms']
 //        VICTORPir.res.srcDirs = ['src/main/res-victor']
     }
@@ -75,7 +75,7 @@ android {
     flavorDimensions "theb"
     productFlavors {
 //        //开发环境，点扬红外
-        DYPir {
+        DYTPir {
 //              // 每个环境包名不同
             dimension "theb"
             applicationId rootProject.ext.projectVersions.applicationId
@@ -86,9 +86,9 @@ android {
 //            resValue "string", "app_name", "web"
 //            resValue "bool", "auto_updates", 'false'
             // 动态修改 常量 字段
-            buildConfigField "String", "ENVIRONMENT", '"DYPir"'
+            buildConfigField "String", "ENVIRONMENT", '"DYTPir"'
             // 修改 AndroidManifest.xml 里渠道变量
-            manifestPlaceholders = [CHANNEL_VALUE: "DYPir"
+            manifestPlaceholders = [CHANNEL_VALUE: "DYTPir"
                                     , app_name   : "DytSpectrumOwl"]
             //, app_icon   : "@mipmap/delete_all"
         }

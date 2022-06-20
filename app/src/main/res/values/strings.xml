@@ -1,15 +1,13 @@
 <resources>
     <!--关于页面-->
-    <string name="CompanyName">Shenzhen Dianyang Technology Co., Ltd.</string>
-    <string name="CompanyWebsite_info">WebSite: </string>
-    <string name="CompanyWebsite">www.dyt-ir.com</string>
-    <string name="About_tel_info">Tel：</string>
-    <string name="About_tel_content">0086–755–2778 6545</string>
-    <string name="ContactEmail">service@dianytech.com</string>
-    <string name="About_main_contact_us">Contact us：</string>
-    <string name="About_main_contact_us_email">service@dianytech.com</string>
-    <string name="about_main_user_manual">User manual</string>
+    <string name="preview_about_company_name">Shenzhen Dianyang Technology Co., Ltd.</string>
+    <string name="preview_about_company_website">WebSite: </string>
+    <string name="preview_about_company_website_content">www.dyt-ir.com</string>
+    <string name="preview_about_contact_email_content">service@dianytech.com</string>
+    <string name="preview_about_contact_us">Contact us：</string>
+    <string name="preview_about_contact_us_email">service@dianytech.com</string>
 
+<!--    页面名称-->
     <string name="app_name">DytSpectrumOwl</string>
     <string name="Gallery">Gallery</string>
     <string name="Welcome">Welcome</string>
@@ -43,9 +41,10 @@
     <!--    设置页-->
     <string name="SettingGeneral">General</string>
     <string name="SettingLanguage">Language</string>
+    <string name="setting_language_chinese">Chinese</string>
+    <string name="setting_language_english">English</string>
     <string name="SettingTemperatureUnit">Temperature Unit</string>
     <string name="SettingIsRecordAudio">Record with Audio</string>
-
     <string name="SettingCameraParams">Thermal Parameters</string>
     <string name="SettingCameraParams_Emittance">Emissivity</string>
     <string name="SettingCameraParams_Distance">Distance </string>
@@ -62,8 +61,13 @@
     <string name="toast_setting_HL_swtich_success">High and low temperature switch successfully.</string>
     <string name="toast_setting_HL_swtich_fail">High and low temperature switching failed.</string>
 
-    <string name="setting_language_chinese">Chinese</string>
-    <string name="setting_language_english">English</string>
+    <!--  设置======更新操作-->
+    <string name="toast_downloading_background">Downloading in the background…</string>
+    <string name="pop_version">The latest version:</string>
+    <string name="toast_already_latest_version">already the latest version</string>
+    <string name="pop_update_now">Update now</string>
+    <string name="pop_ignore">Ignore</string>
+    <string name="value_zero">0.0</string>
 
     <string name="toast_is_recording">Recording video now…</string>
     <string name="toast_save_path">Save path:</string>
@@ -86,11 +90,5 @@
     <string name="toast_complete_Humidity">Humidity setting complete</string>
 
 
-    <!--    更新操作-->
-    <string name="toast_downloading_background">Downloading in the background…</string>
-    <string name="pop_version">The latest version:</string>
-    <string name="toast_already_latest_version">already the latest version</string>
-    <string name="pop_update_now">Update now</string>
-    <string name="pop_ignore">Ignore</string>
-    <string name="value_zero">0.0</string>
+
 </resources>
