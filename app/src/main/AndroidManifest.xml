@@ -38,7 +38,7 @@
             android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:launchMode="singleTop"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name="com.dyt.wcc.victor.ui.preview.PreviewActivity"
             android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
