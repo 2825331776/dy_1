@@ -80,8 +80,8 @@
     <string name="toast_select_same_language">The selected language is the same as the current language.</string>
 
     <!--    取值范围设置 -->
-    <string name="toast_range_int">"The value range is (%1$d - %2$d)"</string>
-    <string name="toast_range_float">"The value range is (%1$f - %2$f)"</string>
+    <string name="toast_range_int">"The value range is (%1$d ~ %2$d)"</string>
+    <string name="toast_range_float">"The value range is (%1$.2f ~ %2$.2f)"</string>
     <string name="toast_complete_Emittance">Emissivity setting complete</string>
     <string name="toast_complete_Distance">Distance setting complete</string>
     <string name="toast_complete_Reflect">Reflected temperature setting complete</string>

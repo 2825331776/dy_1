@@ -1,8 +1,9 @@
-package com.dyt.wcc.dytpir.utils;
+package com.dyt.wcc.dytpir.ui.preview;
 
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.EditText;
 
 /**
@@ -57,6 +58,7 @@ public class DecimalInputTextWatcher implements TextWatcher {
 
 	@Override
 	public void afterTextChanged(Editable editable) {
+//		Log.e("=====================", "afterTextChanged: ");
 		try {
 			String s = editable.toString();
 			editText.removeTextChangedListener(this);
@@ -87,6 +89,5 @@ public class DecimalInputTextWatcher implements TextWatcher {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 }

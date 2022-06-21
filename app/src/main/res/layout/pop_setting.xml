@@ -271,7 +271,7 @@
 
             <EditText
                 android:id="@+id/et_camera_setting_emittance"
-                android:layout_width="@dimen/dimen_55dp"
+                android:layout_width="@dimen/dimen_70dp"
                 android:layout_height="0dp"
                 android:background="@drawable/shape_bg_pop_setting_edit"
                 android:gravity="center"
@@ -333,7 +333,7 @@
 
             <EditText
                 android:id="@+id/et_camera_setting_humidity"
-                android:layout_width="@dimen/dimen_55dp"
+                android:layout_width="@dimen/dimen_70dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="@dimen/dimen_10dp"
                 android:background="@drawable/shape_bg_pop_setting_edit"
@@ -444,7 +444,7 @@
 
             <EditText
                 android:id="@+id/et_camera_setting_revise"
-                android:layout_width="@dimen/dimen_55dp"
+                android:layout_width="@dimen/dimen_70dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="@dimen/dimen_10dp"
                 android:background="@drawable/shape_bg_pop_setting_edit"
@@ -501,13 +501,13 @@
 
             <EditText
                 android:id="@+id/et_camera_setting_reflect"
-                android:layout_width="@dimen/dimen_55dp"
+                android:layout_width="@dimen/dimen_70dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="@dimen/dimen_10dp"
                 android:background="@drawable/shape_bg_pop_setting_edit"
                 android:gravity="center"
                 android:imeOptions="actionDone"
-                android:inputType="number"
+                android:inputType="numberSigned"
                 android:singleLine="true"
                 android:text="@string/value_zero"
                 android:textColor="@color/white"
@@ -558,14 +558,14 @@
 
             <EditText
                 android:id="@+id/et_camera_setting_freeAirTemp"
-                android:layout_width="@dimen/dimen_55dp"
+                android:layout_width="@dimen/dimen_70dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="@dimen/dimen_10dp"
                 android:background="@drawable/shape_bg_pop_setting_edit"
                 android:focusable="true"
                 android:gravity="center"
                 android:imeOptions="actionDone"
-                android:inputType="number"
+                android:inputType="numberSigned"
                 android:singleLine="true"
                 android:text="@string/value_zero"
                 android:textColor="@color/white"

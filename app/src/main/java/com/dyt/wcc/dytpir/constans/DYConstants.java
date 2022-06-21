@@ -14,6 +14,14 @@ import java.io.File;
 public class DYConstants {
 
 	public static final int IMAGE_READY = 100;
+	//校正 最小值  最大值 （在摄氏度）
+	public static final int REVISE_MIN  = -20;
+	public static final int REVISE_MAX  = 20;
+	//环境 反射温度 的最小值  最大值 （在摄氏度）
+	public static final int REFLECT_MIN = -20;
+	public static final int REFLECT_MAX = 120;
+	public static final int ENVIRONMENT_MIN = -20;
+	public static final int ENVIRONMENT_MAX = 50;
 
 	public static final String PIC_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + File.separator + "DYTCamera";
 
@@ -48,15 +56,10 @@ public class DYConstants {
 	public static final int CAMERA_DATA_MODE_8004 = 0x8004;//数据流切换 0x8004
 	public static final int CAMERA_DATA_MODE_8005 = 0x8005;//数据流切换 0x8005
 
-	//	public static final String HighLowTemp_Toggle_info = "highLowTemp_toggle";//高低温追踪 开关
-	//	public static final String areaCheck_Toggle_info = "areaCheck_toggle";//框内细查 开关
-
-	public static final String PALETTE_NUMBER    = "palette_number";//画板设置
-	public static final String LANGUAGE_SETTING  = "language_setting";//语言设置
+	public static final String PALETTE_NUMBER         = "palette_number";//画板设置
+	public static final String LANGUAGE_SETTING       = "language_setting";//语言设置
 	public static final String LANGUAGE_SETTING_INDEX = "language_setting_index";//语言设置的下标
-	public static final String TEMP_UNIT_SETTING = "temp_unit";//温度单位
-
-	//	public static final String SPTAG = "Main";
+	public static final String TEMP_UNIT_SETTING      = "temp_unit";//温度单位
 
 	public static final String SP_NAME              = "DYT_IR_SP_DY";
 	public static final String RECORD_AUDIO_SETTING = "record_audio_setting";
