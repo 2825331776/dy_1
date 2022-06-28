@@ -44,9 +44,6 @@ FrameImage::~FrameImage() {
     ENTER();
     delete[] mBuffer;
     mDeviceHandle = NULL;
-//    if (iTemperatureCallback.onReceiveTemperature){
-//        iTemperatureCallback.onReceiveTemperature = NULL;
-//    }
     EXIT();
 }
 

@@ -1,0 +1,85 @@
+<resources>
+    <!--关于页面-->
+    <string name="CompanyName">深圳市诺方舟电子有限公司</string>
+    <string name="CompanyWebsite_info">网址:</string>
+    <string name="CompanyWebsite">www.jingmingshu.cn</string>
+    <string name="About_tel_info">电话:</string>
+    <string name="About_tel_content">0755–27220204</string>
+    <string name="ContactEmail">sale@noyafa.com</string>
+    <string name="About_Main_business_info">主营：</string>
+    <string name="About_Main_business_content">热成像仪、测距仪、寻线仪、光纤测试仪</string>
+
+    <string name="app_name">精明鼠</string>
+    <string name="Gallery">相册</string>
+    <string name="Welcome">欢迎</string>
+    <string name="MediaBrowser">图库</string>
+
+    <string name="ShowHighLowTemp">高低温追踪</string>
+    <string name="AreaCheck">框内细查</string>
+    <string name="HighTempAlarm">超温报警</string>
+    <string name="FixeTempBar">固定温度条</string>
+    <string name="DynamicTempBar">动态温度条</string>
+
+    <string name="AlarmTempInput">输入</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确定</string>
+
+    <string name="check_updates">检查更新</string>
+    <string name="VersionName">版本号:</string>
+    <string name="contactus_email_head">mailto:</string>
+    <string name="contactus_choice_email">可用邮件应用列表：</string>
+    <string name="pop_about_privacy_policy">隐私权政策</string>
+
+    <!--录制-->
+    <string name="StartRecorderService">启动录制服务</string>
+
+    <!--    设置页-->
+    <string name="SettingGeneral">通用</string>
+    <string name="SettingLanguage">语言</string>
+    <string name="SettingTemperatureUnit">温度单位</string>
+    <string name="SettingIsRecordAudio">录制声音</string>
+    <string name="SettingCameraParams">参数</string>
+    <string name="SettingCameraParams_Emittance">发射率</string>
+    <string name="SettingCameraParams_Distance">距离 </string>
+    <string name="SettingCameraParams_ReflectTemp">反射温度 </string>
+    <string name="SettingCameraParams_Revise">校正 </string>
+    <string name="SettingCameraParams_FreeAirTemp">环境温度 </string>
+    <string name="SettingCameraParams_Humidity">湿度 (%)</string>
+    <string name="SettingCameraParams_Reset">默认</string>
+    <string name="setting_update">更新</string>
+    <string name="setting_check_version_info">软件版本:%s</string>
+    <string name="setting_high_low_temp_gain_toggle_info">高低温切换</string>
+    <string name="setting_high_gain">高温</string>
+    <string name="setting_low_gain">低温</string>
+    <string name="toast_setting_HL_swtich_success">高低温切换成功</string>
+    <string name="toast_setting_HL_swtich_fail">高低温切换失败</string>
+
+    <string name="setting_language_chinese">中文</string>
+    <string name="setting_language_english">英语</string>
+
+    <string name="toast_is_recording">正在录制中…</string>
+    <string name="toast_save_path">保存路径为:</string>
+    <string name="toast_need_connect_camera">请连接相机</string>
+    <string name="toast_dont_have_permission">没授予对应权限</string>
+    <string name="toast_base_permission_explain">没有读写存储权限，将无法预览页面,拍照，录制等功能。是否授权权限？</string>
+    <string name="toast_base_permission_tosetting">没有权限，将无法预览页面,拍照，录制等功能。是否去设置打开？</string>
+    <string name="toast_select_same_language">选择的语言和当前语言相同</string>
+
+    <!--    取值范围设置 -->
+    <string name="toast_range_int">"取值范围为(%1$d ~ %2$d)"</string>
+    <string name="toast_range_float">"取值范围为(%1$.2f ~ %2$.2f)"</string>
+    <string name="toast_complete_Emittance">发射率设置完成</string>
+    <string name="toast_complete_Distance">距离设置完成</string>
+    <string name="toast_complete_Reflect">反射温度设置完成</string>
+    <string name="toast_complete_Revise">校正设置完成</string>
+    <string name="toast_complete_FreeAirTemp">环境温度设置完成</string>
+    <string name="toast_complete_Humidity">湿度设置完成</string>
+
+    <!--    更新操作-->
+    <string name="toast_downloading_background">正在下载中…</string>
+    <string name="pop_version">最新版本:</string>
+    <string name="toast_already_latest_version">已经是最新版本</string>
+    <string name="pop_update_now">立即更新</string>
+    <string name="pop_ignore">忽略</string>
+    <string name="value_zero">0.0</string>
+</resources>

@@ -30,7 +30,11 @@ import java.lang.ref.WeakReference;
  * <p>PackagePath: com.dyt.wcc.common.widget     </p>
  */
 public class MeasureTempSpecificView extends View {
-	private static final boolean isDebug = true;
+	public static final int MEASURE_POINT_VIEW = 1;//点
+	public static final int MEASURE_LINE_VIEW = 2;//线
+	public static final int MEASURE_RECTANGLE_VIEW = 3;//矩形
+
+	private final boolean isDebug = true;
 	private static final String  TAG     = "MyMoveWidget";
 
 	private Bitmap maxTempBt, minTempBt, centerTempBt;//最小温度，最大温度图片（单点只有最小温度的图片）
@@ -268,7 +272,7 @@ public class MeasureTempSpecificView extends View {
 
 		//得到文字的所需宽高,并计算文字方位
 		switch (tempWidgetData.getType()) {
-			case 1://点
+			case MEASURE_POINT_VIEW://点
 				//点温度String
 				minTempStr = tempWidgetData.getPointTemp().getTemp();
 				// 通过方位及其 内容坐标或 文字的坐标设置 ，温度文字基准绘制点
@@ -286,8 +290,8 @@ public class MeasureTempSpecificView extends View {
 				doMeasure();
 				updateContentCoordinate();//更新所有的坐标
 				break;
-			case 2://线
-			case 3://矩形
+			case MEASURE_LINE_VIEW://线
+			case MEASURE_RECTANGLE_VIEW://矩形
 				minTempStr = tempWidgetData.getOtherTemp().getMinTemp();
 				maxTempStr = tempWidgetData.getOtherTemp().getMaxTemp();
 
@@ -375,7 +379,7 @@ public class MeasureTempSpecificView extends View {
 	 * @param type      自身的类型：点、线、矩形
 	 */
 	private void getStrCoordinate (float width, float height, int direction, int type) {
-		if (type == 1) {
+		if (type == MEASURE_POINT_VIEW) {
 			if (direction == WIDGET_DIRECTION_STATE_LEFT_TOP) {
 				strLeft = contentLeft - width;
 				strRight = contentLeft;
@@ -423,7 +427,7 @@ public class MeasureTempSpecificView extends View {
 			toolsLocationState = WIDGET_DIRECTION_STATE_LEFT_BOTTOM;
 		}
 		//		}else {
-		if (type == 2) {
+		if (type == MEASURE_LINE_VIEW) {
 			//线 特有的 移位
 			//左高  右低
 			if (tempWidgetData.getOtherTemp().getStartPointY() >= tempWidgetData.getOtherTemp().getEndPointY()) {
@@ -558,7 +562,7 @@ public class MeasureTempSpecificView extends View {
 				//					Log.e(TAG, " doMeasure: w " + wMeasureSpecSize + " hMeasureSpecSize" + hMeasureSpecSize );
 				//				}
 
-			} else if (tempWidgetData.getType() == 2 || tempWidgetData.getType() == 3) {
+			} else if (tempWidgetData.getType() == MEASURE_LINE_VIEW || tempWidgetData.getType() == MEASURE_RECTANGLE_VIEW) {
 				//有背景 线和矩形的大小看 最高最低点图片的绘制是否影响控件的尺寸
 				float min, max;
 				//点模式，计算最左的坐标
@@ -581,7 +585,7 @@ public class MeasureTempSpecificView extends View {
 				wMeasureSpecSize = maxRight - minLeft;
 			}
 		} else {//没有工具栏
-			if (tempWidgetData.getType() == 1) {
+			if (tempWidgetData.getType() == MEASURE_POINT_VIEW) {
 				float min, max;
 				//点模式，计算最左的坐标
 
@@ -600,7 +604,7 @@ public class MeasureTempSpecificView extends View {
 
 				hMeasureSpecSize = maxBottom - minTop;
 				wMeasureSpecSize = maxRight - minLeft;
-			} else if (tempWidgetData.getType() == 2 || tempWidgetData.getType() == 3) {//无背景，无工具栏
+			} else if (tempWidgetData.getType() == MEASURE_LINE_VIEW || tempWidgetData.getType() == MEASURE_RECTANGLE_VIEW) {//无背景，无工具栏
 				textNeedHeight = (int) getStrHeight(maxTempTextPaint, maxTempStr);
 				float min, max;
 				//点模式，计算最左的坐标
@@ -637,7 +641,7 @@ public class MeasureTempSpecificView extends View {
 	 */
 	private void getContentAndBgCoordinate (@NonNull MeasureEntity tempWidget, Bitmap bp) {
 		if (tempWidgetData.isSelect()) {//有工具栏及内容背景
-			if (tempWidget.getType() == 1) {
+			if (tempWidget.getType() == MEASURE_POINT_VIEW) {
 				//				if (isDebug)
 				//					Log.e(TAG, "步骤一: 得到内容及其背景坐标 ");
 				contentLeft = tempWidgetData.getPointTemp().getStartPointX() - bp.getWidth() / 2.0f;
@@ -653,12 +657,12 @@ public class MeasureTempSpecificView extends View {
 				//				}
 				//				if (isDebug)
 				//					Log.e(TAG, "步骤二: 得到内容及其工具栏方位及其坐标 ");
-			} else if (tempWidget.getType() == 2) {
+			} else if (tempWidget.getType() == MEASURE_LINE_VIEW) {
 				contentLeft = Math.min(tempWidgetData.getOtherTemp().getStartPointX(), tempWidgetData.getOtherTemp().getEndPointX()) - bp.getWidth() / 2.0f;
 				contentRight = Math.max(tempWidgetData.getOtherTemp().getStartPointX(), tempWidgetData.getOtherTemp().getEndPointX()) + bp.getWidth() / 2.0f;
 				contentTop = Math.min(tempWidgetData.getOtherTemp().getStartPointY(), tempWidgetData.getOtherTemp().getEndPointY()) - bp.getHeight() / 2.0f;
 				contentBottom = Math.max(tempWidgetData.getOtherTemp().getStartPointY(), tempWidgetData.getOtherTemp().getEndPointY()) + bp.getHeight() / 2.0f;
-			} else if (tempWidget.getType() == 3) {
+			} else if (tempWidget.getType() == MEASURE_RECTANGLE_VIEW) {
 				contentLeft = tempWidgetData.getOtherTemp().getStartPointX() - bp.getWidth() / 2.0f;
 				contentRight = tempWidgetData.getOtherTemp().getEndPointX() + bp.getWidth() / 2.0f;
 				contentTop = tempWidgetData.getOtherTemp().getStartPointY() - bp.getHeight() / 2.0f;
@@ -672,17 +676,17 @@ public class MeasureTempSpecificView extends View {
 			//初始化工具栏坐标
 			getToolsCoordinate();
 		} else {//无工具栏及内容背景
-			if (tempWidget.getType() == 1) {
+			if (tempWidget.getType() == MEASURE_POINT_VIEW) {
 				contentLeft = contentBgLeft = tempWidgetData.getPointTemp().getStartPointX() - bp.getWidth() / 2.0f;
 				contentRight = contentBgRight = tempWidgetData.getPointTemp().getStartPointX() + bp.getWidth() / 2.0f;
 				contentTop = contentBgTop = tempWidgetData.getPointTemp().getStartPointY() - bp.getHeight() / 2.0f;
 				contentBottom = contentBgBottom = tempWidgetData.getPointTemp().getStartPointY() + bp.getHeight() / 2.0f;
-			} else if (tempWidget.getType() == 3) {
+			} else if (tempWidget.getType() == MEASURE_RECTANGLE_VIEW) {
 				contentLeft = contentBgLeft = tempWidgetData.getOtherTemp().getStartPointX() - bp.getWidth() / 2.0f;
 				contentRight = contentBgRight = tempWidgetData.getOtherTemp().getEndPointX() + bp.getWidth() / 2.0f;
 				contentTop = contentBgTop = tempWidgetData.getOtherTemp().getStartPointY() - bp.getHeight() / 2.0f;
 				contentBottom = contentBgBottom = tempWidgetData.getOtherTemp().getEndPointY() + bp.getHeight() / 2.0f;
-			} else if (tempWidget.getType() == 2) {
+			} else if (tempWidget.getType() == MEASURE_LINE_VIEW) {
 				contentLeft = Math.min(tempWidgetData.getOtherTemp().getStartPointX(), tempWidgetData.getOtherTemp().getEndPointX()) - bp.getWidth() / 2.0f;
 				contentRight = Math.max(tempWidgetData.getOtherTemp().getStartPointX(), tempWidgetData.getOtherTemp().getEndPointX()) + bp.getWidth() / 2.0f;
 				contentTop = Math.min(tempWidgetData.getOtherTemp().getStartPointY(), tempWidgetData.getOtherTemp().getEndPointY()) - bp.getHeight() / 2.0f;

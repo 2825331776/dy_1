@@ -53,6 +53,7 @@ import com.dyt.wcc.common.BuildConfig;
 import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
 import com.serenegiant.usb.IFrameCallback;
 import com.serenegiant.usb.ITemperatureCallback;
+import com.serenegiant.usb.IUVCStatusCallBack;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 
@@ -1116,6 +1117,30 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		//        private short[] ShortTemperatureData = new short[640 * 512 + 10];
 		private Handler mMySubHandler;
 
+		/**
+		 * UVC连接状态
+		 */
+		private int UVCStatus = -1;
+		private int autoSaveCount = 0;
+		private boolean needSendSaveOrder = false;
+		IUVCStatusCallBack iuvcStatusCallBack = new IUVCStatusCallBack() {
+			@Override
+			public void onUVCCurrentStatus (int uvcStatus) {
+				//				Log.e(TAG, "onUVCCurrentStatus:  ===========回调保存指令=========111111111111111111==uvcStatus===>"+uvcStatus );
+				if (uvcStatus!= UVCStatus){
+					UVCStatus = uvcStatus;
+				}else {
+					if (autoSaveCount <= 80 && UVCStatus == 3 && !needSendSaveOrder){
+						autoSaveCount++;
+					}else if (autoSaveCount > 80 && UVCStatus == 3 && !needSendSaveOrder){
+						needSendSaveOrder = true;
+						//						Log.e(TAG, "onUVCCurrentStatus:  ==================回调保存指令================");
+						mUVCCamera.TinySaveCameraParams();
+					}
+				}
+			}
+		};
+
 		@Override
 		protected void finalize () throws Throwable {
 			Log.i(TAG, "CameraThread#finalize");
@@ -1338,6 +1363,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 			}
 		};
 
+
 		public void handleStartPreview (final Object surface) {
 			//            Log.e(TAG, "handleStartPreview:mUVCCamera" + mUVCCamera + " mIsPreviewing:" + mIsPreviewing);
 			if (DEBUG)
@@ -1395,6 +1421,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 				ITemperatureCallback mTempCb = mWeakCameraView.get().getTemperatureCallback();
 				mUVCCamera.setTemperatureCallback(mTempCb);//将温度回调的对象  发送到底层
 //				mWeakCameraView.get().setTemperatureCbing(false);//测温开关
+				mUVCCamera.setUVCStatusCallBack(iuvcStatusCallBack);
 
 				mUVCCamera.updateCameraParams();
 				synchronized (mSync) {

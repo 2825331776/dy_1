@@ -493,8 +493,12 @@ public class MeasureTempContainerView extends RelativeLayout {
 	//更新点的温度
 	private float updatePointTemp (float x, float y) {
 		//数据源上的坐标
-		int index = (10 + (int) (y * HRatio) * mFrameWidth + (int) (x * WRatio));
-		return tempSource[index];
+		if (tempSource != null && tempSource.length > 10) {
+			int index = (10 + (int) (y * HRatio) * mFrameWidth + (int) (x * WRatio));
+			return tempSource[index];
+		}else {
+			return 0.0f;
+		}
 	}
 
 	/**

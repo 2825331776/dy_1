@@ -1378,6 +1378,8 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         if (is_first_run) {
 //                        LOGE("===================is_first_run=======================begin==");
                             if (setMachineSetting(1, 1)) {
+                                float value = 0.9184f;
+                                sendTinyCParamsModification(&value, uvc_diy_communicate, 0x04);
                                 is_first_run = false;
                             } else {
                                 LOGE("===================is_first_run=======设置默认低增益模式失败===还会再次设置=======");
@@ -1992,6 +1994,41 @@ void UVCPreviewIR::savePicDefineData() {
 /***************************************录制相关 结束**************************************/
 
 /***********************************温度相关 开始******************************************************/
+
+//add by 吴长城 获取UVC连接状态回调
+int UVCPreviewIR::setUVCStatusCallBack(JNIEnv *env, jobject uvc_connect_status_callback) {
+    pthread_mutex_lock(&temperature_mutex);
+    {
+        if (!env->IsSameObject(mUvcStatusCallbackObj, uvc_connect_status_callback)) {
+            iUvcStatusCallback.onUVCCurrentStatus = NULL;
+            if (mUvcStatusCallbackObj) {
+                env->DeleteGlobalRef(mUvcStatusCallbackObj);
+            }
+            mUvcStatusCallbackObj = uvc_connect_status_callback;
+            if (mUvcStatusCallbackObj) {
+                // get method IDs of Java object for callback
+                jclass clazz = env->GetObjectClass(mUvcStatusCallbackObj);
+                if (LIKELY(clazz)) {
+                    iUvcStatusCallback.onUVCCurrentStatus = env->GetMethodID(clazz,
+                                                                             "onUVCCurrentStatus",
+                                                                             "(I)V");
+                } else {
+                    LOGE("failed to get object class");
+                }
+                env->ExceptionClear();
+                if (!iUvcStatusCallback.onUVCCurrentStatus) {
+                    LOGE("Can't find iUvcStatusCallback#onUVCCurrentStatus");
+                    env->DeleteGlobalRef(uvc_connect_status_callback);
+                    mUvcStatusCallbackObj = NULL;
+                    uvc_connect_status_callback = NULL;
+                }
+            }
+        }
+    }
+    pthread_mutex_unlock(&temperature_mutex);
+    RETURN(0, int);
+}
+
 //传递一个温度回调的对象，还传递一个回调的方法，实现通用
 int UVCPreviewIR::setTemperatureCallback(JNIEnv *env, jobject temperature_callback_obj) {
     ENTER();
@@ -2095,8 +2132,7 @@ void UVCPreviewIR::do_temperature(JNIEnv *env) {
             pthread_cond_wait(&temperature_sync, &temperature_mutex);
 //            LOGE("do_temperature02");
             if (mIsTemperaturing) {
-//                LOGE("do_temperature==============callback=====begin=====");
-//                do_temperature_callback(env, HoldBuffer);
+                env->CallVoidMethod(mUvcStatusCallbackObj,iUvcStatusCallback.onUVCCurrentStatus,UVC_STATUS);
                 mFrameImage->do_temperature_callback(env, HoldBuffer);
             }
 //            LOGE("do_temperature03");

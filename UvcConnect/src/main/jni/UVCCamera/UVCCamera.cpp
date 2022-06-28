@@ -399,6 +399,16 @@ int UVCCamera::setTemperatureCallback(JNIEnv *env, jobject temperature_callback_
     RETURN(result, int);
 }
 
+int UVCCamera::setUVCStatusCallBack(JNIEnv *env, jobject uvc_status_callback_obj) {
+    ENTER();
+    int result = EXIT_FAILURE;
+    if (mPreview) {
+        //吴长城
+        result = mPreview->setUVCStatusCallBack(env, uvc_status_callback_obj);
+    }
+    RETURN(result, int);
+}
+
 int UVCCamera::startPreview() {
     ENTER();
 

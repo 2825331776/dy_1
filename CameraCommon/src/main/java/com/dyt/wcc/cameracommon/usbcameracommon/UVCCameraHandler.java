@@ -33,6 +33,11 @@ import com.serenegiant.usb.UVCCamera;
 
 public class UVCCameraHandler extends AbstractUVCCameraHandler {
 	private static final String TAG = "UVCCameraHandler";
+	/**
+	 * UVC连接的状态。
+	 */
+	public static final int UVC_STATUS_PREVIEWING = 0;
+	public static final int UVC_STATUS_SN_ERROR = 1;
 	private static UVCCameraHandler mUVCCameraHandler;
 	/**
 	 * create UVCCameraHandler, use MediaVideoEncoder, try MJPEG, default bandwidth

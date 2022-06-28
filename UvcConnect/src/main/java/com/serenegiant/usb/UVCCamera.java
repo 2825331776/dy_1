@@ -489,6 +489,17 @@ public class UVCCamera {
 	}
 
 	/**
+	 * set ir UVCStatus callback
+	 *
+	 * @param callback
+	 */
+	public void setUVCStatusCallBack (final IUVCStatusCallBack callback) {
+		if (mNativePtr != 0) {
+			nativeSetUVCStatusCallBack(mNativePtr, callback);
+		}
+	}
+
+	/**
 	 * start preview
 	 */
 	public synchronized void startPreview () {
@@ -1161,6 +1172,8 @@ public class UVCCamera {
 	private static final native byte[] nativeGetCameraParams (final long mNativePtr, int len);
 
 	private static final native int nativeSetTemperatureCallback (final long mNativePtr, final ITemperatureCallback callback);
+
+	private static final native int nativeSetUVCStatusCallBack (final long mNativePtr, final IUVCStatusCallBack iuvcStatusCallBack);
 
 	private static final native void nativeWhenShutRefresh (final long mNativePtr);
 

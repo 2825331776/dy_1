@@ -417,6 +417,19 @@ static jint nativeSetTemperatureCallback(JNIEnv *env, jobject thiz,
     RETURN(result, jint);
 }
 
+////added by 吴长城, 状态回调函数
+static jint nativeSetUVCStatusCallBack(JNIEnv *env, jobject thiz,
+                                       ID_TYPE id_camera, jobject jIUVCStatusCallBack) {
+    jint result = JNI_ERR;
+    ENTER();
+    UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
+    if (LIKELY(camera)) {
+        jobject uvc_connect_status_callback_obj = env->NewGlobalRef(jIUVCStatusCallBack);
+        result = camera->setUVCStatusCallBack(env, uvc_connect_status_callback_obj);
+    }
+    RETURN(result, jint);
+}
+
 static void nativeWhenShutRefresh(JNIEnv *env, jobject thiz, ID_TYPE id_camera) {
 //LOGE("nativeWhenShutRefresh");
     ENTER();
@@ -2427,6 +2440,7 @@ static JNINativeMethod methods[] = {
         {"nativeRelease",                           "(J)I",                                           (void *) nativeRelease},
 
         {"nativeSetTemperatureCallback",            "(JLcom/serenegiant/usb/ITemperatureCallback;)I", (void *) nativeSetTemperatureCallback},
+        {"nativeSetUVCStatusCallBack",            "(JLcom/serenegiant/usb/IUVCStatusCallBack;)I", (void *) nativeSetUVCStatusCallBack},
         {"nativeWhenShutRefresh",                   "(J)V",                                           (void *) nativeWhenShutRefresh},
         {"nativeWhenChangeTempPara",                "(J)V",                                           (void *) nativeWhenChangeTempPara},
         {"nativeSetAddress",                        "(JLjava/lang/String;)V",                         (void *) nativeSetAddress},

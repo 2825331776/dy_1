@@ -1,0 +1,3 @@
+MeasureTempContainerView.java
+    1、最基本的：新增  和 删除 子view 清除所有的子view
+    包含的业务逻辑：打开超温警告
