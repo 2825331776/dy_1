@@ -28,25 +28,13 @@ import java.text.DecimalFormat;
  * @author zouyulong
  */
 public class CustomRangeSeekBar extends View {
-	public final int UPDATE_VALUE = 1000;
-	//handler what
-	DecimalFormat df = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
-
-	public        int    backcolor = 1;
-	private final Paint  mPaint    = new Paint();
-	//滑块bitmap
-	private       Bitmap mThumbImageMax;//滑块图像 对应表最大值
-	private       Bitmap mThumbImageMin;//滑块图像 对应表最小值
-
 	private static final int    DEFAULT_MODE = 0;
-	private              float  imgMax;//图层的最高温
-	private              float  imgMin;//图层的最低温
-	private              Bitmap mTempMaxImg;//图像 最高温
-	private              Bitmap mTempMinImg;//图像 最低温
-	private              int    widgetMode;//控件的绘制模式。0代表简单的绘制最高最低温。非零代表固定温度条模式。
-	private              float  max;//控件最高温
-	private              float  min;//控件最低温
-
+	//最小值（绝对），
+	public static float mAbsoluteMinValue;
+	public static float mMinTemp = 0;//滑块的最低温度
+	//最大值（绝对）
+	public static float mAbsoluteMaxValue;
+	public static float mMaxTemp = 100;//滑块的最高温度
 	//progress bar 选中背景
 	private static Bitmap mProgressBarSelBg;//整体的背景颜色
 	private static Bitmap mProgressBarBgOne;
@@ -55,50 +43,72 @@ public class CustomRangeSeekBar extends View {
 	private static Bitmap mProgressBarBgFour;
 	private static Bitmap mProgressBarBgFive;
 	private static Bitmap mProgressBarBgSix;
-
-
+	public final int UPDATE_VALUE = 1000;
+	private final Paint  mPaint    = new Paint();
+	//控件最小长度
+	private final int     MIN_HEIGHT            = 400;
+	public        int    backcolor = 1;
+	//handler what
+	DecimalFormat df = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
+	//滑块bitmap
+	private       Bitmap mThumbImageMax;//滑块图像 对应表最大值
+	private       Bitmap mThumbImageMin;//滑块图像 对应表最小值
+	private              float  imgMax;//图层的最高温
+	private              float  imgMin;//图层的最低温
+	private              Bitmap mTempMaxImg;//图像 最高温
+	private              Bitmap mTempMinImg;//图像 最低温
+	private              int    widgetMode;//控件的绘制模式。0代表简单的绘制最高最低温。非零代表固定温度条模式。
+	private              float  max;//控件最高温
+	private              float  min;//控件最低温
+	/**
+	 * handler处理
+	 */
+	public Handler handler = new Handler() {
+		@Override
+		public void handleMessage (Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+				case UPDATE_VALUE:
+					//更新时分秒
+					float[] temp = (float[]) msg.obj;
+					imgMax = temp[0];//滑块最高温 /图层最高温
+					imgMin = temp[1];//滑块最低温/ 图层最低温
+					if (widgetMode == 0) {//普通模式
+						max = imgMax;//控件的最高温
+						min = imgMin;//控件的最低温
+					} else {//固定温度条
+						calculateMaxMin(imgMax, imgMin);
+					}
+					invalidate();
+					break;
+			}
+		}
+	};
 	//changed by wupei
 	private float mThumbHeight;//滑动条高度
 	private float mThumbWidth;//滑动条宽度
-
 	//长度上下padding
 	private float mHeightPadding;
-
-	//最小值（绝对），
-	public static float mAbsoluteMinValue;
-	public static float mMinTemp = 0;//滑块的最低温度
-	//最大值（绝对）
-	public static float mAbsoluteMaxValue;
-	public static float mMaxTemp = 100;//滑块的最高温度
-
 	//已选标准（占滑动条百分比）最小值
 	private double mPercentSelectedMinValue = 0d;
 	//已选标准（占滑动条百分比）最大值
 	private double mPercentSelectedMaxValue = 1d;
-
 	//当前事件处理的thumb滑块
 	private Thumb         mPressedThumb = null;
 	//滑块事件
 	private ThumbListener mThumbListener;
-
-
 	private       RectF   mProgressBarRect;
 	private       RectF   mProgressBarSelRect;
 	//是否可以滑动
 	private       boolean mIsEnable             = true;
 	//最大值和最小值之间要求的最小范围绝对值
 	private       float   mBetweenAbsoluteValue = 1;
-	//控件最小长度
-	private final int     MIN_HEIGHT            = 400;
-
 	//文本宽度
 	private int mWordWidth;
-
 	//文本字体大小
 	private float mWordSize;
 	private float mStartMinPercent;
 	private float mStartMaxPercent;
-
 
 	public CustomRangeSeekBar (Context context) {
 		super(context);
@@ -140,6 +150,45 @@ public class CustomRangeSeekBar extends View {
 		a.recycle();
 
 		widgetMode = DEFAULT_MODE;
+	}
+
+	/**
+	 * 格式化毫秒->00:00
+	 */
+	private static String formatSecondTime (int millisecond) {
+		if (millisecond == 0) {
+			return "00:00";
+		}
+		int second = millisecond / 1000;
+		int m = second / 60;
+		int s = second % 60;
+		if (m >= 60) {
+			int hour = m / 60;
+			int minute = m % 60;
+			return hour + ":" + (minute > 9 ? minute : "0" + minute) + ":" + (s > 9 ? s : "0" + s);
+		} else {
+			return (m > 9 ? m : "0" + m) + ":" + (s > 9 ? s : "0" + s);
+		}
+	}
+
+	/**
+	 * 将dip或dp值转换为px值，保证尺寸大小不变
+	 *
+	 * @param dipValue （DisplayMetrics类中属性density）
+	 * @return
+	 */
+	public static int dp2px (Context context, float dipValue) {
+		final float scale = context.getResources().getDisplayMetrics().density;
+		return (int) (dipValue * scale + 0.5f);
+	}
+
+	public static void setBackBitmap (Bitmap btm1, Bitmap btm2, Bitmap btm3, Bitmap btm4, Bitmap btm5, Bitmap btm6) {
+		mProgressBarBgOne = btm1;
+		mProgressBarBgTwo = btm2;
+		mProgressBarBgThree = btm3;
+		mProgressBarBgFour = btm4;
+		mProgressBarBgFive = btm5;
+		mProgressBarBgSix = btm6;
 	}
 
 	//绘制模式
@@ -189,7 +238,6 @@ public class CustomRangeSeekBar extends View {
 	public void setBackcolor (int backcolor) {
 		this.backcolor = backcolor;
 	}
-
 
 	/**
 	 * 返回被选择的最小值(绝对值)
@@ -281,7 +329,6 @@ public class CustomRangeSeekBar extends View {
 		}
 		return true;
 	}
-
 
 	@Override
 	protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
@@ -416,7 +463,6 @@ public class CustomRangeSeekBar extends View {
 		canvas.drawText(selectmin, 0, screenCoord + mWordSize, mPaint);
 	}
 
-
 	/**
 	 * 根据touchY, 判断是哪一个thumb(Min or Max)
 	 *
@@ -523,16 +569,37 @@ public class CustomRangeSeekBar extends View {
 		}
 	}
 
+	public void setThumbListener (ThumbListener mThumbListener) {
+		this.mThumbListener = mThumbListener;
+	}
+
+	public void Update (float maxtem, float mintem) {
+		Message message = Message.obtain();
+		message.what = UPDATE_VALUE;
+		message.obj = new float[]{maxtem, mintem};
+		handler.sendMessage(message);
+	}
+
+	/**
+	 * max 控件的最高点温度， min 最低点温度
+	 *
+	 * @param maxTemp 实时最大值
+	 * @param minTemp 实时最小值
+	 */
+	private void calculateMaxMin (float maxTemp, float minTemp) {
+		if (Math.abs(max - maxTemp) < 15 || Math.abs(min - minTemp) < 10) {//相差不足10
+			max = ((int) maxTemp / 10) * 10 + 20;
+			min = ((int) minTemp / 10) * 10 - 10;
+		} else {
+
+		}
+	}
+
 	/**
 	 * Thumb枚举， 最大或最小
 	 */
 	private enum Thumb {
 		MIN, MAX
-	}
-
-
-	public void setThumbListener (ThumbListener mThumbListener) {
-		this.mThumbListener = mThumbListener;
 	}
 
 	/**
@@ -552,94 +619,6 @@ public class CustomRangeSeekBar extends View {
 		void onMinMove (float max, float min);
 
 		void onMaxMove (float max, float min);
-	}
-
-
-	/**
-	 * 格式化毫秒->00:00
-	 */
-	private static String formatSecondTime (int millisecond) {
-		if (millisecond == 0) {
-			return "00:00";
-		}
-		int second = millisecond / 1000;
-		int m = second / 60;
-		int s = second % 60;
-		if (m >= 60) {
-			int hour = m / 60;
-			int minute = m % 60;
-			return hour + ":" + (minute > 9 ? minute : "0" + minute) + ":" + (s > 9 ? s : "0" + s);
-		} else {
-			return (m > 9 ? m : "0" + m) + ":" + (s > 9 ? s : "0" + s);
-		}
-	}
-
-	/**
-	 * 将dip或dp值转换为px值，保证尺寸大小不变
-	 *
-	 * @param dipValue （DisplayMetrics类中属性density）
-	 * @return
-	 */
-	public static int dp2px (Context context, float dipValue) {
-		final float scale = context.getResources().getDisplayMetrics().density;
-		return (int) (dipValue * scale + 0.5f);
-	}
-
-
-	public static void setBackBitmap (Bitmap btm1, Bitmap btm2, Bitmap btm3, Bitmap btm4, Bitmap btm5, Bitmap btm6) {
-		mProgressBarBgOne = btm1;
-		mProgressBarBgTwo = btm2;
-		mProgressBarBgThree = btm3;
-		mProgressBarBgFour = btm4;
-		mProgressBarBgFive = btm5;
-		mProgressBarBgSix = btm6;
-	}
-
-	public void Update (float maxtem, float mintem) {
-		Message message = Message.obtain();
-		message.what = UPDATE_VALUE;
-		message.obj = new float[]{maxtem, mintem};
-		handler.sendMessage(message);
-	}
-
-	/**
-	 * handler处理
-	 */
-	public Handler handler = new Handler() {
-		@Override
-		public void handleMessage (Message msg) {
-			super.handleMessage(msg);
-			switch (msg.what) {
-				case UPDATE_VALUE:
-					//更新时分秒
-					float[] temp = (float[]) msg.obj;
-					imgMax = temp[0];//滑块最高温 /图层最高温
-					imgMin = temp[1];//滑块最低温/ 图层最低温
-					if (widgetMode == 0) {//普通模式
-						max = imgMax;//控件的最高温
-						min = imgMin;//控件的最低温
-					} else {//固定温度条
-						calculateMaxMin(imgMax, imgMin);
-					}
-					invalidate();
-					break;
-			}
-		}
-	};
-
-	/**
-	 * max 控件的最高点温度， min 最低点温度
-	 *
-	 * @param maxTemp 实时最大值
-	 * @param minTemp 实时最小值
-	 */
-	private void calculateMaxMin (float maxTemp, float minTemp) {
-		if (Math.abs(max - maxTemp) < 15 || Math.abs(min - minTemp) < 10) {//相差不足10
-			max = ((int) maxTemp / 10) * 10 + 20;
-			min = ((int) minTemp / 10) * 10 - 10;
-		} else {
-
-		}
 	}
 
 }

@@ -8,7 +8,7 @@ import com.dyt.wcc.cameracommon.utils.ByteUtil;
  * @date 2015-11-18
  * @description pHYs数据块
  */
-public class PHYSBlock extends DataBlock{
+public class PHYSBlock extends DataBlock {
 
 	/**
 	 * Pixels per unit, X axis，4 bytes (PNG unsigned integer)
@@ -22,35 +22,40 @@ public class PHYSBlock extends DataBlock{
 	 * Unit specifier，1 byte
 	 */
 	private byte[] unitSpecifier;
-	
-	public PHYSBlock() {
+
+	public PHYSBlock () {
 		super();
 		xPixels = new byte[4];
 		yPixels = new byte[4];
 		unitSpecifier = new byte[1];
 	}
-	
-	public byte[] getxPixels() {
+
+	public byte[] getxPixels () {
 		return xPixels;
 	}
-	public void setxPixels(byte[] xPixels) {
+
+	public void setxPixels (byte[] xPixels) {
 		this.xPixels = xPixels;
 	}
-	public byte[] getyPixels() {
+
+	public byte[] getyPixels () {
 		return yPixels;
 	}
-	public void setyPixels(byte[] yPixels) {
+
+	public void setyPixels (byte[] yPixels) {
 		this.yPixels = yPixels;
 	}
-	public byte[] getUnitSpecifier() {
+
+	public byte[] getUnitSpecifier () {
 		return unitSpecifier;
 	}
-	public void setUnitSpecifier(byte[] unitSpecifier) {
+
+	public void setUnitSpecifier (byte[] unitSpecifier) {
 		this.unitSpecifier = unitSpecifier;
 	}
 
 	@Override
-	public void setData(byte[] data) {
+	public void setData (byte[] data) {
 		int pos = 0;
 		this.xPixels = ByteUtil.cutByte(data, pos, this.xPixels.length);
 		pos += this.xPixels.length;
@@ -58,8 +63,8 @@ public class PHYSBlock extends DataBlock{
 		pos += this.yPixels.length;
 		this.unitSpecifier = ByteUtil.cutByte(data, pos, this.unitSpecifier.length);
 		pos += this.unitSpecifier.length;
-		
+
 		this.data = data;
 	}
-	
+
 }

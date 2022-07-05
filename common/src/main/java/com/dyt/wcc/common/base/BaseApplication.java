@@ -10,7 +10,7 @@ import android.app.Application;
  * <p>PackagePath: com.dyt.wcc.common.base     </p>
  */
 public abstract class BaseApplication extends Application {
-	public static String deviceName="";
+	public static String deviceName = "";
 
 	@Override
 	public void onCreate () {

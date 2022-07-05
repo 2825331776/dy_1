@@ -42,56 +42,56 @@ import java.util.List;
  * <p>PackagePath: com.wcc.dytfourbie.main.widget     </p>
  */
 public class MySpinner extends AppCompatTextView {
-	private static final int MAX_LEVEL = 10000;
-	private static final int VERTICAL_OFFSET = 1;
-	private static final String INSTANCE_STATE = "instance_state";
-	private static final String SELECTED_INDEX = "selected_index";
-	private static final String IS_POPUP_SHOWING = "is_popup_showing";
-	private static final String IS_ARROW_HIDDEN = "is_arrow_hidden";
+	private static final int    MAX_LEVEL             = 10000;
+	private static final int    VERTICAL_OFFSET       = 1;
+	private static final String INSTANCE_STATE        = "instance_state";
+	private static final String SELECTED_INDEX        = "selected_index";
+	private static final String IS_POPUP_SHOWING      = "is_popup_showing";
+	private static final String IS_ARROW_HIDDEN       = "is_arrow_hidden";
 	private static final String ARROW_DRAWABLE_RES_ID = "arrow_drawable_res_id";
 
-	private int                                                 selectedIndex;
-	private Drawable                                            arrowDrawable;
-	private ListPopupWindow                                     popupWindow;
+	private int                  selectedIndex;
+	private Drawable             arrowDrawable;
+	private ListPopupWindow      popupWindow;
 	private MySpinnerBaseAdapter adapter;
 
-	private AdapterView.OnItemClickListener onItemClickListener;
+	private AdapterView.OnItemClickListener    onItemClickListener;
 	private AdapterView.OnItemSelectedListener onItemSelectedListener;
-	private OnSpinnerItemSelectedListener onSpinnerItemSelectedListener;
+	private OnSpinnerItemSelectedListener      onSpinnerItemSelectedListener;
 
 	private boolean isArrowHidden;
-	private int textColor;
-	private int backgroundSelector;
-	private int arrowDrawableTint;
-	private int displayHeight;
-	private int parentVerticalOffset;
-	private int dropDownListPaddingBottom;
+	private int     textColor;
+	private int     backgroundSelector;
+	private int     arrowDrawableTint;
+	private int     displayHeight;
+	private int     parentVerticalOffset;
+	private int     dropDownListPaddingBottom;
 	private @DrawableRes
 	int arrowDrawableResId;
 	private SpinnerTextFormatter spinnerTextFormatter  = new SimpleSpinnerTextFormatter();
 	private SpinnerTextFormatter selectedTextFormatter = new SimpleSpinnerTextFormatter();
-	private PopUpTextAlignment                                  horizontalAlignment;
+	private PopUpTextAlignment   horizontalAlignment;
 
 	@Nullable
 	private ObjectAnimator arrowAnimator = null;
 
-	public MySpinner(Context context) {
+	public MySpinner (Context context) {
 		super(context);
 		init(context, null);
 	}
 
-	public MySpinner(Context context, AttributeSet attrs) {
+	public MySpinner (Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init(context, attrs);
 	}
 
-	public MySpinner(Context context, AttributeSet attrs, int defStyleAttr) {
+	public MySpinner (Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 		init(context, attrs);
 	}
 
 	@Override
-	public Parcelable onSaveInstanceState() {
+	public Parcelable onSaveInstanceState () {
 		Bundle bundle = new Bundle();
 		bundle.putParcelable(INSTANCE_STATE, super.onSaveInstanceState());
 		bundle.putInt(SELECTED_INDEX, selectedIndex);
@@ -104,7 +104,7 @@ public class MySpinner extends AppCompatTextView {
 	}
 
 	@Override
-	public void onRestoreInstanceState(Parcelable savedState) {
+	public void onRestoreInstanceState (Parcelable savedState) {
 		if (savedState instanceof Bundle) {
 			Bundle bundle = (Bundle) savedState;
 			selectedIndex = bundle.getInt(SELECTED_INDEX);
@@ -126,14 +126,13 @@ public class MySpinner extends AppCompatTextView {
 		super.onRestoreInstanceState(savedState);
 	}
 
-	private void init(Context context, AttributeSet attrs) {
+	private void init (Context context, AttributeSet attrs) {
 		Resources resources = getResources();
 		TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MySpinner);
 		int defaultPadding = resources.getDimensionPixelSize(R.dimen.dimen_1dp);
 
 		setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER);
-		setPadding(resources.getDimensionPixelSize(R.dimen.dimen_1dp), defaultPadding, defaultPadding,
-				defaultPadding);
+		setPadding(resources.getDimensionPixelSize(R.dimen.dimen_1dp), defaultPadding, defaultPadding, defaultPadding);
 		setClickable(true);
 		backgroundSelector = typedArray.getResourceId(R.styleable.MySpinner_backgroundSelector, R.drawable.selector_spinneritem);
 		setBackgroundResource(backgroundSelector);
@@ -142,7 +141,7 @@ public class MySpinner extends AppCompatTextView {
 		popupWindow = new ListPopupWindow(context);
 		popupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
 				// The selected item is not displayed within the list, so when the selected position is equal to
 				// the one of the currently selected item it gets shifted to the next item.
 				if (position >= selectedIndex && position < adapter.getCount()) {
@@ -174,7 +173,7 @@ public class MySpinner extends AppCompatTextView {
 
 		popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
 			@Override
-			public void onDismiss() {
+			public void onDismiss () {
 				if (!isArrowHidden) {
 					animateArrow(false);
 				}
@@ -184,11 +183,8 @@ public class MySpinner extends AppCompatTextView {
 		isArrowHidden = typedArray.getBoolean(R.styleable.MySpinner_hideArrow, false);
 		arrowDrawableTint = typedArray.getColor(R.styleable.MySpinner_arrowTint, getResources().getColor(android.R.color.white));
 		arrowDrawableResId = typedArray.getResourceId(R.styleable.MySpinner_arrowDrawable, R.drawable.arrow);
-		dropDownListPaddingBottom =
-				typedArray.getDimensionPixelSize(R.styleable.MySpinner_dropDownListPaddingBottom, 0);
-		horizontalAlignment = PopUpTextAlignment.fromId(
-				typedArray.getInt(R.styleable.MySpinner_popupTextAlignment, PopUpTextAlignment.CENTER.ordinal())
-		);
+		dropDownListPaddingBottom = typedArray.getDimensionPixelSize(R.styleable.MySpinner_dropDownListPaddingBottom, 0);
+		horizontalAlignment = PopUpTextAlignment.fromId(typedArray.getInt(R.styleable.MySpinner_popupTextAlignment, PopUpTextAlignment.CENTER.ordinal()));
 
 		CharSequence[] entries = typedArray.getTextArray(R.styleable.MySpinner_entries);
 		if (entries != null) {
@@ -201,11 +197,11 @@ public class MySpinner extends AppCompatTextView {
 
 	}
 
-	private void measureDisplayHeight() {
+	private void measureDisplayHeight () {
 		displayHeight = getContext().getResources().getDisplayMetrics().heightPixels;
 	}
 
-	private int getParentVerticalOffset() {
+	private int getParentVerticalOffset () {
 		if (parentVerticalOffset > 0) {
 			return parentVerticalOffset;
 		}
@@ -215,7 +211,7 @@ public class MySpinner extends AppCompatTextView {
 	}
 
 	@Override
-	protected void onDetachedFromWindow() {
+	protected void onDetachedFromWindow () {
 		if (arrowAnimator != null) {
 			arrowAnimator.cancel();
 		}
@@ -223,7 +219,7 @@ public class MySpinner extends AppCompatTextView {
 	}
 
 	@Override
-	protected void onAttachedToWindow() {
+	protected void onAttachedToWindow () {
 		super.onAttachedToWindow();
 		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
 			onVisibilityChanged(this, getVisibility());
@@ -231,14 +227,15 @@ public class MySpinner extends AppCompatTextView {
 	}
 
 	@Override
-	protected void onVisibilityChanged(View changedView, int visibility) {
+	protected void onVisibilityChanged (View changedView, int visibility) {
 		super.onVisibilityChanged(changedView, visibility);
 		arrowDrawable = initArrowDrawable(arrowDrawableTint);
 		setArrowDrawableOrHide(arrowDrawable);
 	}
 
-	private Drawable initArrowDrawable(int drawableTint) {
-		if (arrowDrawableResId == 0) return null;
+	private Drawable initArrowDrawable (int drawableTint) {
+		if (arrowDrawableResId == 0)
+			return null;
 		Drawable drawable = ContextCompat.getDrawable(getContext(), arrowDrawableResId);
 		if (drawable != null) {
 			// Gets a copy of this drawable as this is going to be mutated by the animator
@@ -250,7 +247,7 @@ public class MySpinner extends AppCompatTextView {
 		return drawable;
 	}
 
-	private void setArrowDrawableOrHide(Drawable drawable) {
+	private void setArrowDrawableOrHide (Drawable drawable) {
 		if (!isArrowHidden && drawable != null) {
 			setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
 		} else {
@@ -258,46 +255,25 @@ public class MySpinner extends AppCompatTextView {
 		}
 	}
 
-	private int getDefaultTextColor(Context context) {
+	private int getDefaultTextColor (Context context) {
 		TypedValue typedValue = new TypedValue();
-		context.getTheme()
-				.resolveAttribute(android.R.attr.textColorPrimary, typedValue, true);
-		TypedArray typedArray = context.obtainStyledAttributes(typedValue.data,
-				new int[]{android.R.attr.textColorPrimary});
+		context.getTheme().resolveAttribute(android.R.attr.textColorPrimary, typedValue, true);
+		TypedArray typedArray = context.obtainStyledAttributes(typedValue.data, new int[]{android.R.attr.textColorPrimary});
 		int defaultTextColor = typedArray.getColor(0, Color.BLACK);
 		typedArray.recycle();
 		return defaultTextColor;
 	}
 
-	public Object getItemAtPosition(int position) {
+	public Object getItemAtPosition (int position) {
 		return adapter.getItemInDataset(position);
 	}
 
-	public Object getSelectedItem() {
+	public Object getSelectedItem () {
 		return adapter.getItemInDataset(selectedIndex);
 	}
 
-	public int getSelectedIndex() {
+	public int getSelectedIndex () {
 		return selectedIndex;
-	}
-
-	public void setArrowDrawable(@DrawableRes @ColorRes int drawableId) {
-		arrowDrawableResId = drawableId;
-		arrowDrawable = initArrowDrawable(R.drawable.arrow);
-		setArrowDrawableOrHide(arrowDrawable);
-	}
-
-	public void setArrowDrawable(Drawable drawable) {
-		arrowDrawable = drawable;
-		setArrowDrawableOrHide(arrowDrawable);
-	}
-
-	private void setTextInternal(Object item) {
-		if (selectedTextFormatter != null) {
-			setText(selectedTextFormatter.format(item));
-		} else {
-			setText(item.toString());
-		}
 	}
 
 	/**
@@ -305,7 +281,7 @@ public class MySpinner extends AppCompatTextView {
 	 *
 	 * @param position the item's position
 	 */
-	public void setSelectedIndex(int position) {
+	public void setSelectedIndex (int position) {
 		if (adapter != null) {
 			if (position >= 0 && position <= adapter.getCount()) {
 				adapter.setSelectedIndex(position);
@@ -317,13 +293,30 @@ public class MySpinner extends AppCompatTextView {
 		}
 	}
 
+	public void setArrowDrawable (@DrawableRes @ColorRes int drawableId) {
+		arrowDrawableResId = drawableId;
+		arrowDrawable = initArrowDrawable(R.drawable.arrow);
+		setArrowDrawableOrHide(arrowDrawable);
+	}
 
+	public void setArrowDrawable (Drawable drawable) {
+		arrowDrawable = drawable;
+		setArrowDrawableOrHide(arrowDrawable);
+	}
+
+	private void setTextInternal (Object item) {
+		if (selectedTextFormatter != null) {
+			setText(selectedTextFormatter.format(item));
+		} else {
+			setText(item.toString());
+		}
+	}
 
 	/**
 	 * @deprecated use setOnSpinnerItemSelectedListener instead.
 	 */
 	@Deprecated
-	public void addOnItemClickListener(AdapterView.OnItemClickListener onItemClickListener) {
+	public void addOnItemClickListener (AdapterView.OnItemClickListener onItemClickListener) {
 		this.onItemClickListener = onItemClickListener;
 	}
 
@@ -331,26 +324,25 @@ public class MySpinner extends AppCompatTextView {
 	 * @deprecated use setOnSpinnerItemSelectedListener instead.
 	 */
 	@Deprecated
-	public void setOnItemSelectedListener(AdapterView.OnItemSelectedListener onItemSelectedListener) {
+	public void setOnItemSelectedListener (AdapterView.OnItemSelectedListener onItemSelectedListener) {
 		this.onItemSelectedListener = onItemSelectedListener;
 	}
 
-	public <T> void attachDataSource(@NonNull List<T> list) {
+	public <T> void attachDataSource (@NonNull List<T> list) {
 		adapter = new MySpinnerAdapter<>(getContext(), list, textColor, backgroundSelector, spinnerTextFormatter, horizontalAlignment);
 		setAdapterInternal(adapter);
 	}
 
-	public void setAdapter(ListAdapter adapter) {
-		this.adapter = new MySpinnerAdapterWrapper(getContext(), adapter, textColor, backgroundSelector,
-				spinnerTextFormatter, horizontalAlignment);
+	public void setAdapter (ListAdapter adapter) {
+		this.adapter = new MySpinnerAdapterWrapper(getContext(), adapter, textColor, backgroundSelector, spinnerTextFormatter, horizontalAlignment);
 		setAdapterInternal(this.adapter);
 	}
 
-	public PopUpTextAlignment getPopUpTextAlignment() {
+	public PopUpTextAlignment getPopUpTextAlignment () {
 		return horizontalAlignment;
 	}
 
-	private <T> void setAdapterInternal(MySpinnerBaseAdapter<T> adapter) {
+	private <T> void setAdapterInternal (MySpinnerBaseAdapter<T> adapter) {
 		if (adapter.getCount() >= 0) {
 			// If the adapter needs to be set again, ensure to reset the selected index as well
 			selectedIndex = 0;
@@ -360,7 +352,7 @@ public class MySpinner extends AppCompatTextView {
 	}
 
 	@Override
-	public boolean onTouchEvent(MotionEvent event) {
+	public boolean onTouchEvent (MotionEvent event) {
 		if (isEnabled() && event.getAction() == MotionEvent.ACTION_UP) {
 			if (!popupWindow.isShowing() && adapter.getCount() > 0) {
 				showDropDown();
@@ -371,7 +363,7 @@ public class MySpinner extends AppCompatTextView {
 		return super.onTouchEvent(event);
 	}
 
-	private void animateArrow(boolean shouldRotateUp) {
+	private void animateArrow (boolean shouldRotateUp) {
 		int start = shouldRotateUp ? 0 : MAX_LEVEL;
 		int end = shouldRotateUp ? MAX_LEVEL : 0;
 		arrowAnimator = ObjectAnimator.ofInt(arrowDrawable, "level", start, end);
@@ -379,21 +371,21 @@ public class MySpinner extends AppCompatTextView {
 		arrowAnimator.start();
 	}
 
-	public void dismissDropDown() {
+	public void dismissDropDown () {
 		if (!isArrowHidden) {
 			animateArrow(false);
 		}
 		popupWindow.dismiss();
 	}
 
-	public void showDropDown() {
+	public void showDropDown () {
 		if (!isArrowHidden) {
 			animateArrow(true);
 		}
 		popupWindow.setAnchorView(this);
 		popupWindow.show();
 		final ListView listView = popupWindow.getListView();
-		if(listView != null) {
+		if (listView != null) {
 			listView.setVerticalScrollBarEnabled(false);
 			listView.setHorizontalScrollBarEnabled(false);
 			listView.setVerticalFadingEdgeEnabled(false);
@@ -402,85 +394,87 @@ public class MySpinner extends AppCompatTextView {
 	}
 
 
-	private int getPopUpHeight() {
+	private int getPopUpHeight () {
 		return Math.max(verticalSpaceBelow(), verticalSpaceAbove());
 	}
 
-	private int verticalSpaceAbove() {
+	private int verticalSpaceAbove () {
 		return getParentVerticalOffset();
 	}
 
-	private int verticalSpaceBelow() {
+	private int verticalSpaceBelow () {
 		return displayHeight - getParentVerticalOffset() - getMeasuredHeight();
 	}
 
-	public void setTintColor(@ColorRes int resId) {
+	public void setTintColor (@ColorRes int resId) {
 		if (arrowDrawable != null && !isArrowHidden) {
 			DrawableCompat.setTint(arrowDrawable, ContextCompat.getColor(getContext(), resId));
 		}
 	}
 
-	public void setArrowTintColor(int resolvedColor) {
+	public void setArrowTintColor (int resolvedColor) {
 		if (arrowDrawable != null && !isArrowHidden) {
 			DrawableCompat.setTint(arrowDrawable, resolvedColor);
 		}
 	}
 
-	public void hideArrow() {
+	public void hideArrow () {
 		isArrowHidden = true;
 		setArrowDrawableOrHide(arrowDrawable);
 	}
 
-	public void showArrow() {
+	public void showArrow () {
 		isArrowHidden = false;
 		setArrowDrawableOrHide(arrowDrawable);
 	}
 
-	public boolean isArrowHidden() {
+	public boolean isArrowHidden () {
 		return isArrowHidden;
 	}
 
-	public void setDropDownListPaddingBottom(int paddingBottom) {
-		dropDownListPaddingBottom = paddingBottom;
-	}
-
-	public int getDropDownListPaddingBottom() {
+	public int getDropDownListPaddingBottom () {
 		return dropDownListPaddingBottom;
 	}
 
-	public void setSpinnerTextFormatter(SpinnerTextFormatter spinnerTextFormatter) {
+	public void setDropDownListPaddingBottom (int paddingBottom) {
+		dropDownListPaddingBottom = paddingBottom;
+	}
+
+	public void setSpinnerTextFormatter (SpinnerTextFormatter spinnerTextFormatter) {
 		this.spinnerTextFormatter = spinnerTextFormatter;
 	}
 
-	public void setSelectedTextFormatter(SpinnerTextFormatter textFormatter) {
+	public void setSelectedTextFormatter (SpinnerTextFormatter textFormatter) {
 		this.selectedTextFormatter = textFormatter;
 	}
 
 
-	public void performItemClick( int position,boolean showDropdown) {
-		if(showDropdown) showDropDown();
+	public void performItemClick (int position, boolean showDropdown) {
+		if (showDropdown)
+			showDropDown();
 		setSelectedIndex(position);
 	}
 
 	/**
 	 * only applicable when popup is shown .
+	 *
 	 * @param view
 	 * @param position
 	 * @param id
 	 */
-	public void performItemClick(View view, int position, int id) {
+	public void performItemClick (View view, int position, int id) {
 		showDropDown();
 		final ListView listView = popupWindow.getListView();
-		if(listView != null) {
+		if (listView != null) {
 			listView.performItemClick(view, position, id);
 		}
 	}
 
-	public OnSpinnerItemSelectedListener getOnSpinnerItemSelectedListener() {
+	public OnSpinnerItemSelectedListener getOnSpinnerItemSelectedListener () {
 		return onSpinnerItemSelectedListener;
 	}
 
-	public void setOnSpinnerItemSelectedListener(OnSpinnerItemSelectedListener onSpinnerItemSelectedListener) {
+	public void setOnSpinnerItemSelectedListener (OnSpinnerItemSelectedListener onSpinnerItemSelectedListener) {
 		this.onSpinnerItemSelectedListener = onSpinnerItemSelectedListener;
 	}
 

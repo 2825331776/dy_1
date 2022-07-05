@@ -8,21 +8,23 @@ package com.dyt.wcc.common.widget.mySpinner;
  * <p>PackagePath: com.wcc.dytfourbie.main.widget     </p>
  */
 enum PopUpTextAlignment {
-	START(0),
-	END(1),
-	CENTER(2);
+	START(0), END(1), CENTER(2);
 	private final int id;
-	PopUpTextAlignment(int id) {
+
+	PopUpTextAlignment (int id) {
 		this.id = id;
 	}
+
 	/**
 	 * 类似查询id  id如果在枚举当中返回当前值；否则返回center的值2
+	 *
 	 * @param id 查询的值
 	 * @return 在枚举包含中返回当前值。否者返回CENTER 2
 	 */
-	static PopUpTextAlignment fromId(int id) {
+	static PopUpTextAlignment fromId (int id) {
 		for (PopUpTextAlignment value : values()) {
-			if (value.id == id) return value;
+			if (value.id == id)
+				return value;
 		}
 		return CENTER;
 	}

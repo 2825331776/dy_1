@@ -82,6 +82,7 @@ private:
     float requestBandwidth;
     int frameWidth, frameHeight;
     int frameMode;
+    char app_private_path[100];
 
 //	int callbackCount;
 //	unsigned char *CacheBuffer;
@@ -273,6 +274,8 @@ public:
     //2022年5月17日16:46:17 获取机芯参数
     float getMachineSetting(int flag, int value,
                             int mark);
+
+    void setResourcePath(const char* private_path);//设置软件的私有路径地址
 
 /***************************录制*****************************/
 //	int setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format);//把当前数据回调给Java层

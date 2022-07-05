@@ -8,8 +8,8 @@ import com.dyt.wcc.cameracommon.utils.ByteUtil;
  * @date 2015-11-18
  * @description IHDR数据块
  */
-public class IHDRBlock extends DataBlock{
-	
+public class IHDRBlock extends DataBlock {
+
 	/**
 	 * 图像宽度，以像素为单位，4个字节
 	 */
@@ -38,8 +38,8 @@ public class IHDRBlock extends DataBlock{
 	 * 隔行扫描方法，1个字节
 	 */
 	private byte[] interlaceMethod;
-	
-	public IHDRBlock() {
+
+	public IHDRBlock () {
 		super();
 		width = new byte[4];
 		height = new byte[4];
@@ -49,52 +49,65 @@ public class IHDRBlock extends DataBlock{
 		filterMethod = new byte[1];
 		interlaceMethod = new byte[1];
 	}
-	
-	public byte[] getWidth() {
+
+	public byte[] getWidth () {
 		return width;
 	}
-	public void setWidth(byte[] width) {
+
+	public void setWidth (byte[] width) {
 		this.width = width;
 	}
-	public byte[] getHeight() {
+
+	public byte[] getHeight () {
 		return height;
 	}
-	public void setHeight(byte[] height) {
+
+	public void setHeight (byte[] height) {
 		this.height = height;
 	}
-	public byte[] getBitDepth() {
+
+	public byte[] getBitDepth () {
 		return bitDepth;
 	}
-	public void setBitDepth(byte[] bitDepth) {
+
+	public void setBitDepth (byte[] bitDepth) {
 		this.bitDepth = bitDepth;
 	}
-	public byte[] getColourType() {
+
+	public byte[] getColourType () {
 		return colourType;
 	}
-	public void setColourType(byte[] colourType) {
+
+	public void setColourType (byte[] colourType) {
 		this.colourType = colourType;
 	}
-	public byte[] getCompressionMethod() {
+
+	public byte[] getCompressionMethod () {
 		return compressionMethod;
 	}
-	public void setCompressionMethod(byte[] compressionMethod) {
+
+	public void setCompressionMethod (byte[] compressionMethod) {
 		this.compressionMethod = compressionMethod;
 	}
-	public byte[] getFilterMethod() {
+
+	public byte[] getFilterMethod () {
 		return filterMethod;
 	}
-	public void setFilterMethod(byte[] filterMethod) {
+
+	public void setFilterMethod (byte[] filterMethod) {
 		this.filterMethod = filterMethod;
 	}
-	public byte[] getInterlaceMethod() {
+
+	public byte[] getInterlaceMethod () {
 		return interlaceMethod;
 	}
-	public void setInterlaceMethod(byte[] interlaceMethod) {
+
+	public void setInterlaceMethod (byte[] interlaceMethod) {
 		this.interlaceMethod = interlaceMethod;
 	}
 
 	@Override
-	public void setData(byte[] data) {
+	public void setData (byte[] data) {
 		int pos = 0;
 		this.width = ByteUtil.cutByte(data, pos, this.width.length);
 		pos += this.width.length;
@@ -110,7 +123,7 @@ public class IHDRBlock extends DataBlock{
 		pos += this.filterMethod.length;
 		this.interlaceMethod = ByteUtil.cutByte(data, pos, this.interlaceMethod.length);
 		pos += this.interlaceMethod.length;
-		
+
 		this.data = data;
 	}
 

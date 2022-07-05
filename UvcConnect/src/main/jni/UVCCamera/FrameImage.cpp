@@ -68,6 +68,7 @@ const unsigned char *FrameImage::DYgetPalette(int typeOfPalette) {
 void FrameImage::setResourcePath(const char *path) {
     ENTER();
     strcpy(resPath, path);
+    LOGE("=============this app C++ set palette resource path == >%s",resPath);
     EXIT();
 }
 

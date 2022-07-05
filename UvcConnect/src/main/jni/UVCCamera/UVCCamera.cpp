@@ -611,10 +611,10 @@ void UVCCamera::setShutterFix(float mShutterFix) {
 }
 
 //added by wupei
-void UVCCamera::setResourcePath(const char *path) {
+void UVCCamera::setResourcePath(const char * app_path) {
     ENTER();
     if (mDeviceHandle) {
-        mFrameImage->setResourcePath(path);
+        mPreview->setResourcePath(app_path);
     }
     EXIT();
 }

@@ -52,9 +52,9 @@ import com.dyt.wcc.cameracommon.encoder.MediaEncoder;
 import com.dyt.wcc.cameracommon.encoder.MediaVideoEncoder;
 import com.dyt.wcc.common.base.BaseApplication;
 import com.dyt.wcc.common.utils.TempConvertUtils;
-import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
 import com.dyt.wcc.common.widget.dragView.DrawLineRectHint;
 import com.dyt.wcc.common.widget.dragView.MeasureEntity;
+import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
 import com.serenegiant.glutils.EGLBase;
 import com.serenegiant.usb.ITemperatureCallback;
 import com.serenegiant.utils.FpsCounter;
@@ -71,22 +71,20 @@ import java.text.DecimalFormat;
 public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 		implements TextureView.SurfaceTextureListener, CameraViewInterface {
 
-	private static final boolean DEBUG = true;    // TODO set false on release
-	private static final String  TAG   = "UVCCameraTextureView";
-
-
-	private       boolean       mHasSurface;
-	private       RenderHandler mRenderHandler;
-	private final Object        mCaptureSync = new Object();
-	private       Bitmap        mTempBitmap;
-	private       boolean       mRequestCaptureStillImage;
-	private       Callback      mCallback;
-
+	private static final boolean       DEBUG        = true;    // TODO set false on release
+	private static final String        TAG          = "UVCCameraTextureView";
+	private final        Object        mCaptureSync = new Object();
 	/**
 	 * for calculation of frame rate
 	 * 用于计算帧率
 	 */
-	private final FpsCounter mFpsCounter = new FpsCounter();
+	private final        FpsCounter    mFpsCounter  = new FpsCounter();
+	private              boolean       mHasSurface;
+	private              RenderHandler mRenderHandler;
+	private              Bitmap        mTempBitmap;
+	private              boolean       mRequestCaptureStillImage;
+	private              Callback      mCallback;
+	private              Surface       mPreviewSurface;
 
 	public UVCCameraTextureView (final Context context) {
 		this(context, null, 0);
@@ -231,13 +229,10 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 		return mRenderHandler != null ? mRenderHandler.GetTemperatureData() : null;
 	}
 
-
 	@Override
 	public SurfaceTexture getSurfaceTexture () {
 		return mRenderHandler != null ? mRenderHandler.getPreviewTexture() : null;
 	}
-
-	private Surface mPreviewSurface;
 
 	@Override
 	public Surface getSurface () {
@@ -302,7 +297,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			mRenderHandler.initTempFontSize(fontSize);
 		}
 	}
-	public void S0_RotateMatrix_180(boolean isRotate){
+
+	public void S0_RotateMatrix_180 (boolean isRotate) {
 		if (mRenderHandler != null) {
 			mRenderHandler.S0_RotateMatrix_180(isRotate);
 		}
@@ -442,17 +438,21 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 	 */
 	private static final class RenderHandler extends Handler implements SurfaceTexture.OnFrameAvailableListener {
 
-		private static final int MSG_REQUEST_RENDER = 1;
-		private static final int MSG_SET_ENCODER    = 2;
-		private static final int MSG_CREATE_SURFACE = 3;
-		private static final int MSG_RESIZE         = 4;
-		private static final int MSG_TERMINATE      = 9;
-		private static final int MSG_CHECK_AREA     = 5;
+		private static final int          MSG_REQUEST_RENDER = 1;
+		private static final int          MSG_SET_ENCODER    = 2;
+		private static final int          MSG_CREATE_SURFACE = 3;
+		private static final int          MSG_RESIZE         = 4;
+		private static final int          MSG_TERMINATE      = 9;
+		private static final int          MSG_CHECK_AREA     = 5;
+		private final        FpsCounter   mFpsCounter;
+		private              RenderThread mThread;
+		private              boolean      mIsActive          = true;
 
-		private       RenderThread mThread;
-		private       boolean      mIsActive = true;
-		private final FpsCounter   mFpsCounter;
 
+		private RenderHandler (final FpsCounter counter, final RenderThread thread) {
+			mThread = thread;
+			mFpsCounter = counter;
+		}
 
 		public static final RenderHandler createHandler (final FpsCounter counter, final SurfaceTexture surface, final int width, final int height) {
 
@@ -460,12 +460,6 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			thread.start();
 			return thread.getHandler();
 		}
-
-		private RenderHandler (final FpsCounter counter, final RenderThread thread) {
-			mThread = thread;
-			mFpsCounter = counter;
-		}
-
 
 		public void setTemperatureAnalysisMode (int mode) {
 			mThread.setTemperatureAnalysisMode(mode);
@@ -615,7 +609,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			}
 		}
 
-		public void S0_RotateMatrix_180(boolean isRotate){
+		public void S0_RotateMatrix_180 (boolean isRotate) {
 			if (mThread != null) {
 				mThread.S0_RotateMatrix_180(isRotate);
 			}
@@ -677,8 +671,13 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 		}
 
 		private static final class RenderThread extends Thread {
-			private final Object              mSync   = new Object();
+			private final Object              mSync     = new Object();
 			private final SurfaceTexture      mSurface;
+			private final float[]             mStMatrix = new float[16];
+			private final FpsCounter          mFpsCounter;
+			//支持的宽高
+			public        int                 mSupportWidth;
+			public        int                 mSupportHeight;
 			private       RenderHandler       mHandler;
 			private       EGLBase             mEgl;
 			/**
@@ -687,35 +686,109 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			 */
 			private       EGLBase.IEglSurface mEglSurface;
 			private       GLDrawer2D1         mDrawer;
-			private       int                 mTexId  = -1;
-			private       int[]               mTexIds = {-1, -1, -1, -1};
+			private       int                 mTexId    = -1;
+			private       int[]               mTexIds   = {-1, -1, -1, -1};
 			/**
 			 * SurfaceTexture instance to receive video images
 			 * 接收视频图像的 SurfaceTexture 实例
 			 */
 			private       SurfaceTexture      mPreviewSurface, mCamera2Surface;
-			private final float[]      mStMatrix = new float[16];
-			private       MediaEncoder mEncoder;
-			private       int          mViewWidth, mViewHeight;
-			private final FpsCounter    mFpsCounter;
-			private       Camera2Helper mCamera2Helper;
+			private MediaEncoder mEncoder;
 			//            private CustomRangeSeekBar mBindSeekBar;
+			private int          mViewWidth, mViewHeight;
+			private Camera2Helper mCamera2Helper;
+			/**
+			 * 高温报警相关变量
+			 */
+			//            private MediaPlayer mMediaPlayer;
+			private boolean       isOverTempAlarm = false; //是否开启了高温警告
+			private int           alarmCount      = 0;
+			private boolean       isAlarm         = false;//      标记是否要报警
+			//            private boolean isAlarmRing = false;//      标记需要播放铃声
+			private float         mAlarmTemp      = 10000.0f;//标记的报警温度  摄氏度
+			private boolean       isCbTemping     = true;    // 测温开关
+			private boolean       isCamera2ing    = false;
+			//            private Bitmap mCursorBlue, mCursorRed, mCursorYellow, mCursorGreen, mWatermakLogo;
+			private float[]       temperature1    = new float[640 * 512 + 10];
+			private Bitmap        highTempBt, lowTempBt, centerTempBt, normalPointBt;
+			private RectF bpRectF;//绘制图片矩形
+			private int   mBitmapRectSize;
+
+			/*
+			 * Now you can get frame data as ByteBuffer(as YUV/RGB565/RGBX/NV21 pixel format) using IFrameCallback interface
+			 * with UVCCamera#setFrameCallback instead of using following code samples.
+			 */
+/*			// for part1
+ 			private static final int BUF_NUM = 1;
+			private static final int BUF_STRIDE = 640 * 480;
+			private static final int BUF_SIZE = BUF_STRIDE * BUF_NUM;
+			int cnt = 0;
+			int offset = 0;
+			final int pixels[] = new int[BUF_SIZE];
+			final IntBuffer buffer = IntBuffer.wrap(pixels); */
+/*			// for part2
+			private ByteBuffer buf = ByteBuffer.allocateDirect(640 * 480 * 4);
 
 
-			//RenderThread 设置开启 关闭 高低温警告
-			public void startTempAlarm (float markAlarmTemp) {      //开启高温警告
-				isOverTempAlarm = true;
-				mAlarmTemp = markAlarmTemp;
-				alarmCount = 0;
-				//                Log.e(TAG,"====================设置开启高温警告=============== "+ mAlarmTemp );
-			}
-
-			public void stopTempAlarm () {     //关闭高温警告
-				//                Log.e(TAG,"====================关闭高温警告=============== " );
-				isOverTempAlarm = false;
-				mAlarmTemp = 10000.0f;
-				alarmCount = 0;
-			}
+ */
+			private MeasureTempContainerView mMeasureTempContainerView;
+			//绘制线条的画笔，图片画笔
+			private Paint                    linePaint, dottedLinePaint, photoPaint;
+			//绘制文字画笔，绘制文字背景颜色的画笔
+			private TextPaint tempTextPaint, tempTextBgTextPaint;
+			private float maxtemperature;
+			private float mintemperature;
+			//最高温 最低温 中心点 温度开关 控制变量。 0x0fff 从高位到低位 第一个f 是最高温 第二个f 是最低温 第三个f 是中心点温度 开关
+			private int   featurePointsControl = 0;
+			private Rect  dstHighTemp, dstLowTemp, bounds;//创建一个指定的新矩形的坐标
+			private Bitmap icon;
+			private int    mVid = 0, mPid = 0;
+			private float  tinyCorrection          = 0.0f;
+			private Canvas bitcanvas;//初始化画布绘制的图像到icon上
+			private int    temperatureAnalysisMode = -1;//, UnitTemperature
+			private int    rotate                  = 0;
+			private float  widthRatio, heightRatio;
+			//高温 低温 总开关
+			private boolean highTempToggle = false, lowTempToggle = false;
+			private      boolean              isTempShow             = true;
+			private      DrawLineRectHint     myDrawHint             = null;
+			private      DecimalFormat        decimalFormat          = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
+			//            public void setUnitTemperature(int mode) {
+			//                this.UnitTemperature = mode;
+			//            }
+			private      boolean              isRotate_180           = false;
+			//获取全幅温度函数
+			public final ITemperatureCallback ahITemperatureCallback = new ITemperatureCallback() {
+				@Override
+				public void onReceiveTemperature (float[] temperature) {
+					//					Log.e(TAG, "onReceiveTemperature: ==============ahITemperatureCallback========right==============" + mSupportHeight);
+					// 回调的温度的长度为：256x192  + 10
+					if (temperature != null && (temperature.length == (mSupportHeight) * mSupportWidth + 10)) {
+						//						Log.e(TAG, "=====onReceiveTemperature: temperature.length == " + temperature.length);
+						System.arraycopy(temperature, 0, temperature1, 0, (mSupportHeight) * mSupportWidth + 10);
+						if (mPid == 22592 && mVid == 3034) {
+							temperature1[0] = temperature[0] + tinyCorrection;
+							temperature1[3] = temperature[3] + tinyCorrection;
+							temperature1[6] = temperature[6] + tinyCorrection;
+							for (int i = 0; i < mSupportHeight * mSupportWidth; i++) {
+								temperature1[10 + i] = temperature1[10 + i] + tinyCorrection;
+							}
+						} else if (mPid == 1 && mVid == 5396) {
+							if (isRotate_180) {
+								S0_RotateMatrix_180_MaxMin(temperature1, mSupportWidth, mSupportHeight);
+							}
+						}
+						maxtemperature = temperature[3];
+						mintemperature = temperature[6];
+						//						Log.e(TAG, "==========================temperature==================");
+					} else {
+						Log.e(TAG, "onReceiveTemperature: ===========temperature============不合理=======");
+					}
+				}
+			};
+			private      int                  isFirstCome            = 0;
+			private      Rect                 textRect               = new Rect();
+			private      Boolean              isT3                   = BaseApplication.deviceName.contentEquals("T3") || BaseApplication.deviceName.contentEquals("DL13") || BaseApplication.deviceName.contentEquals("DV");
 
 			/**
 			 * constructor
@@ -734,13 +807,26 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 				//                initFrameBitmap();
 			}
 
+			//RenderThread 设置开启 关闭 高低温警告
+			public void startTempAlarm (float markAlarmTemp) {      //开启高温警告
+				isOverTempAlarm = true;
+				mAlarmTemp = markAlarmTemp;
+				alarmCount = 0;
+				//                Log.e(TAG,"====================设置开启高温警告=============== "+ mAlarmTemp );
+			}
+
+			public void stopTempAlarm () {     //关闭高温警告
+				//                Log.e(TAG,"====================关闭高温警告=============== " );
+				isOverTempAlarm = false;
+				mAlarmTemp = 10000.0f;
+				alarmCount = 0;
+			}
 
 			public void initTempFontSize (float fontsize) {
 				this.photoPaint.setTextSize(fontsize);
 				this.tempTextPaint.setTextSize(fontsize);
 				this.tempTextBgTextPaint.setTextSize(fontsize);
 			}
-
 
 			/**
 			 * 初始化 OpenGL ES 的画布的宽高 ，并初始化所需要的画笔。
@@ -835,13 +921,13 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 				if (DEBUG)
 					Log.i(TAG, "RenderThread#updatePreviewSurface:");
 				synchronized (mSync) {
-//					if (mPreviewSurface != null) {
-//						if (DEBUG)
-//							Log.d(TAG, "updatePreviewSurface:release mPreviewSurface");
-//						mPreviewSurface.setOnFrameAvailableListener(null);
-//						mPreviewSurface.release();//释放之后，旋转就出错
-//						mPreviewSurface = null;
-//					}
+					//					if (mPreviewSurface != null) {
+					//						if (DEBUG)
+					//							Log.d(TAG, "updatePreviewSurface:release mPreviewSurface");
+					//						mPreviewSurface.setOnFrameAvailableListener(null);
+					//						mPreviewSurface.release();//释放之后，旋转就出错
+					//						mPreviewSurface = null;
+					//					}
 					mEglSurface.makeCurrent();
 					//           if (mTexId >= 0) {
 					//				mDrawer.deleteTex(mTexId);
@@ -858,7 +944,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 					mPreviewSurface = new SurfaceTexture(mTexIds[0]);
 					mPreviewSurface.setDefaultBufferSize(mViewWidth, mViewHeight);
 					mPreviewSurface.setOnFrameAvailableListener(mHandler);
-//					if (DEBUG)Log.e(TAG, "mHandler=====" + mHandler);
+					//					if (DEBUG)Log.e(TAG, "mHandler=====" + mHandler);
 					// notify to caller thread that previewSurface is ready
 					mSync.notifyAll();
 				}
@@ -872,68 +958,6 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 				}
 				mEncoder = encoder;
 			}
-
-			/*
-			 * Now you can get frame data as ByteBuffer(as YUV/RGB565/RGBX/NV21 pixel format) using IFrameCallback interface
-			 * with UVCCamera#setFrameCallback instead of using following code samples.
-			 */
-/*			// for part1
- 			private static final int BUF_NUM = 1;
-			private static final int BUF_STRIDE = 640 * 480;
-			private static final int BUF_SIZE = BUF_STRIDE * BUF_NUM;
-			int cnt = 0;
-			int offset = 0;
-			final int pixels[] = new int[BUF_SIZE];
-			final IntBuffer buffer = IntBuffer.wrap(pixels); */
-/*			// for part2
-			private ByteBuffer buf = ByteBuffer.allocateDirect(640 * 480 * 4);
-
-
- */
-			/**
-			 * 高温报警相关变量
-			 */
-			//            private MediaPlayer mMediaPlayer;
-			private boolean isOverTempAlarm = false; //是否开启了高温警告
-			private int     alarmCount      = 0;
-			private boolean isAlarm         = false;//      标记是否要报警
-			//            private boolean isAlarmRing = false;//      标记需要播放铃声
-			private float   mAlarmTemp      = 10000.0f;//标记的报警温度  摄氏度
-
-			private boolean isCbTemping  = true;    // 测温开关
-			private boolean isCamera2ing = false;
-
-
-			//            private Bitmap mCursorBlue, mCursorRed, mCursorYellow, mCursorGreen, mWatermakLogo;
-			private float[] temperature1 = new float[640 * 512 + 10];
-			private Bitmap  highTempBt, lowTempBt, centerTempBt, normalPointBt;
-			private RectF                    bpRectF;//绘制图片矩形
-			private int                      mBitmapRectSize;
-			private MeasureTempContainerView mMeasureTempContainerView;
-			//绘制线条的画笔，图片画笔
-			private Paint                    linePaint, dottedLinePaint, photoPaint;
-			//绘制文字画笔，绘制文字背景颜色的画笔
-			private TextPaint tempTextPaint, tempTextBgTextPaint;
-
-			private float maxtemperature;
-			private float mintemperature;
-			//最高温 最低温 中心点 温度开关 控制变量。 0x0fff 从高位到低位 第一个f 是最高温 第二个f 是最低温 第三个f 是中心点温度 开关
-			private int   featurePointsControl = 0;
-
-			private Rect dstHighTemp, dstLowTemp, bounds;//创建一个指定的新矩形的坐标
-			private Bitmap icon;
-			private int    mVid = 0, mPid = 0;
-			private float  tinyCorrection          = 0.0f;
-			private Canvas bitcanvas;//初始化画布绘制的图像到icon上
-			private int    temperatureAnalysisMode = -1;//, UnitTemperature
-			private int    rotate                  = 0;
-			private float  widthRatio, heightRatio;
-			//高温 低温 总开关
-			private boolean highTempToggle = false, lowTempToggle = false;
-
-			private boolean          isTempShow    = true;
-			private DrawLineRectHint myDrawHint    = null;
-			private DecimalFormat    decimalFormat = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
 
 			public void setFrameBitmap (Bitmap highTemp, Bitmap lowTemp, Bitmap centerTemp, Bitmap normalPointTemp, int bpSize) {
 				highTempBt = highTemp;
@@ -949,7 +973,6 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			public void setDrawHint (DrawLineRectHint hint) {
 				myDrawHint = hint;
 			}
-
 
 			public void relayout (int rotate) {
 				this.rotate = rotate;
@@ -1025,23 +1048,15 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 				isCamera2ing = false;
 			}
 
-			//支持的宽高
-			public int mSupportWidth;
-			public int mSupportHeight;
-
 			public void setTemperatureAnalysisMode (int mode) {
 				this.temperatureAnalysisMode = mode;
 			}
 
-			//            public void setUnitTemperature(int mode) {
-			//                this.UnitTemperature = mode;
-			//            }
-			private boolean isRotate_180 = false;
-			public void S0_RotateMatrix_180(boolean isRotate){
+			public void S0_RotateMatrix_180 (boolean isRotate) {
 				isRotate_180 = isRotate;
 			}
 
-			private void S0_RotateMatrix_180_MaxMin(float [] tempArray, int width , int height ){
+			private void S0_RotateMatrix_180_MaxMin (float[] tempArray, int width, int height) {
 				tempArray[1] = width - tempArray[1];
 				tempArray[2] = height - tempArray[2];
 
@@ -1049,43 +1064,13 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 				tempArray[5] = height - tempArray[5];
 			}
 
-			//获取全幅温度函数
-			public final ITemperatureCallback ahITemperatureCallback = new ITemperatureCallback() {
-				@Override
-				public void onReceiveTemperature (float[] temperature) {
-//					Log.e(TAG, "onReceiveTemperature: ==============ahITemperatureCallback========right==============" + mSupportHeight);
-					// 回调的温度的长度为：256x192  + 10
-					if (temperature!=null && (temperature.length == (mSupportHeight) * mSupportWidth + 10)){
-//						Log.e(TAG, "=====onReceiveTemperature: temperature.length == " + temperature.length);
-						System.arraycopy(temperature, 0, temperature1, 0, (mSupportHeight) * mSupportWidth + 10);
-						if (mPid == 22592 && mVid == 3034) {
-							temperature1[0] = temperature[0] + tinyCorrection;
-							temperature1[3] = temperature[3] + tinyCorrection;
-							temperature1[6] = temperature[6] + tinyCorrection;
-							for (int i = 0; i < mSupportHeight * mSupportWidth; i++) {
-								temperature1[10 + i] = temperature1[10 + i] + tinyCorrection;
-							}
-						} else if (mPid == 1 && mVid == 5396) {
-							if (isRotate_180){
-								S0_RotateMatrix_180_MaxMin(temperature1,mSupportWidth,mSupportHeight);
-							}
-						}
-						maxtemperature = temperature[3];
-						mintemperature = temperature[6];
-//						Log.e(TAG, "==========================temperature==================");
-					}else {
-						Log.e(TAG, "onReceiveTemperature: ===========temperature============不合理=======");
-					}
-				}
-			};
-
 			/**
 			 * JNI获取的温度回调到Java层
 			 *
 			 * @return
 			 */
 			public ITemperatureCallback getTemperatureCallback () {
-//				Log.e(TAG, "========获取UVC温度回调===getTemperatureCallback= "+ahITemperatureCallback);
+				//				Log.e(TAG, "========获取UVC温度回调===getTemperatureCallback= "+ahITemperatureCallback);
 				return ahITemperatureCallback;
 			}
 
@@ -1098,16 +1083,13 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 				mSupportWidth = w;
 				widthRatio = mSupportWidth * 1.0f / icon.getWidth();
 				heightRatio = (mSupportHeight) * 1.0f / icon.getHeight();//数据写死了
-//				Log.i(TAG, "widthRatio=" + widthRatio);
-//				Log.i(TAG, "heightRatio=" + heightRatio);
+				//				Log.i(TAG, "widthRatio=" + widthRatio);
+				//				Log.i(TAG, "heightRatio=" + heightRatio);
 			}
 
 			public void setVertices (float scale) {
 				mDrawer.setVertices(scale);
 			}
-
-
-			private int isFirstCome = 0;
 
 			/**
 			 * 选择变换
@@ -1141,8 +1123,6 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 				origin.recycle();
 				return newBM;
 			}
-
-			private Rect textRect = new Rect();
 
 			/**
 			 * @param x             X坐标
@@ -1178,8 +1158,6 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 					}
 				}
 			}
-
-			private Boolean isT3 = BaseApplication.deviceName.contentEquals("T3") || BaseApplication.deviceName.contentEquals("DL13") || BaseApplication.deviceName.contentEquals("DV");
 
 			//更新点的温度
 			private float updatePointTemp (float x, float y) {
@@ -1226,17 +1204,17 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 					//                    bitcanvas.save(Canvas.ALL_SAVE_FLAG);//吴长城修改到下面函数
 					bitcanvas.save();
 				} else {
-//					bitcanvas.restore();
-//					bitcanvas.rotate(180);
-//					bitcanvas.save();
-//					if (rotate == 90 || rotate == 180){
-//						bitcanvas.save();
-//						bitcanvas.rotate(180);
-//					}else {
-//						bitcanvas.save();
-//						bitcanvas.rotate(0);
-//					}
-//					bitcanvas.rotate(180);
+					//					bitcanvas.restore();
+					//					bitcanvas.rotate(180);
+					//					bitcanvas.save();
+					//					if (rotate == 90 || rotate == 180){
+					//						bitcanvas.save();
+					//						bitcanvas.rotate(180);
+					//					}else {
+					//						bitcanvas.save();
+					//						bitcanvas.rotate(0);
+					//					}
+					//					bitcanvas.rotate(180);
 					//绘制超温警告的  四边形
 					if (isAlarm && (alarmCount > 15 && alarmCount < 30)) {
 						linePaint.setColor(Color.RED);
@@ -1385,8 +1363,7 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 						bitcanvas.drawBitmap(lowTempBt, null, bpRectF, photoPaint);
 						tempTextPaint.setColor(Color.BLUE);
 
-						xy2DrawText(temperature1[4] * (icon.getWidth() / (float) mSupportWidth), temperature1[5] * (icon.getHeight() / (float) (mSupportHeight)), decimalFormat.format(TempConvertUtils.Celsius2Temp(temperature1[6],
-								mMeasureTempContainerView.getTempSuffixMode())) + MeasureTempContainerView.tempSuffixList[mMeasureTempContainerView.getTempSuffixMode()], tempTextBgTextPaint, tempTextPaint, 0);
+						xy2DrawText(temperature1[4] * (icon.getWidth() / (float) mSupportWidth), temperature1[5] * (icon.getHeight() / (float) (mSupportHeight)), decimalFormat.format(TempConvertUtils.Celsius2Temp(temperature1[6], mMeasureTempContainerView.getTempSuffixMode())) + MeasureTempContainerView.tempSuffixList[mMeasureTempContainerView.getTempSuffixMode()], tempTextBgTextPaint, tempTextPaint, 0);
 					} else {
 						lowTempToggle = false;
 					}

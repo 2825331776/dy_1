@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/llContainer_mySpinner"
-    android:orientation="horizontal"
-    android:gravity="center"
     android:layout_width="wrap_content"
-    android:layout_height="@dimen/dimen_20dp">
-        <TextView
-            android:id="@+id/tv_spinner_my_info"
-            android:gravity="center"
-            android:text="showSpinnerInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/dimen_20dp"/>
+    android:layout_height="@dimen/dimen_20dp"
+    android:gravity="center"
+    android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/iv_spinner_my_info"
-            android:layout_width="@dimen/dimen_20dp"
-            android:layout_height="@dimen/dimen_20dp"
-            android:src="@mipmap/spinner_down"/>
+    <TextView
+        android:id="@+id/tv_spinner_my_info"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dimen_20dp"
+        android:gravity="center"
+        android:text="showSpinnerInfo" />
+
+    <ImageView
+        android:id="@+id/iv_spinner_my_info"
+        android:layout_width="@dimen/dimen_20dp"
+        android:layout_height="@dimen/dimen_20dp"
+        android:src="@mipmap/spinner_down" />
 
 
 </LinearLayout>

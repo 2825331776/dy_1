@@ -32,13 +32,13 @@ import com.serenegiant.usb.UVCCamera;
 
 
 public class UVCCameraHandler extends AbstractUVCCameraHandler {
-	private static final String TAG = "UVCCameraHandler";
 	/**
 	 * UVC连接的状态。
 	 */
-	public static final int UVC_STATUS_PREVIEWING = 0;
-	public static final int UVC_STATUS_SN_ERROR = 1;
-	private static UVCCameraHandler mUVCCameraHandler;
+	public static final  int              UVC_STATUS_PREVIEWING = 0;
+	public static final  int              UVC_STATUS_SN_ERROR   = 1;
+	private static final String           TAG                   = "UVCCameraHandler";
+	private static       UVCCameraHandler mUVCCameraHandler;
 	/**
 	 * create UVCCameraHandler, use MediaVideoEncoder, try MJPEG, default bandwidth
 	 * @param parent
@@ -76,6 +76,7 @@ public class UVCCameraHandler extends AbstractUVCCameraHandler {
 
 	/**
 	 * create UVCCameraHandler, try MJPEG, default bandwidth
+	 *
 	 * @param parent
 	 * @param cameraView
 	 * @param encoderType 0: use MediaSurfaceEncoder, 1: use MediaVideoEncoder, 2: use MediaVideoBufferEncoder
@@ -92,81 +93,74 @@ public class UVCCameraHandler extends AbstractUVCCameraHandler {
 	}
 
 	 */
-
-	/**
-	 * create UVCCameraHandler, default bandwidth默认带宽
-	 * @param parent
-	 * @param cameraView
-	 * @param encoderType 0: use MediaSurfaceEncoder, 1: use MediaVideoEncoder, 2: use MediaVideoBufferEncoder
-	 * @param width
-	 * @param height
-	 * @param format either UVCCamera.FRAME_FORMAT_YUYV(0) or UVCCamera.FRAME_FORMAT_MJPEG(1)
-	 * @param temperatureCallback 温度回调函数
-	 * @param androidVersion 用户初始化Camera
-	 * @return
-	 */
-	public static final UVCCameraHandler createHandler(
-			final Activity parent, final UVCCameraTextureView cameraView,
-			final int encoderType, final int width, final int height, final int format, ITemperatureCallback temperatureCallback,final MeasureTempContainerView containerView, int androidVersion) {
-		return createHandler(parent, cameraView, encoderType, width, height, format, UVCCamera.DEFAULT_BANDWIDTH,temperatureCallback,containerView,androidVersion);
-	}
-
-
-
-	/**
-	 * create UVCCameraHandler
-	 * @param parent	显示的窗体的对象
-	 * @param cameraView 显示图像控件
-	 * @param encoderType 0: use MediaSurfaceEncoder, 1: use MediaVideoEncoder, 2: use MediaVideoBufferEncoder
-	 * @param width	宽度
-	 * @param height 高度
-	 * @param format either UVCCamera.FRAME_FORMAT_YUYV(0) or UVCCamera.FRAME_FORMAT_MJPEG(1)
-	 * @param bandwidthFactor 带宽
-	 * @param temperatureCallback 温度回调函数
-	 * @param androidVersion 最终用于初始化Camera
-	 * @return
-	 */
-	public static final UVCCameraHandler createHandler(
-			final Activity parent, final UVCCameraTextureView cameraView,
-			final int encoderType, final int width, final int height, final int format, final float bandwidthFactor, ITemperatureCallback temperatureCallback,
-			final MeasureTempContainerView containerView,int androidVersion) {
-//		Log.e(TAG, "createHandler:  123 === " + System.currentTimeMillis());
-		final CameraThread thread = new CameraThread(UVCCameraHandler.class, parent, cameraView, encoderType, width, height, format, bandwidthFactor,temperatureCallback,containerView,androidVersion);
-
-
-		thread.start();
-		mUVCCameraHandler=(UVCCameraHandler)thread.getHandler();
-		return mUVCCameraHandler;
-		//return (UVCCameraHandler)thread.getHandler();
-	}
-
-
-	public static synchronized UVCCameraHandler getInstance(){
-		return mUVCCameraHandler;
-	}
-
-	protected UVCCameraHandler(final CameraThread thread) {
+	protected UVCCameraHandler (final CameraThread thread) {
 		//调用父类的构造函数。仔细了解 constructor 类
 		super(thread);
 	}
 
+	/**
+	 * create UVCCameraHandler, default bandwidth默认带宽
+	 *
+	 * @param parent
+	 * @param cameraView
+	 * @param encoderType         0: use MediaSurfaceEncoder, 1: use MediaVideoEncoder, 2: use MediaVideoBufferEncoder
+	 * @param width
+	 * @param height
+	 * @param format              either UVCCamera.FRAME_FORMAT_YUYV(0) or UVCCamera.FRAME_FORMAT_MJPEG(1)
+	 * @param temperatureCallback 温度回调函数
+	 * @param androidVersion      用户初始化Camera
+	 * @return
+	 */
+	public static final UVCCameraHandler createHandler (final Activity parent, final UVCCameraTextureView cameraView, final int encoderType, final int width, final int height, final int format, ITemperatureCallback temperatureCallback, final MeasureTempContainerView containerView, int androidVersion) {
+		return createHandler(parent, cameraView, encoderType, width, height, format, UVCCamera.DEFAULT_BANDWIDTH, temperatureCallback, containerView, androidVersion);
+	}
+
+	/**
+	 * create UVCCameraHandler
+	 *
+	 * @param parent              显示的窗体的对象
+	 * @param cameraView          显示图像控件
+	 * @param encoderType         0: use MediaSurfaceEncoder, 1: use MediaVideoEncoder, 2: use MediaVideoBufferEncoder
+	 * @param width               宽度
+	 * @param height              高度
+	 * @param format              either UVCCamera.FRAME_FORMAT_YUYV(0) or UVCCamera.FRAME_FORMAT_MJPEG(1)
+	 * @param bandwidthFactor     带宽
+	 * @param temperatureCallback 温度回调函数
+	 * @param androidVersion      最终用于初始化Camera
+	 * @return
+	 */
+	public static final UVCCameraHandler createHandler (final Activity parent, final UVCCameraTextureView cameraView, final int encoderType, final int width, final int height, final int format, final float bandwidthFactor, ITemperatureCallback temperatureCallback, final MeasureTempContainerView containerView, int androidVersion) {
+		//		Log.e(TAG, "createHandler:  123 === " + System.currentTimeMillis());
+		final CameraThread thread = new CameraThread(UVCCameraHandler.class, parent, cameraView, encoderType, width, height, format, bandwidthFactor, temperatureCallback, containerView, androidVersion);
+
+
+		thread.start();
+		mUVCCameraHandler = (UVCCameraHandler) thread.getHandler();
+		return mUVCCameraHandler;
+		//return (UVCCameraHandler)thread.getHandler();
+	}
+
+	public static synchronized UVCCameraHandler getInstance () {
+		return mUVCCameraHandler;
+	}
+
 	@Override
-	public void startPreview(final Object surface) {
+	public void startPreview (final Object surface) {
 		super.startPreview(surface);
 	}
 
 	@Override
-	public void setRecordData(String externalPath) {
+	public void setRecordData (String externalPath) {
 		super.setRecordData(externalPath);
 	}
 
 	@Override
-	public void captureStill() {
+	public void captureStill () {
 		super.captureStill();
 	}
 
 	@Override
-	public boolean captureStill(final String path) {
+	public boolean captureStill (final String path) {
 		return super.captureStill(path);
 	}
 }

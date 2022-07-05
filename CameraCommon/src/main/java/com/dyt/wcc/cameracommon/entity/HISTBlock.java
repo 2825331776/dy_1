@@ -5,8 +5,8 @@ package com.dyt.wcc.cameracommon.entity;
  */
 
 public class HISTBlock extends DataBlock {
-    @Override
-    public void setData(byte[] data) {
-        this.data = data;
-    }
+	@Override
+	public void setData (byte[] data) {
+		this.data = data;
+	}
 }

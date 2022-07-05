@@ -99,37 +99,112 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//jni测试按钮状态记录
 	//	private final int jni_status = 0;
 
+	private static final int REQUEST_CODE_CHOOSE  = 23;
+	private static final int     MSG_CHECK_UPDATE  = 1;
+	private static final int     MSG_CAMERA_PARAMS = 2;
+	public static long startTime = 0;
+	CompoundButton.OnCheckedChangeListener highLowCenterCheckListener = (buttonView, isChecked) -> {
+		switch (buttonView.getId()) {
+			case R.id.cb_main_preview_highlowcenter_trace_high:
+				if (isChecked) {
+					mDataBinding.textureViewPreviewActivity.openFeaturePoints(0);
+				} else {
+					mDataBinding.textureViewPreviewActivity.closeFeaturePoints(0);
+				}
+				break;
+			case R.id.cb_main_preview_highlowcenter_trace_low:
+				if (isChecked) {
+					mDataBinding.textureViewPreviewActivity.openFeaturePoints(1);
+				} else {
+					mDataBinding.textureViewPreviewActivity.closeFeaturePoints(1);
+				}
+				break;
+			case R.id.cb_main_preview_highlowcenter_trace_center:
+				if (isChecked) {
+					mDataBinding.textureViewPreviewActivity.openFeaturePoints(2);
+				} else {
+					mDataBinding.textureViewPreviewActivity.closeFeaturePoints(2);
+				}
+				break;
+		}
+	};
 	private UVCCameraHandler   mUvcCameraHandler;
 	//点线矩形测温弹窗
 	private PopupWindow        PLRPopupWindows;
+	//用户添加 测温模式 切换
+	View.OnClickListener                   tempModeCheckListener      = new View.OnClickListener() {
+		@Override
+		public void onClick (View v) {
+			switch (v.getId()) {
+				case R.id.iv_temp_mode_point:
+					PLRPopupWindows.dismiss();
+					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(1);
+					//					mDataBinding.dragTempContainerPreviewActivity.getDrawTempMode();
+					//					if (isDebug)showToast("point ");
+					break;
+				case R.id.iv_temp_mode_line:
+					PLRPopupWindows.dismiss();
+					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(2);
+					//					if (isDebug)showToast("line ");
+					break;
+				case R.id.iv_temp_mode_rectangle:
+					PLRPopupWindows.dismiss();
+					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(3);
+					//					if (isDebug)showToast("rectangle ");
+					break;
+			}
+		}
+	};
 	private PopupWindow        settingPopWindows;
 	private PopupWindow        companyPopWindows;
 	//	private View popView;
 	private Map<String, Float> cameraParams;
 	private SharedPreferences  sp;
+	//色板切换
+	View.OnClickListener                   paletteChoiceListener      = v -> {
+		switch (v.getId()) {
+			case R.id.palette_layout_Tiehong:
+				setPalette(0);
+				//					if (isDebug)showToast("palette_layout_Tiehong ");
+				break;
+			case R.id.palette_layout_Caihong:
+				setPalette(1);
+				//					if (isDebug)showToast("palette_layout_Caihong ");
+				break;
+			case R.id.palette_layout_Hongre:
+				setPalette(2);
+				//					if (isDebug)showToast("palette_layout_Hongre ");
+				break;
+			case R.id.palette_layout_Heire:
+				setPalette(3);
+				//					if (isDebug)showToast("palette_layout_Heire ");
+				break;
+			case R.id.palette_layout_Baire:
+				setPalette(4);
+				//					if (isDebug)showToast("palette_layout_Baire ");
+				break;
+			case R.id.palette_layout_Lenglan:
+				setPalette(5);
+				//					if (isDebug)showToast("palette_layout_Lenglan ");
+				break;
+		}
+	};
 	//设备 vid pid
 	private int                mVid, mPid;
-
 	private USBMonitor mUsbMonitor;
-
 	private int    mFontSize;
 	private String palettePath;
 	private Bitmap tiehong = null, caihong = null, baire = null, heire = null, hongre = null, lenglan = null;
 	private SendCommand mSendCommand;
-
 	private int screenWidth, screenHeight;
 	private Bitmap highTempBt, lowTempBt, centerTempBt, normalPointBt;
-
 	private DisplayMetrics metrics;
 	private Configuration  configuration;
 	private int            language_index     = -1;//语言的 索引下标
 	private String         language_local_str = "";
 	private boolean        isFirstRun         = false;
-
-	private static final int REQUEST_CODE_CHOOSE  = 23;
 	// 重置参数 返回值
 	private              int defaultSettingReturn = -1;
-
 	//更新工具类对象
 	private AppUpdater                              mAppUpdater;
 	private int                                     maxIndex = 0;
@@ -137,9 +212,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//传感器
 	private AbstractUVCCameraHandler.CameraCallback cameraCallback;
 	private LoadingDialog                           loadingDialog;
-
-	private static final int     MSG_CHECK_UPDATE  = 1;
-	private static final int     MSG_CAMERA_PARAMS = 2;
+	private       int                 oldRotation         = 0;
 	private final        Handler mHandler          = new Handler(new Handler.Callback() {
 		@Override
 		public boolean handleMessage (@NonNull Message msg) {
@@ -348,7 +421,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 									return true;
 								float value = inputValue2Temp(Float.parseFloat(v16.getText().toString()));
 								if (value > DYConstants.REVISE_MAX || value < DYConstants.REVISE_MIN) {
-//									Log.e(TAG, "handleMessage: ======================" + value);
+									//									Log.e(TAG, "handleMessage: ======================" + value);
 									showToast(getString(R.string.toast_range_float, getBorderValue(-20.0f), getBorderValue(20.0f)));
 									return true;
 								}
@@ -588,6 +661,164 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			return false;
 		}
 	});
+	private Surface stt;
+	private final USBMonitor.OnDeviceConnectListener onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
+		@Override
+		public void onAttach (UsbDevice device) {
+			//			if (isDebug)Log.e(TAG, "DD  onAttach: "+ device.toString());
+			Handler handler = new Handler();
+			handler.postDelayed(() -> {
+				if (isDebug)
+					Log.e(TAG, "检测到设备========");
+				if (mUsbMonitor != null)
+					mUsbMonitor.requestPermission(device);
+			}, 100);
+		}
+
+		@Override
+		public void onConnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock, boolean createNew) {
+			//			if (isDebug)Log.e(TAG, "onConnect:  SN ========================= 》 " + device.getSerialNumber());
+			mVid = device.getVendorId();
+			mPid = device.getProductId();
+
+			if (mUvcCameraHandler == null || mUvcCameraHandler.isReleased()) {
+				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null, mDataBinding.dragTempContainerPreviewActivity, 0);
+			}
+
+			mUvcCameraHandler.open(ctrlBlock);
+			startPreview();
+
+			mHandler.postDelayed(() -> {
+				setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
+			}, 300);
+
+			//6.5s之后给 机芯强制设置为 低温模式（测试 发现不是所有设备都生效）
+			//			if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
+			//				mHandler.postDelayed(new Runnable() {
+			//					@Override
+			//					public void run () {
+			//						mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
+			//					}
+			//				}, 5000);
+			//				mHandler.postDelayed(new Runnable() {
+			//					@Override
+			//					public void run () {
+			//						setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
+			//					}
+			//				}, 6000);
+			//				mHandler.postDelayed(new Runnable() {
+			//					@Override
+			//					public void run () {
+			//						if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
+			//							mUvcCameraHandler.tinySaveCameraParams();
+			//					}
+			//				}, 6500);
+			//			}
+		}
+
+		@Override
+		public void onDettach (UsbDevice device) {
+			//				mUvcCameraHandler.close();
+			if (isDebug)
+				Log.e(TAG, "DD  onDetach: ");
+			runOnUiThread(() -> {
+				mDataBinding.dragTempContainerPreviewActivity.setBackgroundColor(getColor(R.color.bg_preview_otg_unconnect));
+				mDataBinding.dragTempContainerPreviewActivity.setConnect(false);
+				mDataBinding.dragTempContainerPreviewActivity.invalidate();
+				onPause();
+				onStop();
+			});
+		}
+
+		@Override
+		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
+			if (isDebug)
+				Log.e(TAG, " DD == onDisconnect: ");
+			runOnUiThread(() -> {
+				//拔出设备之后，重置为低温增益模式
+				sp.edit().putInt(DYConstants.GAIN_TOGGLE_SETTING, 0).apply();
+				//断开连接之时, 恢复UI
+				mDataBinding.toggleAreaCheck.setSelected(false);
+				mDataBinding.toggleHighTempAlarm.setSelected(false);
+
+				mDataBinding.customSeekbarPreviewFragment.setWidgetMode(0);
+				mDataBinding.customSeekbarPreviewFragment.setPalette(sp.getInt(DYConstants.PALETTE_NUMBER, 1) - 1);
+				mDataBinding.customSeekbarPreviewFragment.invalidate();
+				mDataBinding.toggleFixedTempBar.setSelected(false);
+				if (stt != null) {
+					stt.release();
+					stt = null;
+				}
+
+			});
+
+			if (mUvcCameraHandler != null) {
+				mUvcCameraHandler.disWenKuan();
+				mUvcCameraHandler.fixedTempStripChange(false);
+			}
+			DYTApplication.setRobotSingle(DYTRobotSingle.NO_DEVICE);
+
+			if (mUvcCameraHandler != null) {
+				//				mUvcCameraHandler.removeCallback(cameraCallback);
+				//				mUvcCameraHandler.stopTemperaturing();//2022年5月18日19:00:15 S0温度失常
+				mUvcCameraHandler.close();
+			} else {
+				Log.e(TAG, "onDisconnect: ==============mUvcCameraHandler == null========");
+			}
+			mVid = 0;
+			mPid = 0;
+		}
+
+		@Override
+		public void onCancel (UsbDevice device) {
+			if (isDebug)
+				Log.e(TAG, "DD  onCancel: ");
+		}
+	};
+	private MyNumberPicker myNumberPicker;
+	private final SensorEventListener sensorEventListener = new SensorEventListener() {
+		@Override
+		public void onSensorChanged (SensorEvent event) {
+			if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_ACCELEROMETER)) {//								Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_ACCELEROMETER");
+				float x = event.values[0];
+				float y = event.values[1];
+				float z = event.values[2];
+				relayout(x, y, z);
+			}
+		}
+
+		@Override
+		public void onAccuracyChanged (Sensor sensor, int accuracy) {
+		}
+	};
+
+	/**
+	 * <p>判断是否连续点击</p>
+	 *
+	 * @return boolean
+	 */
+	public static boolean doubleClick () {
+		long now = System.currentTimeMillis();
+		if (now - startTime < 1500) {
+			return true;
+		}
+		startTime = now;
+		return false;
+	}
+
+	/**
+	 * <p>判断是否连续点击</p>
+	 *
+	 * @return boolean
+	 */
+	public static boolean doubleGainClick () {
+		long now = System.currentTimeMillis();
+		if (now - startTime < 2000) {
+			return true;
+		}
+		startTime = now;
+		return false;
+	}
 
 	@Override
 	protected void onActivityResult (int requestCode, int resultCode, Intent data) {
@@ -662,23 +893,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			Log.e(TAG, "onDestroy: ");
 		super.onDestroy();
 	}
-
-	private final SensorEventListener sensorEventListener = new SensorEventListener() {
-		@Override
-		public void onSensorChanged (SensorEvent event) {
-			if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_ACCELEROMETER)) {//								Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_ACCELEROMETER");
-				float x = event.values[0];
-				float y = event.values[1];
-				float z = event.values[2];
-				relayout(x, y, z);
-			}
-		}
-
-		@Override
-		public void onAccuracyChanged (Sensor sensor, int accuracy) {
-		}
-	};
-	private       int                 oldRotation         = 0;
 
 	private void relayout (float x, float y, float z) {
 		if (x > -2.5 && x <= 2.5 && y > 7.5 && y <= 10 && oldRotation != 270) {
@@ -860,122 +1074,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		super.onResume();
 	}
 
-	private final USBMonitor.OnDeviceConnectListener onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
-		@Override
-		public void onAttach (UsbDevice device) {
-			//			if (isDebug)Log.e(TAG, "DD  onAttach: "+ device.toString());
-			Handler handler = new Handler();
-			handler.postDelayed(() -> {
-				if (isDebug)
-					Log.e(TAG, "检测到设备========");
-				if (mUsbMonitor != null)
-					mUsbMonitor.requestPermission(device);
-			}, 100);
-		}
-
-		@Override
-		public void onConnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock, boolean createNew) {
-			//			if (isDebug)Log.e(TAG, "onConnect:  SN ========================= 》 " + device.getSerialNumber());
-			mVid = device.getVendorId();
-			mPid = device.getProductId();
-
-			if (mUvcCameraHandler == null || mUvcCameraHandler.isReleased()) {
-				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null, mDataBinding.dragTempContainerPreviewActivity, 0);
-			}
-
-			mUvcCameraHandler.open(ctrlBlock);
-			startPreview();
-
-			mHandler.postDelayed(() -> {
-				setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
-			}, 300);
-
-			//6.5s之后给 机芯强制设置为 低温模式（测试 发现不是所有设备都生效）
-			//			if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
-			//				mHandler.postDelayed(new Runnable() {
-			//					@Override
-			//					public void run () {
-			//						mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
-			//					}
-			//				}, 5000);
-			//				mHandler.postDelayed(new Runnable() {
-			//					@Override
-			//					public void run () {
-			//						setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000);
-			//					}
-			//				}, 6000);
-			//				mHandler.postDelayed(new Runnable() {
-			//					@Override
-			//					public void run () {
-			//						if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
-			//							mUvcCameraHandler.tinySaveCameraParams();
-			//					}
-			//				}, 6500);
-			//			}
-		}
-
-		@Override
-		public void onDettach (UsbDevice device) {
-			//				mUvcCameraHandler.close();
-			if (isDebug)
-				Log.e(TAG, "DD  onDetach: ");
-			runOnUiThread(() -> {
-				mDataBinding.dragTempContainerPreviewActivity.setBackgroundColor(getColor(R.color.bg_preview_otg_unconnect));
-				mDataBinding.dragTempContainerPreviewActivity.setConnect(false);
-				mDataBinding.dragTempContainerPreviewActivity.invalidate();
-				onPause();
-				onStop();
-			});
-		}
-
-		@Override
-		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
-			if (isDebug)
-				Log.e(TAG, " DD == onDisconnect: ");
-			runOnUiThread(() -> {
-				//拔出设备之后，重置为低温增益模式
-				sp.edit().putInt(DYConstants.GAIN_TOGGLE_SETTING, 0).apply();
-				//断开连接之时, 恢复UI
-				mDataBinding.toggleAreaCheck.setSelected(false);
-				mDataBinding.toggleHighTempAlarm.setSelected(false);
-
-				mDataBinding.customSeekbarPreviewFragment.setWidgetMode(0);
-				mDataBinding.customSeekbarPreviewFragment.setPalette(sp.getInt(DYConstants.PALETTE_NUMBER, 1) - 1);
-				mDataBinding.customSeekbarPreviewFragment.invalidate();
-				mDataBinding.toggleFixedTempBar.setSelected(false);
-				if (stt != null) {
-					stt.release();
-					stt = null;
-				}
-
-			});
-
-			if (mUvcCameraHandler != null) {
-				mUvcCameraHandler.disWenKuan();
-				mUvcCameraHandler.fixedTempStripChange(false);
-			}
-			DYTApplication.setRobotSingle(DYTRobotSingle.NO_DEVICE);
-
-			if (mUvcCameraHandler != null) {
-				//				mUvcCameraHandler.removeCallback(cameraCallback);
-				//				mUvcCameraHandler.stopTemperaturing();//2022年5月18日19:00:15 S0温度失常
-				mUvcCameraHandler.close();
-			} else {
-				Log.e(TAG, "onDisconnect: ==============mUvcCameraHandler == null========");
-			}
-			mVid = 0;
-			mPid = 0;
-		}
-
-		@Override
-		public void onCancel (UsbDevice device) {
-			if (isDebug)
-				Log.e(TAG, "DD  onCancel: ");
-		}
-	};
-
-	private Surface stt;
-
 	/**
 	 * 打开连接 调用预览图像的设置
 	 */
@@ -1127,131 +1225,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		return defaultSettingReturn;
 	}
 
-	public static long startTime = 0;
-
-	/**
-	 * <p>判断是否连续点击</p>
-	 *
-	 * @return boolean
-	 */
-	public static boolean doubleClick () {
-		long now = System.currentTimeMillis();
-		if (now - startTime < 1500) {
-			return true;
-		}
-		startTime = now;
-		return false;
-	}
-
-	/**
-	 * <p>判断是否连续点击</p>
-	 *
-	 * @return boolean
-	 */
-	public static boolean doubleGainClick () {
-		long now = System.currentTimeMillis();
-		if (now - startTime < 2000) {
-			return true;
-		}
-		startTime = now;
-		return false;
-	}
-
-	/**
-	 * 切换语言
-	 *
-	 * @param type 语言下标
-	 */
-	private void toSetLanguage (int type) {//切换语言
-		Locale locale;
-		Context context = DYTApplication.getInstance();
-		if (type == 0) {
-			locale = Locale.SIMPLIFIED_CHINESE;
-			LanguageUtils.saveAppLocaleLanguage(locale.toLanguageTag());
-		} else if (type == 1) {
-			locale = Locale.US;
-			LanguageUtils.saveAppLocaleLanguage(locale.toLanguageTag());
-		} else {
-			return;
-		}
-		if (LanguageUtils.isSimpleLanguage(context, locale)) {
-			showToast(R.string.toast_select_same_language);
-			return;
-		}
-		LanguageUtils.updateLanguage(context, locale);//更新语言参数
-		Intent intent = new Intent(context, PreviewActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		context.startActivity(intent);
-		//		finish();
-		//		android.os.Process.killProcess(android.os.Process.myPid());
-		//		System.exit(0);
-	}
-
-
-	//修改S0机芯参数
-	public class SendCommand {
-		int psitionAndValue0 = 0, psitionAndValue1 = 0, psitionAndValue2 = 0, psitionAndValue3 = 0;
-		int result = -1;
-
-		public int sendFloatCommand (int position, byte value0, byte value1, byte value2, byte value3, int interval0, int interval1, int interval2, int interval3, int interval4) {
-			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
-			Handler handler0 = new Handler();
-
-			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0), interval0);
-
-			psitionAndValue1 = ((position + 1) << 8) | (0x000000ff & value1);
-			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue1), interval1);
-
-			psitionAndValue2 = ((position + 2) << 8) | (0x000000ff & value2);
-			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue2), interval2);
-
-			psitionAndValue3 = ((position + 3) << 8) | (0x000000ff & value3);
-			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue3), interval3);
-
-			handler0.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), interval4);
-
-			return result;
-		}
-
-		private void whenChangeTempPara () {
-			if (mUvcCameraHandler != null) {
-				mUvcCameraHandler.whenChangeTempPara();
-			}
-		}
-
-		public void sendShortCommand (int position, byte value0, byte value1, int interval0, int interval1, int interval2) {
-			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
-			Handler handler0 = new Handler();
-			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0), interval0);
-
-			psitionAndValue1 = ((position + 1) << 8) | (0x000000ff & value1);
-			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue1), interval1);
-
-			handler0.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), interval2);
-		}
-
-		public void sendByteCommand (int position, byte value0, int interval0) {
-			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
-			Handler handler0 = new Handler();
-			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0), interval0);
-			handler0.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), interval0 + 20);
-		}
-	}
-
-	@Override
-	protected int bindingLayout () {
-		return R.layout.activity_preview;
-	}
-
-	@Override
-	protected String getLanguageStr () {
-		if (sp != null) {
-			return sp.getString(DYConstants.LANGUAGE_SETTING, Locale.getDefault().getLanguage());
-		} else {
-			return Locale.getDefault().getLanguage();
-		}
-	}
-
 	//	@Override
 	//	protected void attachBaseContext (Context newBase) {
 	//		//		mContext = newBase;
@@ -1306,6 +1279,50 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//		getResources().updateConfiguration(config, metrics);
 	//
 	//	}
+
+	/**
+	 * 切换语言
+	 *
+	 * @param type 语言下标
+	 */
+	private void toSetLanguage (int type) {//切换语言
+		Locale locale;
+		Context context = DYTApplication.getInstance();
+		if (type == 0) {
+			locale = Locale.SIMPLIFIED_CHINESE;
+			LanguageUtils.saveAppLocaleLanguage(locale.toLanguageTag());
+		} else if (type == 1) {
+			locale = Locale.US;
+			LanguageUtils.saveAppLocaleLanguage(locale.toLanguageTag());
+		} else {
+			return;
+		}
+		if (LanguageUtils.isSimpleLanguage(context, locale)) {
+			showToast(R.string.toast_select_same_language);
+			return;
+		}
+		LanguageUtils.updateLanguage(context, locale);//更新语言参数
+		Intent intent = new Intent(context, PreviewActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		context.startActivity(intent);
+		//		finish();
+		//		android.os.Process.killProcess(android.os.Process.myPid());
+		//		System.exit(0);
+	}
+
+	@Override
+	protected int bindingLayout () {
+		return R.layout.activity_preview;
+	}
+
+	@Override
+	protected String getLanguageStr () {
+		if (sp != null) {
+			return sp.getString(DYConstants.LANGUAGE_SETTING, Locale.getDefault().getLanguage());
+		} else {
+			return Locale.getDefault().getLanguage();
+		}
+	}
 
 	@Override
 	protected void initView () {
@@ -1502,8 +1519,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 
 	}
-
-	private MyNumberPicker myNumberPicker;
 
 	//android获取一个用于打开PDF文件的intent
 	public Intent getPdfFileIntent (String Path) {
@@ -1944,86 +1959,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		});
 	}
 
-	//色板切换
-	View.OnClickListener                   paletteChoiceListener      = v -> {
-		switch (v.getId()) {
-			case R.id.palette_layout_Tiehong:
-				setPalette(0);
-				//					if (isDebug)showToast("palette_layout_Tiehong ");
-				break;
-			case R.id.palette_layout_Caihong:
-				setPalette(1);
-				//					if (isDebug)showToast("palette_layout_Caihong ");
-				break;
-			case R.id.palette_layout_Hongre:
-				setPalette(2);
-				//					if (isDebug)showToast("palette_layout_Hongre ");
-				break;
-			case R.id.palette_layout_Heire:
-				setPalette(3);
-				//					if (isDebug)showToast("palette_layout_Heire ");
-				break;
-			case R.id.palette_layout_Baire:
-				setPalette(4);
-				//					if (isDebug)showToast("palette_layout_Baire ");
-				break;
-			case R.id.palette_layout_Lenglan:
-				setPalette(5);
-				//					if (isDebug)showToast("palette_layout_Lenglan ");
-				break;
-		}
-	};
-	//用户添加 测温模式 切换
-	View.OnClickListener                   tempModeCheckListener      = new View.OnClickListener() {
-		@Override
-		public void onClick (View v) {
-			switch (v.getId()) {
-				case R.id.iv_temp_mode_point:
-					PLRPopupWindows.dismiss();
-					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(1);
-					//					mDataBinding.dragTempContainerPreviewActivity.getDrawTempMode();
-					//					if (isDebug)showToast("point ");
-					break;
-				case R.id.iv_temp_mode_line:
-					PLRPopupWindows.dismiss();
-					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(2);
-					//					if (isDebug)showToast("line ");
-					break;
-				case R.id.iv_temp_mode_rectangle:
-					PLRPopupWindows.dismiss();
-					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(3);
-					//					if (isDebug)showToast("rectangle ");
-					break;
-			}
-		}
-	};
-	CompoundButton.OnCheckedChangeListener highLowCenterCheckListener = (buttonView, isChecked) -> {
-		switch (buttonView.getId()) {
-			case R.id.cb_main_preview_highlowcenter_trace_high:
-				if (isChecked) {
-					mDataBinding.textureViewPreviewActivity.openFeaturePoints(0);
-				} else {
-					mDataBinding.textureViewPreviewActivity.closeFeaturePoints(0);
-				}
-				break;
-			case R.id.cb_main_preview_highlowcenter_trace_low:
-				if (isChecked) {
-					mDataBinding.textureViewPreviewActivity.openFeaturePoints(1);
-				} else {
-					mDataBinding.textureViewPreviewActivity.closeFeaturePoints(1);
-				}
-				break;
-			case R.id.cb_main_preview_highlowcenter_trace_center:
-				if (isChecked) {
-					mDataBinding.textureViewPreviewActivity.openFeaturePoints(2);
-				} else {
-					mDataBinding.textureViewPreviewActivity.closeFeaturePoints(2);
-				}
-				break;
-		}
-	};
-
-
 	/**
 	 * 获取相机参数，本地sp保存
 	 */
@@ -2231,5 +2166,55 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			PLRPopupWindows.dismiss();
 		super.onBackPressed();
 		Log.e(TAG, "onBackPressed: ");
+	}
+
+	//修改S0机芯参数
+	public class SendCommand {
+		int psitionAndValue0 = 0, psitionAndValue1 = 0, psitionAndValue2 = 0, psitionAndValue3 = 0;
+		int result = -1;
+
+		public int sendFloatCommand (int position, byte value0, byte value1, byte value2, byte value3, int interval0, int interval1, int interval2, int interval3, int interval4) {
+			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
+			Handler handler0 = new Handler();
+
+			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0), interval0);
+
+			psitionAndValue1 = ((position + 1) << 8) | (0x000000ff & value1);
+			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue1), interval1);
+
+			psitionAndValue2 = ((position + 2) << 8) | (0x000000ff & value2);
+			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue2), interval2);
+
+			psitionAndValue3 = ((position + 3) << 8) | (0x000000ff & value3);
+			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue3), interval3);
+
+			handler0.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), interval4);
+
+			return result;
+		}
+
+		private void whenChangeTempPara () {
+			if (mUvcCameraHandler != null) {
+				mUvcCameraHandler.whenChangeTempPara();
+			}
+		}
+
+		public void sendShortCommand (int position, byte value0, byte value1, int interval0, int interval1, int interval2) {
+			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
+			Handler handler0 = new Handler();
+			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0), interval0);
+
+			psitionAndValue1 = ((position + 1) << 8) | (0x000000ff & value1);
+			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue1), interval1);
+
+			handler0.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), interval2);
+		}
+
+		public void sendByteCommand (int position, byte value0, int interval0) {
+			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
+			Handler handler0 = new Handler();
+			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0), interval0);
+			handler0.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), interval0 + 20);
+		}
 	}
 }

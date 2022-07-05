@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <corners android:radius="@dimen/dimen_10dp"/>
+    <corners android:radius="@dimen/dimen_10dp" />
 
-    <stroke android:width="@dimen/dimen_1dp" android:color="@color/bg_cutoff_rule" />
+    <stroke
+        android:width="@dimen/dimen_1dp"
+        android:color="@color/bg_cutoff_rule" />
 
-    <padding android:bottom="@dimen/dimen_2dp"
-            android:top="@dimen/dimen_2dp"
+    <padding
+        android:bottom="@dimen/dimen_2dp"
         android:left="@dimen/dimen_2dp"
-        android:right="@dimen/dimen_2dp"/>
+        android:right="@dimen/dimen_2dp"
+        android:top="@dimen/dimen_2dp" />
 
-    <solid android:color="@color/bg_preview_right"/>
+    <solid android:color="@color/bg_preview_right" />
 
 </shape>

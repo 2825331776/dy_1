@@ -1,116 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
     </data>
 
     <ScrollView
-        android:orientation="vertical"
-        android:fillViewport="true"
-        android:scrollbars="none"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:orientation="vertical"
+        android:scrollbars="none">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:background="@drawable/shape_bg_pop_palette_choice"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_bg_pop_palette_choice">
 
-<!--            <androidx.constraintlayout.widget.Guideline-->
-<!--                android:id="@+id/gl_percent1"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="0dp"-->
-<!--                android:orientation="horizontal"-->
-<!--                app:layout_constraintGuide_percent="0.125"/>-->
+            <!--            <androidx.constraintlayout.widget.Guideline-->
+            <!--                android:id="@+id/gl_percent1"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="0dp"-->
+            <!--                android:orientation="horizontal"-->
+            <!--                app:layout_constraintGuide_percent="0.125"/>-->
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/gl_percent1_line1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.06"
-                />
+                app:layout_constraintGuide_percent="0.06" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Tiehong"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/gl_percent1_line1"
                 android:layout_width="@dimen/dimen_30dp"
                 android:layout_height="@dimen/dimen_30dp"
                 android:layout_marginTop="@dimen/dimen_10dp"
-                android:background="@mipmap/ic_palette_choice_tiehong" />
+                android:background="@mipmap/ic_palette_choice_tiehong"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/gl_percent1_line1" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Caihong"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/palette_layout_Heire"
-                android:layout_marginTop="@dimen/dimen_20dp"
                 android:layout_width="@dimen/dimen_30dp"
                 android:layout_height="@dimen/dimen_30dp"
-                android:background="@mipmap/ic_palette_choice_caihong" />
+                android:layout_marginTop="@dimen/dimen_20dp"
+                android:background="@mipmap/ic_palette_choice_caihong"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/palette_layout_Heire" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Hongre"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/palette_layout_Caihong"
-                android:layout_marginTop="@dimen/dimen_20dp"
                 android:layout_width="@dimen/dimen_30dp"
                 android:layout_height="@dimen/dimen_30dp"
-                android:background="@mipmap/ic_palette_choice_hongre" />
+                android:layout_marginTop="@dimen/dimen_20dp"
+                android:background="@mipmap/ic_palette_choice_hongre"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/palette_layout_Caihong" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Heire"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/palette_layout_Baire"
-                android:layout_marginTop="@dimen/dimen_20dp"
                 android:layout_width="@dimen/dimen_30dp"
                 android:layout_height="@dimen/dimen_30dp"
-                android:background="@mipmap/ic_palette_choice_heire" />
+                android:layout_marginTop="@dimen/dimen_20dp"
+                android:background="@mipmap/ic_palette_choice_heire"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/palette_layout_Baire" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Baire"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/palette_layout_Tiehong"
-                android:layout_marginTop="@dimen/dimen_20dp"
                 android:layout_width="@dimen/dimen_30dp"
                 android:layout_height="@dimen/dimen_30dp"
-                android:background="@mipmap/ic_palette_choice_baire" />
+                android:layout_marginTop="@dimen/dimen_20dp"
+                android:background="@mipmap/ic_palette_choice_baire"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/palette_layout_Tiehong" />
 
             <ImageButton
                 android:id="@+id/palette_layout_Lenglan"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/palette_layout_Hongre"
-                android:layout_marginTop="@dimen/dimen_20dp"
                 android:layout_width="@dimen/dimen_30dp"
                 android:layout_height="@dimen/dimen_30dp"
-                android:background="@mipmap/ic_palette_choice_lenglan" />
-<!--            <ImageButton-->
-<!--                android:id="@+id/palette_layout_Lenglan2"-->
-<!--                app:layout_constraintLeft_toLeftOf="parent"-->
-<!--                app:layout_constraintRight_toRightOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/palette_layout_Lenglan"-->
-<!--                android:layout_marginTop="@dimen/dimen_20dp"-->
-<!--                android:layout_width="@dimen/dimen_40dp"-->
-<!--                android:layout_height="@dimen/dimen_40dp"-->
-<!--                android:background="@mipmap/ic_palette_choice_lenglan" />-->
-<!--            <ImageButton-->
-<!--                android:id="@+id/palette_layout_Lenglan3"-->
-<!--                app:layout_constraintLeft_toLeftOf="parent"-->
-<!--                app:layout_constraintRight_toRightOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/palette_layout_Lenglan2"-->
-<!--                android:layout_marginTop="@dimen/dimen_20dp"-->
-<!--                android:layout_width="@dimen/dimen_40dp"-->
-<!--                android:layout_height="@dimen/dimen_40dp"-->
-<!--                android:background="@mipmap/ic_palette_choice_lenglan" />-->
+                android:layout_marginTop="@dimen/dimen_20dp"
+                android:background="@mipmap/ic_palette_choice_lenglan"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/palette_layout_Hongre" />
+            <!--            <ImageButton-->
+            <!--                android:id="@+id/palette_layout_Lenglan2"-->
+            <!--                app:layout_constraintLeft_toLeftOf="parent"-->
+            <!--                app:layout_constraintRight_toRightOf="parent"-->
+            <!--                app:layout_constraintTop_toBottomOf="@id/palette_layout_Lenglan"-->
+            <!--                android:layout_marginTop="@dimen/dimen_20dp"-->
+            <!--                android:layout_width="@dimen/dimen_40dp"-->
+            <!--                android:layout_height="@dimen/dimen_40dp"-->
+            <!--                android:background="@mipmap/ic_palette_choice_lenglan" />-->
+            <!--            <ImageButton-->
+            <!--                android:id="@+id/palette_layout_Lenglan3"-->
+            <!--                app:layout_constraintLeft_toLeftOf="parent"-->
+            <!--                app:layout_constraintRight_toRightOf="parent"-->
+            <!--                app:layout_constraintTop_toBottomOf="@id/palette_layout_Lenglan2"-->
+            <!--                android:layout_marginTop="@dimen/dimen_20dp"-->
+            <!--                android:layout_width="@dimen/dimen_40dp"-->
+            <!--                android:layout_height="@dimen/dimen_40dp"-->
+            <!--                android:background="@mipmap/ic_palette_choice_lenglan" />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>

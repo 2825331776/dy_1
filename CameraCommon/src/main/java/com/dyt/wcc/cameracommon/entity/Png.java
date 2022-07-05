@@ -9,34 +9,33 @@ import java.util.List;
  * @description Png格式
  */
 public class Png {
-	
-	private PngHeader pngHeader;
+
+	private PngHeader       pngHeader;
 	/**
 	 * 数据块集合
 	 */
 	private List<DataBlock> dataBlocks;
-	
-	public Png() {
+
+	public Png () {
 		dataBlocks = new LinkedList<DataBlock>();
 	}
 
-	
-	public PngHeader getPngHeader() {
+
+	public PngHeader getPngHeader () {
 		return pngHeader;
 	}
 
-	public void setPngHeader(PngHeader pngHeader) {
+	public void setPngHeader (PngHeader pngHeader) {
 		this.pngHeader = pngHeader;
 	}
 
-	public List<DataBlock> getDataBlocks() {
+	public List<DataBlock> getDataBlocks () {
 		return dataBlocks;
 	}
 
-	public void setDataBlocks(List<DataBlock> dataBlocks) {
+	public void setDataBlocks (List<DataBlock> dataBlocks) {
 		this.dataBlocks = dataBlocks;
 	}
-	
-	
+
 
 }

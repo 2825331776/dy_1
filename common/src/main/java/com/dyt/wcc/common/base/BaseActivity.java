@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
+import com.dyt.wcc.common.BuildConfig;
 import com.dyt.wcc.common.utils.KeyboardsUtils;
 
 import java.lang.ref.WeakReference;
@@ -33,39 +34,40 @@ import java.util.Locale;
  * <p>PackagePath: com.dyt.wcc.common.base.ui     </p>
  */
 public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatActivity {
-	protected final String  TAG = this.getClass().getSimpleName();
+	protected final String TAG = this.getClass().getSimpleName();
 
 	protected WeakReference<Context> mContext;
 	protected T                      mDataBinding;//绑定的布局View
-	protected boolean                isDebug = true;
+	protected boolean                isDebug = BuildConfig.DEBUG;
 	protected Toast                  mToast;
-	protected int mRotation;
-//	protected SharedPreferences mBaseActivitySp;
+	protected int                    mRotation;
+	//	protected SharedPreferences mBaseActivitySp;
 
 	@Override
 	protected void onCreate (@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mDataBinding = DataBindingUtil.setContentView(this,bindingLayout());//绑定布局
-//		onCreateLanguageStr = getResources().getConfiguration().locale.getLanguage();
-//		Log.e(TAG, "onCreate: =====onCreateLanguageStr===" + onCreateLanguageStr);
+		mDataBinding = DataBindingUtil.setContentView(this, bindingLayout());//绑定布局
+		//		onCreateLanguageStr = getResources().getConfiguration().locale.getLanguage();
+		//		Log.e(TAG, "onCreate: =====onCreateLanguageStr===" + onCreateLanguageStr);
 
 
 		this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		mContext = new WeakReference<>(this);
-		mToast = Toast.makeText(mContext.get(),"",Toast.LENGTH_SHORT);
-//		mToast.setGravity();
+		mToast = Toast.makeText(mContext.get(), "", Toast.LENGTH_SHORT);
+		//		mToast.setGravity();
 		initView();
 	}
 
-//	//实现一个当前获取sp返回 local.xxx.getLanguage();
-//	protected String onCreateLanguageStr = "";
-	protected abstract String getLanguageStr();
+	//	//实现一个当前获取sp返回 local.xxx.getLanguage();
+	//	protected String onCreateLanguageStr = "";
+	protected abstract String getLanguageStr ();
 
 	////设置绑定布局
-	protected abstract int bindingLayout();
+	protected abstract int bindingLayout ();
+
 	//初始化控件
-	protected abstract void initView();
+	protected abstract void initView ();
 
 	public int getMRotation () {
 		return mRotation;
@@ -76,18 +78,19 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 		mToast.getView().setRotation(mRotation);
 	}
 
-	protected void showToast(int resId){
+	protected void showToast (int resId) {
 		//		mToast.cancel();
 		mToast.setText(resId);
 		mToast.show();
 	}
-	protected void showToast(String str){
+
+	protected void showToast (String str) {
 		//		mToast.cancel();
 		mToast.setText(str);
 		mToast.show();
 	}
 
-	protected void hideInput(IBinder token){
+	protected void hideInput (IBinder token) {
 		InputMethodManager im = (InputMethodManager) mContext.get().getSystemService(Context.INPUT_METHOD_SERVICE);
 		im.hideSoftInputFromWindow(token, InputMethodManager.HIDE_NOT_ALWAYS);
 	}
@@ -105,8 +108,8 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 	 */
 	@CallSuper
 	@Override
-	public boolean dispatchTouchEvent(MotionEvent ev) {
-		if (ev.getAction() ==  MotionEvent.ACTION_DOWN ) {
+	public boolean dispatchTouchEvent (MotionEvent ev) {
+		if (ev.getAction() == MotionEvent.ACTION_DOWN) {
 			View view = getCurrentFocus();
 			if (KeyboardsUtils.isShouldHideKeyBord(view, ev)) {
 				KeyboardsUtils.hintKeyBoards(view);
@@ -114,6 +117,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 		}
 		return super.dispatchTouchEvent(ev);
 	}
+
 	public ContextWrapper wrap (Context context) {
 		Resources res = context.getResources();
 		Configuration configuration = res.getConfiguration();
@@ -125,8 +129,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 			LocaleList.setDefault(localeList);
 			configuration.setLocales(localeList);
 			context = context.createConfigurationContext(configuration);
-		}
-		else {
+		} else {
 			configuration.locale = newLocale;
 			res.updateConfiguration(configuration, res.getDisplayMetrics());
 		}
@@ -134,36 +137,35 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 	}
 
 
-
-//	@Override
-//	protected void attachBaseContext(Context newBase) {
-//		if (isSupportMultiLanguage()) {
-//			String language = LanguageSp.getLanguage(newBase);
-//			Context context = LanguageUtil.attachBaseContext(newBase, language);
-//			final Configuration configuration = context.getResources().getConfiguration();
-//			final ContextThemeWrapper wrappedContext = new ContextThemeWrapper(context,
-//					R.style.Theme_AppCompat_Empty) {
-//				@Override
-//				public void applyOverrideConfiguration(Configuration overrideConfiguration) {
-//					if (overrideConfiguration != null) {
-//						overrideConfiguration.setTo(configuration);
-//					}
-//					super.applyOverrideConfiguration(overrideConfiguration);
-//				}
-//			};
-//			super.attachBaseContext(wrappedContext);
-//		} else {
-//			super.attachBaseContext(newBase);
-//		}
-//	}
+	//	@Override
+	//	protected void attachBaseContext(Context newBase) {
+	//		if (isSupportMultiLanguage()) {
+	//			String language = LanguageSp.getLanguage(newBase);
+	//			Context context = LanguageUtil.attachBaseContext(newBase, language);
+	//			final Configuration configuration = context.getResources().getConfiguration();
+	//			final ContextThemeWrapper wrappedContext = new ContextThemeWrapper(context,
+	//					R.style.Theme_AppCompat_Empty) {
+	//				@Override
+	//				public void applyOverrideConfiguration(Configuration overrideConfiguration) {
+	//					if (overrideConfiguration != null) {
+	//						overrideConfiguration.setTo(configuration);
+	//					}
+	//					super.applyOverrideConfiguration(overrideConfiguration);
+	//				}
+	//			};
+	//			super.attachBaseContext(wrappedContext);
+	//		} else {
+	//			super.attachBaseContext(newBase);
+	//		}
+	//	}
 	@Override
 	protected void attachBaseContext (Context newBase) {
-//		mContext = newBase;
+		//		mContext = newBase;
 		super.attachBaseContext(wrap(newBase));
 	}
 
 	@Override
-	public void applyOverrideConfiguration(Configuration overrideConfiguration) {
+	public void applyOverrideConfiguration (Configuration overrideConfiguration) {
 		// 兼容androidX在部分手机切换语言失败问题
 		if (overrideConfiguration != null) {
 			int uiMode = overrideConfiguration.uiMode;

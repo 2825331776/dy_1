@@ -81,78 +81,56 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 
 public abstract class AbstractUVCCameraHandler extends Handler {
-	private static final boolean DEBUG = true;    // TODO set false on release
-	private static final String  TAG   = "AbsUVCCameraHandler";
-
-	public interface CameraCallback {
-		public void onOpen ();
-
-		public void onClose ();
-
-		public void onStartPreview ();
-
-		public void onStopPreview ();
-
-		public void onStartRecording ();
-
-		public void onStopRecording ();
-
-		public void onError (final Exception e);
-
-		//  add  吴长城 2022年4月20日17:18:06
-		public void onSavePicFinished (boolean isFinish, String picPath);
-	}
-
-
-	private static final int MSG_OPEN                    = 0;
-	private static final int MSG_CLOSE                   = 1;
-	private static final int MSG_PREVIEW_START           = 2;
-	private static final int MSG_PREVIEW_STOP            = 3;
-	private static final int MSG_CAPTURE_STILL           = 4;
-	private static final int MSG_CAPTURE_START           = 5;
-	private static final int MSG_CAPTURE_STOP            = 6;
-	private static final int MSG_MEDIA_UPDATE            = 7;
-	private static final int MSG_SET_PALETTEPATH         = 8;
-	private static final int MSG_RELEASE                 = 9;
-	private static final int MSG_TEMPERATURE_START       = 10;
-	private static final int MSG_TEMPERATURE_STOP        = 11;
-	private static final int MSG_ON_RECEIVE_TEMPERATURE  = 12;
-	private static final int MSG_CHANGE_PALETTE          = 13;
-	private static final int MSG_SET_TEMPRANGE           = 14;
-	private static final int MSG_MAKE_REPORT             = 15;
-	private static final int MSG_OPEN_SYS_CAMERA         = 16;
-	private static final int MSG_CLOSE_SYS_CAMERA        = 17;
-	private static final int MSG_SET_HIGHTHROW           = 18;
-	private static final int MSG_SET_LOWTHROW            = 19;
-	private static final int MSG_SET_HIGHPLAT            = 20;
-	private static final int MSG_SET_LOWPLAT             = 21;
-	private static final int MSG_SET_ORGSUBGSHIGH        = 22;
-	private static final int MSG_SET_ORGSUBGSLOW         = 23;
-	private static final int MSG_SET_SIGMAD              = 24;
-	private static final int MSG_SET_SIGMAR              = 25;
-	private static final int MSG_RELAYOUT                = 26;
-	private static final int MSG_WATERMARK_ONOFF         = 27;
-	private static final int MSG_SET_SHUTTERFIX          = 28;
-	private static final int MSG_SET_DEV_DIRECT_TCP      = 29;
-	private static final int MSG_SET_DEV_PALETTE         = 30;
+	private static final boolean                     DEBUG                       = true;    // TODO set false on release
+	private static final String                      TAG                         = "AbsUVCCameraHandler";
+	private static final int                         MSG_OPEN                    = 0;
+	private static final int                         MSG_CLOSE                   = 1;
+	private static final int                         MSG_PREVIEW_START           = 2;
+	private static final int                         MSG_PREVIEW_STOP            = 3;
+	private static final int                         MSG_CAPTURE_STILL           = 4;
+	private static final int                         MSG_CAPTURE_START           = 5;
+	private static final int                         MSG_CAPTURE_STOP            = 6;
+	private static final int                         MSG_MEDIA_UPDATE            = 7;
+	private static final int                         MSG_SET_PALETTEPATH         = 8;
+	private static final int                         MSG_RELEASE                 = 9;
+	private static final int                         MSG_TEMPERATURE_START       = 10;
+	private static final int                         MSG_TEMPERATURE_STOP        = 11;
+	private static final int                         MSG_ON_RECEIVE_TEMPERATURE  = 12;
+	private static final int                         MSG_CHANGE_PALETTE          = 13;
+	private static final int                         MSG_SET_TEMPRANGE           = 14;
+	private static final int                         MSG_MAKE_REPORT             = 15;
+	private static final int                         MSG_OPEN_SYS_CAMERA         = 16;
+	private static final int                         MSG_CLOSE_SYS_CAMERA        = 17;
+	private static final int                         MSG_SET_HIGHTHROW           = 18;
+	private static final int                         MSG_SET_LOWTHROW            = 19;
+	private static final int                         MSG_SET_HIGHPLAT            = 20;
+	private static final int                         MSG_SET_LOWPLAT             = 21;
+	private static final int                         MSG_SET_ORGSUBGSHIGH        = 22;
+	private static final int                         MSG_SET_ORGSUBGSLOW         = 23;
+	private static final int                         MSG_SET_SIGMAD              = 24;
+	private static final int                         MSG_SET_SIGMAR              = 25;
+	private static final int                         MSG_RELAYOUT                = 26;
+	private static final int                         MSG_WATERMARK_ONOFF         = 27;
+	private static final int                         MSG_SET_SHUTTERFIX          = 28;
+	private static final int                         MSG_SET_DEV_DIRECT_TCP      = 29;
+	private static final int                         MSG_SET_DEV_PALETTE         = 30;
 	//added by wupei
-	private static final int MSG_LA_WENKUAN              = 31;
-	private static final int MSG_DIS_WENKUAN             = 32;
-	private static final int MSG_AREA_CHECK              = 33;
-	private static final int MSG_SET_AREA                = 34;
-	private static final int MSG_SHOW_TEMP               = 35;
+	private static final int                         MSG_LA_WENKUAN              = 31;
+	private static final int                         MSG_DIS_WENKUAN             = 32;
+	private static final int                         MSG_AREA_CHECK              = 33;
+	private static final int                         MSG_SET_AREA                = 34;
+	private static final int                         MSG_SHOW_TEMP               = 35;
 	//长城添加
-	private static final int MSG_FIXED_TEMP_STRIP        = 36;
-	private static final int MSG_TINY_SAVE_CAMERA_PARAMS = 45;//保存TinyC机芯参数。
-	private static final int MSG_SAVEDATA_FIVESECONDS    = 40;//保存五帧数据
-	private static final int MSG_SAVE_PICTURE            = 50;//截屏
-	private static final int MSG_SET_VERIFY_SN           = 55;//设置是否验证SN
+	private static final int                         MSG_FIXED_TEMP_STRIP        = 36;
+	private static final int                         MSG_TINY_SAVE_CAMERA_PARAMS = 45;//保存TinyC机芯参数。
+	private static final int                         MSG_SAVEDATA_FIVESECONDS    = 40;//保存五帧数据
+	private static final int                         MSG_SAVE_PICTURE            = 50;//截屏
+	private static final int                         MSG_SET_VERIFY_SN           = 55;//设置是否验证SN
+	private final        WeakReference<CameraThread> mWeakThread;
 
 	//	private static final int MSG_SWITCH_GAIN = 57;
 	//    private static final int MSG_ISRECORDAUDIO = 37;//本来在这里新增一个 是否录制音频的开关。后面直接加到了 打开录制开关的参数里面
-
-	private final    WeakReference<CameraThread> mWeakThread;
-	private volatile boolean                     mReleased;
+	private volatile boolean mReleased;
 
 	protected AbstractUVCCameraHandler (final CameraThread thread) {
 		Log.e(TAG, "============ 创建线程");
@@ -237,12 +215,26 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		return 0;
 	}
 
+	public void setHighThrow (int inputHighThrow) {
+		Message message = Message.obtain();
+		message.what = MSG_SET_HIGHTHROW;
+		message.arg1 = inputHighThrow;
+		sendMessage(message);
+	}
+
 	public int getLowThrow () {
 		final CameraThread thread = mWeakThread.get();
 		if ((thread != null) && (thread.mUVCCamera) != null) {
 			//return thread.mUVCCamera.getLowThrow();
 		}
 		return 0;
+	}
+
+	public void setLowThrow (int inputLowThrow) {
+		Message message = Message.obtain();
+		message.what = MSG_SET_LOWTHROW;
+		message.arg1 = inputLowThrow;
+		sendMessage(message);
 	}
 
 	public int getHighPlat () {
@@ -253,12 +245,26 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		return 0;
 	}
 
+	public void setHighPlat (int inputHighPlat) {
+		Message message = Message.obtain();
+		message.what = MSG_SET_HIGHPLAT;
+		message.arg1 = inputHighPlat;
+		sendMessage(message);
+	}
+
 	public int getLowPlat () {
 		final CameraThread thread = mWeakThread.get();
 		if ((thread != null) && (thread.mUVCCamera) != null) {
 			//return thread.mUVCCamera.getLowPlat();
 		}
 		return 0;
+	}
+
+	public void setLowPlat (int inputLowPlat) {
+		Message message = Message.obtain();
+		message.what = MSG_SET_LOWPLAT;
+		message.arg1 = inputLowPlat;
+		sendMessage(message);
 	}
 
 	public int getOrgSubGsHigh () {
@@ -269,12 +275,26 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		return 0;
 	}
 
+	public void setOrgSubGsHigh (int inputOrgSubGsHigh) {
+		Message message = Message.obtain();
+		message.what = MSG_SET_ORGSUBGSHIGH;
+		message.arg1 = inputOrgSubGsHigh;
+		sendMessage(message);
+	}
+
 	public int getOrgSubGsLow () {
 		final CameraThread thread = mWeakThread.get();
 		if ((thread != null) && (thread.mUVCCamera) != null) {
 			//return thread.mUVCCamera.getOrgSubGsLow();
 		}
 		return 0;
+	}
+
+	public void setOrgSubGsLow (int inputOrgSubGsLow) {
+		Message message = Message.obtain();
+		message.what = MSG_SET_ORGSUBGSLOW;
+		message.arg1 = inputOrgSubGsLow;
+		sendMessage(message);
 	}
 
 	public float getSigmaD () {
@@ -285,6 +305,13 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		return 0;
 	}
 
+	public void setSigmaD (int inputSigmaD) {
+		Message message = Message.obtain();
+		message.what = MSG_SET_SIGMAD;
+		message.arg1 = inputSigmaD;
+		sendMessage(message);
+	}
+
 	public float getSigmaR () {
 		final CameraThread thread = mWeakThread.get();
 		if ((thread != null) && (thread.mUVCCamera) != null) {
@@ -293,6 +320,12 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		return 0;
 	}
 
+	public void setSigmaR (int inputSigmaR) {
+		Message message = Message.obtain();
+		message.what = MSG_SET_SIGMAR;
+		message.arg1 = inputSigmaR;
+		sendMessage(message);
+	}
 
 	public boolean isPreviewing () {
 		final CameraThread thread = mWeakThread.get();
@@ -509,62 +542,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		Message message = Message.obtain();
 		message.what = MSG_SHOW_TEMP;
 		message.arg1 = isTempShow;
-		sendMessage(message);
-	}
-
-	public void setHighThrow (int inputHighThrow) {
-		Message message = Message.obtain();
-		message.what = MSG_SET_HIGHTHROW;
-		message.arg1 = inputHighThrow;
-		sendMessage(message);
-	}
-
-	public void setLowThrow (int inputLowThrow) {
-		Message message = Message.obtain();
-		message.what = MSG_SET_LOWTHROW;
-		message.arg1 = inputLowThrow;
-		sendMessage(message);
-	}
-
-	public void setHighPlat (int inputHighPlat) {
-		Message message = Message.obtain();
-		message.what = MSG_SET_HIGHPLAT;
-		message.arg1 = inputHighPlat;
-		sendMessage(message);
-	}
-
-	public void setLowPlat (int inputLowPlat) {
-		Message message = Message.obtain();
-		message.what = MSG_SET_LOWPLAT;
-		message.arg1 = inputLowPlat;
-		sendMessage(message);
-	}
-
-	public void setSigmaD (int inputSigmaD) {
-		Message message = Message.obtain();
-		message.what = MSG_SET_SIGMAD;
-		message.arg1 = inputSigmaD;
-		sendMessage(message);
-	}
-
-	public void setSigmaR (int inputSigmaR) {
-		Message message = Message.obtain();
-		message.what = MSG_SET_SIGMAR;
-		message.arg1 = inputSigmaR;
-		sendMessage(message);
-	}
-
-	public void setOrgSubGsHigh (int inputOrgSubGsHigh) {
-		Message message = Message.obtain();
-		message.what = MSG_SET_ORGSUBGSHIGH;
-		message.arg1 = inputOrgSubGsHigh;
-		sendMessage(message);
-	}
-
-	public void setOrgSubGsLow (int inputOrgSubGsLow) {
-		Message message = Message.obtain();
-		message.what = MSG_SET_ORGSUBGSLOW;
-		message.arg1 = inputOrgSubGsLow;
 		sendMessage(message);
 	}
 
@@ -796,7 +773,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		return result;
 	}
 
-
 	public void whenShutRefresh () {
 		checkReleased();
 		final CameraThread thread = mWeakThread.get();
@@ -1023,6 +999,25 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		}
 	}
 
+	public interface CameraCallback {
+		public void onOpen ();
+
+		public void onClose ();
+
+		public void onStartPreview ();
+
+		public void onStopPreview ();
+
+		public void onStartRecording ();
+
+		public void onStopRecording ();
+
+		public void onError (final Exception e);
+
+		//  add  吴长城 2022年4月20日17:18:06
+		public void onSavePicFinished (boolean isFinish, String picPath);
+	}
+
 	static final class CameraThread extends Thread {
 		private static final String                                    TAG_THREAD = "CameraThread";
 		private final        Object                                    mSync      = new Object();
@@ -1031,47 +1026,196 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		private final        WeakReference<UVCCameraTextureView>       mWeakCameraView;
 		private final        int                                       mEncoderType;
 		private final        Set<CameraCallback>                       mCallbacks = new CopyOnWriteArraySet<CameraCallback>();
-		private              int                                       mWidth, mHeight, mPreviewMode, mPalettetype;//mWidth mHeight 是返回数据的尺寸
-		private float                    mBandwidthFactor;
-		private int                      currentAndroidVersion;
-		private boolean                  mIsPreviewing;    // 是否初始化显示控件
-		private boolean                  mIsTemperaturing;    // 是否启动温度回调
-		//        private boolean mIsCapturing;    // 是否启动拍照回调
-		private boolean                  mIsRecording;    // 是否启动记录
 		//        private boolean mIsRecordAudio = false;//是否录制音频
-		public  ITemperatureCallback     CameraThreadTemperatureCallback;
+		public               ITemperatureCallback                      CameraThreadTemperatureCallback;
+		MediaScannerConnection.OnScanCompletedListener ScanCompletedListener = new MediaScannerConnection.OnScanCompletedListener() {
+			@Override
+			public void onScanCompleted (String path, Uri uri) {
+					/*	final Activity parent = mWeakParent.get();
+						final boolean released = (mHandler == null) || mHandler.mReleased;
+						if (parent != null && parent.getApplicationContext() != null) {
+							if (released || parent.isDestroyed()) {
+								handleRelease();
+							}
+							if(mIsTemperaturing) {
+								String[] SplitArray=path.split("\\.");
+								String NewPath = SplitArray[0]+"IR.png";
+								try {
+									PngUtil.wirteByteArrayToPng(path, ByteTemperatureData, NewPath);
+										try {
+											MediaScannerConnection.scanFile(parent.getApplicationContext(), new String[]{ NewPath }, null, null);
+										} catch (final Exception e) {
+										}
+								} catch (final Exception e) {
+									Log.e(TAG, "handleUpdateMedia wirteByteArrayToPng:", e);
+								}
+								File OldPhoto=new File(path);
+								if(OldPhoto.isFile() && OldPhoto.exists()) {
+									Boolean succeedDelete = OldPhoto.delete();
+									if(succeedDelete){
+										try {
+											MediaScannerConnection.scanFile(parent.getApplicationContext(), new String[]{ path }, null, null);
+										} catch (final Exception e) {
+										}
+									}
+
+								}
+							}
+						} else {
+							Log.w(TAG, "MainActivity already destroyed");
+							// give up to add this movie to MediaStore now.
+							// Seeing this movie on Gallery app etc. will take a lot of time.
+							handleRelease();
+						}*/
+			}
+		};
+		private int mWidth, mHeight, mPreviewMode, mPalettetype;//mWidth mHeight 是返回数据的尺寸
+		private float                                   mBandwidthFactor;
+		private int                                     currentAndroidVersion;
+		private boolean                                 mIsPreviewing;    // 是否初始化显示控件
+		private boolean                                 mIsTemperaturing;    // 是否启动温度回调
+		//        private boolean mIsCapturing;    // 是否启动拍照回调
+		private boolean                                 mIsRecording;    // 是否启动记录
 		/**
 		 * shutter sound
 		 */
 		//        private SoundPool            mSoundPool;
-		private int                      mSoundId;
-		private AbstractUVCCameraHandler mHandler;
+		private int                                     mSoundId;
+		private AbstractUVCCameraHandler                mHandler;
 		/**
 		 * for accessing UVC camera
 		 */
-		private UVCCamera                mUVCCamera;
+		private UVCCamera                               mUVCCamera;
 		/**
 		 * 持有的 MeasureTempContainerView
 		 */
-		private WeakReference<MeasureTempContainerView> mContainerView ;
-
+		private WeakReference<MeasureTempContainerView> mContainerView;
 		/**
 		 * muxer for audio/video recording
 		 */
-		private MediaMuxerWrapper        mMuxer;
-		private MediaVideoBufferEncoder  mVideoEncoder;
+		private MediaMuxerWrapper                       mMuxer;
 
 		/************* wifi添加字段 ************/
-		/**
-		 * tpcCamera
-		 **/
-		//        private TcpClient mTcpClient;
-		private int cameraType = 1; // 1为uvc,2为tcp
-		private int mVid, mPid;
+		private       MediaVideoBufferEncoder mVideoEncoder;
+		//        private byte[] FrameData = new byte[640 * 512 * 4];
+		private final IFrameCallback          mIFrameCallback = new IFrameCallback() {
+			@Override
+			public void onFrame (final ByteBuffer frameData) {
+				//Log.e(TAG, "mIFrameCallback ");
+				Log.e(TAG, "the frame frameData.capacity ==== " + frameData.capacity());//196608= 256*192*4 RGBA格式返回;
+				final MediaVideoBufferEncoder videoEncoder;
+				synchronized (mSync) {
+					videoEncoder = mVideoEncoder;
+				}
+				if (videoEncoder != null) {
+					videoEncoder.frameAvailableSoon();
+					videoEncoder.encode(frameData);
+				}
+				//                if (frameData != null){
+				//
+				////                    frameData.get(FrameData, 0, frameData.capacity());
+				//
+				//                    final MediaVideoBufferEncoder videoEncoder;
+				//                    synchronized (mSync) {
+				//                        videoEncoder = mVideoEncoder;
+				//                    }
+				//                    if (videoEncoder != null) {
+				//                        videoEncoder.frameAvailableSoon();
+				//                        videoEncoder.encode(frameData);
+				//                    }
+				//                }
+
+				//Log.e(TAG, "mIFrameCallback frameData[384*288*4/2]:"+ (int)FrameData[384*288*4/2]);
+				//Log.e(TAG, "mIFrameCallback frameData[384*288*4/2]:"+ (int)FrameData[384*288*4/2]);
+			}
+		};
 
 		/************************/
 
 		//        private float[] temperatureData = new float[640 * 512 + 10];
+		/**
+		 * tpcCamera
+		 **/
+		//        private TcpClient mTcpClient;
+		private       int                               cameraType            = 1; // 1为uvc,2为tcp
+		private final MediaEncoder.MediaEncoderListener mMediaEncoderListener = new MediaEncoder.MediaEncoderListener() {
+			@Override
+			public void onPrepared (final MediaEncoder encoder) {
+				if (DEBUG)
+					Log.e(TAG, "onPrepared:encoder=" + encoder);
+				Log.e(TAG, "onPrepared: mIsRecording:" + mIsRecording);
+				mIsRecording = true;
+				if (encoder instanceof MediaVideoEncoder)
+					try {
+						mWeakCameraView.get().setVideoEncoder((MediaVideoEncoder) encoder);
+					} catch (final Exception e) {
+						Log.e(TAG, "onPrepared:", e);
+					}
+				/*if (encoder instanceof MediaSurfaceEncoder)
+					try {
+						mWeakCameraView.get().setVideoEncoder((MediaSurfaceEncoder)encoder);
+						mUVCCamera.startCapture(((MediaSurfaceEncoder)encoder).getInputSurface());
+					} catch (final Exception e) {
+						Log.e(TAG, "onPrepared:", e);
+					}*/
+			}
+
+			@Override
+			public void onStopped (final MediaEncoder encoder) {
+				if (DEBUG)
+					Log.e(TAG_THREAD, "onStopped:encoder=" + encoder);
+				if ((encoder instanceof MediaVideoEncoder) || (encoder instanceof MediaSurfaceEncoder))
+					try {
+						mIsRecording = false;
+						final Activity parent = mWeakParent.get();
+						mWeakCameraView.get().setVideoEncoder(null);
+						//                        synchronized (mSync) {
+						//                            if (mUVCCamera != null) {
+						//                                Log.e(TAG, "onStopped:stopCapture ");
+						//                                mUVCCamera.stopCapture();
+						//                            }
+						//                        }
+						final String path = encoder.getOutputPath();
+						if (!TextUtils.isEmpty(path)) {
+							mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_MEDIA_UPDATE, path), 200);
+						} else {
+							final boolean released = (mHandler == null) || mHandler.mReleased;
+							if (released || parent == null || parent.isDestroyed()) {
+								handleRelease();
+							}
+						}
+					} catch (final Exception e) {
+						Log.e(TAG, "onPrepared:", e);
+					}
+			}
+		};
+		private       int                               mVid, mPid;
+		//        private byte[] ByteTemperatureData = new byte[(640 * 512 + 10) * 4];
+		//        private short[] ShortTemperatureData = new short[640 * 512 + 10];
+		private Handler mMySubHandler;
+		/**
+		 * UVC连接状态
+		 */
+		private int     UVCStatus         = -1;
+		private int     autoSaveCount     = 0;
+		private boolean needSendSaveOrder = false;
+		IUVCStatusCallBack iuvcStatusCallBack = new IUVCStatusCallBack() {
+			@Override
+			public void onUVCCurrentStatus (int uvcStatus) {
+				//				Log.e(TAG, "onUVCCurrentStatus:  ===========回调保存指令=========111111111111111111==uvcStatus===>"+uvcStatus );
+				if (uvcStatus != UVCStatus) {
+					UVCStatus = uvcStatus;
+				} else {
+					if (autoSaveCount <= 80 && UVCStatus == 3 && !needSendSaveOrder) {
+						autoSaveCount++;
+					} else if (autoSaveCount > 80 && UVCStatus == 3 && !needSendSaveOrder) {
+						needSendSaveOrder = true;
+						//						Log.e(TAG, "onUVCCurrentStatus:  ==================回调保存指令================");
+						mUVCCamera.TinySaveCameraParams();
+					}
+				}
+			}
+		};
 
 		/**
 		 * @param clazz               Class extends AbstractUVCCameraHandler
@@ -1085,7 +1229,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		 * @param temperatureCallback 温度回调函数
 		 * @param androidVersion      用户初始化Camera
 		 */
-		CameraThread (final Class<? extends AbstractUVCCameraHandler> clazz, final Activity parent, final UVCCameraTextureView cameraView, final int encoderType, final int width, final int height, final int format, final float bandwidthFactor, ITemperatureCallback temperatureCallback, final MeasureTempContainerView containerview,int androidVersion) {
+		CameraThread (final Class<? extends AbstractUVCCameraHandler> clazz, final Activity parent, final UVCCameraTextureView cameraView, final int encoderType, final int width, final int height, final int format, final float bandwidthFactor, ITemperatureCallback temperatureCallback, final MeasureTempContainerView containerview, int androidVersion) {
 
 			super("CameraThread");
 			//by wp
@@ -1109,37 +1253,9 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 			mWeakParent = new WeakReference<Activity>(parent);
 			mWeakCameraView = new WeakReference<UVCCameraTextureView>(cameraView);
 			//            loadShutterSound(parent);
-			mContainerView = new WeakReference<>(containerview) ;
+			mContainerView = new WeakReference<>(containerview);
 			Log.e(TAG, "CameraThread: ================end");
 		}
-
-		//        private byte[] ByteTemperatureData = new byte[(640 * 512 + 10) * 4];
-		//        private short[] ShortTemperatureData = new short[640 * 512 + 10];
-		private Handler mMySubHandler;
-
-		/**
-		 * UVC连接状态
-		 */
-		private int UVCStatus = -1;
-		private int autoSaveCount = 0;
-		private boolean needSendSaveOrder = false;
-		IUVCStatusCallBack iuvcStatusCallBack = new IUVCStatusCallBack() {
-			@Override
-			public void onUVCCurrentStatus (int uvcStatus) {
-				//				Log.e(TAG, "onUVCCurrentStatus:  ===========回调保存指令=========111111111111111111==uvcStatus===>"+uvcStatus );
-				if (uvcStatus!= UVCStatus){
-					UVCStatus = uvcStatus;
-				}else {
-					if (autoSaveCount <= 80 && UVCStatus == 3 && !needSendSaveOrder){
-						autoSaveCount++;
-					}else if (autoSaveCount > 80 && UVCStatus == 3 && !needSendSaveOrder){
-						needSendSaveOrder = true;
-						//						Log.e(TAG, "onUVCCurrentStatus:  ==================回调保存指令================");
-						mUVCCamera.TinySaveCameraParams();
-					}
-				}
-			}
-		};
 
 		@Override
 		protected void finalize () throws Throwable {
@@ -1182,7 +1298,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 				//                }
 			}
 		}
-
 
 		public boolean isTemperaturing () {
 			synchronized (mSync) {
@@ -1246,7 +1361,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 						Log.e(TAG, "==================mSupportedSize==============" + mSupportedSize);
 
 					int find_str_postion = mSupportedSize.indexOf("256x196");
-//					Log.e(TAG, "handleOpen: find_str_postion" +find_str_postion);
+					//					Log.e(TAG, "handleOpen: find_str_postion" +find_str_postion);
 					if (find_str_postion >= 0) {
 						mWidth = 256;
 						mHeight = 196;
@@ -1254,7 +1369,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 							Log.e(TAG, "handleOpen: 256*196 DEVICE ");
 					}
 					find_str_postion = mSupportedSize.indexOf("256x192");
-//					Log.e(TAG, "handleOpen: find_str_postion" +find_str_postion);
+					//					Log.e(TAG, "handleOpen: find_str_postion" +find_str_postion);
 					if (find_str_postion >= 0) {
 						mWidth = 256;
 						mHeight = 192;
@@ -1262,7 +1377,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 							Log.e(TAG, "handleOpen: 256*192 DEVICE ");
 					}
 					find_str_postion = mSupportedSize.indexOf("160x120");
-//					Log.e(TAG, "handleOpen: find_str_postion" +find_str_postion);
+					//					Log.e(TAG, "handleOpen: find_str_postion" +find_str_postion);
 					if (find_str_postion >= 0) {
 						mWidth = 160;
 						mHeight = 120;
@@ -1313,7 +1428,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 					mUVCCamera = null;
 				}
 				if (camera != null) {
-//					camera.stopPreview();
+					//					camera.stopPreview();
 					mIsPreviewing = false;
 					camera.destroy();
 					callOnClose();
@@ -1330,40 +1445,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 
 		}
 
-		//        private byte[] FrameData = new byte[640 * 512 * 4];
-		private final IFrameCallback mIFrameCallback = new IFrameCallback() {
-			@Override
-			public void onFrame (final ByteBuffer frameData) {
-				//Log.e(TAG, "mIFrameCallback ");
-				Log.e(TAG, "the frame frameData.capacity ==== " + frameData.capacity());//196608= 256*192*4 RGBA格式返回;
-				final MediaVideoBufferEncoder videoEncoder;
-				synchronized (mSync) {
-					videoEncoder = mVideoEncoder;
-				}
-				if (videoEncoder != null) {
-					videoEncoder.frameAvailableSoon();
-					videoEncoder.encode(frameData);
-				}
-				//                if (frameData != null){
-				//
-				////                    frameData.get(FrameData, 0, frameData.capacity());
-				//
-				//                    final MediaVideoBufferEncoder videoEncoder;
-				//                    synchronized (mSync) {
-				//                        videoEncoder = mVideoEncoder;
-				//                    }
-				//                    if (videoEncoder != null) {
-				//                        videoEncoder.frameAvailableSoon();
-				//                        videoEncoder.encode(frameData);
-				//                    }
-				//                }
-
-				//Log.e(TAG, "mIFrameCallback frameData[384*288*4/2]:"+ (int)FrameData[384*288*4/2]);
-				//Log.e(TAG, "mIFrameCallback frameData[384*288*4/2]:"+ (int)FrameData[384*288*4/2]);
-			}
-		};
-
-
 		public void handleStartPreview (final Object surface) {
 			//            Log.e(TAG, "handleStartPreview:mUVCCamera" + mUVCCamera + " mIsPreviewing:" + mIsPreviewing);
 			if (DEBUG)
@@ -1374,8 +1455,8 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 					return;
 				try {
 					//判断是否有 MeasureTempContainerView ,有的话设置 mFrameWidth 和 mFrameHeight
-					if (mContainerView.get()!=null){
-						mContainerView.get().setFrameWH(mWidth,mHeight);
+					if (mContainerView.get() != null) {
+						mContainerView.get().setFrameWH(mWidth, mHeight);
 					}
 
 					mUVCCamera.setPreviewSize(mWidth, mHeight, 1, 25, mPreviewMode, mBandwidthFactor, currentAndroidVersion);
@@ -1420,7 +1501,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 				// 温度回调 接口
 				ITemperatureCallback mTempCb = mWeakCameraView.get().getTemperatureCallback();
 				mUVCCamera.setTemperatureCallback(mTempCb);//将温度回调的对象  发送到底层
-//				mWeakCameraView.get().setTemperatureCbing(false);//测温开关
+				//				mWeakCameraView.get().setTemperatureCbing(false);//测温开关
 				mUVCCamera.setUVCStatusCallBack(iuvcStatusCallBack);
 
 				mUVCCamera.updateCameraParams();
@@ -1734,7 +1815,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 			}
 		}
 
-
 		public void handleSetArea (final Object area) {
 			//            if (DEBUG) Log.v(TAG_THREAD, "handleSetPalettePath:");
 			if (mUVCCamera != null) {
@@ -1777,18 +1857,17 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 			}
 		}
 
-
 		public void handleStartRecording (boolean isRecordAudio) {
-//			Log.e(TAG_THREAD, "handleStartRecording:");
+			//			Log.e(TAG_THREAD, "handleStartRecording:");
 			try {
 				if ((mUVCCamera == null) || (mMuxer != null) || (!isTemperaturing()))
 					return;
 				final MediaMuxerWrapper muxer = new MediaMuxerWrapper(".mp4");    // if you record audio only, ".m4a" is also OK.
 				MediaVideoBufferEncoder videoEncoder = null;
-//				Log.e(TAG_THREAD, " =================mEncoderType=========================    " + mEncoderType);
+				//				Log.e(TAG_THREAD, " =================mEncoderType=========================    " + mEncoderType);
 				switch (mEncoderType) {
 					case 1:    // for video capturing using MediaVideoEncoder
-//						Log.e(TAG_THREAD, "===========case 1:========================:");
+						//						Log.e(TAG_THREAD, "===========case 1:========================:");
 						new MediaVideoEncoder(muxer, mWeakCameraView.get().getWidth(), mWeakCameraView.get().getHeight(), mMediaEncoderListener);
 						break;
 					case 2:    // for video capturing using MediaVideoBufferEncoder
@@ -1801,13 +1880,13 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 				}
 				if (isRecordAudio) {
 					//for audio capturing
-//					Log.e(TAG, "=============new MediaAudioEncoder=========== ");
+					//					Log.e(TAG, "=============new MediaAudioEncoder=========== ");
 					new MediaAudioEncoder(muxer, mMediaEncoderListener);
 				}
 				muxer.prepare();
 				muxer.startRecording();
 				if (videoEncoder != null) {
-//					Log.e(TAG, "setFrameCallback ");
+					//					Log.e(TAG, "setFrameCallback ");
 					//                    mUVCCamera.setFrameCallback(mIFrameCallback, UVCCamera.PIXEL_FORMAT_YUV);
 				}
 				synchronized (mSync) {
@@ -1817,9 +1896,10 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 				callOnStartRecording();
 			} catch (final IOException e) {
 				callOnError(e);
-//				Log.e(TAG, "startCapture error =====:", e);
+				//				Log.e(TAG, "startCapture error =====:", e);
 			}
 		}
+
 		public void handleSetPalette (int paletteCode) {
 			//            if (mTcpClient == null) {
 			//                return;
@@ -1852,6 +1932,11 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 			mWeakCameraView.get().setTemperatureCbing(true);
 		}
 
+		//        public void handleWatermarkOnOff(boolean isWatermaker) {
+		//            Log.e(TAG, "handleWatermarkOnOff isWatermaker: " + isWatermaker);
+		//            mWeakCameraView.get().watermarkOnOff(isWatermaker);
+		//        }
+
 		public void setVerifySn () {
 			if (mUVCCamera == null)
 				return;
@@ -1863,11 +1948,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 				return;
 			mWeakCameraView.get().relayout(rotate);
 		}
-
-		//        public void handleWatermarkOnOff(boolean isWatermaker) {
-		//            Log.e(TAG, "handleWatermarkOnOff isWatermaker: " + isWatermaker);
-		//            mWeakCameraView.get().watermarkOnOff(isWatermaker);
-		//        }
 
 		public void handleTempShowOnOff (boolean isTempShow) {
 			Log.e(TAG, "handleTempShowOnOff isTempShow: " + isTempShow);
@@ -1979,49 +2059,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 			}
 		}
 
-
-		MediaScannerConnection.OnScanCompletedListener ScanCompletedListener = new MediaScannerConnection.OnScanCompletedListener() {
-			@Override
-			public void onScanCompleted (String path, Uri uri) {
-					/*	final Activity parent = mWeakParent.get();
-						final boolean released = (mHandler == null) || mHandler.mReleased;
-						if (parent != null && parent.getApplicationContext() != null) {
-							if (released || parent.isDestroyed()) {
-								handleRelease();
-							}
-							if(mIsTemperaturing) {
-								String[] SplitArray=path.split("\\.");
-								String NewPath = SplitArray[0]+"IR.png";
-								try {
-									PngUtil.wirteByteArrayToPng(path, ByteTemperatureData, NewPath);
-										try {
-											MediaScannerConnection.scanFile(parent.getApplicationContext(), new String[]{ NewPath }, null, null);
-										} catch (final Exception e) {
-										}
-								} catch (final Exception e) {
-									Log.e(TAG, "handleUpdateMedia wirteByteArrayToPng:", e);
-								}
-								File OldPhoto=new File(path);
-								if(OldPhoto.isFile() && OldPhoto.exists()) {
-									Boolean succeedDelete = OldPhoto.delete();
-									if(succeedDelete){
-										try {
-											MediaScannerConnection.scanFile(parent.getApplicationContext(), new String[]{ path }, null, null);
-										} catch (final Exception e) {
-										}
-									}
-
-								}
-							}
-						} else {
-							Log.w(TAG, "MainActivity already destroyed");
-							// give up to add this movie to MediaStore now.
-							// Seeing this movie on Gallery app etc. will take a lot of time.
-							handleRelease();
-						}*/
-			}
-		};
-
 		public void handleRelease () {
 			if (DEBUG)
 				Log.v(TAG_THREAD, "handleRelease:mIsRecording=" + mIsRecording);
@@ -2034,58 +2071,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 			if (DEBUG)
 				Log.v(TAG_THREAD, "handleRelease:finished");
 		}
-
-		private final MediaEncoder.MediaEncoderListener mMediaEncoderListener = new MediaEncoder.MediaEncoderListener() {
-			@Override
-			public void onPrepared (final MediaEncoder encoder) {
-				if (DEBUG)
-					Log.e(TAG, "onPrepared:encoder=" + encoder);
-				Log.e(TAG, "onPrepared: mIsRecording:" + mIsRecording);
-				mIsRecording = true;
-				if (encoder instanceof MediaVideoEncoder)
-					try {
-						mWeakCameraView.get().setVideoEncoder((MediaVideoEncoder) encoder);
-					} catch (final Exception e) {
-						Log.e(TAG, "onPrepared:", e);
-					}
-				/*if (encoder instanceof MediaSurfaceEncoder)
-					try {
-						mWeakCameraView.get().setVideoEncoder((MediaSurfaceEncoder)encoder);
-						mUVCCamera.startCapture(((MediaSurfaceEncoder)encoder).getInputSurface());
-					} catch (final Exception e) {
-						Log.e(TAG, "onPrepared:", e);
-					}*/
-			}
-
-			@Override
-			public void onStopped (final MediaEncoder encoder) {
-				if (DEBUG)
-					Log.e(TAG_THREAD, "onStopped:encoder=" + encoder);
-				if ((encoder instanceof MediaVideoEncoder) || (encoder instanceof MediaSurfaceEncoder))
-					try {
-						mIsRecording = false;
-						final Activity parent = mWeakParent.get();
-						mWeakCameraView.get().setVideoEncoder(null);
-						//                        synchronized (mSync) {
-						//                            if (mUVCCamera != null) {
-						//                                Log.e(TAG, "onStopped:stopCapture ");
-						//                                mUVCCamera.stopCapture();
-						//                            }
-						//                        }
-						final String path = encoder.getOutputPath();
-						if (!TextUtils.isEmpty(path)) {
-							mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_MEDIA_UPDATE, path), 200);
-						} else {
-							final boolean released = (mHandler == null) || mHandler.mReleased;
-							if (released || parent == null || parent.isDestroyed()) {
-								handleRelease();
-							}
-						}
-					} catch (final Exception e) {
-						Log.e(TAG, "onPrepared:", e);
-					}
-			}
-		};
 
 		/**
 		 * prepare and load shutter sound for still image capturing

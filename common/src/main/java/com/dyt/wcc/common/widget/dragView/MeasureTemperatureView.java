@@ -3,7 +3,6 @@ package com.dyt.wcc.common.widget.dragView;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -21,14 +20,13 @@ public abstract class MeasureTemperatureView extends View {
 	public static final int MEASURE_VIEW_POINT     = 0;
 	public static final int MEASURE_VIEW_LINE      = 1;
 	public static final int MEASURE_VIEW_RECTANGLE = 2;
-
+	//与父布局间距
+	protected int   containerBorderLength = 0;
+	//绘制工具栏的paint
+	protected Paint toolsPaint;
 	public MeasureTemperatureView (Context context) {
 		super(context);
 	}
-	//与父布局间距
-	protected int containerBorderLength = 0;
-	//绘制工具栏的paint
-	protected Paint toolsPaint ;
 
 	public MeasureTemperatureView (Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
@@ -40,14 +38,6 @@ public abstract class MeasureTemperatureView extends View {
 
 	public MeasureTemperatureView (Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 		super(context, attrs, defStyleAttr, defStyleRes);
-	}
-
-	/**
-	 * 子类 业务操作的接口
-	 */
-	public interface ChildViewOperate {
-
-		void onAttachView2Parent ();
 	}
 
 	@Override
@@ -63,5 +53,13 @@ public abstract class MeasureTemperatureView extends View {
 	@Override
 	protected void onLayout (boolean changed, int left, int top, int right, int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
+	}
+
+	/**
+	 * 子类 业务操作的接口
+	 */
+	public interface ChildViewOperate {
+
+		void onAttachView2Parent ();
 	}
 }

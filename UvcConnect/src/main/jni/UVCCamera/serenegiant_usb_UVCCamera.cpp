@@ -282,7 +282,7 @@ static jbyteArray nativeGetByteArrayTemperaturePara(JNIEnv *env, jobject thiz,
     ENTER();
     UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
     jbyteArray array = (env)->NewByteArray(len);
-    //通过传入的长度分配了一个len字节的内存。也就是len个长度的char
+    //通过传入的长度分配了一个len字节的内存。也就是len个长度的char 128
     uint8_t *para = (uint8_t *) malloc(len * sizeof(uint8_t));//
     int status = 0;
     if (LIKELY(camera)) {

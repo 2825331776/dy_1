@@ -39,25 +39,26 @@ import java.util.Locale;
 
 
 public class MediaMuxerWrapper {
-	private static final boolean DEBUG = true;	// TODO set false on release
-	private static final String TAG = "MediaMuxerWrapper";
+	private static final boolean DEBUG = true;    // TODO set false on release
+	private static final String  TAG   = "MediaMuxerWrapper";
 
-	private static final String DIR_NAME = "DYTCamera";
-    private static final SimpleDateFormat mDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.CHINA);
-
-	private String mOutputPath;
-	private final MediaMuxer mMediaMuxer;	// API >= 18
-	private int mEncoderCount, mStatredCount;
-	private boolean mIsStarted;
+	private static final String           DIR_NAME        = "DYTCamera";
+	private static final SimpleDateFormat mDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.CHINA);
+	private final MediaMuxer mMediaMuxer;    // API >= 18
+	private       String     mOutputPath;
+	private       int        mEncoderCount, mStatredCount;
+	private boolean      mIsStarted;
 	private MediaEncoder mVideoEncoder, mAudioEncoder;
 
 	/**
 	 * Constructor
+	 *
 	 * @param ext extension of output file
 	 * @throws IOException
 	 */
-	public MediaMuxerWrapper(String ext) throws IOException {
-		if (TextUtils.isEmpty(ext)) ext = ".mp4";
+	public MediaMuxerWrapper (String ext) throws IOException {
+		if (TextUtils.isEmpty(ext))
+			ext = ".mp4";
 		try {
 			mOutputPath = getCaptureFile(Environment.DIRECTORY_DCIM, ext).toString();
 		} catch (final NullPointerException e) {
@@ -68,25 +69,55 @@ public class MediaMuxerWrapper {
 		mIsStarted = false;
 	}
 
-	public String getOutputPath() {
+	/**
+	 * generate output file
+	 *
+	 * @param type Environment.DIRECTORY_MOVIES / Environment.DIRECTORY_DCIM etc.
+	 * @param ext  .mp4(.m4a for audio) or .png
+	 * @return return null when this app has no writing permission to external storage.
+	 */
+	public static final File getCaptureFile (final String type, final String ext) {
+		final File dir = new File(Environment.getExternalStoragePublicDirectory(type), DIR_NAME);
+		Log.d(TAG, "path=" + dir.toString());
+		dir.mkdirs();
+		if (dir.canWrite()) {
+			return new File(dir, getDateTimeString() + ext);
+		}
+		return null;
+	}
+
+	/**
+	 * get current date and time as String
+	 *
+	 * @return
+	 */
+	public static final String getDateTimeString () {
+		final GregorianCalendar now = new GregorianCalendar();
+		return mDateTimeFormat.format(now.getTime());
+	}
+
+	public String getOutputPath () {
 		return mOutputPath;
 	}
 
-	public void prepare() throws IOException {
+	public void prepare () throws IOException {
 		if (mVideoEncoder != null)
 			mVideoEncoder.prepare();
 		if (mAudioEncoder != null)
 			mAudioEncoder.prepare();
 	}
 
-	public void startRecording() {
+	public void startRecording () {
 		if (mVideoEncoder != null)
 			mVideoEncoder.startRecording();
 		if (mAudioEncoder != null)
 			mAudioEncoder.startRecording();
 	}
 
-	public void stopRecording() {
+	//**********************************************************************
+	//**********************************************************************
+
+	public void stopRecording () {
 		if (mVideoEncoder != null)
 			mVideoEncoder.stopRecording();
 		mVideoEncoder = null;
@@ -95,25 +126,24 @@ public class MediaMuxerWrapper {
 		mAudioEncoder = null;
 	}
 
-	public synchronized boolean isStarted() {
+	public synchronized boolean isStarted () {
 		return mIsStarted;
 	}
 
-//**********************************************************************
-//**********************************************************************
 	/**
 	 * assign encoder to this calss. this is called from encoder.
+	 *
 	 * @param encoder instance of MediaVideoEncoder or MediaAudioEncoder
 	 */
-	/*package*/ void addEncoder(final MediaEncoder encoder) {
+	/*package*/ void addEncoder (final MediaEncoder encoder) {
 		if (encoder instanceof MediaVideoEncoder) {
 			if (mVideoEncoder != null)
 				throw new IllegalArgumentException("Video encoder already added.");
 			mVideoEncoder = encoder;
 		} else if (encoder instanceof MediaSurfaceEncoder) {
-				if (mVideoEncoder != null)
-					throw new IllegalArgumentException("Video encoder already added.");
-				mVideoEncoder = encoder;
+			if (mVideoEncoder != null)
+				throw new IllegalArgumentException("Video encoder already added.");
+			mVideoEncoder = encoder;
 		} else if (encoder instanceof MediaVideoBufferEncoder) {
 			if (mVideoEncoder != null)
 				throw new IllegalArgumentException("Video encoder already added.");
@@ -126,27 +156,34 @@ public class MediaMuxerWrapper {
 			throw new IllegalArgumentException("unsupported encoder");
 		mEncoderCount = (mVideoEncoder != null ? 1 : 0) + (mAudioEncoder != null ? 1 : 0);
 	}
+
 	/**
 	 * request start recording from encoder
+	 *
 	 * @return true when muxer is ready to write
 	 */
-	/*package*/ synchronized boolean start() {
-		if (DEBUG) Log.v(TAG,  "start:");
+	/*package*/
+	synchronized boolean start () {
+		if (DEBUG)
+			Log.v(TAG, "start:");
 		mStatredCount++;
 		if ((mEncoderCount > 0) && (mStatredCount == mEncoderCount)) {
 			mMediaMuxer.start();
 			mIsStarted = true;
 			notifyAll();
-			if (DEBUG) Log.v(TAG,  "MediaMuxer started:");
+			if (DEBUG)
+				Log.v(TAG, "MediaMuxer started:");
 		}
 		return mIsStarted;
 	}
 
 	/**
 	 * request stop recording from encoder when encoder received EOS
-	*/
-	/*package*/ synchronized void stop() {
-		if (DEBUG) Log.v(TAG,  "stop:mStatredCount=" + mStatredCount);
+	 */
+	/*package*/
+	synchronized void stop () {
+		if (DEBUG)
+			Log.v(TAG, "stop:mStatredCount=" + mStatredCount);
 		mStatredCount--;
 		if ((mEncoderCount > 0) && (mStatredCount <= 0)) {
 			try {
@@ -155,59 +192,41 @@ public class MediaMuxerWrapper {
 				Log.w(TAG, e);
 			}
 			mIsStarted = false;
-			if (DEBUG) Log.v(TAG,  "MediaMuxer stopped:");
+			if (DEBUG)
+				Log.v(TAG, "MediaMuxer stopped:");
 		}
 	}
 
+	//**********************************************************************
+	//**********************************************************************
+
 	/**
 	 * assign encoder to muxer
+	 *
 	 * @param format
 	 * @return minus value indicate error
 	 */
-	/*package*/ synchronized int addTrack(final MediaFormat format) {
+	/*package*/
+	synchronized int addTrack (final MediaFormat format) {
 		if (mIsStarted)
 			throw new IllegalStateException("muxer already started");
 		final int trackIx = mMediaMuxer.addTrack(format);
-		if (DEBUG) Log.i(TAG, "addTrack:trackNum=" + mEncoderCount + ",trackIx=" + trackIx + ",format=" + format);
+		if (DEBUG)
+			Log.i(TAG, "addTrack:trackNum=" + mEncoderCount + ",trackIx=" + trackIx + ",format=" + format);
 		return trackIx;
 	}
 
 	/**
 	 * write encoded data to muxer
+	 *
 	 * @param trackIndex
 	 * @param byteBuf
 	 * @param bufferInfo
 	 */
-	/*package*/ synchronized void writeSampleData(final int trackIndex, final ByteBuffer byteBuf, final MediaCodec.BufferInfo bufferInfo) {
+	/*package*/
+	synchronized void writeSampleData (final int trackIndex, final ByteBuffer byteBuf, final MediaCodec.BufferInfo bufferInfo) {
 		if (mStatredCount > 0)
 			mMediaMuxer.writeSampleData(trackIndex, byteBuf, bufferInfo);
 	}
-
-//**********************************************************************
-//**********************************************************************
-    /**
-     * generate output file
-     * @param type Environment.DIRECTORY_MOVIES / Environment.DIRECTORY_DCIM etc.
-     * @param ext .mp4(.m4a for audio) or .png
-     * @return return null when this app has no writing permission to external storage.
-     */
-    public static final File getCaptureFile(final String type, final String ext) {
-		final File dir = new File(Environment.getExternalStoragePublicDirectory(type), DIR_NAME);
-		Log.d(TAG, "path=" + dir.toString());
-		dir.mkdirs();
-        if (dir.canWrite()) {
-        	return new File(dir, getDateTimeString() + ext);
-        }
-    	return null;
-    }
-
-    /**
-     * get current date and time as String
-     * @return
-     */
-    public static final String getDateTimeString() {
-    	final GregorianCalendar now = new GregorianCalendar();
-    	return mDateTimeFormat.format(now.getTime());
-    }
 
 }

@@ -40,36 +40,36 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 有焦点的时候 哪个子View获得了，  否则都没有焦点  带焦点的控件有工具栏
  */
 public class MeasureTempContainerView extends RelativeLayout {
-	private MyCustomRangeSeekBar mSeekBar;
-
+	private static final int UPDATE_TEMP_DATA = 1;
+	private static final boolean isDebug       = true;
+	private static final String  TAG           = "MyDragContainer";
+	private static final int POINT_MAX_NUMBER     = 3;
+	private static final int LINE_MAX_NUMBER      = 3;
+	private static final int RECTANGLE_MAX_NUMBER = 3;
+	private static final int       TO_UNSELECT = 3;
 	//点击工具栏之后的控制 响应的事件。删除的事件。
 	public static int perToolsWidthHeightSet = 33;//每个工具栏的宽高
 	public static int perToolsMargin         = 1;//每个工具栏的margin
-
-	private static final int UPDATE_TEMP_DATA = 1;
-
-	private static final boolean isDebug       = true;
-	private static final String  TAG           = "MyDragContainer";
+	/**
+	 * 温度单位 String
+	 * tempSuffixList
+	 * "℃","℉","K"
+	 */
+	public static String[] tempSuffixList = new String[]{"℃", "℉", "K"};
+	private MyCustomRangeSeekBar mSeekBar;
+	//	private Bitmap                             pointBt, maxTempBt, minTempBt;//三张图片 ：单点温度、线和矩阵的 最高、最低温的图片
 	private              boolean isControlItem = false;//是否是操作子View
 	private              boolean isConnect     = false;
-
 	private boolean isRotate = false;
-
 	//	private CopyOnWriteArrayList<MyMoveWidget>                 highLowTempLists;//高温 最低温，中心点温度 集合
 	//	private MyMoveWidget selectChild;
 	//	private TempWidgetObj selectChildData;
 	private CopyOnWriteArrayList<MeasureEntity>           userAddData;
 	private CopyOnWriteArrayList<MeasureTempSpecificView> userAddView;
-	//	private Bitmap                             pointBt, maxTempBt, minTempBt;//三张图片 ：单点温度、线和矩阵的 最高、最低温的图片
-
 	private float WRatio, HRatio;//相机数据大小  与 显示屏幕大小的比值。
-
-
 	private int                    drawTempMode    = -1;
 	private WeakReference<Context> mContext;
 	private float                  mDataNearByUnit = 0;// 距离数据源 的 单位，有多少个单位，以 矩形 为的感应区为一个单位
-
-
 	/**
 	 * temperatureData[0]=centerTmp;
 	 * temperatureData[1]=(float)maxx1;
@@ -83,37 +83,22 @@ public class MeasureTempContainerView extends RelativeLayout {
 	 * temperatureData[9]=point3Tmp;
 	 */
 	private float[] tempSource;
-
 	private              int pointNum             = 0;
 	private              int lineNum              = 0;
 	private              int recNum               = 0;
-	private static final int POINT_MAX_NUMBER     = 3;
-	private static final int LINE_MAX_NUMBER      = 3;
-	private static final int RECTANGLE_MAX_NUMBER = 3;
-
 	private int screenWidth, screenHeight;//屏幕的宽高
 	private int mFrameWidth = 0, mFrameHeight = 0;
 	private int startPressX, startPressY, endPressX, endPressY;
 	private int addWidgetMarginX, addWidgetMarginY;
 	private int minAddWidgetWidth, minAddWidgetHeight;//添加控件的最小宽高  约束添加的线和矩形
-
 	private boolean enabled = true;//设置是否可用,为false时不能添加view 不能进行任何操作
-
 	//温度数值的模式。0摄氏度， 1华氏度， 2开氏度
 	private       int      tempSuffixMode = 0;
-	/**
-	 * 温度单位 String
-	 * tempSuffixList
-	 * "℃","℉","K"
-	 */
-	public static String[] tempSuffixList = new String[]{"℃", "℉", "K"};
-
 	//绘制OTG提示文字
 	private TextPaint testPaint;
 	private int       OTGTextLength = 0;
-	private Rect      OTGRect;
 	//	private StaticLayout staticLayout ;
-
+	private Rect      OTGRect;
 	private float                   valueHighTempAlarm  = 0.0f;//设置最高温数值
 	private boolean                 isAboveHighTemp     = false;//是否超温
 	private boolean                 highTempAlarmToggle = false;
@@ -123,31 +108,124 @@ public class MeasureTempContainerView extends RelativeLayout {
 	private MediaPlayer             audioPlayer;
 	private long                    lastAboveTime       = 0;
 
-	//屏幕宽度的三分之二
-	private int partScreenWidth = 0;
-
 
 	//	protected void setBitMap(Bitmap point,Bitmap max , Bitmap min){
 	//		pointBt = point;maxTempBt = max;minTempBt = min;
 	//		invalidate();
 	//	}
+	//屏幕宽度的三分之二
+	private int partScreenWidth = 0;
+	private OnChildToolsClickListener mChildToolsClickListener;
+	private              Timer     mTimer      = null;
+	private              TimerTask mUnSelect_TimeTask;
+	private              boolean   lastMove    = false;
+	private              boolean   hasSelect   = false;
+	private              Handler   mHandler    = new Handler(new Handler.Callback() {
+		@Override
+		public boolean handleMessage (@NonNull Message msg) {
+			switch (msg.what) {
+				case TO_UNSELECT:
+					setAllChildUnSelect();
+					hasSelect = false;
+					break;
+			}
+			return true;
+		}
+	});
+	/**
+	 * 新增测温模式时：绘制 测温线 或 矩形 时，在UVCCameraTextureView里 绘制提示线
+	 */
+	private onAddChildDataListener addChildDataListener;
+	//提示线 对象
+	private DrawLineRectHint       drawHint;
+	private Handler handler = new Handler(new Handler.Callback() {
+		@Override
+		public boolean handleMessage (@NonNull Message msg) {
+			switch (msg.what) {
+				case UPDATE_TEMP_DATA:
+					tempSource = (float[]) msg.obj;
+					// 刷新 底层绘制 数据源
+					if (userAddData.size() != 0) {
+						for (int i = 0; i < userAddData.size(); i++) {
+							//todo 更新每一个的 温度信息。
+							if (userAddData.get(i).getType() == 1) {//点
+								float temp = updatePointTemp(userAddData.get(i).getPointTemp().getStartPointX(), userAddData.get(i).getPointTemp().getStartPointY());
+								userAddData.get(i).getPointTemp().setTemp(getTempStrByMode(temp));
+							} else {//线及其矩形
+								updateLRTemp(userAddData.get(i).getOtherTemp(), userAddData.get(i).getType());
+							}
+							userAddView.get(i).invalidate();
+						}
+					}
+					isAboveHighTemp = false;
+					//先判断添加的view是否超温 ， 否则判断全局是否超温
+					if (userAddData.size() > 0) {
+						for (int i = 0; i < userAddData.size(); i++) {
+							if (userAddData.get(i).getType() == 1) {
+								isAboveHighTemp = isAboveHighTemp | (updatePointTemp(userAddData.get(i).getPointTemp().getStartPointX(), userAddData.get(i).getPointTemp().getStartPointY()) > valueHighTempAlarm);
+							} else {
+								isAboveHighTemp = isAboveHighTemp | (tempSource[(int) ((userAddData.get(i).getOtherTemp().getMaxTempX() * WRatio) + ((userAddData.get(i).getOtherTemp().getMaxTempY() * HRatio) * mFrameWidth) + 10)] > valueHighTempAlarm);
+							}
+						}
+					} else {
+						//判定超温报警是否超过了额定温度，每帧刷新
+						isAboveHighTemp = tempSource[3] >= valueHighTempAlarm;
+					}
+					//超温警告 打开了开关，并且超温了。没帧刷新数据
+					if (isAboveHighTemp && highTempAlarmToggle) {
+						lastAboveTime = System.currentTimeMillis();//最后一次播放的时间
+						if (audioPlayer != null && !audioPlayer.isPlaying()) {
+							audioPlayer.start();
+						}
+						//					Log.e(TAG, "handleMessage: " + audioPlayer.isPlaying());
+					} else {//一段时间（X）后停止音乐的播放，如果音乐是在播放，则停止。
+						if (((System.currentTimeMillis() - lastAboveTime) / 1000) > 3 && audioPlayer != null && audioPlayer.isPlaying()) {//时间可以更改
+							audioPlayer.pause();
+						}
+					}
+					//				invalidate();//重新绘制
+
+					if (mSeekBar != null) {//更新滑动温度条
+						mSeekBar.Update(tempSource[3], tempSource[6]);
+					}
+					//				//刷新高低温追踪的数据
+					//				if (highLowTempLists.size()!=0){
+					//					for (MyMoveWidget myMoveWidget : highLowTempLists){
+					//						if (myMoveWidget.getView().getPointTemp().getType() == 1){
+					//							myMoveWidget.getView().getPointTemp().setStartPointX((int) getXByWRatio(tempSource[1]));
+					//							myMoveWidget.getView().getPointTemp().setStartPointY((int) getYByHRatio(tempSource[2]));
+					//							myMoveWidget.getView().getPointTemp().setTemp(getTempStrByMode(tempSource[3]));
+					//						}
+					//						if (myMoveWidget.getView().getPointTemp().getType()==2){
+					//							myMoveWidget.getView().getPointTemp().setStartPointX((int) getXByWRatio(tempSource[4]));
+					//							myMoveWidget.getView().getPointTemp().setStartPointY((int) getYByHRatio(tempSource[5]));
+					//							myMoveWidget.getView().getPointTemp().setTemp(getTempStrByMode(tempSource[6]));
+					//						}
+					//						if (myMoveWidget.getView().getPointTemp().getType() == 3){
+					//							myMoveWidget.getView().getPointTemp().setTemp(getTempStrByMode(tempSource[0]));
+					//						}
+					//						myMoveWidget.requestLayout();
+					//						myMoveWidget.invalidate();
+					//					}
+					//				}
+
+					//刷新已选 子View的数据
+					//					if (selectChild != null){
+					//						if (selectChildData.getType() ==1){
+					//							float temp = updatePointTemp(selectChildData.getPointTemp().getStartPointX(),selectChildData.getPointTemp().getStartPointY());
+					//							selectChildData.getPointTemp().setTemp(getTempStrByMode(temp));
+					//						}else {
+					//							updateLRTemp(selectChildData.getOtherTemp(),selectChildData.getType());
+					//						}
+					//						selectChild.requestLayout();
+					//					}
 
 
-	public boolean isConnect () {
-		return isConnect;
-	}
-
-	public void setConnect (boolean connect) {
-		isConnect = connect;
-	}
-
-	//实时刷新本地的温度数据
-	public void upDateTemp (float[] date) {
-		Message message = Message.obtain();
-		message.what = UPDATE_TEMP_DATA;
-		message.obj = date;
-		handler.sendMessage(message);
-	}
+					break;
+			}
+			return false;
+		}
+	});
 
 	public MeasureTempContainerView (Context context) {
 		this(context, null);
@@ -161,6 +239,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 		this(context, attrs, defStyleAttr, 0);
 	}
 
+
 	public MeasureTempContainerView (Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 		super(context, attrs, defStyleAttr, defStyleRes);
 		if (isDebug)
@@ -168,6 +247,59 @@ public class MeasureTempContainerView extends RelativeLayout {
 		mContext = new WeakReference<>(context);
 		initAttrs();
 		initView();
+	}
+
+	public boolean isConnect () {
+		return isConnect;
+	}
+
+	public void setConnect (boolean connect) {
+		isConnect = connect;
+	}
+
+	//	private OnUserCRUDListener onUserCRUDListener;
+	//
+	//	public OnUserCRUDListener getUserCRUDListener () {
+	//		return onUserCRUDListener;
+	//	}
+	//
+	//	public void setUserCRUDListener (OnUserCRUDListener userCRUDListener) {
+	//		this.onUserCRUDListener = userCRUDListener;
+	//	}
+
+	//	/**
+	//	 * 用户添加的 子View 添加，删除，查找，移动，监听器
+	//	 */
+	//	public interface OnUserCRUDListener{
+	//		/**
+	//		 * 添加 子测温数据
+	//		 * @return
+	//		 */
+	//		boolean onAddChildView();
+	//
+	//		/**
+	//		 * 删除 子测温数据
+	//		 * @return
+	//		 */
+	//		boolean onDeleteChildView();
+	//		/**
+	//		 * 获取所有的 子测温数据
+	//		 * @return
+	//		 */
+	//		void onGetAllChildView();
+	//		/**
+	//		 * 子测温数据 更改
+	//		 * @return
+	//		 */
+	//		void onChildViewChanged();
+	//	}
+
+	//实时刷新本地的温度数据
+	public void upDateTemp (float[] date) {
+		Message message = Message.obtain();
+		message.what = UPDATE_TEMP_DATA;
+		message.obj = date;
+		handler.sendMessage(message);
 	}
 
 	public void setRotate (boolean rotate) {
@@ -231,7 +363,6 @@ public class MeasureTempContainerView extends RelativeLayout {
 		return areaData;
 	}
 
-
 	public void setHighTempAlarmToggle (boolean highTempAlarmToggle) {
 		this.highTempAlarmToggle = highTempAlarmToggle;
 	}
@@ -278,67 +409,6 @@ public class MeasureTempContainerView extends RelativeLayout {
 		}
 	}
 
-	//	private OnUserCRUDListener onUserCRUDListener;
-	//
-	//	public OnUserCRUDListener getUserCRUDListener () {
-	//		return onUserCRUDListener;
-	//	}
-	//
-	//	public void setUserCRUDListener (OnUserCRUDListener userCRUDListener) {
-	//		this.onUserCRUDListener = userCRUDListener;
-	//	}
-
-	//	/**
-	//	 * 用户添加的 子View 添加，删除，查找，移动，监听器
-	//	 */
-	//	public interface OnUserCRUDListener{
-	//		/**
-	//		 * 添加 子测温数据
-	//		 * @return
-	//		 */
-	//		boolean onAddChildView();
-	//
-	//		/**
-	//		 * 删除 子测温数据
-	//		 * @return
-	//		 */
-	//		boolean onDeleteChildView();
-	//		/**
-	//		 * 获取所有的 子测温数据
-	//		 * @return
-	//		 */
-	//		void onGetAllChildView();
-	//		/**
-	//		 * 子测温数据 更改
-	//		 * @return
-	//		 */
-	//		void onChildViewChanged();
-	//	}
-
-	public interface OnChildToolsClickListener {
-		/**
-		 * 子View 工具栏被点击回调函数
-		 *
-		 * @param childObj 被点击的子View 数据源
-		 * @param position 被点击工具栏的 坐标（从0开始）
-		 */
-		void onChildToolsClick (MeasureEntity childObj, int position);
-
-		/**
-		 * 数据源中  矩形的数量发生变化回调
-		 */
-		void onRectChangedListener ();
-
-		/**
-		 * 清除所有数据源 回调
-		 */
-		void onClearAllListener ();
-
-		void onSetParentUnselect ();
-	}
-
-	private OnChildToolsClickListener mChildToolsClickListener;
-
 	public void setChildToolsClickListener (OnChildToolsClickListener childToolsClickListener) {
 		this.mChildToolsClickListener = childToolsClickListener;
 	}
@@ -360,7 +430,6 @@ public class MeasureTempContainerView extends RelativeLayout {
 		minAddWidgetWidth = minAddWidgetHeight = DensityUtil.dp2px(mContext.get(), 70);//最小为50个dp
 		mDataNearByUnit = DensityUtil.dp2px(mContext.get(), 5);
 	}
-
 
 	/**
 	 * @param canvas 画布
@@ -384,7 +453,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 			}
 			oneLineStr = sb.toString();
 		}
-//		Log.e(TAG, "lineFeed: ===============oneLineStr.length()==" + oneLineStr.length() +" str.length()======" + str.length());
+		//		Log.e(TAG, "lineFeed: ===============oneLineStr.length()==" + oneLineStr.length() +" str.length()======" + str.length());
 
 		testPaint.getTextBounds(oneLineStr, 0, oneLineStr.length(), OTGRect);
 		OTGTextLength = OTGRect.width();
@@ -392,9 +461,9 @@ public class MeasureTempContainerView extends RelativeLayout {
 		canvas.drawText(oneLineStr, (screenWidth - OTGTextLength) / 2.0f, heigth, testPaint);
 		//计算剩下的汉字
 		String lastStr = "";
-		if ( str.length()>= oneLineStr.length()){
+		if (str.length() >= oneLineStr.length()) {
 			lastStr = str.substring(oneLineStr.length(), str.length());
-		}else {
+		} else {
 			lastStr = str.substring(str.length(), str.length());
 		}
 		if (lastStr.length() > 0) {
@@ -496,7 +565,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 		if (tempSource != null && tempSource.length > 10) {
 			int index = (10 + (int) (y * HRatio) * mFrameWidth + (int) (x * WRatio));
 			return tempSource[index];
-		}else {
+		} else {
 			return 0.0f;
 		}
 	}
@@ -660,6 +729,61 @@ public class MeasureTempContainerView extends RelativeLayout {
 
 		return true;
 	}
+
+	/**
+	 * 通过点击事件，得到位置上是否有子View。
+	 * @param event 点击事件
+	 * @return 是否有子View
+	 */
+	//	private boolean getEventInChild(MotionEvent event){
+	//		boolean isOperate = false;
+	//		for (MyMoveWidget child : userAdd){
+	//			isOperate = isOperate | (event.getX() >= child.getLeft() && event.getX() <= child.getRight()
+	//					&& event.getY() >= child.getTop() && event.getY() <= child.getBottom());
+	//		}
+	//		return isOperate;
+	//	}
+
+	//	/**
+	//	 * 判断是否有选中状态的子View
+	//	 * @return 是否有选中的子View
+	//	 */
+	//	private boolean hasSelectChild(MotionEvent event){
+	//		boolean hasSelectChild = false;
+	//		for (MyMoveWidget child : userAdd){
+	//			hasSelectChild = hasSelectChild|child.isSelectedState();
+	//		}
+	//		return hasSelectChild;
+	//	}
+
+
+	//	private MyMoveWidget getSelectChildByEvent(MotionEvent event){
+	//		MyMoveWidget children = null;
+	//		for (MyMoveWidget child : userAdd){
+	//			if (child.isSelectedState() && (event.getX() >= child.getLeft() && event.getX() <= child.getRight()
+	//					&& event.getY() >= child.getTop() && event.getY() <= child.getBottom())){
+	//				children = child;
+	//			}
+	//		}
+	//		return children;
+	//	}
+
+	//	/**
+	//	 * 通过点击的坐标。得到选中的子View（返回的是最后一个此范围的控件。效果不对）
+	//	 * @param event
+	//	 * @return
+	//	 */
+	//	private MyMoveWidget getSelectChildByMotionEvent(MotionEvent event){
+	//		MyMoveWidget select = null;
+	//		for (MyMoveWidget child : userAdd){
+	//
+	//			if (event.getX() >= child.getLeft() && event.getX() <= child.getRight()
+	//					&& event.getY() >= child.getTop() && event.getY() <= child.getBottom()){
+	//				select = child;
+	//			}
+	//		}
+	//		return select;
+	//	}
 
 	/**
 	 * 单纯的获取最高 最低温度值，根据设置的温度 单位 K F C。
@@ -849,61 +973,6 @@ public class MeasureTempContainerView extends RelativeLayout {
 	}
 
 	/**
-	 * 通过点击事件，得到位置上是否有子View。
-	 * @param event 点击事件
-	 * @return 是否有子View
-	 */
-	//	private boolean getEventInChild(MotionEvent event){
-	//		boolean isOperate = false;
-	//		for (MyMoveWidget child : userAdd){
-	//			isOperate = isOperate | (event.getX() >= child.getLeft() && event.getX() <= child.getRight()
-	//					&& event.getY() >= child.getTop() && event.getY() <= child.getBottom());
-	//		}
-	//		return isOperate;
-	//	}
-
-	//	/**
-	//	 * 判断是否有选中状态的子View
-	//	 * @return 是否有选中的子View
-	//	 */
-	//	private boolean hasSelectChild(MotionEvent event){
-	//		boolean hasSelectChild = false;
-	//		for (MyMoveWidget child : userAdd){
-	//			hasSelectChild = hasSelectChild|child.isSelectedState();
-	//		}
-	//		return hasSelectChild;
-	//	}
-
-
-	//	private MyMoveWidget getSelectChildByEvent(MotionEvent event){
-	//		MyMoveWidget children = null;
-	//		for (MyMoveWidget child : userAdd){
-	//			if (child.isSelectedState() && (event.getX() >= child.getLeft() && event.getX() <= child.getRight()
-	//					&& event.getY() >= child.getTop() && event.getY() <= child.getBottom())){
-	//				children = child;
-	//			}
-	//		}
-	//		return children;
-	//	}
-
-	//	/**
-	//	 * 通过点击的坐标。得到选中的子View（返回的是最后一个此范围的控件。效果不对）
-	//	 * @param event
-	//	 * @return
-	//	 */
-	//	private MyMoveWidget getSelectChildByMotionEvent(MotionEvent event){
-	//		MyMoveWidget select = null;
-	//		for (MyMoveWidget child : userAdd){
-	//
-	//			if (event.getX() >= child.getLeft() && event.getX() <= child.getRight()
-	//					&& event.getY() >= child.getTop() && event.getY() <= child.getBottom()){
-	//				select = child;
-	//			}
-	//		}
-	//		return select;
-	//	}
-
-	/**
 	 * 按下的事件点 是否在选中的控件中
 	 * 事件在 已选的框内，则越过所有事件 直接给子View消费事件。
 	 */
@@ -949,6 +1018,8 @@ public class MeasureTempContainerView extends RelativeLayout {
 		return result;
 	}
 
+	//	private boolean pressSelectNotUp = false ; // 按下选中，没有弹起
+
 	@Override
 	public boolean dispatchTouchEvent (MotionEvent ev) {
 		if (!enabled) {
@@ -984,24 +1055,6 @@ public class MeasureTempContainerView extends RelativeLayout {
 		}
 		return super.dispatchTouchEvent(ev);
 	}
-
-	private              Timer     mTimer      = null;
-	private              TimerTask mUnSelect_TimeTask;
-	private static final int       TO_UNSELECT = 3;
-	private              Handler   mHandler    = new Handler(new Handler.Callback() {
-		@Override
-		public boolean handleMessage (@NonNull Message msg) {
-			switch (msg.what) {
-				case TO_UNSELECT:
-					setAllChildUnSelect();
-					hasSelect = false;
-					break;
-			}
-			return true;
-		}
-	});
-	private              boolean   lastMove    = false;
-	private              boolean   hasSelect   = false;
 
 	/**
 	 * 分发的条件：当前事件 是否在子View集合内？或已选中子View中？或数据源的感应区？（在感应区时：分发给子View去 本容器添加子View，TextureView移除此View）。
@@ -1082,23 +1135,6 @@ public class MeasureTempContainerView extends RelativeLayout {
 		}
 	}
 
-	//	private boolean pressSelectNotUp = false ; // 按下选中，没有弹起
-
-	/**
-	 * 选择绘制模式后，去绘制提示线的 监听器。
-	 */
-	public interface onAddChildDataListener {
-		/**
-		 * 移动事件回调
-		 */
-		void onIsEventActionMove (DrawLineRectHint hint);
-
-		/**
-		 * 弹起时间回调。取消绘制提示线
-		 */
-		void onIsEventActionUp (DrawLineRectHint hint);
-	}
-
 	public onAddChildDataListener getAddChildDataListener () {
 		return addChildDataListener;
 	}
@@ -1107,13 +1143,6 @@ public class MeasureTempContainerView extends RelativeLayout {
 		this.addChildDataListener = addChildDataListener;
 		drawHint = new DrawLineRectHint();
 	}
-
-	/**
-	 * 新增测温模式时：绘制 测温线 或 矩形 时，在UVCCameraTextureView里 绘制提示线
-	 */
-	private onAddChildDataListener addChildDataListener;
-	//提示线 对象
-	private DrawLineRectHint       drawHint;
 
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
@@ -1212,93 +1241,41 @@ public class MeasureTempContainerView extends RelativeLayout {
 		}
 	}
 
+	public interface OnChildToolsClickListener {
+		/**
+		 * 子View 工具栏被点击回调函数
+		 *
+		 * @param childObj 被点击的子View 数据源
+		 * @param position 被点击工具栏的 坐标（从0开始）
+		 */
+		void onChildToolsClick (MeasureEntity childObj, int position);
 
-	private Handler handler = new Handler(new Handler.Callback() {
-		@Override
-		public boolean handleMessage (@NonNull Message msg) {
-			switch (msg.what) {
-				case UPDATE_TEMP_DATA:
-					tempSource = (float[]) msg.obj;
-					// 刷新 底层绘制 数据源
-					if (userAddData.size() != 0) {
-						for (int i = 0; i < userAddData.size(); i++) {
-							//todo 更新每一个的 温度信息。
-							if (userAddData.get(i).getType() == 1) {//点
-								float temp = updatePointTemp(userAddData.get(i).getPointTemp().getStartPointX(), userAddData.get(i).getPointTemp().getStartPointY());
-								userAddData.get(i).getPointTemp().setTemp(getTempStrByMode(temp));
-							} else {//线及其矩形
-								updateLRTemp(userAddData.get(i).getOtherTemp(), userAddData.get(i).getType());
-							}
-							userAddView.get(i).invalidate();
-						}
-					}
-					isAboveHighTemp = false;
-					//先判断添加的view是否超温 ， 否则判断全局是否超温
-					if (userAddData.size() > 0) {
-						for (int i = 0; i < userAddData.size(); i++) {
-							if (userAddData.get(i).getType() == 1) {
-								isAboveHighTemp = isAboveHighTemp | (updatePointTemp(userAddData.get(i).getPointTemp().getStartPointX(), userAddData.get(i).getPointTemp().getStartPointY()) > valueHighTempAlarm);
-							} else {
-								isAboveHighTemp = isAboveHighTemp | (tempSource[(int) ((userAddData.get(i).getOtherTemp().getMaxTempX() * WRatio) + ((userAddData.get(i).getOtherTemp().getMaxTempY() * HRatio) * mFrameWidth) + 10)] > valueHighTempAlarm);
-							}
-						}
-					} else {
-						//判定超温报警是否超过了额定温度，每帧刷新
-						isAboveHighTemp = tempSource[3] >= valueHighTempAlarm;
-					}
-					//超温警告 打开了开关，并且超温了。没帧刷新数据
-					if (isAboveHighTemp && highTempAlarmToggle) {
-						lastAboveTime = System.currentTimeMillis();//最后一次播放的时间
-						if (audioPlayer != null && !audioPlayer.isPlaying()) {
-							audioPlayer.start();
-						}
-						//					Log.e(TAG, "handleMessage: " + audioPlayer.isPlaying());
-					} else {//一段时间（X）后停止音乐的播放，如果音乐是在播放，则停止。
-						if (((System.currentTimeMillis() - lastAboveTime) / 1000) > 3 && audioPlayer != null && audioPlayer.isPlaying()) {//时间可以更改
-							audioPlayer.pause();
-						}
-					}
-					//				invalidate();//重新绘制
+		/**
+		 * 数据源中  矩形的数量发生变化回调
+		 */
+		void onRectChangedListener ();
 
-					if (mSeekBar != null) {//更新滑动温度条
-						mSeekBar.Update(tempSource[3], tempSource[6]);
-					}
-					//				//刷新高低温追踪的数据
-					//				if (highLowTempLists.size()!=0){
-					//					for (MyMoveWidget myMoveWidget : highLowTempLists){
-					//						if (myMoveWidget.getView().getPointTemp().getType() == 1){
-					//							myMoveWidget.getView().getPointTemp().setStartPointX((int) getXByWRatio(tempSource[1]));
-					//							myMoveWidget.getView().getPointTemp().setStartPointY((int) getYByHRatio(tempSource[2]));
-					//							myMoveWidget.getView().getPointTemp().setTemp(getTempStrByMode(tempSource[3]));
-					//						}
-					//						if (myMoveWidget.getView().getPointTemp().getType()==2){
-					//							myMoveWidget.getView().getPointTemp().setStartPointX((int) getXByWRatio(tempSource[4]));
-					//							myMoveWidget.getView().getPointTemp().setStartPointY((int) getYByHRatio(tempSource[5]));
-					//							myMoveWidget.getView().getPointTemp().setTemp(getTempStrByMode(tempSource[6]));
-					//						}
-					//						if (myMoveWidget.getView().getPointTemp().getType() == 3){
-					//							myMoveWidget.getView().getPointTemp().setTemp(getTempStrByMode(tempSource[0]));
-					//						}
-					//						myMoveWidget.requestLayout();
-					//						myMoveWidget.invalidate();
-					//					}
-					//				}
+		/**
+		 * 清除所有数据源 回调
+		 */
+		void onClearAllListener ();
 
-					//刷新已选 子View的数据
-					//					if (selectChild != null){
-					//						if (selectChildData.getType() ==1){
-					//							float temp = updatePointTemp(selectChildData.getPointTemp().getStartPointX(),selectChildData.getPointTemp().getStartPointY());
-					//							selectChildData.getPointTemp().setTemp(getTempStrByMode(temp));
-					//						}else {
-					//							updateLRTemp(selectChildData.getOtherTemp(),selectChildData.getType());
-					//						}
-					//						selectChild.requestLayout();
-					//					}
+		void onSetParentUnselect ();
+	}
 
 
-					break;
-			}
-			return false;
-		}
-	});
+	/**
+	 * 选择绘制模式后，去绘制提示线的 监听器。
+	 */
+	public interface onAddChildDataListener {
+		/**
+		 * 移动事件回调
+		 */
+		void onIsEventActionMove (DrawLineRectHint hint);
+
+		/**
+		 * 弹起时间回调。取消绘制提示线
+		 */
+		void onIsEventActionUp (DrawLineRectHint hint);
+	}
 }

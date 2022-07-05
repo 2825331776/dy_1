@@ -2,18 +2,20 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <corners android:radius="@dimen/dimen_5dp"/>
-    <solid android:color="@color/bg_preview_right"/>
-    <stroke android:color="@color/bg_preview_left_cutoff_rule"
-        android:width="1px"/>
+    <corners android:radius="@dimen/dimen_5dp" />
+    <solid android:color="@color/bg_preview_right" />
+    <stroke
+        android:width="1px"
+        android:color="@color/bg_preview_left_cutoff_rule" />
 
-<!--     android:paddingLeft="@dimen/dimen_20dp"
-        android:paddingRight="@dimen/dimen_20dp"
-        android:paddingTop="@dimen/dimen_20dp"
-        android:paddingBottom="@dimen/dimen_10dp"-->
-    <padding android:top="@dimen/dimen_20dp"
+    <!--     android:paddingLeft="@dimen/dimen_20dp"
+            android:paddingRight="@dimen/dimen_20dp"
+            android:paddingTop="@dimen/dimen_20dp"
+            android:paddingBottom="@dimen/dimen_10dp"-->
+    <padding
+        android:bottom="@dimen/dimen_15dp"
         android:left="@dimen/dimen_20dp"
         android:right="@dimen/dimen_20dp"
-        android:bottom="@dimen/dimen_15dp"/>
+        android:top="@dimen/dimen_20dp" />
 
 </shape>

@@ -16,7 +16,8 @@ public class MySpinnerAdapter<T> extends MySpinnerBaseAdapter {
 	private final List<T> items;
 
 	/**
-	 *  constructor
+	 * constructor
+	 *
 	 * @param context
 	 * @param items
 	 * @param textColor
@@ -24,21 +25,14 @@ public class MySpinnerAdapter<T> extends MySpinnerBaseAdapter {
 	 * @param spinnerTextFormatter
 	 * @param horizontalAlignment
 	 */
-	MySpinnerAdapter (
-			Context context,
-			List<T> items,
-			int textColor,
-			int backgroundSelector,
-			SpinnerTextFormatter spinnerTextFormatter,
-			PopUpTextAlignment horizontalAlignment
-	) {
+	MySpinnerAdapter (Context context, List<T> items, int textColor, int backgroundSelector, SpinnerTextFormatter spinnerTextFormatter, PopUpTextAlignment horizontalAlignment) {
 		super(context, textColor, backgroundSelector, spinnerTextFormatter, horizontalAlignment);
 		this.items = items;
 	}
 
 	@Override
 	public int getCount () {
-		return items.size()-1;
+		return items.size() - 1;
 	}
 
 	@Override

@@ -10,9 +10,6 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
 import android.os.Bundle;
@@ -97,44 +94,110 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//jni测试按钮状态记录
 	//	private final int jni_status = 0;
 
+	private static final int REQUEST_CODE_CHOOSE  = 23;
+	private static final int     MSG_CHECK_UPDATE  = 1;
+	private static final int     MSG_CAMERA_PARAMS = 2;
+	public static long startTime = 0;
+	CompoundButton.OnCheckedChangeListener highLowCenterCheckListener = (buttonView, isChecked) -> {
+		switch (buttonView.getId()) {
+			case R.id.cb_main_preview_highlowcenter_trace_high:
+				if (isChecked) {
+					mDataBinding.textureViewPreviewActivity.openFeaturePoints(0);
+				} else {
+					mDataBinding.textureViewPreviewActivity.closeFeaturePoints(0);
+				}
+				break;
+			case R.id.cb_main_preview_highlowcenter_trace_low:
+				if (isChecked) {
+					mDataBinding.textureViewPreviewActivity.openFeaturePoints(1);
+				} else {
+					mDataBinding.textureViewPreviewActivity.closeFeaturePoints(1);
+				}
+				break;
+			case R.id.cb_main_preview_highlowcenter_trace_center:
+				if (isChecked) {
+					mDataBinding.textureViewPreviewActivity.openFeaturePoints(2);
+				} else {
+					mDataBinding.textureViewPreviewActivity.closeFeaturePoints(2);
+				}
+				break;
+		}
+	};
 	private UVCCameraHandler   mUvcCameraHandler;
 	//点线矩形测温弹窗
 	private PopupWindow        PLRPopupWindows;
+	//用户添加 测温模式 切换
+	View.OnClickListener                   tempModeCheckListener      = new View.OnClickListener() {
+		@Override
+		public void onClick (View v) {
+			switch (v.getId()) {
+				case R.id.iv_temp_mode_point:
+					PLRPopupWindows.dismiss();
+					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(1);
+					//					mDataBinding.dragTempContainerPreviewActivity.getDrawTempMode();
+					//					if (isDebug)showToast("point ");
+					break;
+				case R.id.iv_temp_mode_line:
+					PLRPopupWindows.dismiss();
+					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(2);
+					//					if (isDebug)showToast("line ");
+					break;
+				case R.id.iv_temp_mode_rectangle:
+					PLRPopupWindows.dismiss();
+					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(3);
+					//					if (isDebug)showToast("rectangle ");
+					break;
+			}
+		}
+	};
 	private PopupWindow        settingPopWindows;
 	private PopupWindow        companyPopWindows;
 	//	private View popView;
 	private Map<String, Float> cameraParams;
 	private SharedPreferences  sp;
+	//色板切换
+	View.OnClickListener                   paletteChoiceListener      = v -> {
+		switch (v.getId()) {
+			case R.id.palette_layout_Tiehong:
+				setPalette(0);
+				//					if (isDebug)showToast("palette_layout_Tiehong ");
+				break;
+			case R.id.palette_layout_Caihong:
+				setPalette(1);
+				//					if (isDebug)showToast("palette_layout_Caihong ");
+				break;
+			case R.id.palette_layout_Hongre:
+				setPalette(2);
+				//					if (isDebug)showToast("palette_layout_Hongre ");
+				break;
+			case R.id.palette_layout_Heire:
+				setPalette(3);
+				//					if (isDebug)showToast("palette_layout_Heire ");
+				break;
+			case R.id.palette_layout_Baire:
+				setPalette(4);
+				//					if (isDebug)showToast("palette_layout_Baire ");
+				break;
+			case R.id.palette_layout_Lenglan:
+				setPalette(5);
+				//					if (isDebug)showToast("palette_layout_Lenglan ");
+				break;
+		}
+	};
 	//设备 vid pid
 	private int                mVid, mPid;
-
 	private USBMonitor mUsbMonitor;
-
 	private int    mFontSize;
 	private String palettePath;
 	private Bitmap tiehong = null, caihong = null, baire = null, heire = null, hongre = null, lenglan = null;
 	private SendCommand mSendCommand;
-
 	private int screenWidth, screenHeight;
 	private Bitmap highTempBt, lowTempBt, centerTempBt, normalPointBt;
-
 	private DisplayMetrics metrics;
 	private Configuration  configuration;
 	private int            language_index     = -1;//语言的 索引下标
 	private String         language_local_str = "";
 	private boolean        isFirstRun         = false;
-
-	private static final int REQUEST_CODE_CHOOSE  = 23;
-	// 重置参数 返回值
-	private              int defaultSettingReturn = -1;
-
-	//更新工具类对象
-	private AppUpdater                              mAppUpdater;
-	private int                                     maxIndex = 0;
-	private List<UpdateObj>                         updateObjList;
-	//传感器
-	private AbstractUVCCameraHandler.CameraCallback cameraCallback;
-	private LoadingDialog                           loadingDialog;
 	//	//校正输入框 过滤器
 	//	private TextWatcher reviseTextWatcher;
 	//	//发射率输入框 拦截器
@@ -143,10 +206,15 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//	private TextWatcher reflectTextWatcher;
 	//	//环境温度 输入框 拦截器
 	//	private TextWatcher environmentTextWatcher;
-
-
-	private static final int     MSG_CHECK_UPDATE  = 1;
-	private static final int     MSG_CAMERA_PARAMS = 2;
+	// 重置参数 返回值
+	private              int defaultSettingReturn = -1;
+	//更新工具类对象
+	private AppUpdater                              mAppUpdater;
+	private int                                     maxIndex = 0;
+	private List<UpdateObj>                         updateObjList;
+	//传感器
+	private AbstractUVCCameraHandler.CameraCallback cameraCallback;
+	private LoadingDialog                           loadingDialog;
 	private final        Handler mHandler          = new Handler(new Handler.Callback() {
 		@Override
 		public boolean handleMessage (@NonNull Message msg) {
@@ -281,7 +349,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 									}
 									float fvalue = value / 100.0f;
 									if (mUvcCameraHandler != null) {
-										if (mPid == 1 && mVid == 5396) {
+										if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
 											sendS0Order(fvalue, DYConstants.SETTING_HUMIDITY_INT);
 										}
 										popSettingBinding.etCameraSettingHumidity.setText(String.format(Locale.US, "%d", value));
@@ -331,9 +399,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 								}
 								v14.clearFocus();
 								if (mUvcCameraHandler != null) {
-									if (mPid == 1 && mVid == 5396) {
+									if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
 										sendS0Order(value, DYConstants.SETTING_EMITTANCE_INT);
-									} else if (mPid == 22592 && mVid == 3034) {
+									} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
 										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, value, 3);
 									}
 									sp.edit().putFloat(DYConstants.setting_emittance, value).apply();
@@ -474,16 +542,16 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					settingPopWindows.setTouchable(true);
 
 					//第四步：显示控件
-					if (oldRotation == 90 || oldRotation == 180) {
-						int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-						settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
-						settingPopWindows.getContentView().setRotation(180);
-					}
-					if (oldRotation == 0 || oldRotation == 270) {
-						int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-						settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
-						settingPopWindows.getContentView().setRotation(0);
-					}
+					//					if (oldRotation == 90 || oldRotation == 180) {
+					//						int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
+					//						settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
+					//						settingPopWindows.getContentView().setRotation(180);
+					//					}
+					//					if (oldRotation == 0 || oldRotation == 270) {
+					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
+					settingPopWindows.getContentView().setRotation(0);
+					//					}
 
 					//弹窗消失，机芯执行保存指令。
 					settingPopWindows.setOnDismissListener(() -> {
@@ -591,278 +659,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			return false;
 		}
 	});
-
-	@Override
-	protected void onActivityResult (int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		//		if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
-		//		}
-	}
-
-	@Override
-	protected void onPause () {
-		if (isDebug)
-			Log.e(TAG, "onPause: ");
-
-		if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()) {
-			//			mUvcCameraHandler.stopTemperaturing();
-			//			if (BuildConfig.DEBUG)
-			//				Log.e(TAG, "onPause: 停止温度回调");
-		}
-		//		mSensorManager.unregisterListener(sensorEventListener, mAccelerometerSensor);
-		super.onPause();
-	}
-
-	@Override
-	public void onStop () {
-		if (isDebug)
-			Log.e(TAG, "onStop: ");
-		if (mUsbMonitor != null) {
-			if (mUsbMonitor.isRegistered()) {
-				mUsbMonitor.unregister();
-			}
-		}
-		if (mUvcCameraHandler != null) {
-			mUvcCameraHandler.close();
-		}
-		super.onStop();
-	}
-
-	@Override
-	protected void onRestart () {
-		if (isDebug)
-			Log.e(TAG, "onRestart: ");
-		//		mDataBinding.textureViewPreviewActivity.onResume();
-		super.onRestart();
-	}
-
-	@Override
-	public void onStart () {
-		super.onStart();
-		if (isDebug)
-			Log.e(TAG, "onStart: ");
-
-	}
-
-	@Override
-	public void onCreate (@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		if (isDebug)
-			Log.e(TAG, "onCreate: ");
-	}
-
-	@Override
-	public void onDestroy () {
-		if (mUvcCameraHandler != null) {
-			mUvcCameraHandler.release();
-			mUvcCameraHandler = null;
-		}
-		if (mUsbMonitor != null) {
-			mUsbMonitor.destroy();
-			mUsbMonitor = null;
-		}
-		if (isDebug)
-			Log.e(TAG, "onDestroy: ");
-		super.onDestroy();
-	}
-
-	private final SensorEventListener sensorEventListener = new SensorEventListener() {
-		@Override
-		public void onSensorChanged (SensorEvent event) {
-			if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_ACCELEROMETER)) {//								Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_ACCELEROMETER");
-				float x = event.values[0];
-				float y = event.values[1];
-				float z = event.values[2];
-				relayout(x, y, z);
-			}
-		}
-
-		@Override
-		public void onAccuracyChanged (Sensor sensor, int accuracy) {
-		}
-	};
-	private       int                 oldRotation         = 0;
-
-	private void relayout (float x, float y, float z) {
-		if (x > -2.5 && x <= 2.5 && y > 7.5 && y <= 10 && oldRotation != 270) {
-			oldRotation = 270;
-			mDataBinding.clMainPreview.setRotation(0);
-			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
-				mUvcCameraHandler.setRotateMatrix_180(false);
-			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(false);
-
-			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(false);
-
-			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
-				PLRPopupWindows.dismiss();
-				if (oldRotation == 0 || oldRotation == 270) {
-					int offsetX = 0;
-					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
-					PLRPopupWindows.getContentView().setRotation(0);
-				}
-			}
-
-			if (settingPopWindows != null && settingPopWindows.isShowing()) {
-				settingPopWindows.dismiss();
-				if (oldRotation == 0 || oldRotation == 270) {
-					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
-					settingPopWindows.getContentView().setRotation(0);
-				}
-			}
-
-			if (companyPopWindows != null && companyPopWindows.isShowing()) {
-				companyPopWindows.dismiss();
-				if (oldRotation == 0 || oldRotation == 270) {
-					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
-					companyPopWindows.getContentView().setRotation(0);
-				}
-			}
-			if (myNumberPicker != null && myNumberPicker.isVisible()) {
-				myNumberPicker.dismiss();
-				myNumberPicker.setRotation(false);
-				myNumberPicker.show(getSupportFragmentManager(), null);
-			}
-			setMRotation(0);
-		} else if (x > 7.5 && x <= 10 && y > -2.5 && y <= 2.5 && oldRotation != 0) {
-			oldRotation = 0;
-			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
-				mUvcCameraHandler.setRotateMatrix_180(false);
-			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(false);
-
-			mDataBinding.clMainPreview.setRotation(0);
-			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(false);
-			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
-				PLRPopupWindows.dismiss();
-				if (oldRotation == 0 || oldRotation == 270) {
-					int offsetX = 0;
-					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
-					PLRPopupWindows.getContentView().setRotation(0);
-				}
-			}
-			if (settingPopWindows != null && settingPopWindows.isShowing()) {
-				settingPopWindows.dismiss();
-				if (oldRotation == 0 || oldRotation == 270) {
-					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
-					settingPopWindows.getContentView().setRotation(0);
-				}
-			}
-
-			if (companyPopWindows != null && companyPopWindows.isShowing()) {
-				companyPopWindows.dismiss();
-				if (oldRotation == 0 || oldRotation == 270) {
-					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
-					companyPopWindows.getContentView().setRotation(0);
-				}
-			}
-
-			if (myNumberPicker != null && myNumberPicker.isVisible()) {
-				myNumberPicker.dismiss();
-				myNumberPicker.setRotation(false);
-				myNumberPicker.show(getSupportFragmentManager(), null);
-			}
-			setMRotation(0);
-		} else if (x > -2.5 && x <= 2.5 && y > -10 && y <= -7.5 && oldRotation != 90) {
-			oldRotation = 90;
-			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
-				mUvcCameraHandler.setRotateMatrix_180(true);
-			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(true);
-			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
-			//			mDataBinding.textureViewPreviewActivity.setRotation(180);
-			mDataBinding.clMainPreview.setRotation(180);
-			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
-			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(true);
-			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
-				PLRPopupWindows.dismiss();
-				if (oldRotation == 90 || oldRotation == 180) {
-					int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
-					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
-					PLRPopupWindows.getContentView().setRotation(180);
-				}
-			}
-			if (settingPopWindows != null && settingPopWindows.isShowing()) {
-				settingPopWindows.dismiss();
-				//第四步：显示控件
-				if (oldRotation == 90 || oldRotation == 180) {
-					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
-					settingPopWindows.getContentView().setRotation(180);
-				}
-			}
-
-			if (companyPopWindows != null && companyPopWindows.isShowing()) {
-				companyPopWindows.dismiss();
-				if (oldRotation == 90 || oldRotation == 180) {
-					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
-					companyPopWindows.getContentView().setRotation(180);
-				}
-			}
-
-			if (myNumberPicker != null && myNumberPicker.isVisible()) {
-				myNumberPicker.dismiss();
-				myNumberPicker.setRotation(true);
-				myNumberPicker.show(getSupportFragmentManager(), null);
-			}
-			setMRotation(180);
-		} else if (x > -10 && x <= -7.5 && y > -2.5 && y < 2.5 && oldRotation != 180) {
-			oldRotation = 180;
-			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
-				mUvcCameraHandler.setRotateMatrix_180(true);
-			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(true);
-			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
-			//			mDataBinding.textureViewPreviewActivity.setRotation(180);
-			mDataBinding.clMainPreview.setRotation(180);
-			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(true);
-			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
-				PLRPopupWindows.dismiss();
-				if (oldRotation == 90 || oldRotation == 180) {
-					int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
-					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
-					PLRPopupWindows.getContentView().setRotation(180);
-				}
-			}
-			if (settingPopWindows != null && settingPopWindows.isShowing()) {
-				settingPopWindows.dismiss();
-				//第四步：显示控件
-				if (oldRotation == 90 || oldRotation == 180) {
-					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
-					settingPopWindows.getContentView().setRotation(180);
-				}
-			}
-
-			if (companyPopWindows != null && companyPopWindows.isShowing()) {
-				companyPopWindows.dismiss();
-				if (oldRotation == 90 || oldRotation == 180) {
-					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
-					companyPopWindows.getContentView().setRotation(180);
-				}
-			}
-
-			if (myNumberPicker != null && myNumberPicker.isVisible()) {
-				myNumberPicker.dismiss();
-				myNumberPicker.setRotation(true);
-				myNumberPicker.show(getSupportFragmentManager(), null);
-			}
-			setMRotation(180);
-		}
-	}
-
-	@Override
-	protected void onResume () {
-		if (isDebug)
-			Log.e(TAG, "onResume: ");
-		if (mUsbMonitor != null && !mUsbMonitor.isRegistered()) {
-			mUsbMonitor.register();
-		}
-		super.onResume();
-	}
-
+	private Surface stt;
 	private final USBMonitor.OnDeviceConnectListener onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
 		@Override
 		public void onAttach (UsbDevice device) {
@@ -976,8 +773,306 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				Log.e(TAG, "DD  onCancel: ");
 		}
 	};
+	private MyNumberPicker myNumberPicker;
 
-	private Surface stt;
+	//	private final SensorEventListener sensorEventListener = new SensorEventListener() {
+	//		@Override
+	//		public void onSensorChanged (SensorEvent event) {
+	//			if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_ACCELEROMETER)) {//								Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_ACCELEROMETER");
+	//				float x = event.values[0];
+	//				float y = event.values[1];
+	//				float z = event.values[2];
+	////				relayout(x, y, z);
+	//			}
+	//		}
+	//
+	//		@Override
+	//		public void onAccuracyChanged (Sensor sensor, int accuracy) {
+	//		}
+	//	};
+	//	private       int                 oldRotation         = 0;
+
+	//	private void relayout (float x, float y, float z) {
+	//		if (x > -2.5 && x <= 2.5 && y > 7.5 && y <= 10 && oldRotation != 270) {
+	//			oldRotation = 270;
+	//			mDataBinding.clMainPreview.setRotation(0);
+	//			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
+	//				mUvcCameraHandler.setRotateMatrix_180(false);
+	//			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(false);
+	//
+	//			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(false);
+	//
+	//			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
+	//				PLRPopupWindows.dismiss();
+	//				if (oldRotation == 0 || oldRotation == 270) {
+	//					int offsetX = 0;
+	//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+	//					PLRPopupWindows.getContentView().setRotation(0);
+	//				}
+	//			}
+	//
+	//			if (settingPopWindows != null && settingPopWindows.isShowing()) {
+	//				settingPopWindows.dismiss();
+	//				if (oldRotation == 0 || oldRotation == 270) {
+	//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+	//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
+	//					settingPopWindows.getContentView().setRotation(0);
+	//				}
+	//			}
+	//
+	//			if (companyPopWindows != null && companyPopWindows.isShowing()) {
+	//				companyPopWindows.dismiss();
+	//				if (oldRotation == 0 || oldRotation == 270) {
+	//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+	//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+	//					companyPopWindows.getContentView().setRotation(0);
+	//				}
+	//			}
+	//			if (myNumberPicker != null && myNumberPicker.isVisible()) {
+	//				myNumberPicker.dismiss();
+	//				myNumberPicker.setRotation(false);
+	//				myNumberPicker.show(getSupportFragmentManager(), null);
+	//			}
+	//			setMRotation(0);
+	//		} else if (x > 7.5 && x <= 10 && y > -2.5 && y <= 2.5 && oldRotation != 0) {
+	//			oldRotation = 0;
+	//			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
+	//				mUvcCameraHandler.setRotateMatrix_180(false);
+	//			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(false);
+	//
+	//			mDataBinding.clMainPreview.setRotation(0);
+	//			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(false);
+	//			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
+	//				PLRPopupWindows.dismiss();
+	//				if (oldRotation == 0 || oldRotation == 270) {
+	//					int offsetX = 0;
+	//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+	//					PLRPopupWindows.getContentView().setRotation(0);
+	//				}
+	//			}
+	//			if (settingPopWindows != null && settingPopWindows.isShowing()) {
+	//				settingPopWindows.dismiss();
+	//				if (oldRotation == 0 || oldRotation == 270) {
+	//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+	//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
+	//					settingPopWindows.getContentView().setRotation(0);
+	//				}
+	//			}
+	//
+	//			if (companyPopWindows != null && companyPopWindows.isShowing()) {
+	//				companyPopWindows.dismiss();
+	//				if (oldRotation == 0 || oldRotation == 270) {
+	//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+	//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+	//					companyPopWindows.getContentView().setRotation(0);
+	//				}
+	//			}
+	//
+	//			if (myNumberPicker != null && myNumberPicker.isVisible()) {
+	//				myNumberPicker.dismiss();
+	//				myNumberPicker.setRotation(false);
+	//				myNumberPicker.show(getSupportFragmentManager(), null);
+	//			}
+	//			setMRotation(0);
+	//		} else if (x > -2.5 && x <= 2.5 && y > -10 && y <= -7.5 && oldRotation != 90) {
+	//			oldRotation = 90;
+	//			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
+	//				mUvcCameraHandler.setRotateMatrix_180(true);
+	//			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(true);
+	//			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
+	//			//			mDataBinding.textureViewPreviewActivity.setRotation(180);
+	//			mDataBinding.clMainPreview.setRotation(180);
+	//			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
+	//			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(true);
+	//			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
+	//				PLRPopupWindows.dismiss();
+	//				if (oldRotation == 90 || oldRotation == 180) {
+	//					int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
+	//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+	//					PLRPopupWindows.getContentView().setRotation(180);
+	//				}
+	//			}
+	//			if (settingPopWindows != null && settingPopWindows.isShowing()) {
+	//				settingPopWindows.dismiss();
+	//				//第四步：显示控件
+	//				if (oldRotation == 90 || oldRotation == 180) {
+	//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
+	//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
+	//					settingPopWindows.getContentView().setRotation(180);
+	//				}
+	//			}
+	//
+	//			if (companyPopWindows != null && companyPopWindows.isShowing()) {
+	//				companyPopWindows.dismiss();
+	//				if (oldRotation == 90 || oldRotation == 180) {
+	//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
+	//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+	//					companyPopWindows.getContentView().setRotation(180);
+	//				}
+	//			}
+	//
+	//			if (myNumberPicker != null && myNumberPicker.isVisible()) {
+	//				myNumberPicker.dismiss();
+	//				myNumberPicker.setRotation(true);
+	//				myNumberPicker.show(getSupportFragmentManager(), null);
+	//			}
+	//			setMRotation(180);
+	//		} else if (x > -10 && x <= -7.5 && y > -2.5 && y < 2.5 && oldRotation != 180) {
+	//			oldRotation = 180;
+	//			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
+	//				mUvcCameraHandler.setRotateMatrix_180(true);
+	//			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(true);
+	//			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
+	//			//			mDataBinding.textureViewPreviewActivity.setRotation(180);
+	//			mDataBinding.clMainPreview.setRotation(180);
+	//			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(true);
+	//			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
+	//				PLRPopupWindows.dismiss();
+	//				if (oldRotation == 90 || oldRotation == 180) {
+	//					int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
+	//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+	//					PLRPopupWindows.getContentView().setRotation(180);
+	//				}
+	//			}
+	//			if (settingPopWindows != null && settingPopWindows.isShowing()) {
+	//				settingPopWindows.dismiss();
+	//				//第四步：显示控件
+	//				if (oldRotation == 90 || oldRotation == 180) {
+	//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
+	//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
+	//					settingPopWindows.getContentView().setRotation(180);
+	//				}
+	//			}
+	//
+	//			if (companyPopWindows != null && companyPopWindows.isShowing()) {
+	//				companyPopWindows.dismiss();
+	//				if (oldRotation == 90 || oldRotation == 180) {
+	//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
+	//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+	//					companyPopWindows.getContentView().setRotation(180);
+	//				}
+	//			}
+	//
+	//			if (myNumberPicker != null && myNumberPicker.isVisible()) {
+	//				myNumberPicker.dismiss();
+	//				myNumberPicker.setRotation(true);
+	//				myNumberPicker.show(getSupportFragmentManager(), null);
+	//			}
+	//			setMRotation(180);
+	//		}
+	//	}
+
+	/**
+	 * <p>判断是否连续点击</p>
+	 *
+	 * @return boolean
+	 */
+	public static boolean doubleClick () {
+		long now = System.currentTimeMillis();
+		if (now - startTime < 1500) {
+			return true;
+		}
+		startTime = now;
+		return false;
+	}
+
+	/**
+	 * <p>判断是否连续点击</p>
+	 *
+	 * @return boolean
+	 */
+	public static boolean doubleGainClick () {
+		long now = System.currentTimeMillis();
+		if (now - startTime < 2000) {
+			return true;
+		}
+		startTime = now;
+		return false;
+	}
+
+	@Override
+	protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		//		if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
+		//		}
+	}
+
+	@Override
+	protected void onPause () {
+		if (isDebug)
+			Log.e(TAG, "onPause: ");
+
+		if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()) {
+			//			mUvcCameraHandler.stopTemperaturing();
+			//			if (BuildConfig.DEBUG)
+			//				Log.e(TAG, "onPause: 停止温度回调");
+		}
+		//		mSensorManager.unregisterListener(sensorEventListener, mAccelerometerSensor);
+		super.onPause();
+	}
+
+	@Override
+	public void onStop () {
+		if (isDebug)
+			Log.e(TAG, "onStop: ");
+		if (mUsbMonitor != null) {
+			if (mUsbMonitor.isRegistered()) {
+				mUsbMonitor.unregister();
+			}
+		}
+		if (mUvcCameraHandler != null) {
+			mUvcCameraHandler.close();
+		}
+		super.onStop();
+	}
+
+	@Override
+	protected void onRestart () {
+		if (isDebug)
+			Log.e(TAG, "onRestart: ");
+		//		mDataBinding.textureViewPreviewActivity.onResume();
+		super.onRestart();
+	}
+
+	@Override
+	public void onStart () {
+		super.onStart();
+		if (isDebug)
+			Log.e(TAG, "onStart: ");
+
+	}
+
+	@Override
+	public void onCreate (@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if (isDebug)
+			Log.e(TAG, "onCreate: ");
+	}
+
+	@Override
+	public void onDestroy () {
+		if (mUvcCameraHandler != null) {
+			mUvcCameraHandler.release();
+			mUvcCameraHandler = null;
+		}
+		if (mUsbMonitor != null) {
+			mUsbMonitor.destroy();
+			mUsbMonitor = null;
+		}
+		if (isDebug)
+			Log.e(TAG, "onDestroy: ");
+		super.onDestroy();
+	}
+
+	@Override
+	protected void onResume () {
+		if (isDebug)
+			Log.e(TAG, "onResume: ");
+		if (mUsbMonitor != null && !mUsbMonitor.isRegistered()) {
+			mUsbMonitor.register();
+		}
+		super.onResume();
+	}
 
 	/**
 	 * 打开连接 调用预览图像的设置
@@ -1130,131 +1225,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		return defaultSettingReturn;
 	}
 
-	public static long startTime = 0;
-
-	/**
-	 * <p>判断是否连续点击</p>
-	 *
-	 * @return boolean
-	 */
-	public static boolean doubleClick () {
-		long now = System.currentTimeMillis();
-		if (now - startTime < 1500) {
-			return true;
-		}
-		startTime = now;
-		return false;
-	}
-
-	/**
-	 * <p>判断是否连续点击</p>
-	 *
-	 * @return boolean
-	 */
-	public static boolean doubleGainClick () {
-		long now = System.currentTimeMillis();
-		if (now - startTime < 2000) {
-			return true;
-		}
-		startTime = now;
-		return false;
-	}
-
-	/**
-	 * 切换语言
-	 *
-	 * @param type 语言下标
-	 */
-	private void toSetLanguage (int type) {//切换语言
-		Locale locale;
-		Context context = DYTApplication.getInstance();
-		if (type == 0) {
-			locale = Locale.SIMPLIFIED_CHINESE;
-			LanguageUtils.saveAppLocaleLanguage(locale.toLanguageTag());
-		} else if (type == 1) {
-			locale = Locale.US;
-			LanguageUtils.saveAppLocaleLanguage(locale.toLanguageTag());
-		} else {
-			return;
-		}
-		if (LanguageUtils.isSimpleLanguage(context, locale)) {
-			showToast(R.string.toast_select_same_language);
-			return;
-		}
-		LanguageUtils.updateLanguage(context, locale);//更新语言参数
-		Intent intent = new Intent(context, PreviewActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		context.startActivity(intent);
-		//		finish();
-		//		android.os.Process.killProcess(android.os.Process.myPid());
-		//		System.exit(0);
-	}
-
-
-	//修改S0机芯参数
-	public class SendCommand {
-		int psitionAndValue0 = 0, psitionAndValue1 = 0, psitionAndValue2 = 0, psitionAndValue3 = 0;
-		int result = -1;
-
-		public int sendFloatCommand (int position, byte value0, byte value1, byte value2, byte value3, int interval0, int interval1, int interval2, int interval3, int interval4) {
-			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
-			Handler handler0 = new Handler();
-
-			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0), interval0);
-
-			psitionAndValue1 = ((position + 1) << 8) | (0x000000ff & value1);
-			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue1), interval1);
-
-			psitionAndValue2 = ((position + 2) << 8) | (0x000000ff & value2);
-			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue2), interval2);
-
-			psitionAndValue3 = ((position + 3) << 8) | (0x000000ff & value3);
-			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue3), interval3);
-
-			handler0.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), interval4);
-
-			return result;
-		}
-
-		private void whenChangeTempPara () {
-			if (mUvcCameraHandler != null) {
-				mUvcCameraHandler.whenChangeTempPara();
-			}
-		}
-
-		public void sendShortCommand (int position, byte value0, byte value1, int interval0, int interval1, int interval2) {
-			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
-			Handler handler0 = new Handler();
-			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0), interval0);
-
-			psitionAndValue1 = ((position + 1) << 8) | (0x000000ff & value1);
-			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue1), interval1);
-
-			handler0.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), interval2);
-		}
-
-		public void sendByteCommand (int position, byte value0, int interval0) {
-			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
-			Handler handler0 = new Handler();
-			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0), interval0);
-			handler0.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), interval0 + 20);
-		}
-	}
-
-	@Override
-	protected int bindingLayout () {
-		return R.layout.activity_preview;
-	}
-
-	@Override
-	protected String getLanguageStr () {
-		if (sp != null) {
-			return sp.getString(DYConstants.LANGUAGE_SETTING, Locale.getDefault().getLanguage());
-		} else {
-			return Locale.getDefault().getLanguage();
-		}
-	}
-
 	//	@Override
 	//	protected void attachBaseContext (Context newBase) {
 	//		//		mContext = newBase;
@@ -1309,6 +1279,50 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//		getResources().updateConfiguration(config, metrics);
 	//
 	//	}
+
+	/**
+	 * 切换语言
+	 *
+	 * @param type 语言下标
+	 */
+	private void toSetLanguage (int type) {//切换语言
+		Locale locale;
+		Context context = DYTApplication.getInstance();
+		if (type == 0) {
+			locale = Locale.SIMPLIFIED_CHINESE;
+			LanguageUtils.saveAppLocaleLanguage(locale.toLanguageTag());
+		} else if (type == 1) {
+			locale = Locale.US;
+			LanguageUtils.saveAppLocaleLanguage(locale.toLanguageTag());
+		} else {
+			return;
+		}
+		if (LanguageUtils.isSimpleLanguage(context, locale)) {
+			showToast(R.string.toast_select_same_language);
+			return;
+		}
+		LanguageUtils.updateLanguage(context, locale);//更新语言参数
+		Intent intent = new Intent(context, PreviewActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		context.startActivity(intent);
+		//		finish();
+		//		android.os.Process.killProcess(android.os.Process.myPid());
+		//		System.exit(0);
+	}
+
+	@Override
+	protected int bindingLayout () {
+		return R.layout.activity_preview;
+	}
+
+	@Override
+	protected String getLanguageStr () {
+		if (sp != null) {
+			return sp.getString(DYConstants.LANGUAGE_SETTING, Locale.getDefault().getLanguage());
+		} else {
+			return Locale.getDefault().getLanguage();
+		}
+	}
 
 	@Override
 	protected void initView () {
@@ -1461,6 +1475,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					AssetCopyer.copyAllAssets(DYTApplication.getInstance(), mContext.get().getExternalFilesDir(null).getAbsolutePath());
 					//		Log.e(TAG,"===========getExternalFilesDir=========="+this.getExternalFilesDir(null).getAbsolutePath());
 					palettePath = mContext.get().getExternalFilesDir(null).getAbsolutePath();
+					Log.e(TAG, "onGranted: ===========palettePath=============》" + palettePath);
 					CreateBitmap createBitmap = new CreateBitmap();
 					try {
 						tiehong = createBitmap.GenerateBitmap(mContext.get(), "1.dat");
@@ -1504,8 +1519,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			}
 		});
 	}
-
-	private MyNumberPicker myNumberPicker;
 
 	/**
 	 * 初始化界面的监听器
@@ -1617,7 +1630,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				});
 				myNumberPicker.setCancelable(false);
 
-				myNumberPicker.setRotation(oldRotation != 0 && oldRotation != 270);
+				//				myNumberPicker.setRotation(oldRotation != 0 && oldRotation != 270);
 				myNumberPicker.show(getSupportFragmentManager(), null);
 			} else {
 				mDataBinding.textureViewPreviewActivity.stopTempAlarm();
@@ -1647,16 +1660,16 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			PLRPopupWindows.setTouchable(true);
 
 			//				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, 0, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
-			if (oldRotation == 90 || oldRotation == 180) {
-				int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
-				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
-				PLRPopupWindows.getContentView().setRotation(180);
-			}
-			if (oldRotation == 0 || oldRotation == 270) {
-				int offsetX = 0;
-				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
-				PLRPopupWindows.getContentView().setRotation(0);
-			}
+			//			if (oldRotation == 90 || oldRotation == 180) {
+			//				int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
+			//				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			//				PLRPopupWindows.getContentView().setRotation(180);
+			//			}
+			//			if (oldRotation == 0 || oldRotation == 270) {
+			int offsetX = 0;
+			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			PLRPopupWindows.getContentView().setRotation(0);
+			//			}
 		});
 
 		//测温模式。绘制  温度模式 切换  弹窗
@@ -1679,16 +1692,16 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			PLRPopupWindows.setOutsideTouchable(true);
 			PLRPopupWindows.setTouchable(true);
 
-			if (oldRotation == 90 || oldRotation == 180) {
-				int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
-				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
-				PLRPopupWindows.getContentView().setRotation(180);
-			}
-			if (oldRotation == 0 || oldRotation == 270) {
-				int offsetX = 0;
-				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
-				PLRPopupWindows.getContentView().setRotation(0);
-			}
+			//			if (oldRotation == 90 || oldRotation == 180) {
+			//				int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
+			//				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			//				PLRPopupWindows.getContentView().setRotation(180);
+			//			}
+			//			if (oldRotation == 0 || oldRotation == 270) {
+			int offsetX = 0;
+			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			PLRPopupWindows.getContentView().setRotation(0);
+			//			}
 			//			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, 0, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 			//			}
 		});
@@ -1717,18 +1730,18 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			PLRPopupWindows.setOutsideTouchable(true);
 			PLRPopupWindows.setTouchable(true);
 
-			if (oldRotation == 90 || oldRotation == 180) {
-				Log.e(TAG, "initListener: ===oldRotation == 90 || oldRotation == 180=====");
-				int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
-				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
-				PLRPopupWindows.getContentView().setRotation(180);
-			}
-			if (oldRotation == 0 || oldRotation == 270) {
-				Log.e(TAG, "initListener: oldRotation == 0 || oldRotation == 270===");
-				int offsetX = 0;
-				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
-				PLRPopupWindows.getContentView().setRotation(0);
-			}
+			//			if (oldRotation == 90 || oldRotation == 180) {
+			//				Log.e(TAG, "initListener: ===oldRotation == 90 || oldRotation == 180=====");
+			//				int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
+			//				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			//				PLRPopupWindows.getContentView().setRotation(180);
+			//			}
+			//			if (oldRotation == 0 || oldRotation == 270) {
+			Log.e(TAG, "initListener: oldRotation == 0 || oldRotation == 270===");
+			int offsetX = 0;
+			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			PLRPopupWindows.getContentView().setRotation(0);
+			//			}
 
 			//			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, 0, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 
@@ -1873,7 +1886,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				return;
 			if (mUvcCameraHandler.isOpened()) {
 				if (mPid == 1 && mVid == 5396) {
-					getCameraParams();//
+					getCameraParams();
+					mHandler.sendEmptyMessage(MSG_CAMERA_PARAMS);
 				} else if (mPid == 22592 && mVid == 3034) {
 					new Thread(new Runnable() {
 						@Override
@@ -1973,86 +1987,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		});
 	}
 
-	//色板切换
-	View.OnClickListener                   paletteChoiceListener      = v -> {
-		switch (v.getId()) {
-			case R.id.palette_layout_Tiehong:
-				setPalette(0);
-				//					if (isDebug)showToast("palette_layout_Tiehong ");
-				break;
-			case R.id.palette_layout_Caihong:
-				setPalette(1);
-				//					if (isDebug)showToast("palette_layout_Caihong ");
-				break;
-			case R.id.palette_layout_Hongre:
-				setPalette(2);
-				//					if (isDebug)showToast("palette_layout_Hongre ");
-				break;
-			case R.id.palette_layout_Heire:
-				setPalette(3);
-				//					if (isDebug)showToast("palette_layout_Heire ");
-				break;
-			case R.id.palette_layout_Baire:
-				setPalette(4);
-				//					if (isDebug)showToast("palette_layout_Baire ");
-				break;
-			case R.id.palette_layout_Lenglan:
-				setPalette(5);
-				//					if (isDebug)showToast("palette_layout_Lenglan ");
-				break;
-		}
-	};
-	//用户添加 测温模式 切换
-	View.OnClickListener                   tempModeCheckListener      = new View.OnClickListener() {
-		@Override
-		public void onClick (View v) {
-			switch (v.getId()) {
-				case R.id.iv_temp_mode_point:
-					PLRPopupWindows.dismiss();
-					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(1);
-					//					mDataBinding.dragTempContainerPreviewActivity.getDrawTempMode();
-					//					if (isDebug)showToast("point ");
-					break;
-				case R.id.iv_temp_mode_line:
-					PLRPopupWindows.dismiss();
-					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(2);
-					//					if (isDebug)showToast("line ");
-					break;
-				case R.id.iv_temp_mode_rectangle:
-					PLRPopupWindows.dismiss();
-					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(3);
-					//					if (isDebug)showToast("rectangle ");
-					break;
-			}
-		}
-	};
-	CompoundButton.OnCheckedChangeListener highLowCenterCheckListener = (buttonView, isChecked) -> {
-		switch (buttonView.getId()) {
-			case R.id.cb_main_preview_highlowcenter_trace_high:
-				if (isChecked) {
-					mDataBinding.textureViewPreviewActivity.openFeaturePoints(0);
-				} else {
-					mDataBinding.textureViewPreviewActivity.closeFeaturePoints(0);
-				}
-				break;
-			case R.id.cb_main_preview_highlowcenter_trace_low:
-				if (isChecked) {
-					mDataBinding.textureViewPreviewActivity.openFeaturePoints(1);
-				} else {
-					mDataBinding.textureViewPreviewActivity.closeFeaturePoints(1);
-				}
-				break;
-			case R.id.cb_main_preview_highlowcenter_trace_center:
-				if (isChecked) {
-					mDataBinding.textureViewPreviewActivity.openFeaturePoints(2);
-				} else {
-					mDataBinding.textureViewPreviewActivity.closeFeaturePoints(2);
-				}
-				break;
-		}
-	};
-
-
 	/**
 	 * 获取相机参数，本地sp保存
 	 */
@@ -2143,18 +2077,18 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		companyPopWindows.setOutsideTouchable(true);
 		companyPopWindows.setTouchable(true);
 
-		if (oldRotation == 90 || oldRotation == 180) {
-			//			if (isDebug)Log.e(TAG, "==================showPopWindows: 90 /180");
-			int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-			companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
-			companyPopWindows.getContentView().setRotation(180);
-		}
-		if (oldRotation == 0 || oldRotation == 270) {
-			//			if (isDebug)Log.e(TAG, "============showPopWindows: 0 /270");
-			int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-			companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
-			companyPopWindows.getContentView().setRotation(0);
-		}
+		//		if (oldRotation == 90 || oldRotation == 180) {
+		//			//			if (isDebug)Log.e(TAG, "==================showPopWindows: 90 /180");
+		//			int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
+		//			companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+		//			companyPopWindows.getContentView().setRotation(180);
+		//		}
+		//		if (oldRotation == 0 || oldRotation == 270) {
+		//			if (isDebug)Log.e(TAG, "============showPopWindows: 0 /270");
+		int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+		companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+		companyPopWindows.getContentView().setRotation(0);
+		//		}
 	}
 
 	/**
@@ -2260,5 +2194,55 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			PLRPopupWindows.dismiss();
 		super.onBackPressed();
 		Log.e(TAG, "onBackPressed: ");
+	}
+
+	//修改S0机芯参数
+	public class SendCommand {
+		int psitionAndValue0 = 0, psitionAndValue1 = 0, psitionAndValue2 = 0, psitionAndValue3 = 0;
+		int result = -1;
+
+		public int sendFloatCommand (int position, byte value0, byte value1, byte value2, byte value3, int interval0, int interval1, int interval2, int interval3, int interval4) {
+			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
+			Handler handler0 = new Handler();
+
+			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0), interval0);
+
+			psitionAndValue1 = ((position + 1) << 8) | (0x000000ff & value1);
+			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue1), interval1);
+
+			psitionAndValue2 = ((position + 2) << 8) | (0x000000ff & value2);
+			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue2), interval2);
+
+			psitionAndValue3 = ((position + 3) << 8) | (0x000000ff & value3);
+			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue3), interval3);
+
+			handler0.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), interval4);
+
+			return result;
+		}
+
+		private void whenChangeTempPara () {
+			if (mUvcCameraHandler != null) {
+				mUvcCameraHandler.whenChangeTempPara();
+			}
+		}
+
+		public void sendShortCommand (int position, byte value0, byte value1, int interval0, int interval1, int interval2) {
+			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
+			Handler handler0 = new Handler();
+			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0), interval0);
+
+			psitionAndValue1 = ((position + 1) << 8) | (0x000000ff & value1);
+			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue1), interval1);
+
+			handler0.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), interval2);
+		}
+
+		public void sendByteCommand (int position, byte value0, int interval0) {
+			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
+			Handler handler0 = new Handler();
+			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0), interval0);
+			handler0.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), interval0 + 20);
+		}
 	}
 }

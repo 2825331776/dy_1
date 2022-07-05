@@ -60,15 +60,13 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 		this.mListener = listener;
 	}
 
-	interface SetCompleteListener {
-		/**
-		 * 设置超温警告的温度， 数值的单位为： 摄氏度。
-		 *
-		 * @param setValue float 类型的 摄氏度
-		 */
-		void onSetComplete (float setValue);
+	@Override
+	protected void onCreate (Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.pop_overtemp_alarm);
 
-		void onCancelListener ();
+		initView();
+		initData();
 	}
 	//	private int mRotation;
 	//
@@ -79,16 +77,6 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 	//		this.mRotation = rotation;
 	////		getWindow().getDecorView().setRotation(mRotation);
 	//	}
-
-	@Override
-	protected void onCreate (Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.pop_overtemp_alarm);
-
-		initView();
-		initData();
-	}
-
 
 	private void initView () {
 		numberPickerView_hundreds = findViewById(R.id.numberPicker_hundreds_main_preview_overTemp_pop);
@@ -154,5 +142,16 @@ public class OverTempDialog extends Dialog implements NumberPickerView.OnValueCh
 				mValue = (int) mValue + Float.parseFloat(value) / 10;
 				break;
 		}
+	}
+
+	interface SetCompleteListener {
+		/**
+		 * 设置超温警告的温度， 数值的单位为： 摄氏度。
+		 *
+		 * @param setValue float 类型的 摄氏度
+		 */
+		void onSetComplete (float setValue);
+
+		void onCancelListener ();
 	}
 }

@@ -5,10 +5,10 @@ package com.dyt.wcc.cameracommon.entity;
  * @date 2015-11-18
  * @description tRNS数据块
  */
-public class TRNSBlock extends DataBlock{
-	
-	public void setData(byte[] data) {
+public class TRNSBlock extends DataBlock {
+
+	public void setData (byte[] data) {
 		this.data = data;
 	}
-	
+
 }

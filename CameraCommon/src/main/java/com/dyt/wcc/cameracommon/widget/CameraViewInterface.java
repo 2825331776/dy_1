@@ -35,19 +35,30 @@ import com.serenegiant.widget.IAspectRatioView;
  * 屏幕高宽比 IAspectRatioView 传入宽高比 double，或传入宽高 计算得到宽高比， 得到宽高比 三个方法
  */
 public interface CameraViewInterface extends IAspectRatioView {
+	public ITemperatureCallback getTemperatureCallback ();
+
+	//	public TcpITemperatureCallback getTcpTemperatureCallback();
+	public void onPause ();
+
+	public void onResume ();
+
+	public void setCallback (Callback callback);
+
+	public SurfaceTexture getSurfaceTexture ();
+
+	public Surface getSurface ();
+
+	public boolean hasSurface ();
+
+	public void setVideoEncoder (final IVideoEncoder encoder);
+
+	public Bitmap captureStillImage ();
+
 	public interface Callback {
-		public void onSurfaceCreated(CameraViewInterface view, Surface surface);
-		public void onSurfaceChanged(CameraViewInterface view, Surface surface, int width, int height);
-		public void onSurfaceDestroy(CameraViewInterface view, Surface surface);
+		public void onSurfaceCreated (CameraViewInterface view, Surface surface);
+
+		public void onSurfaceChanged (CameraViewInterface view, Surface surface, int width, int height);
+
+		public void onSurfaceDestroy (CameraViewInterface view, Surface surface);
 	}
-	public ITemperatureCallback getTemperatureCallback();
-//	public TcpITemperatureCallback getTcpTemperatureCallback();
-	public void onPause();
-	public void onResume();
-	public void setCallback(Callback callback);
-	public SurfaceTexture getSurfaceTexture();
-	public Surface getSurface();
-	public boolean hasSurface();
-	public void setVideoEncoder(final IVideoEncoder encoder);
-	public Bitmap captureStillImage();
 }

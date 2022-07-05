@@ -2,46 +2,47 @@
 <merge>
 
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="@dimen/dimen_25dp"
-    android:background="@drawable/shape_bg_pop_setting_three_choice_one"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dimen_25dp"
+        android:background="@drawable/shape_bg_pop_setting_three_choice_one">
 
-    <TextView
-        android:id="@+id/tv_three_choice_one_c"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/tv_three_choice_one_f"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:text="℃"
-        android:layout_width="@dimen/dimen_40dp"
-        android:layout_height="match_parent"/>
-    <TextView
-        android:id="@+id/tv_three_choice_one_f"
-        app:layout_constraintLeft_toRightOf="@id/tv_three_choice_one_c"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/tv_three_choice_one_k"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:text="℉"
-        android:textColor="@color/white"
-        android:gravity="center"
-        android:layout_width="@dimen/dimen_40dp"
-        android:layout_height="match_parent"/>
-    <TextView
-        android:id="@+id/tv_three_choice_one_k"
-        app:layout_constraintLeft_toRightOf="@id/tv_three_choice_one_f"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@drawable/shape_bg_pop_setting_three_choice_one_right"
-        android:text="K"
-        android:textColor="@color/white"
-        android:gravity="center"
-        android:layout_width="@dimen/dimen_40dp"
-        android:layout_height="match_parent"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/tv_three_choice_one_c"
+            android:layout_width="@dimen/dimen_40dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="℃"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/tv_three_choice_one_f"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_three_choice_one_f"
+            android:layout_width="@dimen/dimen_40dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="℉"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/tv_three_choice_one_c"
+            app:layout_constraintRight_toLeftOf="@id/tv_three_choice_one_k"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_three_choice_one_k"
+            android:layout_width="@dimen/dimen_40dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_bg_pop_setting_three_choice_one_right"
+            android:gravity="center"
+            android:text="K"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/tv_three_choice_one_f"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </merge>

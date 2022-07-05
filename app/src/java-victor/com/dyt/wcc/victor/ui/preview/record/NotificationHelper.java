@@ -31,17 +31,13 @@ public class NotificationHelper {
 	@TargetApi(Build.VERSION_CODES.O)
 	private static final int    CHANNEL_IMPORTANCE_SYSTEM = NotificationManager.IMPORTANCE_HIGH;
 
-	private static class InstanceHolder {
-		private static final NotificationHelper instance = new NotificationHelper();
+	private NotificationHelper () {
+		super();
+		createChannel();
 	}
 
 	public static NotificationHelper getInstance () {
 		return InstanceHolder.instance;
-	}
-
-	private NotificationHelper () {
-		super();
-		createChannel();
 	}
 
 	/**
@@ -81,9 +77,7 @@ public class NotificationHelper {
 	public NotificationCompat.Builder create (String channelId) {
 		Context context = DYTApplication.getInstance();
 
-		return new NotificationCompat.Builder(context, channelId).setContentTitle(context.getString(R.string.app_name))
-				.setWhen(System.currentTimeMillis()).setSmallIcon(R.mipmap.ic_launcher_dy)
-				.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher_dy));
+		return new NotificationCompat.Builder(context, channelId).setContentTitle(context.getString(R.string.app_name)).setWhen(System.currentTimeMillis()).setSmallIcon(R.mipmap.ic_launcher_dy).setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher_dy));
 	}
 
 	/**
@@ -116,6 +110,10 @@ public class NotificationHelper {
 		if (manager != null) {
 			manager.notify(id, notification);
 		}
+	}
+
+	private static class InstanceHolder {
+		private static final NotificationHelper instance = new NotificationHelper();
 	}
 
 }

@@ -201,9 +201,9 @@
                 app:layout_constraintTop_toTopOf="@id/tv_high_low_temp_gain_info"
                 app:selectedColor="@color/bg_three_choice_one"
                 app:selectedTab="0"
-                app:switchTabs= "@array/highlow_gain"
                 app:strokeRadius="@dimen/dimen_5dp"
                 app:strokeWidth="@dimen/dimen_1dp"
+                app:switchTabs="@array/highlow_gain"
                 app:text_Size="@dimen/dimen_16sp" />
 
             <TextView
@@ -593,10 +593,10 @@
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:gravity="center"
                 android:text="@string/setting_update"
-                android:visibility="gone"
                 android:textColor="@color/bg_three_choice_one"
                 android:textSize="@dimen/dimen_16sp"
                 android:textStyle="bold"
+                android:visibility="gone"
                 app:layout_constraintLeft_toRightOf="@id/gl_setting_title"
                 app:layout_constraintTop_toBottomOf="@id/tv5" />
             <!--        版本更新-->
@@ -606,9 +606,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen_10dp"
                 android:gravity="center"
-                android:textSize="@dimen/dimen_16sp"
                 android:text="@string/setting_check_version_info"
                 android:textColor="@color/white"
+                android:textSize="@dimen/dimen_16sp"
                 app:layout_constraintLeft_toRightOf="@id/gl_setting_title"
                 app:layout_constraintTop_toBottomOf="@id/tv_camera_update" />
 
@@ -619,10 +619,10 @@
                 android:background="@drawable/bg_setting_language_toggle"
                 android:gravity="center"
                 android:text="@string/check_updates"
-                android:visibility="gone"
                 android:textAllCaps="false"
                 android:textColor="@color/black"
                 android:textSize="@dimen/dimen_16sp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/tv_check_version_info"
                 app:layout_constraintLeft_toLeftOf="@id/bt_show_choice_language"
                 app:layout_constraintRight_toRightOf="@id/bt_show_choice_language"

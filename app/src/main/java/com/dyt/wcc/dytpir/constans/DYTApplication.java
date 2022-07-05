@@ -20,11 +20,11 @@ import com.tencent.bugly.crashreport.CrashReport;
  */
 public class DYTApplication extends BaseApplication {
 
-	private static final String      TAG         = "DYTApplication";
+	private static final String         TAG         = "DYTApplication";
 	//	private AppViewModel appViewModel;//全局唯一ViewModel
 	@NonNull
-	public static  DYTApplication instance;
-	private static DYTRobotSingle robotSingle = DYTRobotSingle.NO_DEVICE;
+	public static        DYTApplication instance;
+	private static       DYTRobotSingle robotSingle = DYTRobotSingle.NO_DEVICE;
 
 	public static DYTRobotSingle getRobotSingle () {
 		return robotSingle;
@@ -43,7 +43,7 @@ public class DYTApplication extends BaseApplication {
 	public void onCreate () {
 		super.onCreate();
 		instance = this;
-//		CrashReport.initCrashReport(getApplicationContext(), "253f40d84b", false);
+		//		CrashReport.initCrashReport(getApplicationContext(), "253f40d84b", false);
 		CrashReport.initCrashReport(getApplicationContext());
 		//监听activity生命周期
 		registerActivityLifecycleCallbacks();
@@ -51,11 +51,11 @@ public class DYTApplication extends BaseApplication {
 
 	@Override
 	protected void attachBaseContext (Context base) {
-//		if (instance != null) {
-//		}else{
-//			SharedPreferences sp = instance.getSharedPreferences(DYConstants.SP_NAME,Context.MODE_PRIVATE);
-			super.attachBaseContext(LanguageUtils.wrap(base));
-//		}
+		//		if (instance != null) {
+		//		}else{
+		//			SharedPreferences sp = instance.getSharedPreferences(DYConstants.SP_NAME,Context.MODE_PRIVATE);
+		super.attachBaseContext(LanguageUtils.wrap(base));
+		//		}
 	}
 
 	private void registerActivityLifecycleCallbacks () {

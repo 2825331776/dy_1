@@ -93,11 +93,11 @@ android {
             buildConfigField "String", "ENVIRONMENT", '"DYTPir"'
             // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE: "DYTPir"
-                                    , app_name   : "DytSpectrumOwl"
+                                    , app_name   : "@string/app_name"
                                     , app_icon   : "@mipmap/ic_launcher_dy_round"
                                     , APP_ID     : "1"
                                     , APP_Version: "2"
-                                    , APP_Channel: "3"
+                                    , APP_Channel: rootProject.ext.envInfo.DYT.appPackageName
                                     , isDebug    : "4"]
             //, app_icon   : "@mipmap/delete_all"
         }
@@ -116,11 +116,11 @@ android {
             buildConfigField "String", "ENVIRONMENT", '"JMSPir"'
             // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE: "JMSPir"
-                                    , app_name   : "NOYAFA"
+                                    , app_name   : "@string/app_name_NOYAFA"
                                     , app_icon   : "@mipmap/icon_launcher_jms"
                                     , APP_ID     : "1"
                                     , APP_Version: "2"
-                                    , APP_Channel: "3"
+                                    , APP_Channel: rootProject.ext.envInfo.JMS.appPackageName
                                     , isDebug    : "4"]
             // , app_icon   : "@mipmap/delete_all"
         }
@@ -139,11 +139,11 @@ android {
             buildConfigField "String", "ENVIRONMENT", '"VICTORPir"'
             // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE: "VICTORPir"
-                                    , app_name   : "VICTOR"
+                                    , app_name   : "@string/app_name_VICTOR"
                                     , app_icon   : "@mipmap/ic_launcher_victor"
                                     , APP_ID     : "1"
                                     , APP_Version: "2"
-                                    , APP_Channel: "3"
+                                    , APP_Channel: rootProject.ext.envInfo.VICTOR.appPackageName
                                     , isDebug    : "4"]
             //, app_icon   : "@mipmap/delete_all"
         }
@@ -202,7 +202,7 @@ android {
                 if (outputFile != null && outputFile.name.endsWith('.apk')) {
 //                    def fileName = "DytSpectrumOwl"+ "_${variant.flavorName}_${variant.buildType.name}_v${variant.productFlavors[0].versionName}" +
 //                            "_b${variant.productFlavors[0].versionCode}_${releasePackageTime()}.apk"
-                    def fileName = "${variant.productFlavors[0].manifestPlaceholders.app_name}" + "_${variant.buildType.name}_v${variant.productFlavors[0].versionName}" +
+                    def fileName = "${variant.productFlavors[0].manifestPlaceholders.APP_Channel}" + "_${variant.buildType.name}_v${variant.productFlavors[0].versionName}" +
                             "_b${variant.productFlavors[0].versionCode}_${releasePackageTime()}.apk"
                     outputFileName = fileName
                 }

@@ -6,22 +6,23 @@ package com.dyt.wcc.cameracommon.entity;
  * description png头部信息
  */
 public class PngHeader {
-	
+
 	/**
 	 * png文件头部信息，固定,8个字节
 	 */
 	private byte[] flag;
-	
-	public PngHeader() {
+
+	public PngHeader () {
 		flag = new byte[8];
 	}
 
-	public byte[] getFlag() {
+	public byte[] getFlag () {
 		return flag;
 	}
-	public void setFlag(byte[] flag) {
+
+	public void setFlag (byte[] flag) {
 		this.flag = flag;
 	}
-	
+
 
 }

@@ -7,9 +7,9 @@ package com.dyt.wcc.cameracommon.entity;
  */
 public class CommonBlock extends DataBlock {
 
-	public void setData(byte[] data) {
+	public void setData (byte[] data) {
 		this.data = data;
 	}
-	
+
 
 }

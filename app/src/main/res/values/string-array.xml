@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-        <string-array name="highlow_gain">
-            <item>@string/setting_low_gain</item>
-            <item>@string/setting_high_gain</item>
-        </string-array>
+    <string-array name="highlow_gain">
+        <item>@string/setting_low_gain</item>
+        <item>@string/setting_high_gain</item>
+    </string-array>
 </resources>

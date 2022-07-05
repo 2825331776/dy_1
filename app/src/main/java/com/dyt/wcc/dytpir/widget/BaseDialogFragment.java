@@ -27,10 +27,10 @@ import java.util.Objects;
  */
 public abstract class BaseDialogFragment extends DialogFragment {
 
-	protected     Context        mContext;
-	protected     View           view;
 	private final DialogPosition dialogPosition;
 	private final boolean        canceledOnTouchOutside;
+	protected     Context        mContext;
+	protected     View           view;
 
 	/**
 	 * 初始化器
@@ -110,16 +110,6 @@ public abstract class BaseDialogFragment extends DialogFragment {
 	protected abstract void initListener ();
 
 	/**
-	 * Dialog位置
-	 * CENTER：居中
-	 * BOTTOM：底部
-	 * TOP;顶部
-	 */
-	public enum DialogPosition {
-		CENTER, BOTTOM, TOP
-	}
-
-	/**
 	 * 弹出软键盘
 	 * PS：若要使用此方法自动弹出软键盘，dialog样式必须配置<item name="android:windowSoftInputMode">stateVisible</item>
 	 */
@@ -131,6 +121,16 @@ public abstract class BaseDialogFragment extends DialogFragment {
 		// 弹出软键盘
 		InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+	}
+
+	/**
+	 * Dialog位置
+	 * CENTER：居中
+	 * BOTTOM：底部
+	 * TOP;顶部
+	 */
+	public enum DialogPosition {
+		CENTER, BOTTOM, TOP
 	}
 }
 

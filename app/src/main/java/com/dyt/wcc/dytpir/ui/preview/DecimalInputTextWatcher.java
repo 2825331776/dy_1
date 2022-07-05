@@ -3,7 +3,6 @@ package com.dyt.wcc.dytpir.ui.preview;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.widget.EditText;
 
 /**
@@ -13,18 +12,15 @@ import android.widget.EditText;
 public class DecimalInputTextWatcher implements TextWatcher {
 
 	private static final String Period = ".";
-	private static final String Zero = "0";
-
-	/**
-	 * 需要设置该 DecimalInputTextWatcher 的 EditText
-	 */
-	private EditText editText = null;
-
+	private static final String Zero   = "0";
 	/**
 	 * 默认  小数的位数   2 位
 	 */
 	private static final int DEFAULT_DECIMAL_DIGITS = 2;
-
+	/**
+	 * 需要设置该 DecimalInputTextWatcher 的 EditText
+	 */
+	private EditText editText = null;
 	private int decimalDigits;// 小数的位数
 	private int totalDigits;//最大长度
 
@@ -33,7 +29,7 @@ public class DecimalInputTextWatcher implements TextWatcher {
 	 * @param totalDigits   最大长度
 	 * @param decimalDigits 小数的位数
 	 */
-	public DecimalInputTextWatcher(EditText editText, int totalDigits, int decimalDigits) {
+	public DecimalInputTextWatcher (EditText editText, int totalDigits, int decimalDigits) {
 		if (editText == null) {
 			throw new RuntimeException("editText can not be null");
 		}
@@ -47,18 +43,18 @@ public class DecimalInputTextWatcher implements TextWatcher {
 	}
 
 	@Override
-	public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+	public void beforeTextChanged (CharSequence charSequence, int i, int i1, int i2) {
 
 	}
 
 	@Override
-	public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+	public void onTextChanged (CharSequence charSequence, int i, int i1, int i2) {
 
 	}
 
 	@Override
-	public void afterTextChanged(Editable editable) {
-//		Log.e("=====================", "afterTextChanged: ");
+	public void afterTextChanged (Editable editable) {
+		//		Log.e("=====================", "afterTextChanged: ");
 		try {
 			String s = editable.toString();
 			editText.removeTextChangedListener(this);
@@ -68,8 +64,7 @@ public class DecimalInputTextWatcher implements TextWatcher {
 			if (s.contains(Period)) {
 				//超过小数位限定位数,只保留限定小数位数
 				if (s.length() - 1 - s.indexOf(Period) > decimalDigits) {
-					s = s.substring(0,
-							s.indexOf(Period) + decimalDigits + 1);
+					s = s.substring(0, s.indexOf(Period) + decimalDigits + 1);
 					editable.replace(0, editable.length(), s.trim());
 				}
 			}
@@ -79,8 +74,7 @@ public class DecimalInputTextWatcher implements TextWatcher {
 				editable.replace(0, editable.length(), s.trim());
 			}
 			//首位输入0时,不再继续输入
-			if (s.startsWith(Zero)
-					&& s.trim().length() > 1) {
+			if (s.startsWith(Zero) && s.trim().length() > 1) {
 				if (!s.substring(1, 2).equals(Period)) {
 					editable.replace(0, editable.length(), Zero);
 				}

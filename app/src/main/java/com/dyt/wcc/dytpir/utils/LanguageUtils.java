@@ -135,17 +135,17 @@ public class LanguageUtils {
 	 */
 	public static Locale getPrefAppLocale () {
 		String appLocaleLanguage = getPrefAppLocaleLanguage();
-//		if (!TextUtils.isEmpty(appLocaleLanguage)) {
-//			if (SYSTEM_LANGUAGE_TGA.equals(appLocaleLanguage)) { //系统语言则返回null
-//				return null;
-//			} else {
-//				return Locale.forLanguageTag(appLocaleLanguage);
-//			}
-//		}
-//		return Locale.SIMPLIFIED_CHINESE; // 为空，默认是简体中文
-		if (new Locale("zh").getLanguage().equals(appLocaleLanguage)){
+		//		if (!TextUtils.isEmpty(appLocaleLanguage)) {
+		//			if (SYSTEM_LANGUAGE_TGA.equals(appLocaleLanguage)) { //系统语言则返回null
+		//				return null;
+		//			} else {
+		//				return Locale.forLanguageTag(appLocaleLanguage);
+		//			}
+		//		}
+		//		return Locale.SIMPLIFIED_CHINESE; // 为空，默认是简体中文
+		if (new Locale("zh").getLanguage().equals(appLocaleLanguage)) {
 			return Locale.SIMPLIFIED_CHINESE;
-		}else {
+		} else {
 			return Locale.UK;
 		}
 	}

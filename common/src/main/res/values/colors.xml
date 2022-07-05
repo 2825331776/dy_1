@@ -12,12 +12,12 @@
 
     <color name="bg_preview_left_cutoff_rule">#FF666666</color>
 
-<!--    整体背景颜色-->
+    <!--    整体背景颜色-->
     <color name="bg_preview_right">#FF071132</color>
-<!--    布局右侧按钮颜色-->
+    <!--    布局右侧按钮颜色-->
     <color name="bg_preview_toggle_select">#FF4AD662</color>
     <color name="bg_preview_toggle_unselect">#FFDDDDDD</color>
-<!--    设置界面：选择温度单位的颜色-->
+    <!--    设置界面：选择温度单位的颜色-->
     <color name="bg_three_choice_one">#81D8CF</color>
 
 

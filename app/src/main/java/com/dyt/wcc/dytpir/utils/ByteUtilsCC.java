@@ -16,8 +16,6 @@ import java.util.Map;
  */
 public class ByteUtilsCC {
 
-	private static final String TAG = "ByteUtilsCC";
-
 	public static final String FIX              = "Fix";//修正
 	public static final String STR_FIX          = "strFix";
 	public static final String REFLECT_TEMP     = "Refltmp";//反射温度
@@ -30,6 +28,7 @@ public class ByteUtilsCC {
 	public static final String STR_EMISSIVITY   = "strEmissivity";
 	public static final String DISTANCE         = "distance";//距离
 	public static final String STR_DISTANCE     = "strDistance";
+	private static final String TAG = "ByteUtilsCC";
 
 	/**
 	 * @param data byte数据源。1 byte = 8 bits   eg:0000 0000

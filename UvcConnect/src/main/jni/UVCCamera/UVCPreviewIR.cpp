@@ -1265,9 +1265,11 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     }
 
                     //读取配置文件的 加密SN
+                    const char * file_f = "/configs.txt";
+                    strcat(app_private_path,file_f);
                     FILE *inFile = NULL;
                     inFile = fopen(
-                            "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/configs.txt",
+                            app_private_path,
                             "a+");
                     //存储文件流数据 的指针
                     char *fileStore;
@@ -1616,7 +1618,13 @@ UVCPreviewIR::draw_preview_one(uint8_t *frameData, ANativeWindow **window, convF
         copyToSurface(RgbaHoldBuffer, window);
     }
 }
-
+void UVCPreviewIR::setResourcePath(const char * path) {
+    strcpy(app_private_path, path);
+    if (mFrameImage){
+        mFrameImage->setResourcePath(path);
+    }
+    EXIT();
+}
 
 inline const bool UVCPreviewIR::IsRotateMatrix_180() const { return isRotateMatrix_180; }
 

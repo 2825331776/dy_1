@@ -30,45 +30,9 @@ import java.lang.ref.WeakReference;
  * <p>PackagePath: com.dyt.wcc.common.widget     </p>
  */
 public class MeasureTempSpecificView extends View {
-	public static final int MEASURE_POINT_VIEW = 1;//点
-	public static final int MEASURE_LINE_VIEW = 2;//线
+	public static final int MEASURE_POINT_VIEW     = 1;//点
+	public static final int MEASURE_LINE_VIEW      = 2;//线
 	public static final int MEASURE_RECTANGLE_VIEW = 3;//矩形
-
-	private final boolean isDebug = true;
-	private static final String  TAG     = "MyMoveWidget";
-
-	private Bitmap maxTempBt, minTempBt, centerTempBt;//最小温度，最大温度图片（单点只有最小温度的图片）
-	private MeasureEntity tempWidgetData;//数据源
-	/**
-	 * 最小矩形的 边长（单位：像素/30dp）
-	 */
-	private int           mMinRectPixelsLength = 0;
-	//	private int mMinWidth;//最小宽度像素点个数    //矩阵和线独有
-	//矩形描边的长度为 最小宽度的一半 除以3，厚度为固定值8
-
-	private boolean isShowBg = false;//是否显示背景
-
-	private TextPaint pointTextPaint, maxTempTextPaint, minTempTextPaint, centerTempTextPaint;//画笔：点文字、最高最低文字、 中心点文字
-	private Paint pointPaint, linePaint, linePaintBg;//画笔：画点图片 、绘制线矩形的线条画笔
-	private Paint recZoomBox;//绘制背景画笔，绘制矩形八个方位的画笔
-	private int   recZoomBoxPaintStroke;// 缩放框画笔 宽度
-	private Paint textStokerPaint;
-
-	private WeakReference<Context> mContext;
-
-	private int padLeft, padRight, padTop, padBottom;//内容布局的四周 padding 填充  // 貌似可以无需这个， 设置成一个常量的边界距离就OK
-	/**
-	 * 子View 与 父容器边界的 最小间隔 2个dp
-	 */
-	private int containerBorderLength = 0;
-
-
-	private int moveMaxWidth;//能移动的最大宽度和高度（即父控件的长宽）
-	private int moveMaxHeight;
-	//	private boolean hasBackGroundAndTools = false;
-
-	//	private RectF pointBgRectF;
-	private float wMeasureSpecSize, hMeasureSpecSize;
 	//todo  状态应提取出去
 	//八个方位
 	public static final int WIDGET_DIRECTION_STATE_LEFT         = 0x000;
@@ -76,37 +40,79 @@ public class MeasureTempSpecificView extends View {
 	public static final int WIDGET_DIRECTION_STATE_TOP          = 0x010;
 	public static final int WIDGET_DIRECTION_STATE_BOTTOM       = 0x011;
 	public static final int WIDGET_DIRECTION_STATE_LEFT_TOP     = 0x100;//256
+	//	private int mMinWidth;//最小宽度像素点个数    //矩阵和线独有
+	//矩形描边的长度为 最小宽度的一半 除以3，厚度为固定值8
 	public static final int WIDGET_DIRECTION_STATE_LEFT_BOTTOM  = 0x101;//257
 	public static final int WIDGET_DIRECTION_STATE_RIGHT_TOP    = 0x110;//272
 	public static final int WIDGET_DIRECTION_STATE_RIGHT_BOTTOM = 0x111;//273
 	public static final int CENTER_RECTANGLE                    = 0x1111;//中心部分
-
+	private static final String  TAG     = "MyMoveWidget";
+	//	private Timer mTimer = null;
+	//	private TimerTask mTimeTask;
+	private static final int     TO_CHANGE_SELECT = 11;
+	private final        boolean isDebug = true;
+	private Bitmap maxTempBt, minTempBt, centerTempBt;//最小温度，最大温度图片（单点只有最小温度的图片）
+	private MeasureEntity tempWidgetData;//数据源
+	/**
+	 * 最小矩形的 边长（单位：像素/30dp）
+	 */
+	private int           mMinRectPixelsLength = 0;
+	private boolean isShowBg = false;//是否显示背景
+	//	private boolean hasBackGroundAndTools = false;
+	private TextPaint pointTextPaint, maxTempTextPaint, minTempTextPaint, centerTempTextPaint;//画笔：点文字、最高最低文字、 中心点文字
+	private Paint pointPaint, linePaint, linePaintBg;//画笔：画点图片 、绘制线矩形的线条画笔
+	private Paint recZoomBox;//绘制背景画笔，绘制矩形八个方位的画笔
+	private int   recZoomBoxPaintStroke;// 缩放框画笔 宽度
+	private Paint textStokerPaint;
+	private WeakReference<Context> mContext;
+	private int padLeft, padRight, padTop, padBottom;//内容布局的四周 padding 填充  // 貌似可以无需这个， 设置成一个常量的边界距离就OK
+	/**
+	 * 子View 与 父容器边界的 最小间隔 2个dp
+	 */
+	private int containerBorderLength = 0;
+	private int moveMaxWidth;//能移动的最大宽度和高度（即父控件的长宽）
+	private int moveMaxHeight;
+	//	private RectF pointBgRectF;
+	private float wMeasureSpecSize, hMeasureSpecSize;
 	//内容的矩形、内容背景矩形、 工具图片绘制的矩形、 工具图片的背景 矩形、 文字矩形
 	private RectF rectContent, rectContentBg, rectTool, rectToolsBg, textRectBg;
-
 	private int tempLocationState = WIDGET_DIRECTION_STATE_LEFT_TOP, toolsLocationState = WIDGET_DIRECTION_STATE_LEFT_TOP, widgetLocationState;//文字 和 工具 绘制所处于的状态
-
 	private float contentLeft, contentRight, contentTop, contentBottom;
 	private float contentBgLeft, contentBgRight, contentBgTop, contentBgBottom;
-
 	private float textNeedWidth, textNeedHeight, toolsNeedWidth, toolsNeedHeight;
-
 	private float strLeft, strRight, strTop, strBottom;
 	private float toolsBgLeft, toolsBgRight, toolsBgTop, toolsBgBottom;
-
 	private String minTempStr, maxTempStr;//记录最小最高温度
 	private float xOffset, yOffset;//X 轴 和Y轴 偏移量， 相对于Android View的坐标原点
-
 	private float pressDownX, pressDownY;
 	private float zoomLineLength;//缩放的线条长度
 	private int   rectangleState;
-
 	private MeasureTempContainerView.OnChildToolsClickListener mChildToolsClickListener;
-
-	public void setChildToolsClickListener (MeasureTempContainerView.OnChildToolsClickListener childToolsClickListener) {
-		this.mChildToolsClickListener = childToolsClickListener;
-	}
-
+	private              Handler mHandler         = new Handler(new Handler.Callback() {
+		@Override
+		public boolean handleMessage (@NonNull Message msg) {
+			switch (msg.what) {
+				case TO_CHANGE_SELECT:
+					//					if (tempWidgetData.isCanMove()){
+					tempWidgetData.setSelect(true);
+					requestLayout();
+					//					}
+					break;
+			}
+			return true;
+		}
+	});
+	/**
+	 * 子view如何分发 事件。
+	 * 调用自身的 onTouchEvent 方法：
+	 * 直接消耗掉事件：
+	 *
+	 * @param ev
+	 * @return
+	 */
+	private float mDataNearByUnit = 0;// 距离数据源 的 单位，有多少个单位，以 矩形 为的感应区为一个单位
+	private long pressDownStart;
+	private long pressCancelTime;
 	public MeasureTempSpecificView (Context context, MeasureEntity view, int maxWidth, int maxHeight) {
 		super(context);
 		mContext = new WeakReference<>(context);
@@ -131,6 +137,9 @@ public class MeasureTempSpecificView extends View {
 		initData();
 	}
 
+	public void setChildToolsClickListener (MeasureTempContainerView.OnChildToolsClickListener childToolsClickListener) {
+		this.mChildToolsClickListener = childToolsClickListener;
+	}
 
 	/**
 	 * 初始化 一些参数
@@ -213,24 +222,6 @@ public class MeasureTempSpecificView extends View {
 		recZoomBox.setStrokeWidth(recZoomBoxPaintStroke);
 	}
 
-	//	private Timer mTimer = null;
-	//	private TimerTask mTimeTask;
-	private static final int     TO_CHANGE_SELECT = 11;
-	private              Handler mHandler         = new Handler(new Handler.Callback() {
-		@Override
-		public boolean handleMessage (@NonNull Message msg) {
-			switch (msg.what) {
-				case TO_CHANGE_SELECT:
-					//					if (tempWidgetData.isCanMove()){
-					tempWidgetData.setSelect(true);
-					requestLayout();
-					//					}
-					break;
-			}
-			return true;
-		}
-	});
-
 	public MeasureEntity gettempWidgetData () {
 		return tempWidgetData;
 	}
@@ -238,7 +229,6 @@ public class MeasureTempSpecificView extends View {
 	public void settempWidgetData (MeasureEntity tempWidgetData) {
 		this.tempWidgetData = tempWidgetData;
 	}
-
 
 	public void dataUpdate (MeasureEntity obj) {
 		tempWidgetData = obj;
@@ -752,7 +742,6 @@ public class MeasureTempSpecificView extends View {
 		return calculateY;
 	}
 
-
 	public boolean isSelectedState () {
 		return tempWidgetData.isSelect();
 	}
@@ -1002,16 +991,6 @@ public class MeasureTempSpecificView extends View {
 		setMeasuredDimension((int) wMeasureSpecSize, (int) hMeasureSpecSize);
 	}
 
-	/**
-	 * 子view如何分发 事件。
-	 * 调用自身的 onTouchEvent 方法：
-	 * 直接消耗掉事件：
-	 *
-	 * @param ev
-	 * @return
-	 */
-	private float mDataNearByUnit = 0;// 距离数据源 的 单位，有多少个单位，以 矩形 为的感应区为一个单位
-
 	@Override
 	public boolean dispatchTouchEvent (MotionEvent ev) {
 		//		Log.e(TAG, "Child View  === dispatchTouchEvent ==  ev.getAction ==== " + ev.getAction());
@@ -1108,7 +1087,6 @@ public class MeasureTempSpecificView extends View {
 		}
 		return state;
 	}
-
 
 	/**
 	 * <p>矩形测温 的缩放 或 平移 ，pressDirection 为center的时候为平移，其余为缩放。</p>
@@ -1295,10 +1273,6 @@ public class MeasureTempSpecificView extends View {
 		}
 	}
 
-	private long pressDownStart;
-	private long pressCancelTime;
-
-
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
 		//		Log.e(TAG, "Child onTouchEvent:  getX=======> " + event.getX() + " getY======> " + event.getY() + "  bg = " + tempWidgetData.isSelect());
@@ -1361,28 +1335,20 @@ public class MeasureTempSpecificView extends View {
 							float xLength = Math.abs(ex - sx);//x 轴 长度
 							float yLength = Math.abs(ey - sy);//y 轴 长度
 							if (tempWidgetData.isRotate()) {
-								if ((sx - xoff) >= containerBorderLength && (sx - xoff) <= (moveMaxWidth - xLength - containerBorderLength)
-										&& (ex - xoff) >= containerBorderLength + xLength && (ex - xoff) <= moveMaxWidth - containerBorderLength) {
+								if ((sx - xoff) >= containerBorderLength && (sx - xoff) <= (moveMaxWidth - xLength - containerBorderLength) && (ex - xoff) >= containerBorderLength + xLength && (ex - xoff) <= moveMaxWidth - containerBorderLength) {
 									sx -= xoff;
 									ex -= xoff;
 								}
-								if ((Math.min(ey, sy) - yoff) >= containerBorderLength
-										&& ((Math.min(ey, sy) - yoff) <= (moveMaxHeight - yLength - containerBorderLength))
-										&& (Math.max(ey, sy) - yoff) >= (containerBorderLength + yLength)
-										&& ((Math.max(ey, sy) - yoff) <= (moveMaxHeight - containerBorderLength))) {
+								if ((Math.min(ey, sy) - yoff) >= containerBorderLength && ((Math.min(ey, sy) - yoff) <= (moveMaxHeight - yLength - containerBorderLength)) && (Math.max(ey, sy) - yoff) >= (containerBorderLength + yLength) && ((Math.max(ey, sy) - yoff) <= (moveMaxHeight - containerBorderLength))) {
 									sy -= yoff;
 									ey -= yoff;
 								}
 							} else {
-								if ((sx + xoff) >= containerBorderLength && (sx + xoff) <= (moveMaxWidth - xLength - padRight)
-										&& (ex + xoff) >= padLeft + xLength && (ex + xoff) <= moveMaxWidth - padRight) {
+								if ((sx + xoff) >= containerBorderLength && (sx + xoff) <= (moveMaxWidth - xLength - padRight) && (ex + xoff) >= padLeft + xLength && (ex + xoff) <= moveMaxWidth - padRight) {
 									sx += xoff;
 									ex += xoff;
 								}
-								if ((Math.min(ey, sy) + yoff) >= containerBorderLength
-										&& ((Math.min(ey, sy) + yoff) <= (moveMaxHeight - yLength - containerBorderLength))
-										&& (Math.max(ey, sy) + yoff) >= (containerBorderLength + yLength)
-										&& ((Math.max(ey, sy) + yoff) <= (moveMaxHeight - containerBorderLength))) {
+								if ((Math.min(ey, sy) + yoff) >= containerBorderLength && ((Math.min(ey, sy) + yoff) <= (moveMaxHeight - yLength - containerBorderLength)) && (Math.max(ey, sy) + yoff) >= (containerBorderLength + yLength) && ((Math.max(ey, sy) + yoff) <= (moveMaxHeight - containerBorderLength))) {
 									sy += yoff;
 									ey += yoff;
 								}

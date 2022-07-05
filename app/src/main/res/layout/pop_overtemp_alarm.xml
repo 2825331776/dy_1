@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -8,147 +7,148 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_gravity="center"
-        android:background="@drawable/bg_main_preview_overtemp_pop"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_main_preview_overtemp_pop">
 
         <com.dyt.wcc.common.widget.NumberPickerView
             android:id="@+id/numberPicker_hundreds_main_preview_overTemp_pop"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:layout_width="@dimen/dimen_30dp"
             android:layout_height="@dimen/dimen_120dp"
             android:layout_centerHorizontal="true"
             android:layout_margin="@dimen/dimen_5dp"
             android:layout_marginTop="@dimen/dimen_5dp"
             android:layout_marginEnd="@dimen/dimen_5dp"
-            app:layout_constraintRight_toLeftOf="@id/numberPicker_decade_main_preview_overTemp_pop"
             android:background="#11999999"
             android:contentDescription="test_number_picker_view"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/numberPicker_decade_main_preview_overTemp_pop"
+            app:layout_constraintTop_toTopOf="parent"
+            app:npv_DividerColor="@color/bg_three_choice_one"
             app:npv_ItemPaddingHorizontal="@dimen/dimen_5dp"
             app:npv_ItemPaddingVertical="@dimen/dimen_5dp"
             app:npv_ShownCount="3"
-            app:npv_DividerColor="@color/bg_three_choice_one"
             app:npv_TextColorNormal="@color/gray"
             app:npv_TextColorSelected="@color/white"
             app:npv_TextSizeNormal="14sp"
             app:npv_TextSizeSelected="18sp"
-            app:npv_WrapSelectorWheel="true"/>
+            app:npv_WrapSelectorWheel="true" />
 
         <com.dyt.wcc.common.widget.NumberPickerView
             android:id="@+id/numberPicker_decade_main_preview_overTemp_pop"
+            android:layout_width="@dimen/dimen_30dp"
+            android:layout_height="@dimen/dimen_120dp"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="@dimen/dimen_5dp"
+            android:background="#11999999"
+            android:contentDescription="test_number_picker_view"
             app:layout_constraintLeft_toRightOf="@id/numberPicker_hundreds_main_preview_overTemp_pop"
             app:layout_constraintRight_toLeftOf="@id/numberPicker_unit_main_preview_overTemp_pop"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_width="@dimen/dimen_30dp"
-            android:layout_height="@dimen/dimen_120dp"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="@dimen/dimen_5dp"
-            android:background="#11999999"
-            android:contentDescription="test_number_picker_view"
+            app:npv_DividerColor="@color/bg_three_choice_one"
             app:npv_ItemPaddingHorizontal="@dimen/dimen_5dp"
             app:npv_ItemPaddingVertical="@dimen/dimen_5dp"
             app:npv_ShownCount="3"
-            app:npv_DividerColor="@color/bg_three_choice_one"
             app:npv_TextColorNormal="@color/gray"
             app:npv_TextColorSelected="@color/white"
             app:npv_TextSizeNormal="14sp"
             app:npv_TextSizeSelected="18sp"
-            app:npv_WrapSelectorWheel="true"/>
+            app:npv_WrapSelectorWheel="true" />
 
         <com.dyt.wcc.common.widget.NumberPickerView
             android:id="@+id/numberPicker_unit_main_preview_overTemp_pop"
+            android:layout_width="@dimen/dimen_30dp"
+            android:layout_height="@dimen/dimen_120dp"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="@dimen/dimen_5dp"
+            android:background="#11999999"
+            android:contentDescription="test_number_picker_view"
             app:layout_constraintLeft_toRightOf="@id/numberPicker_decade_main_preview_overTemp_pop"
             app:layout_constraintRight_toLeftOf="@id/tv_point"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_width="@dimen/dimen_30dp"
-            android:layout_height="@dimen/dimen_120dp"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="@dimen/dimen_5dp"
-            android:background="#11999999"
-            android:contentDescription="test_number_picker_view"
+            app:npv_DividerColor="@color/bg_three_choice_one"
             app:npv_ItemPaddingHorizontal="@dimen/dimen_5dp"
             app:npv_ItemPaddingVertical="@dimen/dimen_5dp"
-            app:npv_DividerColor="@color/bg_three_choice_one"
+            app:npv_ShownCount="3"
             app:npv_TextColorNormal="@color/gray"
             app:npv_TextColorSelected="@color/white"
-            app:npv_ShownCount="3"
             app:npv_TextSizeNormal="14sp"
             app:npv_TextSizeSelected="18sp"
-            app:npv_WrapSelectorWheel="true"/>
+            app:npv_WrapSelectorWheel="true" />
 
         <TextView
             android:id="@+id/tv_point"
+            android:layout_width="@dimen/dimen_20dp"
+            android:layout_height="@dimen/dimen_20dp"
+            android:gravity="center_horizontal"
             android:text=" . "
             android:textColor="@color/white"
             android:textStyle="bold"
-            android:gravity="center_horizontal"
+            app:layout_constraintBottom_toBottomOf="@id/numberPicker_unit_main_preview_overTemp_pop"
             app:layout_constraintLeft_toRightOf="@id/numberPicker_unit_main_preview_overTemp_pop"
             app:layout_constraintRight_toLeftOf="@id/numberPicker_decimal_main_preview_overTemp_pop"
-            app:layout_constraintTop_toTopOf="@id/numberPicker_unit_main_preview_overTemp_pop"
-            app:layout_constraintBottom_toBottomOf="@id/numberPicker_unit_main_preview_overTemp_pop"
-            android:layout_width="@dimen/dimen_20dp"
-            android:layout_height="@dimen/dimen_20dp" />
+            app:layout_constraintTop_toTopOf="@id/numberPicker_unit_main_preview_overTemp_pop" />
 
         <com.dyt.wcc.common.widget.NumberPickerView
             android:id="@+id/numberPicker_decimal_main_preview_overTemp_pop"
-            app:layout_constraintLeft_toRightOf="@id/tv_point"
-            app:layout_constraintTop_toTopOf="parent"
             android:layout_width="@dimen/dimen_30dp"
             android:layout_height="@dimen/dimen_120dp"
             android:layout_centerHorizontal="true"
             android:layout_margin="@dimen/dimen_5dp"
             android:background="#11999999"
             android:contentDescription="test_number_picker_view"
+            app:layout_constraintLeft_toRightOf="@id/tv_point"
+            app:layout_constraintTop_toTopOf="parent"
+            app:npv_DividerColor="@color/bg_three_choice_one"
             app:npv_ItemPaddingHorizontal="@dimen/dimen_5dp"
             app:npv_ItemPaddingVertical="@dimen/dimen_5dp"
             app:npv_ShownCount="3"
-            app:npv_DividerColor="@color/bg_three_choice_one"
             app:npv_TextColorNormal="@color/gray"
             app:npv_TextColorSelected="@color/white"
             app:npv_TextSizeNormal="14sp"
             app:npv_TextSizeSelected="18sp"
-            app:npv_WrapSelectorWheel="true"/>
+            app:npv_WrapSelectorWheel="true" />
+
         <TextView
             android:id="@+id/tv_main_preview_ovetemp_pop_unit"
-            app:layout_constraintLeft_toRightOf="@id/numberPicker_decimal_main_preview_overTemp_pop"
-            app:layout_constraintTop_toTopOf="@id/numberPicker_decimal_main_preview_overTemp_pop"
-            app:layout_constraintBottom_toBottomOf="@id/numberPicker_decimal_main_preview_overTemp_pop"
-            android:layout_marginStart="@dimen/dimen_5dp"
-            android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="℃"/>
+            android:layout_marginStart="@dimen/dimen_5dp"
+            android:text="℃"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="@id/numberPicker_decimal_main_preview_overTemp_pop"
+            app:layout_constraintLeft_toRightOf="@id/numberPicker_decimal_main_preview_overTemp_pop"
+            app:layout_constraintTop_toTopOf="@id/numberPicker_decimal_main_preview_overTemp_pop" />
 
         <Button
             android:id="@+id/bt_submit"
-            android:text="@string/confirm"
-            app:layout_constraintHorizontal_weight="1"
-            android:textSize="@dimen/dimen_16sp"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:background="@drawable/bg_main_preview_over_temp_alarm"
-            android:layout_marginTop="@dimen/dimen_10dp"
-            app:layout_constraintTop_toBottomOf="@id/numberPicker_unit_main_preview_overTemp_pop"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toRightOf="@id/bt_cancel"
             android:layout_width="0dp"
+            android:layout_height="@dimen/dimen_28dp"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:background="@drawable/bg_main_preview_over_temp_alarm"
+            android:gravity="center"
+            android:text="@string/confirm"
             android:textAllCaps="false"
-            android:layout_height="@dimen/dimen_28dp" />
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintLeft_toRightOf="@id/bt_cancel"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/numberPicker_unit_main_preview_overTemp_pop" />
 
         <Button
             android:id="@+id/bt_cancel"
-            app:layout_constraintHorizontal_weight="1"
             android:layout_width="0dp"
             android:layout_height="@dimen/dimen_28dp"
             android:layout_marginEnd="@dimen/dimen_10dp"
-            android:textColor="@color/white"
             android:background="@drawable/bg_main_preview_over_temp_alarm"
             android:text="@string/cancel"
             android:textAllCaps="false"
+            android:textColor="@color/white"
             android:textSize="@dimen/dimen_16sp"
             app:layout_constraintBottom_toBottomOf="@+id/bt_submit"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/bt_submit"
             app:layout_constraintTop_toTopOf="@+id/bt_submit" />

@@ -8,8 +8,12 @@ package com.dyt.wcc.common.widget.dragView;
  * <p>PackagePath: com.dyt.wcc.common.widget.dragView     </p>
  */
 public class DrawLineRectHint {
-	private int drawTempMode;
+	private int     drawTempMode;
 	private boolean needDraw = false;
+	private float startXCoordinate;
+	private float startYCoordinate;
+	private float endXCoordinate;
+	private float endYCoordinate;
 
 	public boolean isNeedDraw () {
 		return needDraw;
@@ -18,12 +22,6 @@ public class DrawLineRectHint {
 	public void setNeedDraw (boolean needDraw) {
 		this.needDraw = needDraw;
 	}
-
-	private float startXCoordinate;
-	private float startYCoordinate;
-
-	private float endXCoordinate;
-	private float endYCoordinate;
 
 	public int getDrawTempMode () {
 		return drawTempMode;

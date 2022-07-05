@@ -13,13 +13,13 @@ import java.io.File;
  */
 public class DYConstants {
 
-	public static final int IMAGE_READY = 100;
+	public static final int IMAGE_READY     = 100;
 	//校正 最小值  最大值 （在摄氏度）
-	public static final int REVISE_MIN  = -20;
-	public static final int REVISE_MAX  = 20;
+	public static final int REVISE_MIN      = -20;
+	public static final int REVISE_MAX      = 20;
 	//环境 反射温度 的最小值  最大值 （在摄氏度）
-	public static final int REFLECT_MIN = -20;
-	public static final int REFLECT_MAX = 120;
+	public static final int REFLECT_MIN     = -20;
+	public static final int REFLECT_MAX     = 120;
 	public static final int ENVIRONMENT_MIN = -20;
 	public static final int ENVIRONMENT_MAX = 50;
 

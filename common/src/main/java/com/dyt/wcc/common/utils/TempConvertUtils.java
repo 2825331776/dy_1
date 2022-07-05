@@ -20,7 +20,7 @@ public class TempConvertUtils {
 	 */
 	public static float temp2Celsius (float temp, int mode) {
 		float result = 0.0f;//centigrade
-		if (Float.isNaN(temp) || temp > BaseConstants.BASE_MAX_TEMP || temp < BaseConstants.BASE_MIN_TEMP){
+		if (Float.isNaN(temp) || temp > BaseConstants.BASE_MAX_TEMP || temp < BaseConstants.BASE_MIN_TEMP) {
 			return Float.NaN;
 		}
 		switch (mode) {
@@ -57,9 +57,9 @@ public class TempConvertUtils {
 				result = (temp + 273.15f);
 				break;
 		}
-		if (result > BaseConstants.BASE_MAX_TEMP || result < BaseConstants.BASE_MIN_TEMP){
+		if (result > BaseConstants.BASE_MAX_TEMP || result < BaseConstants.BASE_MIN_TEMP) {
 			return Float.NaN;
-		}else {
+		} else {
 			return result;
 		}
 

@@ -33,24 +33,10 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 	private              LayoutInflater                    mInflater;
 	private              MyOnItemClickListener             onItemClickListener;
 
-	public interface MyOnItemClickListener {
-		void itemClickListener (int position);
-	}
-
-	public void setOnItemClickListener (MyOnItemClickListener itemClickListener) {
-		this.onItemClickListener = itemClickListener;
-	}
-
 	public GalleryAdapter (Context context, CopyOnWriteArrayList<GalleryBean> data) {
 		this.mContext = context;
 		this.photoList = data;
 		mInflater = LayoutInflater.from(mContext);
-	}
-
-	@NonNull
-	@Override
-	public GalleryHolder onCreateViewHolder (@NonNull ViewGroup parent, int viewType) {
-		return new GalleryHolder(mInflater.inflate(R.layout.item_photo_gallery, parent, false));
 	}
 
 	public static String stringForTime (int timeMs) {
@@ -68,6 +54,16 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 		} else {
 			return mFormatter.format("%02d:%02d", minutes, seconds).toString();
 		}
+	}
+
+	public void setOnItemClickListener (MyOnItemClickListener itemClickListener) {
+		this.onItemClickListener = itemClickListener;
+	}
+
+	@NonNull
+	@Override
+	public GalleryHolder onCreateViewHolder (@NonNull ViewGroup parent, int viewType) {
+		return new GalleryHolder(mInflater.inflate(R.layout.item_photo_gallery, parent, false));
 	}
 
 	@Override
@@ -105,6 +101,10 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 	@Override
 	public int getItemCount () {
 		return photoList.size();
+	}
+
+	public interface MyOnItemClickListener {
+		void itemClickListener (int position);
 	}
 
 	static class GalleryHolder extends RecyclerView.ViewHolder {

@@ -1,5 +1,7 @@
 package com.dyt.wcc.common.widget.dragView;
 
+import androidx.annotation.NonNull;
+
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
  * <p>Author：stefan cheng        </p>
@@ -18,7 +20,7 @@ public class MeasurePointEntity {
 	private float startPointY;
 
 	private String temp;//温度值
-	private int tempDirection;////绘制前通过计算坐标初始化 方位
+	private int    tempDirection;////绘制前通过计算坐标初始化 方位
 
 	public int getType () {
 		return type;
@@ -31,21 +33,27 @@ public class MeasurePointEntity {
 	public int getTempDirection () {
 		return tempDirection;
 	}
+
 	public void setTempDirection (int tempDirection) {
 		this.tempDirection = tempDirection;
 	}
+
 	public float getStartPointX () {
 		return startPointX;
 	}
+
 	public void setStartPointX (float startPointX) {
 		this.startPointX = startPointX;
 	}
+
 	public float getStartPointY () {
 		return startPointY;
 	}
+
 	public void setStartPointY (float startPointY) {
 		this.startPointY = startPointY;
 	}
+
 	public String getTemp () {
 		return temp;
 	}
@@ -54,9 +62,9 @@ public class MeasurePointEntity {
 		this.temp = temp;
 	}
 
+	@NonNull
 	@Override
 	public String toString () {
-		return "PointTempWidget{" + "type=" + type + ", startPointX=" + startPointX + ", startPointY=" +
-				startPointY + ", temp='" + temp + '\'' + ", tempDirection=" + tempDirection + '}';
+		return "PointTempWidget{" + "type=" + type + ", startPointX=" + startPointX + ", startPointY=" + startPointY + ", temp='" + temp + '\'' + ", tempDirection=" + tempDirection + '}';
 	}
 }

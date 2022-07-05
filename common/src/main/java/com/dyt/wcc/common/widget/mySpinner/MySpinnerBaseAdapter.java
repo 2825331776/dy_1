@@ -21,26 +21,23 @@ import com.dyt.wcc.common.R;
  * <p>PackagePath: com.wcc.dytfourbie.main.widget     </p>
  */
 public abstract class MySpinnerBaseAdapter<T> extends BaseAdapter {
-	private final PopUpTextAlignment                                  horizontalAlignment;//枚举类型 START 0  END 1  CENTER 2
+	private final PopUpTextAlignment   horizontalAlignment;//枚举类型 START 0  END 1  CENTER 2
 	private final SpinnerTextFormatter spinnerTextFormatter;
-
+	int selectedIndex;
 	private int textColor;
 	private int backgroundSelector;
-
-	int selectedIndex;
-
 	private Context mContext;
 
 	/**
 	 * constructor
+	 *
 	 * @param context
 	 * @param textColor
 	 * @param backgroundSelector
 	 * @param spinnerTextFormatter
 	 * @param horizontalAlignment
 	 */
-	MySpinnerBaseAdapter (Context context, int textColor, int backgroundSelector,
-	                      SpinnerTextFormatter spinnerTextFormatter, PopUpTextAlignment horizontalAlignment) {
+	MySpinnerBaseAdapter (Context context, int textColor, int backgroundSelector, SpinnerTextFormatter spinnerTextFormatter, PopUpTextAlignment horizontalAlignment) {
 		this.mContext = context;
 		this.spinnerTextFormatter = spinnerTextFormatter;
 		this.backgroundSelector = backgroundSelector;
@@ -72,7 +69,7 @@ public abstract class MySpinnerBaseAdapter<T> extends BaseAdapter {
 		return convertView;
 	}
 
-	private void setTextHorizontalAlignment(TextView textView) {
+	private void setTextHorizontalAlignment (TextView textView) {
 		switch (horizontalAlignment) {
 			case START:
 				textView.setGravity(Gravity.START);
@@ -87,27 +84,28 @@ public abstract class MySpinnerBaseAdapter<T> extends BaseAdapter {
 	}
 
 	@Override
-	public long getItemId(int position) {
+	public long getItemId (int position) {
 		return position;
 	}
 
-	public abstract T getItemInDataset(int position);
+	public abstract T getItemInDataset (int position);
 
 	@Override
-	public abstract T getItem(int position);
+	public abstract T getItem (int position);
 
 	/***************get set method *******************/
-	public int getSelectedIndex() {
+	public int getSelectedIndex () {
 		return selectedIndex;
 	}
-	void setSelectedIndex(int index) {
+
+	void setSelectedIndex (int index) {
 		selectedIndex = index;
 	}
 
 	static class ViewHolder {
 		TextView textView;
 
-		ViewHolder(TextView textView) {
+		ViewHolder (TextView textView) {
 			this.textView = textView;
 		}
 	}

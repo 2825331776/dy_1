@@ -7,7 +7,7 @@
     <string name="preview_about_contact_us">Contact us：</string>
     <string name="preview_about_contact_us_email">service@dianytech.com</string>
 
-<!--    页面名称-->
+    <!--    页面名称-->
     <string name="app_name">DytSpectrumOwl</string>
     <string name="Gallery">Gallery</string>
     <string name="Welcome">Welcome</string>
@@ -88,7 +88,6 @@
     <string name="toast_complete_Revise">Calibration setting complete</string>
     <string name="toast_complete_FreeAirTemp">Ambient temperature setting complete</string>
     <string name="toast_complete_Humidity">Humidity setting complete</string>
-
 
 
 </resources>

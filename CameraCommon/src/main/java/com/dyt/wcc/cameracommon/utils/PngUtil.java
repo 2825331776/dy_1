@@ -22,14 +22,15 @@ import java.io.OutputStream;
  * @decription 隐藏文件内容到png格式图片中
  */
 public class PngUtil {
-	
+
 	/**
 	 * 读取指定png文件的信息
+	 *
 	 * @param pngFileName
 	 * @return
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	private static Png readPng(String pngFileName) throws IOException {
+	private static Png readPng (String pngFileName) throws IOException {
 		Png png = new Png();
 		File pngFile = new File(pngFileName);
 		InputStream pngIn = null;
@@ -42,8 +43,8 @@ public class PngUtil {
 			pngIn.read(pngHeader.getFlag());
 			png.setPngHeader(pngHeader);
 			pos += pngHeader.getFlag().length;
-			
-			while(pos < pngFile.length()) {
+
+			while (pos < pngFile.length()) {
 				DataBlock realDataBlock = null;
 				//读取数据块
 				DataBlock dataBlock = new CommonBlock();
@@ -69,7 +70,7 @@ public class PngUtil {
 			throw e;
 		} finally {
 			try {
-				if(pngIn != null) {
+				if (pngIn != null) {
 					pngIn.close();
 				}
 			} catch (IOException e) {
@@ -79,16 +80,17 @@ public class PngUtil {
 		}
 		return png;
 	}
-	
+
 	/**
 	 * 将读取到的文件信息写入到指定png的文件中，并指定输出文件
-	 * @param png				Png信息对象
-	 * @param pngFileName		png文件名
-	 * @param inputFileName		要隐藏的文件名
-	 * @param outFileName		输出文件名，内容包括png数据和要隐藏文件的信息
-	 * @throws IOException 
+	 *
+	 * @param png           Png信息对象
+	 * @param pngFileName   png文件名
+	 * @param inputFileName 要隐藏的文件名
+	 * @param outFileName   输出文件名，内容包括png数据和要隐藏文件的信息
+	 * @throws IOException
 	 */
-	private static void wirteFileToPng(Png png, String pngFileName, String inputFileName, String outFileName) throws IOException {
+	private static void wirteFileToPng (Png png, String pngFileName, String inputFileName, String outFileName) throws IOException {
 		File pngFile = new File(pngFileName);
 		File inputFile = new File(inputFileName);
 		File outFile = new File(outFileName);
@@ -98,7 +100,7 @@ public class PngUtil {
 		int len = -1;
 		byte[] buf = new byte[1024];
 		try {
-			if(!outFile.exists()) {
+			if (!outFile.exists()) {
 				outFile.createNewFile();
 			}
 			pngIn = new FileInputStream(pngFile);
@@ -116,22 +118,21 @@ public class PngUtil {
 			out.write(png.getPngHeader().getFlag());
 			//写入数据块信息
 			String hexCode = null;
-			for(int i = 0; i < png.getDataBlocks().size(); i++) {
+			for (int i = 0; i < png.getDataBlocks().size(); i++) {
 				DataBlock dataBlock = png.getDataBlocks().get(i);
-				hexCode = ByteUtil.byteToHex(dataBlock.getChunkTypeCode(), 
-						0, dataBlock.getChunkTypeCode().length);
+				hexCode = ByteUtil.byteToHex(dataBlock.getChunkTypeCode(), 0, dataBlock.getChunkTypeCode().length);
 				hexCode = hexCode.toUpperCase();
 				out.write(dataBlock.getLength());
 				out.write(dataBlock.getChunkTypeCode());
 				//写数据块数据
-				if(BlockUtil.isIEND(hexCode)) {
+				if (BlockUtil.isIEND(hexCode)) {
 					//写原来IEND数据块的数据
-					if(dataBlock.getData() != null) {
+					if (dataBlock.getData() != null) {
 						out.write(dataBlock.getData());
 					}
 					//如果是IEND数据块，那么将文件内容写入IEND数据块的数据中去
 					len = -1;
-					while((len = inputIn.read(buf)) > 0) {
+					while ((len = inputIn.read(buf)) > 0) {
 						out.write(buf, 0, len);
 					}
 				} else {
@@ -144,13 +145,13 @@ public class PngUtil {
 			throw e;
 		} finally {
 			try {
-				if(pngIn != null) {
+				if (pngIn != null) {
 					pngIn.close();
 				}
-				if(inputIn != null) {
+				if (inputIn != null) {
 					inputIn.close();
 				}
-				if(out != null) {
+				if (out != null) {
 					out.close();
 				}
 			} catch (IOException e) {
@@ -158,28 +159,30 @@ public class PngUtil {
 				throw e;
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * 将指定的文件信息写入到png文件中，并输出到指定的文件中
-	 * @param pngFileName			png文件名
-	 * @param inputFileName			要隐藏的文件名
-	 * @param outFileName			输出文件名
-	 * @throws IOException 
+	 *
+	 * @param pngFileName   png文件名
+	 * @param inputFileName 要隐藏的文件名
+	 * @param outFileName   输出文件名
+	 * @throws IOException
 	 */
-	public static void writeFileToPng(String pngFileName, String inputFileName, String outFileName) throws IOException {
+	public static void writeFileToPng (String pngFileName, String inputFileName, String outFileName) throws IOException {
 		Png png = readPng(pngFileName);
 		wirteFileToPng(png, pngFileName, inputFileName, outFileName);
 	}
-	
+
 	/**
 	 * 读取png文件中存储的信息，并写入到指定指定输出文件中
-	 * @param pngFileName		png文件名
-	 * @param outFileName		指定输出文件名
-	 * @throws IOException 
+	 *
+	 * @param pngFileName png文件名
+	 * @param outFileName 指定输出文件名
+	 * @throws IOException
 	 */
-	public static void readFileFromPng(String pngFileName, String outFileName) throws IOException {
+	public static void readFileFromPng (String pngFileName, String outFileName) throws IOException {
 		File pngFile = new File(pngFileName);
 		File outFile = new File(outFileName);
 		InputStream pngIn = null;
@@ -189,7 +192,7 @@ public class PngUtil {
 		int len = -1;
 		byte[] buf = new byte[1024];
 		try {
-			if(!outFile.exists()) {
+			if (!outFile.exists()) {
 				outFile.createNewFile();
 			}
 			pngIn = new BufferedInputStream(new FileInputStream(pngFile));
@@ -211,8 +214,8 @@ public class PngUtil {
 			pngIn.skip(pngFile.length() - fileLength - crcLength);
 			pos = pngFile.length() - fileLength - crcLength;
 			//读取隐藏文件数据
-			while((len = pngIn.read(buf)) > 0) {
-				if( (pos + len) > (pngFile.length() - crcLength) ) {
+			while ((len = pngIn.read(buf)) > 0) {
+				if ((pos + len) > (pngFile.length() - crcLength)) {
 					out.write(buf, 0, (int) (pngFile.length() - crcLength - pos));
 					break;
 				} else {
@@ -225,10 +228,10 @@ public class PngUtil {
 			throw e;
 		} finally {
 			try {
-				if(pngIn != null) {
+				if (pngIn != null) {
 					pngIn.close();
 				}
-				if(out != null) {
+				if (out != null) {
 					out.close();
 				}
 			} catch (IOException e) {
@@ -237,17 +240,19 @@ public class PngUtil {
 			}
 		}
 	}
+
 	/**
 	 * 将读取到的文件信息写入到指定png的文件中，并指定输出文件
-	 * @param pngFileName		png文件名
-	 * @param append		要添加的buye[]
-	 * @param outFileName		输出文件名，内容包括png数据和要隐藏文件的信息
+	 *
+	 * @param pngFileName png文件名
+	 * @param append      要添加的buye[]
+	 * @param outFileName 输出文件名，内容包括png数据和要隐藏文件的信息
 	 * @throws IOException
 	 */
-	public static void wirteByteArrayToPng( String pngFileName, byte[] append, String outFileName) throws IOException {
+	public static void wirteByteArrayToPng (String pngFileName, byte[] append, String outFileName) throws IOException {
 		Png png;
 		try {
-			 png = readPng(pngFileName);
+			png = readPng(pngFileName);
 		} catch (IOException e) {
 			Log.e("readPng", "readPng:", e);
 			throw e;
@@ -261,29 +266,28 @@ public class PngUtil {
 		int len = -1;
 		byte[] buf = new byte[1024];
 		try {
-			if(!outFile.exists()) {
+			if (!outFile.exists()) {
 				outFile.createNewFile();
 			}
 			pngIn = new FileInputStream(pngFile);
-		//	inputIn=new ByteArrayInputStream(append);
+			//	inputIn=new ByteArrayInputStream(append);
 			//inputIn = new FileInputStream(inputFile);
 			out = new FileOutputStream(outFile);
 			//获取最后一个数据块，即IEND数据块
-		//	DataBlock iendBlock = png.getDataBlocks().get(png.getDataBlocks().size() - 1);
+			//	DataBlock iendBlock = png.getDataBlocks().get(png.getDataBlocks().size() - 1);
 			//修改IEND数据块数据长度：原来的长度+要隐藏文件的长度
-		//	long iendLength = ByteUtil.highByteToLong(iendBlock.getLength());
-		//	iendLength += append.length;
-		//	iendBlock.setLength(ByteUtil.longToHighByte(iendLength, iendBlock.getLength().length));
+			//	long iendLength = ByteUtil.highByteToLong(iendBlock.getLength());
+			//	iendLength += append.length;
+			//	iendBlock.setLength(ByteUtil.longToHighByte(iendLength, iendBlock.getLength().length));
 			//修改IEND crc信息：保存隐藏文件的大小（字节），方便后面读取png时找到文件内容的位置，并读取
-		//	iendBlock.setCrc(ByteUtil.longToHighByte(append.length, iendBlock.getCrc().length));
+			//	iendBlock.setCrc(ByteUtil.longToHighByte(append.length, iendBlock.getCrc().length));
 			//写入文件头部信息
 			out.write(png.getPngHeader().getFlag());
 			//写入数据块信息
 			String hexCode = null;
-			for(int i = 0; i < png.getDataBlocks().size(); i++) {
+			for (int i = 0; i < png.getDataBlocks().size(); i++) {
 				DataBlock dataBlock = png.getDataBlocks().get(i);
-				hexCode = ByteUtil.byteToHex(dataBlock.getChunkTypeCode(),
-						0, dataBlock.getChunkTypeCode().length);
+				hexCode = ByteUtil.byteToHex(dataBlock.getChunkTypeCode(), 0, dataBlock.getChunkTypeCode().length);
 				hexCode = hexCode.toUpperCase();
 				out.write(dataBlock.getLength());
 				out.write(dataBlock.getChunkTypeCode());
@@ -304,13 +308,10 @@ public class PngUtil {
 					//写原来IEND数据块的数据
 					out.write(dataBlock.getData());
 					out.write(dataBlock.getCrc());
-				}else {
+				} else {
 					out.write(dataBlock.getCrc());
 					out.write(append);
 				}
-
-
-
 
 
 				//}
@@ -340,13 +341,13 @@ public class PngUtil {
 			throw e;
 		} finally {
 			try {
-				if(pngIn != null) {
+				if (pngIn != null) {
 					pngIn.close();
 				}
-				if(inputIn != null) {
+				if (inputIn != null) {
 					inputIn.close();
 				}
-				if(out != null) {
+				if (out != null) {
 					out.close();
 				}
 			} catch (IOException e) {

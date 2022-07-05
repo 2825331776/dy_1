@@ -34,7 +34,18 @@ import java.util.List;
  * <p>PackagePath: com.dyt.wcc.common.widget     </p>
  */
 public class MyCustomRangeSeekBar extends View {
+	public static final int                        UPDATE_VALUE  = 1005;
 	private static final String TAG               = "MyCustomRangeSeekBar";
+	private static final String        MAX_LENGTH_TEMP = "999.9";
+	//最小值（绝对），取值0-100
+	public static float mAbsoluteMinValue = 0;
+	//最大值（绝对）
+	public static float mAbsoluteMaxValue = 100;
+	private static float MAX_TEMP = 500.0f;
+	private static float MIN_TEMP = -100.0f;
+	private final Paint mPaint = new Paint();
+	//控件最小高度
+	private final int MIN_HEIGHT = 400;
 	/**
 	 * 实时最大最小 摄氏度 数值。用于滑动了滑动块之后去直接计算返回给C++层的数值
 	 */
@@ -49,16 +60,13 @@ public class MyCustomRangeSeekBar extends View {
 	//	private float mViewHeight;
 	private              int    thumbMaxCount     = 0;
 	private              int    thumbMinCount     = 0;
-
 	private              DecimalFormat df              = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
-	private static final String        MAX_LENGTH_TEMP = "999.9";
 	private              Rect          maxTempTextRect;//最大值温度文字的矩形
 	/**
 	 * 最大值温度文字的宽度
 	 */
 	private              float         maxTempTextLength;
 	private              int           tempUnitMode    = BaseConstants.CelsiusIndex;//温度的单位，绘制在顶部
-
 	/**
 	 * 滑动块 的最高最低温度
 	 */
@@ -72,7 +80,6 @@ public class MyCustomRangeSeekBar extends View {
 	private float  mThumbHeight;//滑动条高度
 	private float  mThumbWidth;//滑动条宽度
 	private RectF  mThumbRect;//滑动条的矩形
-
 	/**
 	 * 实时返回的最高最低温,带有温度单位变化的
 	 */
@@ -81,17 +88,10 @@ public class MyCustomRangeSeekBar extends View {
 	private RectF  realTimeTempPicRect;//实时温度
 	private Bitmap btRangeMaxTemp, btRangeMinTemp;
 	private int widgetMode = 0;//控件的绘制模式。0代表简单的绘制最高最低温。非零代表固定温度条模式。
-
 	//progress bar 选中背景
 	private List<Bitmap> mProgressBarSelectBgList;//整体的背景颜色
 	private Bitmap       mProgressBarBg;
 	private Bitmap       mProgressBarSelectBg;
-
-	//最小值（绝对），取值0-100
-	public static float mAbsoluteMinValue = 0;
-	//最大值（绝对）
-	public static float mAbsoluteMaxValue = 100;
-
 	//已选标准（占滑动条百分比）最小值 。相对于整体的高度。
 	private double mPercentSelectedMinValue = 0d;
 	//已选标准（占滑动条百分比）最大值。相对于整体的高度。
@@ -106,96 +106,12 @@ public class MyCustomRangeSeekBar extends View {
 	 * 色板覆盖的矩形
 	 */
 	private RectF  mProgressBarSelRect;
-
 	//是否可以滑动
 	private boolean mEnable = true;
-
 	//当前事件处理的thumb滑块 ，区分按下的操作是最小值 还是最大值的滑块
 	private             MyCustomRangeSeekBar.Thumb mPressedThumb = null;
 	//滑块事件
 	private             ThumbListener              mThumbListener;
-	public static final int                        UPDATE_VALUE  = 1005;
-
-	private final Paint mPaint = new Paint();
-
-	//控件最小高度
-	private final int MIN_HEIGHT = 400;
-
-	private        float mTextSize;//文字的大小。
-	private        int   topBottomPadding;
-	//条子的宽度
-	private        float seekbarWidth;
-	//实时温度 图片的宽度
-	private        int   realTimeHighLowPicWidth;
-	private static float MAX_TEMP = 500.0f;
-	private static float MIN_TEMP = -100.0f;
-
-	/**
-	 * Thumb枚举， 最大或最小
-	 */
-	private enum Thumb {
-		MIN, MAX
-	}
-
-	/**
-	 * 滑块事件
-	 */
-	public interface ThumbListener {
-		/**
-		 * 最大最小值是否改变
-		 *
-		 * @param maxPercent 最大值百分比
-		 * @param minPercent 最小值百分比
-		 * @param maxValue   最大值百分比对应的温度数值
-		 * @param minValue   最小百分比对应的温度数值
-		 */
-		void thumbChanged (float maxPercent, float minPercent, float maxValue, float minValue);
-
-		/**
-		 * 最大值的滑块 抬起
-		 *
-		 * @param maxPercent 最大值百分比
-		 * @param minPercent 最小值百分比
-		 * @param maxValue   最大值百分比对应的温度数值
-		 * @param minValue   最小百分比对应的温度数值
-		 */
-		void onUpMaxThumb (float maxPercent, float minPercent, float maxValue, float minValue);
-
-		/**
-		 * 最大值的滑块 抬起
-		 *
-		 * @param maxPercent 最大值百分比
-		 * @param minPercent 最小值百分比
-		 * @param maxValue   最大值百分比对应的温度数值
-		 * @param minValue   最小百分比对应的温度数值
-		 */
-		void onUpMinThumb (float maxPercent, float minPercent, float maxValue, float minValue);
-
-		/**
-		 * 最小值滑块移动
-		 *
-		 * @param maxPercent 最大值百分比
-		 * @param minPercent 最小值百分比
-		 * @param maxValue   最大值百分比对应的温度数值
-		 * @param minValue   最小百分比对应的温度数值
-		 */
-		void onMinMove (float maxPercent, float minPercent, float maxValue, float minValue);
-
-		/**
-		 * 最大值滑块移动
-		 *
-		 * @param maxPercent 最大值百分比
-		 * @param minPercent 最小值百分比
-		 * @param maxValue   最大值百分比对应的温度数值
-		 * @param minValue   最小百分比对应的温度数值
-		 */
-		void onMaxMove (float maxPercent, float minPercent, float maxValue, float minValue);
-	}
-
-	public void setTempUnitText (int tempUnitIndex) {
-		this.tempUnitMode = tempUnitIndex;
-	}
-
 	public Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage (Message msg) {
@@ -230,6 +146,63 @@ public class MyCustomRangeSeekBar extends View {
 			}
 		}
 	};
+	private        float mTextSize;//文字的大小。
+	private        int   topBottomPadding;
+	//条子的宽度
+	private        float seekbarWidth;
+	//实时温度 图片的宽度
+	private        int   realTimeHighLowPicWidth;
+
+	public MyCustomRangeSeekBar (Context context) {
+		super(context);
+	}
+
+	public MyCustomRangeSeekBar (Context context, @Nullable AttributeSet attrs) {
+		super(context, attrs);
+		TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.MyCustomRangeSeekBar, 0, 0);
+
+		mProgressBarBg = BitmapFactory.decodeResource(getResources(), R.mipmap.seekbar_bg);//整体的背景颜色
+
+		mThumbMaxImage = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_temp_seekbar_thumb_max_arrow);
+		mThumbMinImage = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_temp_seekbar_thumb_min_arrow);
+		btRangeMaxTemp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_temp_seekbar_realtime_max_arrow);
+		btRangeMinTemp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_temp_seekbar_realtime_min_arrow);
+
+		mTextSize = a.getDimension(R.styleable.MyCustomRangeSeekBar_SeekBarAllTextSize, DensityUtil.dp2px(context, 14));
+		mPaint.setColor(ContextCompat.getColor(context, R.color.white));
+
+		initPaint();//必须放这里
+
+		initView();
+
+		seekbarWidth = DensityUtil.dp2px(context, 8);//条子的宽度
+		realTimeHighLowPicWidth = DensityUtil.dp2px(context, 20);
+		mThumbHeight = Math.max(mThumbMaxImage.getHeight(), DensityUtil.dp2px(context, 17));//滑动块的高度
+		//滑块的宽度为 尖角的宽度 + 内容设置的宽度
+		mThumbWidth = DensityUtil.dp2px(context, 5) + Math.max(Math.max(mThumbMaxImage.getWidth(), DensityUtil.dp2px(context, 40)), mPaint.measureText(MAX_LENGTH_TEMP));//滑块的宽度
+		// MyCustomRangeSeekBar: 40 dp == 40 999.9 length = > 35.0
+		//		Log.e(TAG, "MyCustomRangeSeekBar: 40 dp == " + dp2px(context,40) + " 999.9 length = > " + mPaint.measureText(MAX_LENGTH_TEMP));
+
+		maxTempTextRect = new Rect();
+		mPaint.getTextBounds(MAX_LENGTH_TEMP, 0, MAX_LENGTH_TEMP.length(), maxTempTextRect);
+		maxTempTextLength = mPaint.measureText(MAX_LENGTH_TEMP);
+		//必须在画笔初始化之后去计算文字的高度
+		topBottomPadding = (int) ((mThumbHeight + maxTempTextRect.height()) * 2);//顶部底部的padding 为 滑动块高度加2倍文字的高度
+		//整个滑动条的背景颜色  底部坐标 通过绘制时计算得到
+		mProgressBarRectBg = new RectF(maxTempTextLength + realTimeHighLowPicWidth, topBottomPadding, maxTempTextLength + realTimeHighLowPicWidth + seekbarWidth, topBottomPadding * 2);
+		//滑块之间的矩形（已选的渲染区间矩形）
+		mProgressBarSelRect = new RectF(maxTempTextLength + realTimeHighLowPicWidth, topBottomPadding, maxTempTextLength + realTimeHighLowPicWidth + seekbarWidth, 0);
+		//滑块的矩形
+		mThumbRect = new RectF(maxTempTextLength + realTimeHighLowPicWidth + seekbarWidth, topBottomPadding, maxTempTextLength + realTimeHighLowPicWidth + seekbarWidth + mThumbWidth, topBottomPadding + mThumbHeight);
+		//实时高低温矩形
+		realTimeTempPicRect = new RectF(maxTempTextLength, topBottomPadding, maxTempTextLength + realTimeHighLowPicWidth, topBottomPadding + maxTempTextRect.height());
+
+		a.recycle();
+	}
+
+	public void setTempUnitText (int tempUnitIndex) {
+		this.tempUnitMode = tempUnitIndex;
+	}
 
 	/**
 	 * mMaxTemp 条子最高温， mMinTemp 条子最低温
@@ -242,15 +215,13 @@ public class MyCustomRangeSeekBar extends View {
 			calculateSeekBarTopBottomTemp();
 		}
 		//实时最大值 大于 （底部 -5）  或者 实时最大值 小于（底部-20）
-		if (realTimeMaxDCTemp > TempConvertUtils.temp2Celsius(mMaxTemp, tempUnitMode) - 5 ||
-				realTimeMaxDCTemp < TempConvertUtils.temp2Celsius(mMaxTemp, tempUnitMode) - 20) {
+		if (realTimeMaxDCTemp > TempConvertUtils.temp2Celsius(mMaxTemp, tempUnitMode) - 5 || realTimeMaxDCTemp < TempConvertUtils.temp2Celsius(mMaxTemp, tempUnitMode) - 20) {
 			thumbMaxCount++;
 		} else {//不满足变化的条件，重置计数器
 			thumbMaxCount = 0;
 		}
 		//实时最小值 小于 （底部 +5）  或者 实时最小值 大于（底部+20）
-		if (realTimeMinDCTemp < TempConvertUtils.temp2Celsius(mMinTemp, tempUnitMode) + 5 ||
-				realTimeMinDCTemp > TempConvertUtils.temp2Celsius(mMinTemp, tempUnitMode) + 20) {
+		if (realTimeMinDCTemp < TempConvertUtils.temp2Celsius(mMinTemp, tempUnitMode) + 5 || realTimeMinDCTemp > TempConvertUtils.temp2Celsius(mMinTemp, tempUnitMode) + 20) {
 			thumbMinCount++;
 		} else {//不满足变化的条件，重置计数器
 			thumbMinCount = 0;
@@ -404,53 +375,6 @@ public class MyCustomRangeSeekBar extends View {
 	//百分比
 	private float Temp2Height (float temp) {
 		return (float) ((getHeight() - 2 * topBottomPadding) * TempToPercent(temp));
-	}
-
-	public MyCustomRangeSeekBar (Context context) {
-		super(context);
-	}
-
-	public MyCustomRangeSeekBar (Context context, @Nullable AttributeSet attrs) {
-		super(context, attrs);
-		TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.MyCustomRangeSeekBar, 0, 0);
-
-		mProgressBarBg = BitmapFactory.decodeResource(getResources(), R.mipmap.seekbar_bg);//整体的背景颜色
-
-		mThumbMaxImage = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_temp_seekbar_thumb_max_arrow);
-		mThumbMinImage = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_temp_seekbar_thumb_min_arrow);
-		btRangeMaxTemp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_temp_seekbar_realtime_max_arrow);
-		btRangeMinTemp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_temp_seekbar_realtime_min_arrow);
-
-		mTextSize = a.getDimension(R.styleable.MyCustomRangeSeekBar_SeekBarAllTextSize, DensityUtil.dp2px(context, 14));
-		mPaint.setColor(ContextCompat.getColor(context, R.color.white));
-
-		initPaint();//必须放这里
-
-		initView();
-
-		seekbarWidth = DensityUtil.dp2px(context, 8);//条子的宽度
-		realTimeHighLowPicWidth = DensityUtil.dp2px(context, 20);
-		mThumbHeight = Math.max(mThumbMaxImage.getHeight(), DensityUtil.dp2px(context, 17));//滑动块的高度
-		//滑块的宽度为 尖角的宽度 + 内容设置的宽度
-		mThumbWidth = DensityUtil.dp2px(context, 5) + Math.max(Math.max(mThumbMaxImage.getWidth(), DensityUtil.dp2px(context, 40)), mPaint.measureText(MAX_LENGTH_TEMP));//滑块的宽度
-		// MyCustomRangeSeekBar: 40 dp == 40 999.9 length = > 35.0
-		//		Log.e(TAG, "MyCustomRangeSeekBar: 40 dp == " + dp2px(context,40) + " 999.9 length = > " + mPaint.measureText(MAX_LENGTH_TEMP));
-
-		maxTempTextRect = new Rect();
-		mPaint.getTextBounds(MAX_LENGTH_TEMP, 0, MAX_LENGTH_TEMP.length(), maxTempTextRect);
-		maxTempTextLength = mPaint.measureText(MAX_LENGTH_TEMP);
-		//必须在画笔初始化之后去计算文字的高度
-		topBottomPadding = (int) ((mThumbHeight + maxTempTextRect.height()) * 2);//顶部底部的padding 为 滑动块高度加2倍文字的高度
-		//整个滑动条的背景颜色  底部坐标 通过绘制时计算得到
-		mProgressBarRectBg = new RectF(maxTempTextLength + realTimeHighLowPicWidth, topBottomPadding, maxTempTextLength + realTimeHighLowPicWidth + seekbarWidth, topBottomPadding * 2);
-		//滑块之间的矩形（已选的渲染区间矩形）
-		mProgressBarSelRect = new RectF(maxTempTextLength + realTimeHighLowPicWidth, topBottomPadding, maxTempTextLength + realTimeHighLowPicWidth + seekbarWidth, 0);
-		//滑块的矩形
-		mThumbRect = new RectF(maxTempTextLength + realTimeHighLowPicWidth + seekbarWidth, topBottomPadding, maxTempTextLength + realTimeHighLowPicWidth + seekbarWidth + mThumbWidth, topBottomPadding + mThumbHeight);
-		//实时高低温矩形
-		realTimeTempPicRect = new RectF(maxTempTextLength, topBottomPadding, maxTempTextLength + realTimeHighLowPicWidth, topBottomPadding + maxTempTextRect.height());
-
-		a.recycle();
 	}
 
 	private void initView () {
@@ -825,9 +749,71 @@ public class MyCustomRangeSeekBar extends View {
 		invalidate();
 	}
 
-
 	@Override
 	protected void onLayout (boolean changed, int left, int top, int right, int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
+	}
+
+	/**
+	 * Thumb枚举， 最大或最小
+	 */
+	private enum Thumb {
+		MIN, MAX
+	}
+
+
+	/**
+	 * 滑块事件
+	 */
+	public interface ThumbListener {
+		/**
+		 * 最大最小值是否改变
+		 *
+		 * @param maxPercent 最大值百分比
+		 * @param minPercent 最小值百分比
+		 * @param maxValue   最大值百分比对应的温度数值
+		 * @param minValue   最小百分比对应的温度数值
+		 */
+		void thumbChanged (float maxPercent, float minPercent, float maxValue, float minValue);
+
+		/**
+		 * 最大值的滑块 抬起
+		 *
+		 * @param maxPercent 最大值百分比
+		 * @param minPercent 最小值百分比
+		 * @param maxValue   最大值百分比对应的温度数值
+		 * @param minValue   最小百分比对应的温度数值
+		 */
+		void onUpMaxThumb (float maxPercent, float minPercent, float maxValue, float minValue);
+
+		/**
+		 * 最大值的滑块 抬起
+		 *
+		 * @param maxPercent 最大值百分比
+		 * @param minPercent 最小值百分比
+		 * @param maxValue   最大值百分比对应的温度数值
+		 * @param minValue   最小百分比对应的温度数值
+		 */
+		void onUpMinThumb (float maxPercent, float minPercent, float maxValue, float minValue);
+
+		/**
+		 * 最小值滑块移动
+		 *
+		 * @param maxPercent 最大值百分比
+		 * @param minPercent 最小值百分比
+		 * @param maxValue   最大值百分比对应的温度数值
+		 * @param minValue   最小百分比对应的温度数值
+		 */
+		void onMinMove (float maxPercent, float minPercent, float maxValue, float minValue);
+
+		/**
+		 * 最大值滑块移动
+		 *
+		 * @param maxPercent 最大值百分比
+		 * @param minPercent 最小值百分比
+		 * @param maxValue   最大值百分比对应的温度数值
+		 * @param minValue   最小百分比对应的温度数值
+		 */
+		void onMaxMove (float maxPercent, float minPercent, float maxValue, float minValue);
 	}
 }

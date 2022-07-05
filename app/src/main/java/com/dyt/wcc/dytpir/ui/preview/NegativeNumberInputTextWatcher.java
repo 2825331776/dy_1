@@ -17,50 +17,47 @@ public class NegativeNumberInputTextWatcher implements TextWatcher {
 	private static final String Period         = ".";
 	private static final String Zero           = "0";
 	private static final String NegativeNumber = "-";
-	private static final String TAG               = "NegativeNumberInputTextWatcher";
-
-	/**
-	 * 需要设置该 DecimalInputTextWatcher 的 EditText
-	 */
-	private EditText editText = null;
-
+	private static final String TAG            = "NegativeNumberInputTextWatcher";
 	/**
 	 * 默认  小数的位数 2 位
 	 */
 	private static final int DEFAULT_DECIMAL_DIGITS = 2;
-
-	private int decimalDigits = DEFAULT_DECIMAL_DIGITS;// 小数的位数
-	private boolean canNegative = false;//是否可为负数
-	private boolean canDecimal = false; //是否有小数
-	private float show_max ;//能显示的最大值
-	private float show_min ;//能显示的最小值
-	private int totalDigits;//最大长度
+	/**
+	 * 需要设置该 DecimalInputTextWatcher 的 EditText
+	 */
+	private EditText editText = null;
+	private int     decimalDigits = DEFAULT_DECIMAL_DIGITS;// 小数的位数
+	private boolean canNegative   = false;//是否可为负数
+	private boolean canDecimal    = false; //是否有小数
+	private float   show_max;//能显示的最大值
+	private float   show_min;//能显示的最小值
+	private int     totalDigits;//最大长度
 
 	/**
-	 * @param editText      editText
-	 * @param show_min   显示的最小值
-	 * @param show_max  显示的最大值
+	 * @param editText         editText
+	 * @param show_min         显示的最小值
+	 * @param show_max         显示的最大值
 	 * @param canDecimalDigits 是否能输入小数点
-	 * @param totalDigits 长度
+	 * @param totalDigits      长度
 	 */
-	public NegativeNumberInputTextWatcher(EditText editText, float show_min, float show_max ,boolean canDecimalDigits, int totalDigits) {
+	public NegativeNumberInputTextWatcher (EditText editText, float show_min, float show_max, boolean canDecimalDigits, int totalDigits) {
 		if (editText == null) {
 			throw new RuntimeException("editText can not be null");
 		}
 		this.editText = editText;
 		this.show_max = show_max;
 		this.show_min = show_min;
-		if (this.show_min < 0){
+		if (this.show_min < 0) {
 			this.canNegative = true;
 		}
 		this.canDecimal = canDecimalDigits;
 		if (totalDigits <= 0)
 			throw new RuntimeException("totalDigits must > 0");
 		this.totalDigits = totalDigits;
-//		if (decimalDigits <= 0)
-//			throw new RuntimeException("decimalDigits must > 0");
+		//		if (decimalDigits <= 0)
+		//			throw new RuntimeException("decimalDigits must > 0");
 
-//		this.decimalDigits = decimalDigits;
+		//		this.decimalDigits = decimalDigits;
 	}
 
 	@Override
@@ -75,7 +72,7 @@ public class NegativeNumberInputTextWatcher implements TextWatcher {
 
 	@Override
 	public void afterTextChanged (Editable editable) {
-		Log.e(TAG, "afterTextChanged: editable==>" +editable.toString());
+		Log.e(TAG, "afterTextChanged: editable==>" + editable.toString());
 		try {
 			String s = editable.toString();
 			editText.removeTextChangedListener(this);
@@ -85,8 +82,7 @@ public class NegativeNumberInputTextWatcher implements TextWatcher {
 			if (s.contains(Period)) {
 				//超过小数位限定位数,只保留限定小数位数
 				if (s.length() - 1 - s.indexOf(Period) > decimalDigits) {
-					s = s.substring(0,
-							s.indexOf(Period) + decimalDigits + 1);
+					s = s.substring(0, s.indexOf(Period) + decimalDigits + 1);
 					editable.replace(0, editable.length(), s.trim());
 				}
 			}
@@ -97,21 +93,20 @@ public class NegativeNumberInputTextWatcher implements TextWatcher {
 				}
 			}
 			//首位输入0时,不再继续输入
-			if (s.startsWith(Zero)
-					&& s.trim().length() > 1) {
+			if (s.startsWith(Zero) && s.trim().length() > 1) {
 				if (!s.substring(1, 2).equals(Period)) {
 					editable.replace(0, editable.length(), Zero);
 				}
 			}
-//			//把输入的值保存在 最大值和最小值的范围内。
-//			if ("-".equals(editable.toString())){}
-			Log.e(TAG, "afterTextChanged: editable==>" +editable.toString());
+			//			//把输入的值保存在 最大值和最小值的范围内。
+			//			if ("-".equals(editable.toString())){}
+			Log.e(TAG, "afterTextChanged: editable==>" + editable.toString());
 			float fValue = Float.parseFloat(editable.toString());
-			if (fValue> show_max){
-				editable.replace(0,totalDigits,String.valueOf(show_max));
+			if (fValue > show_max) {
+				editable.replace(0, totalDigits, String.valueOf(show_max));
 			}
-			if (fValue < show_min){
-				editable.replace(0,totalDigits,String.valueOf(show_min));
+			if (fValue < show_min) {
+				editable.replace(0, totalDigits, String.valueOf(show_min));
 			}
 			editText.addTextChangedListener(this);
 		} catch (Exception e) {

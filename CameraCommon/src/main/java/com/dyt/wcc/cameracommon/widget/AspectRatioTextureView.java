@@ -35,51 +35,51 @@ import com.serenegiant.widget.IAspectRatioView;
  * you can show this view in the center of screen and keep the aspect ratio of content
  * XXX it is better that can set the aspect ratio as xml property
  */
-public class AspectRatioTextureView extends TextureView	// API >= 14
-	implements IAspectRatioView {
+public class AspectRatioTextureView extends TextureView    // API >= 14
+		implements IAspectRatioView {
 
-	private static final boolean DEBUG = true;	// TODO set false on release
-	private static final String TAG = "AbstractCameraView";
+	private static final boolean DEBUG = true;    // TODO set false on release
+	private static final String  TAG   = "AbstractCameraView";
 
-    private double                       mRequestedAspect = -1.0;
+	private double                       mRequestedAspect = -1.0;
 	private CameraViewInterface.Callback mCallback;
 
-	public AspectRatioTextureView(final Context context) {
+	public AspectRatioTextureView (final Context context) {
 		this(context, null, 0);
 	}
 
-	public AspectRatioTextureView(final Context context, final AttributeSet attrs) {
+	public AspectRatioTextureView (final Context context, final AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
 
-	public AspectRatioTextureView(final Context context, final AttributeSet attrs, final int defStyle) {
+	public AspectRatioTextureView (final Context context, final AttributeSet attrs, final int defStyle) {
 		super(context, attrs, defStyle);
-//		Log.e(TAG, "AspectRatioTextureView: "+ System.currentTimeMillis());
+		//		Log.e(TAG, "AspectRatioTextureView: "+ System.currentTimeMillis());
 	}
 
 	@Override
-    public void setAspectRatio(final double aspectRatio) {
-        if (aspectRatio < 0) {
-            throw new IllegalArgumentException();
-        }
-        if (mRequestedAspect != aspectRatio) {
-            mRequestedAspect = aspectRatio;
-            requestLayout();
-        }
-    }
+	public void setAspectRatio (final int width, final int height) {
+		setAspectRatio(width / (double) height);
+	}
 
 	@Override
-    public void setAspectRatio(final int width, final int height) {
-		setAspectRatio(width / (double)height);
-    }
-
-	@Override
-	public double getAspectRatio() {
+	public double getAspectRatio () {
 		return mRequestedAspect;
 	}
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+	@Override
+	public void setAspectRatio (final double aspectRatio) {
+		if (aspectRatio < 0) {
+			throw new IllegalArgumentException();
+		}
+		if (mRequestedAspect != aspectRatio) {
+			mRequestedAspect = aspectRatio;
+			requestLayout();
+		}
+	}
+
+	@Override
+	protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
 
 		if (mRequestedAspect > 0) {
 			int initialWidth = MeasureSpec.getSize(widthMeasureSpec);
@@ -90,7 +90,7 @@ public class AspectRatioTextureView extends TextureView	// API >= 14
 			initialWidth -= horizPadding;
 			initialHeight -= vertPadding;
 
-			final double viewAspectRatio = (double)initialWidth / initialHeight;
+			final double viewAspectRatio = (double) initialWidth / initialHeight;
 			final double aspectDiff = mRequestedAspect / viewAspectRatio - 1;
 
 			if (Math.abs(aspectDiff) > 0.01) {
@@ -108,7 +108,7 @@ public class AspectRatioTextureView extends TextureView	// API >= 14
 			}
 		}
 
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+	}
 
 }

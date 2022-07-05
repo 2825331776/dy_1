@@ -12,11 +12,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.dyt.wcc.common.utils.TempConvertUtils;
 import com.dyt.wcc.common.widget.NumberPickerView;
 import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
 import com.dyt.wcc.dytpir.R;
+
+import java.lang.reflect.Field;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -62,16 +66,40 @@ public class MyNumberPicker extends DialogFragment implements NumberPickerView.O
 		this.mListener = listener;
 	}
 
-
-	public interface SetCompleteListener {
-		/**
-		 * 设置超温警告的温度， 数值的单位为： 摄氏度。
-		 *
-		 * @param setValue float 类型的 摄氏度
-		 */
-		void onSetComplete (float setValue);
-
-		void onCancelListener ();
+	/**
+	 * 连接机芯之后，拔出机芯，点击超温警告，出现闪退。
+	 *
+	 * @param manager
+	 * @param tag
+	 */
+	@Override
+	public void show (@NonNull FragmentManager manager, @Nullable String tag) {
+		if (!isAdded()) {
+			boolean canProcess = true;
+			try {
+				Class c = Class.forName("androidx.fragment.app.DialogFragment");
+				Object obj = this;
+				Field dismissed = c.getDeclaredField("mDismissed");
+				dismissed.setAccessible(true);
+				dismissed.set(obj, false);
+				Field shownByMe = c.getDeclaredField("mShownByMe");
+				shownByMe.setAccessible(true);
+				shownByMe.set(obj, true);
+			} catch (Exception e) {
+				e.printStackTrace();
+				canProcess = false;
+			} finally {
+				if (canProcess) {
+					FragmentTransaction ft = manager.beginTransaction();
+					ft.add(this, tag);
+					ft.commitAllowingStateLoss();
+					Log.e("BaseDialogFragment", "show commitAllowingStateLoss");
+				} else {
+					super.show(manager, tag);
+					Log.e("BaseDialogFragment", "show commit");
+				}
+			}
+		}
 	}
 	//	private int mRotation;
 	//
@@ -91,32 +119,21 @@ public class MyNumberPicker extends DialogFragment implements NumberPickerView.O
 	//		initView();
 	//		initData();
 	//	}
-	private boolean rotation;
-
-	public boolean isRotation () {
-		return rotation;
-	}
-
-	public void setRotation (boolean rotation) {
-		this.rotation = rotation;
-	}
-
-	//	private View contentView;
+	//	private boolean rotation;
 
 	@Nullable
 	@Override
 	public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.pop_overtemp_alarm, container, false);
-		if (rotation) {
-			view.setRotation(180);
-		} else {
-			view.setRotation(0);
-		}
+		//		if (rotation) {
+		//			view.setRotation(180);
+		//		} else {
+		//			view.setRotation(0);
+		//		}
 		initView(view);
 		initData();
 		return view;
 	}
-
 
 	private void initView (@NonNull View view) {
 		numberPickerView_hundreds = view.findViewById(R.id.numberPicker_hundreds_main_preview_overTemp_pop);
@@ -176,5 +193,16 @@ public class MyNumberPicker extends DialogFragment implements NumberPickerView.O
 				mValue = (int) mValue + Float.parseFloat(value) / 10;
 				break;
 		}
+	}
+
+	public interface SetCompleteListener {
+		/**
+		 * 设置超温警告的温度， 数值的单位为： 摄氏度。
+		 *
+		 * @param setValue float 类型的 摄氏度
+		 */
+		void onSetComplete (float setValue);
+
+		void onCancelListener ();
 	}
 }

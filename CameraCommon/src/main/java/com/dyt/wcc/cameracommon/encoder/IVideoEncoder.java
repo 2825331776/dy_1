@@ -24,5 +24,5 @@
 package com.dyt.wcc.cameracommon.encoder;
 
 public interface IVideoEncoder {
-	public boolean frameAvailableSoon();
+	public boolean frameAvailableSoon ();
 }

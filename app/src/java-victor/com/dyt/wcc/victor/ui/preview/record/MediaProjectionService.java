@@ -55,14 +55,6 @@ public class MediaProjectionService extends Service {
 
 	private MediaProjectionNotificationEngine notificationEngine;
 
-	public class MediaProjectionBinder extends Binder {
-
-		public MediaProjectionService getService () {
-			return MediaProjectionService.this;
-		}
-
-	}
-
 	/**
 	 * 绑定Service
 	 *
@@ -395,6 +387,14 @@ public class MediaProjectionService extends Service {
 		isMediaRecording = false;
 
 		mediaRecorderCallback = null;
+	}
+
+	public class MediaProjectionBinder extends Binder {
+
+		public MediaProjectionService getService () {
+			return MediaProjectionService.this;
+		}
+
 	}
 
 }
