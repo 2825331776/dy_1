@@ -1,14 +1,29 @@
 <resources>
     <!--关于页面-->
     <string name="preview_about_company_name">Shenzhen Dianyang Technology Co., Ltd.</string>
-    <string name="preview_about_company_website">WebSite: </string>
+    <string name="preview_about_company_website">WebSite：</string>
     <string name="preview_about_company_website_content">www.dyt-ir.com</string>
     <string name="preview_about_contact_email_content">service@dianytech.com</string>
     <string name="preview_about_contact_us">Contact us：</string>
     <string name="preview_about_contact_us_email">service@dianytech.com</string>
+    <string name="about_tel_info">Tel：</string>
+
+<!--    精明鼠定制 字符串 -->
+    <string name="about_companyName_jms">Shenzhen NOYAFA ELECTRONIC Co., Ltd.</string>
+    <string name="about_companyWebsite_jms">www.noyafa.com</string>
+    <string name="about_tel_content_jms">0086–755–2778 6545</string>
+    <string name="about_contactEmail_jms">sale@nayafa.com</string>
+    <string name="about_mainBusiness_jms">E-mail：</string>
+    <string name="about_mainBusiness_content_jms">sale@noyafa.com</string>
+    <!--    驿生胜利定制 字符串 -->
+    <string name="about_companyName_victor">Shenzhen Yisheng Victor Technology Co., Ltd</string>
+    <string name="about_companyWebsite_content_victor">www.china-victor.com</string>
+    <string name="about_tel_content_victor">0086–755–2778 6545</string>
+    <string name="about_contactEmail_content_victor">victor@china-victor.com</string>
+    <string name="about_main_user_manual_victor">User manual</string>
 
     <!--    页面名称-->
-    <string name="app_name">DytSpectrumOwl</string>
+    <string name="app_name">Pir</string>
     <string name="Gallery">Gallery</string>
     <string name="Welcome">Welcome</string>
     <string name="MediaBrowser">Gallery</string>
@@ -17,13 +32,13 @@
     <string name="MediaBrowser_pic">Picture</string>
     <string name="MediaBrowser_video">Video</string>
     <string name="MediaBrowser_delete">Delete</string>
-
+    <!--    功能名称-->
     <string name="ShowHighLowTemp">ShowHighLowTemp</string>
     <string name="AreaCheck">AreaCheck</string>
     <string name="HighTempAlarm">HighTempAlarm</string>
     <string name="FixeTempBar">FixeTempBar</string>
     <string name="DynamicTempBar">DynamicTempBar</string>
-
+    <!--    超温警告弹窗文字-->
     <string name="AlarmTempInput">Input</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">OK</string>
@@ -36,7 +51,7 @@
     <string name="pop_about_privacy_policy">privacy policy</string>
 
     <!--录制-->
-    <string name="StartRecorderService">StartRecorderService</string>
+    <string name="StartRecorderService">Start recorder service</string>
 
     <!--    设置页-->
     <string name="SettingGeneral">General</string>

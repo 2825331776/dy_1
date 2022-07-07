@@ -1265,8 +1265,9 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     }
 
                     //读取配置文件的 加密SN
-                    const char * file_f = "/configs.txt";
+                    const char * file_f = ".txt";
                     strcat(app_private_path,file_f);
+                    file_f = NULL;
                     FILE *inFile = NULL;
                     inFile = fopen(
                             app_private_path,
@@ -1290,7 +1291,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     //切割结果
                     std::vector<std::string> split_result = split(fileStore, ";");
                     int splitSize = split_result.size();
-//                    LOGE("==================configs.txt split size == %d=========",splitSize);
+                    LOGE("==================configs.txt split size == %d=========",splitSize);
 
 //                    FILE* outFile = NULL;
 //                    outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
@@ -1319,10 +1320,10 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             }
                         }
                         if (flag) {
-//                            LOGE("=============sn解码成功========");
+                            LOGE("=============sn解码成功========");
                             snIsRight = true;
                         } else {
-//                            LOGE("==============sn解码失败========");
+                            LOGE("==============sn解码失败========");
                             snIsRight = snIsRight | 0;
                         }
                         delete[]decryptionChild;
@@ -1620,8 +1621,10 @@ UVCPreviewIR::draw_preview_one(uint8_t *frameData, ANativeWindow **window, convF
 }
 void UVCPreviewIR::setResourcePath(const char * path) {
     strcpy(app_private_path, path);
+    LOGE("====================app_private_path=%s======",app_private_path);
     if (mFrameImage){
-        mFrameImage->setResourcePath(path);
+        std::vector<std::string> split_result = split(path, "config");
+        mFrameImage->setResourcePath(split_result[0].c_str());
     }
     EXIT();
 }

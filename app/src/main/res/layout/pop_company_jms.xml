@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data></data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_140dp"
+        android:background="@drawable/bg_main_preview_setting_pop"
+        android:paddingStart="@dimen/dimen_20dp"
+        android:paddingEnd="@dimen/dimen_20dp">
+
+        <!--标题导航线-->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_setting_title"
+            android:layout_width="@dimen/dimen_5dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="@dimen/dimen_20dp" />
+        <!--公司名称-->
+        <TextView
+            android:id="@+id/tv_company_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:text="@string/about_companyName_jms"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_16sp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="@id/gl_setting_title"
+            app:layout_constraintTop_toTopOf="parent" />
+        <!--网址-->
+        <!--        超链接颜色设置-->
+        <!--        android:textColorLink="@color/white"-->
+        <TextView
+            android:id="@+id/tv_website"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_7dp"
+            android:text="@string/preview_about_company_website"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintLeft_toLeftOf="@id/tv_company_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_company_name" />
+
+        <TextView
+            android:id="@+id/tv_company_website"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:text="@string/about_companyWebsite_jms"
+            android:textColorLink="@color/white"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_website"
+            app:layout_constraintLeft_toRightOf="@id/tv_website"
+            app:layout_constraintTop_toTopOf="@id/tv_website" />
+
+        <!--       Tel-->
+        <TextView
+            android:id="@+id/tv_about_tel_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_7dp"
+            android:text="@string/about_tel_info"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintLeft_toLeftOf="@id/tv_website"
+            app:layout_constraintTop_toBottomOf="@id/tv_website" />
+
+        <TextView
+            android:id="@+id/tv_about_tel_content"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:autoLink="email"
+            android:text="@string/about_tel_content_jms"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textColorLink="@color/white"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_about_tel_info"
+            app:layout_constraintLeft_toRightOf="@id/tv_about_tel_info"
+            app:layout_constraintTop_toTopOf="@id/tv_about_tel_info" />
+
+        <!--        主营 链接-->
+        <TextView
+            android:id="@+id/tv_about_Main_business_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_7dp"
+            android:layout_marginBottom="@dimen/dimen_10dp"
+            android:autoLink="web"
+            android:text="@string/about_mainBusiness_jms"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintLeft_toLeftOf="@id/tv_company_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_about_tel_content" />
+
+        <TextView
+            android:id="@+id/tv_about_Main_business_content"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:text="@string/about_mainBusiness_content_jms"
+            android:background="@drawable/txt_under_line"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textColorLink="@color/white"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_about_Main_business_info"
+            app:layout_constraintLeft_toRightOf="@id/tv_about_Main_business_info"
+            app:layout_constraintTop_toTopOf="@id/tv_about_Main_business_info" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

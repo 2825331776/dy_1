@@ -11,7 +11,7 @@ import android.widget.EditText;
  * <p>Author：stefan cheng        </p>
  * <p>Create Date：2021/12/2  17:56     </p>
  * <p>Description：@todo         </p>
- * <p>PackagePath: com.dyt.wcc.dytpir.utils     </p>
+ * <p>PackagePath: com.dyt.wcc.utils     </p>
  */
 public class KeyboardsUtils {
 

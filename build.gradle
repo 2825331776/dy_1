@@ -1,6 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 apply from :'configs.gradle'
-
+println("=====build.gradle==========configs.gradle=================");
 buildscript {
     repositories {
         google()
@@ -25,5 +25,6 @@ allprojects {
 }
 
 task clean(type: Delete) {
+    println("=====build.gradle==========task clean=================");
     delete rootProject.buildDir
 }

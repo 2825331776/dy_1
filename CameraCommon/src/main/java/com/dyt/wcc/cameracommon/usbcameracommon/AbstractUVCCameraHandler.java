@@ -368,11 +368,11 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		sendMessage(obtainMessage(MSG_OPEN, ctrlBlock));
 	}
 
-	public void PreparePalette (String path, int type) {
+	public void PreparePalette (String path, int type,String configName) {
 		checkReleased();
 		Message message = Message.obtain();
 		message.what = MSG_SET_PALETTEPATH;
-		message.obj = path;
+		message.obj = path +"/"+ configName;
 		message.arg1 = type;
 		sendMessage(message);
 

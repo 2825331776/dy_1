@@ -11,36 +11,36 @@ ext {
             VName        : "1.1.5",
 
             supportV     : "27.0.0",
-            applicationId: "com.dyt.wcc.dytpir"
+            appId: "com.dyt.wcc"
     ]
 
     // 多渠道产品信息
     envInfo = [
-            DYT   : [
+            DYTConfig   : [
                     // 应用 id
-                    applicationId : "com.dyt.wcc.dytpir",
+                    appId : "com.dyt.wcc",
                     // 构建版本号
                     VCode         : 105,
                     // 版本名称
                     VName         : "1.1.5",
                     appPackageName: "DytSpectrumOwl",
             ],
-            JMS   : [
+            JMSConfig   : [
                     // 应用 id
-                    applicationId : "com.dyt.wcc.jms",
+                    appId : "com.dyt.wcc",
                     // 构建版本号
-                    VCode         : 103,
+                    VCode         : 105,
                     // 版本名称
-                    VName         : "1.1.3",
+                    VName         : "1.1.5",
                     appPackageName: "NOYAFA",
             ],
-            VICTOR: [
+            VICTORConfig: [
                     // 应用 id
-                    applicationId : "com.dyt.wcc.victor",
+                    appId : "com.dyt.wcc",
                     // 构建版本号
-                    VCode         : 102,
+                    VCode         : 105,
                     // 版本名称
-                    VName         : "1.1.2",
+                    VName         : "1.1.5",
                     appPackageName: "VICTOR",
             ],
     ]

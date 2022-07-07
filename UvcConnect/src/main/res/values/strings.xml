@@ -22,7 +22,6 @@
   ~  may have a different license, see the respective files.
   -->
 <resources>
-    <string name="select">Select Xtherm device</string>
     <string name="refresh">Refresh</string>
     <string name="no_device">No device found</string>
     <string name="per_title">Regarding permission</string>

@@ -9,7 +9,7 @@ import java.text.DecimalFormat;
  * <p>Author：stefan cheng        </p>
  * <p>Create Date：2021/12/27  15:42     </p>
  * <p>Description：温度转换工具类  ，摄氏度  华氏度  开氏度 之间的转换        </p>
- * <p>PackagePath: com.dyt.wcc.dytpir.utils     </p>
+ * <p>PackagePath: com.dyt.wcc.utils     </p>
  */
 public class TempConvertUtils {
 

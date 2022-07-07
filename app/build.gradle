@@ -16,13 +16,13 @@ android {
 
     compileSdkVersion versions.compileSdkV
     buildToolsVersion versions.buildToolsV
-
+    println("===============android=================");
     defaultConfig {
-        applicationId versions.applicationId
+        applicationId versions.appId
         minSdkVersion versions.minSdkV
         targetSdkVersion versions.targetSdkV
-        versionCode versions.VCode
-        versionName versions.VName
+//        versionCode versions.VCode
+//        versionName versions.VName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -30,6 +30,8 @@ android {
         ndk {
             abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64', 'x86'
         }
+
+        flavorDimensions "demo1", "demo2"
     }
 
     compileOptions {
@@ -44,6 +46,7 @@ android {
     //第二种：为了保护签名文件，把它放在local.properties中并在版本库中排除
     // ，不把这些信息写入到版本库中（注意，此种方式签名文件中不能有中文）
     signingConfigs {
+        println("===============signingConfigs=================");
         releaseConfig {
             storeFile file(properties.getProperty("keystroe_storeFile"))
             storePassword properties.getProperty("keystroe_storePassword")
@@ -59,95 +62,133 @@ android {
     }
 
     sourceSets {
+        println("===============sourceSets=================");
 //        main {
-//            jniLibs.srcDirs = ['libs']
+//            assets.srcDirs = ['src/main/assets']
+//            res.srcDirs = ['src/main/res']
+//            java.srcDirs = ['src/main/java']
+//            manifest.srcFile 'src/main/AndroidManifest.xml'
 //        }
+        dyt {
+            assets.srcDirs = ['src/dytPir/assets']
+            res.srcDirs = ['src/dytPir/res-dyt']
+            java.srcDirs = ['src/dytPir/java']
+            manifest.srcFile 'src/dytPir/AndroidManifest.xml'
+        }
+        jms {
+            assets.srcDirs = ['src/jmsPir/assets']
+            res.srcDirs = ['src/jmsPir/res-jms']
+            java.srcDirs = ['src/jmsPir/java']
+            manifest.srcFile 'src/jmsPir/AndroidManifest.xml'
+        }
+
+//        }
+        victor {
+            java.srcDirs = ['src/victorPir/java']
+            assets.srcDirs = ['src/victorPir/assets']
+            res.srcDirs = ['src/victorPir/res-victor']
+            manifest.srcFile 'src/victorPir/AndroidManifest.xml'
+        }
         // young 这里新增指定prd环境的资源文件，也就是这里的文件会覆盖 res 的同名文件
         // 这里的 huawei.res.srcDirs 中的 huawei 是渠道名称
         // 然后这里指向的资源路径，是渠道特有的资源，总而言之，就是这里的资源会覆盖，正常 res 目录下的资源
         //放入渠道特有的 资源，需要替换对应的资源时，在 productFlavors 的渠道名称{} 里的 manifestPlaceholders
         //加上 替换的资源为那个名称
-        DYTPir.res.srcDirs = ['src/main/res']
-//        DYTPir.assets.dirs = ["src/main/assets"]
-//        DYTPir.resources.srcDir('src/main/java')
-        JMSPir.res.srcDirs = ['src/main/res-victor']
-//        JMSPir.resources.srcDir('src/main/java-jms')
-        VICTORPir.res.srcDirs = ['src/main/res-victor']
-//        VICTORPir.resources.srcDir('src/main/java-victor')
+//        DYTPir.res.srcDirs = ['src/main/res']
+////        DYTPir.assets.dirs = ["src/main/assets"]
+////        DYTPir.resources.srcDir('src/main/java')
+//        jmsPir.res.srcDirs = ['src/main/res-victor']
+////        jmsPir.resources.srcDir('src/main/jmsPir')
+//        victorPir.res.srcDirs = ['src/main/res-victor']
+//        victorPir.resources.srcDir('src/main/victorPir')
     }
 
-    flavorDimensions "theb"
+//    flavorDimensions('dyt', 'victor', 'dytpir')//,
     productFlavors {
-//        //开发环境，点扬红外
-        DYTPir {
+        println("===============productFlavors=================");
+        //点扬红外
+        dyt {
 //              // 每个环境包名不同
-            dimension "theb"
-            applicationId rootProject.ext.envInfo.DYT.applicationId
-            versionCode rootProject.ext.envInfo.DYT.VCode
-            versionName rootProject.ext.envInfo.DYT.VName
+//            dimension 'dyt'
+
+//            applicationId versions.appId
+            applicationIdSuffix ".dytpir"
+            versionCode rootProject.ext.envInfo.DYTConfig.VCode
+            versionName rootProject.ext.envInfo.DYTConfig.VName
             // 动态添加 string.xml 字段；
             // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
 //            resValue "string", "app_name", "web"
 //            resValue "bool", "auto_updates", 'false'
             // 动态修改 常量 字段
-            buildConfigField "String", "ENVIRONMENT", '"DYTPir"'
+           buildConfigField "String", "CONFIGS_NAME", '"configs_dyt"'
+            buildConfigField "String", "SP_NAME", '"DYT_IR_SP_DY"'
+            buildConfigField "int", "COMPANY_H", '110'
             // 修改 AndroidManifest.xml 里渠道变量
-            manifestPlaceholders = [CHANNEL_VALUE: "DYTPir"
-                                    , app_name   : "@string/app_name"
-                                    , app_icon   : "@mipmap/ic_launcher_dy_round"
-                                    , APP_ID     : "1"
-                                    , APP_Version: "2"
-                                    , APP_Channel: rootProject.ext.envInfo.DYT.appPackageName
-                                    , isDebug    : "4"]
+            manifestPlaceholders = [CHANNEL_VALUE         : "DYTPir"
+                                    , app_icon            : "@mipmap/ic_launcher_dy_foreground"
+//                                    , applicationId :"${rootProject.ext.envInfo.DYTConfig.appId}.dytpir"
+                                    , APP_ID              : "1"
+                                    , APP_Version         : "2"
+                                    , APP_Channel         : rootProject.ext.envInfo.DYTConfig.appPackageName
+                                    , PROVIDER_AUTHORITIES: "com.dyt.wcc.dytpir.FileProvider"]
             //, app_icon   : "@mipmap/delete_all"
+            dimension "demo1"
         }
         //精明鼠   NOYAFA
-        JMSPir {
+        jms {
             // 每个环境包名不同
-            dimension "theb"
-            applicationId rootProject.ext.envInfo.JMS.applicationId
-            versionCode rootProject.ext.envInfo.JMS.VCode
-            versionName rootProject.ext.envInfo.JMS.VName
+            applicationIdSuffix ".jms"
+            versionCode rootProject.ext.envInfo.JMSConfig.VCode
+            versionName rootProject.ext.envInfo.JMSConfig.VName
             // 动态添加 string.xml 字段；
             // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
 //            resValue "string", "app_name", "huawei"
 //            resValue "bool", "auto_updates", 'false'
             // 动态修改 常量 字段
-            buildConfigField "String", "ENVIRONMENT", '"JMSPir"'
+            buildConfigField "String", "CONFIGS_NAME", '"configs_jms"'
+            buildConfigField "String", "SP_NAME", '"DYT_IR_SP_JMS"'
+            buildConfigField "int", "COMPANY_H", '145'
             // 修改 AndroidManifest.xml 里渠道变量
-            manifestPlaceholders = [CHANNEL_VALUE: "JMSPir"
-                                    , app_name   : "@string/app_name_NOYAFA"
-                                    , app_icon   : "@mipmap/icon_launcher_jms"
-                                    , APP_ID     : "1"
-                                    , APP_Version: "2"
-                                    , APP_Channel: rootProject.ext.envInfo.JMS.appPackageName
-                                    , isDebug    : "4"]
+            manifestPlaceholders = [CHANNEL_VALUE         : "jmsPir"
+                                    , app_icon            : "@mipmap/ic_launcher_jms_round"
+                                    , APP_ID              : "1"
+                                    , APP_Version         : "2"
+                                    , APP_Channel         : rootProject.ext.envInfo.JMSConfig.appPackageName
+                                    , PROVIDER_AUTHORITIES: "com.dyt.wcc.jms.FileProvider"]
             // , app_icon   : "@mipmap/delete_all"
+            flavorDimensions "demo1"
+//            sourceSets {
+//                jmsPir.assets.srcDirs = ['src/jmsPir/assets']
+//                jmsPir.res.srcDirs = ['src/jmsPir/res-dytpir']
+//                jmsPir.java.srcDirs = ['src/jmsPir/java']
+//                jmsPir.manifest.srcFile = ['src/main/AndroidManifest.xml']
+//            }
         }
-//        //驿生胜利  VICTOR
-        VICTORPir {
+        victor {
             // 每个环境包名不同
-            dimension "theb"
-            applicationId rootProject.ext.envInfo.VICTOR.applicationId
-            versionCode rootProject.ext.envInfo.VICTOR.VCode
-            versionName rootProject.ext.envInfo.VICTOR.VName
+            applicationIdSuffix ".victor"
+
+            versionCode rootProject.ext.envInfo.VICTORConfig.VCode
+            versionName rootProject.ext.envInfo.VICTORConfig.VName
             // 动态添加 string.xml 字段；
             // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
 //            resValue "string", "app_name", "xiaomi"
 //            resValue "bool", "auto_updates", 'false'
             // 动态修改 常量 字段
-            buildConfigField "String", "ENVIRONMENT", '"VICTORPir"'
+            buildConfigField "String", "CONFIGS_NAME", '"configs_victor"'
+            buildConfigField "String", "SP_NAME", '"DYT_IR_SP_VICTOR"'
+            buildConfigField "int", "COMPANY_H", '145'
             // 修改 AndroidManifest.xml 里渠道变量
-            manifestPlaceholders = [CHANNEL_VALUE: "VICTORPir"
-                                    , app_name   : "@string/app_name_VICTOR"
-                                    , app_icon   : "@mipmap/ic_launcher_victor"
-                                    , APP_ID     : "1"
-                                    , APP_Version: "2"
-                                    , APP_Channel: rootProject.ext.envInfo.VICTOR.appPackageName
-                                    , isDebug    : "4"]
-            //, app_icon   : "@mipmap/delete_all"
+            manifestPlaceholders = [CHANNEL_VALUE         : "victorPir"
+                                    , app_icon            : "@mipmap/ic_launcher_victor"
+                                    , APP_ID              : "1"
+                                    , APP_Version         : "2"
+                                    , APP_Channel         : rootProject.ext.envInfo.VICTORConfig.appPackageName
+                                    , PROVIDER_AUTHORITIES: "com.dyt.wcc.victor.FileProvider"]
+            flavorDimensions "demo1"
         }
     }
+
 
     //移除lint检测的error
     lintOptions {
@@ -155,6 +196,7 @@ android {
     }
 
     buildTypes {
+        println("===============buildTypes=================");
         debug {
             // 使用config签名
             signingConfig signingConfigs.debugConfig
@@ -222,8 +264,7 @@ dependencies {
     implementation project(path: ':CameraCommon')
     //引用 easyphotos 库
     implementation project(path: ':easyphotos')
-    //引用第三方 pdf查看库
-//    implementation project(path: ':library')
+
 
     implementation project(path: ':UvcConnect')
     implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -246,5 +287,10 @@ dependencies {
 //    implementation 'com.tom-roush:pdfbox-android:2.0.23.0'
 //    implementation 'es.voghdev.pdfviewpager:library:1.1.2'
 //    compile 'com.github.barteksc:android-pdf-viewer:2.8.1'
+
+    //引用第三方 pdf查看库
+    implementation project(path: ':library')
+    //victor 独有的 library
+//     victorImplementation(path: ':library')
 
 }

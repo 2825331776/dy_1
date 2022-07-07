@@ -22,7 +22,7 @@ import com.dyt.wcc.common.R;
  * <p>Author：stefan cheng        </p>
  * <p>Create Date：2021/9/11  11:11     </p>
  * <p>Description：自定义开关控件         </p>
- * <p>PackagePath: com.dyt.wcc.dytpir.widget     </p>
+ * <p>PackagePath: com.dyt.wcc.widget     </p>
  */
 public class MyToggle extends LinearLayout {
 	private static final String       TAG = "MyToggle.TAG";

@@ -26,7 +26,7 @@ import com.dyt.wcc.common.R;
  * <p>Create Date：2021/9/16  15:07     </p>
  * <p>Description：@开关底部加文字  切换效果自定义         </p>
  * 支持：设置描边颜色， 切换颜色，圆按钮颜色，字体颜色
- * <p>PackagePath: com.dyt.wcc.dytpir.widget     </p>
+ * <p>PackagePath: com.dyt.wcc.widget     </p>
  * <p>
  * 可以做动画滑动效果，但未做。
  * 字体自适应效果未做
