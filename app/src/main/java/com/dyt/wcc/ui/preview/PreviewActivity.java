@@ -6,12 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Paint;
 import android.hardware.usb.UsbDevice;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -45,7 +44,6 @@ import com.dyt.wcc.cameracommon.encoder.MediaMuxerWrapper;
 import com.dyt.wcc.cameracommon.usbcameracommon.AbstractUVCCameraHandler;
 import com.dyt.wcc.cameracommon.usbcameracommon.UVCCameraHandler;
 import com.dyt.wcc.cameracommon.utils.ByteUtil;
-import com.dyt.wcc.common.base.BaseActivity;
 import com.dyt.wcc.common.utils.DensityUtil;
 import com.dyt.wcc.common.utils.FontUtils;
 import com.dyt.wcc.common.widget.MyCustomRangeSeekBar;
@@ -61,13 +59,13 @@ import com.dyt.wcc.customize.jms.JMSCompanyView;
 import com.dyt.wcc.customize.victor.PdfActivity;
 import com.dyt.wcc.customize.victor.VictorCompanyView;
 import com.dyt.wcc.databinding.ActivityPreviewBinding;
-import com.dyt.wcc.databinding.PopCompanyInfoBinding;
 import com.dyt.wcc.databinding.PopHighlowcenterTraceBinding;
 import com.dyt.wcc.databinding.PopPaletteChoiceBinding;
 import com.dyt.wcc.databinding.PopSettingBinding;
 import com.dyt.wcc.databinding.PopTempModeChoiceBinding;
 import com.dyt.wcc.ui.gallery.GlideEngine;
 import com.dyt.wcc.utils.AssetCopyer;
+import com.dyt.wcc.utils.BaseActivity;
 import com.dyt.wcc.utils.ByteUtilsCC;
 import com.dyt.wcc.utils.CreateBitmap;
 import com.dyt.wcc.utils.LanguageUtils;
@@ -99,7 +97,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//jni测试按钮状态记录
 	//	private final int jni_status = 0;
 
-	private static final int REQUEST_CODE_CHOOSE  = 23;
+//	private static final int REQUEST_CODE_CHOOSE  = 23;
 	private static final int     MSG_CHECK_UPDATE  = 1;
 	private static final int     MSG_CAMERA_PARAMS = 2;
 	public static long startTime = 0;
@@ -198,10 +196,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private SendCommand mSendCommand;
 	private int screenWidth, screenHeight;
 	private Bitmap highTempBt, lowTempBt, centerTempBt, normalPointBt;
-	private DisplayMetrics metrics;
-	private Configuration  configuration;
-	private int            language_index     = -1;//语言的 索引下标
-	private String         language_local_str = "";
+//	private DisplayMetrics metrics;
+//	private Configuration  configuration;
 	private boolean        isFirstRun         = false;
 	//	//校正输入框 过滤器
 	//	private TextWatcher reviseTextWatcher;
@@ -265,12 +261,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					} else if (mPid == 22592 && mVid == 3034) {//TinyC 无湿度参数
 						popSettingBinding.tvCameraSettingHumidity.setVisibility(View.GONE);
 					}
-					//					popSettingBinding.btCheckVersion.setVisibility(View.GONE);
-					popSettingBinding.btCheckVersion.setOnClickListener(v1 -> {
-						OkHttpClient client = new OkHttpClient();
-						new Thread(new Runnable() {
-							@Override
-							public void run () {
+					popSettingBinding.btCheckVersion.setVisibility(View.GONE);
+					if (DYConstants.COMPANY_DYT.equals(BuildConfig.FLAVOR)){
+						popSettingBinding.btCheckVersion.setVisibility(View.VISIBLE);
+						popSettingBinding.btCheckVersion.setOnClickListener(v1 -> {
+							OkHttpClient client = new OkHttpClient();
+							new Thread(() -> {
 								Request request = new Request.Builder().url(DYConstants.UPDATE_CHECK_INFO).get().build();
 								try {
 									Response response = client.newCall(request).execute();
@@ -329,9 +325,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 								} catch (IOException | PackageManager.NameNotFoundException e) {
 									e.printStackTrace();
 								}
-							}
-						}).start();
-					});
+							}).start();
+						});
+					}
+
+
 					//第二步：将获取的数据 展示在输入框内
 					if (cameraParams != null) {
 						popSettingBinding.etCameraSettingEmittance.setText(String.valueOf(cameraParams.get(DYConstants.setting_emittance)));//发射率 0-1
@@ -601,23 +599,20 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 							loadingDialog.show();
 
 							if (position == 0) {
-								new Thread(new Runnable() {
-									@Override
-									public void run () {
-										final boolean isSuccess = mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
-										runOnUiThread(new Runnable() {
-											@Override
-											public void run () {
-												if (!isSuccess) {
-													//													showToast(getString(R.string.toast_setting_HL_swtich_success));
-													//												}else {
-													//													showToast(getString(R.string.toast_setting_HL_swtich_fail));
-													popSettingBinding.switchHighlowGain.setSelectedTab(1, false);
-												}
-												loadingDialog.dismiss();
+								new Thread(() -> {
+									final boolean isSuccess = mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
+									runOnUiThread(new Runnable() {
+										@Override
+										public void run () {
+											if (!isSuccess) {
+												//													showToast(getString(R.string.toast_setting_HL_swtich_success));
+												//												}else {
+												//													showToast(getString(R.string.toast_setting_HL_swtich_fail));
+												popSettingBinding.switchHighlowGain.setSelectedTab(1, false);
 											}
-										});
-									}
+											loadingDialog.dismiss();
+										}
+									});
 								}).start();
 
 							} else {
@@ -1295,10 +1290,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		Context context = DYTApplication.getInstance();
 		if (type == 0) {
 			locale = Locale.SIMPLIFIED_CHINESE;
-			LanguageUtils.saveAppLocaleLanguage(locale.toLanguageTag());
+			LanguageUtils.saveAppLocaleLanguage(locale.getLanguage());
 		} else if (type == 1) {
 			locale = Locale.US;
-			LanguageUtils.saveAppLocaleLanguage(locale.toLanguageTag());
+			LanguageUtils.saveAppLocaleLanguage(locale.getLanguage());
 		} else {
 			return;
 		}
@@ -1310,9 +1305,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		Intent intent = new Intent(context, PreviewActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		context.startActivity(intent);
-		//		finish();
-		//		android.os.Process.killProcess(android.os.Process.myPid());
-		//		System.exit(0);
 	}
 
 	@Override
@@ -1333,8 +1325,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	protected void initView () {
 		//		Log.e(TAG, "initView: ==========================手机型号为：===" + Build.MODEL);
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
-		configuration = getResources().getConfiguration();
-		metrics = getResources().getDisplayMetrics();
+//		configuration = getResources().getConfiguration();
+//		metrics = getResources().getDisplayMetrics();
 		loadingDialog = LoadingDialog.get(mContext.get());
 
 
@@ -1436,11 +1428,18 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			//默认不打开音频录制
 			sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING, 1).apply();
 
-			language_local_str = Locale.getDefault().getLanguage();
+			String language_local_str;
 			//		if (isDebug)
-			Log.e(TAG, "initView: ===============language_local_str==============" + language_local_str);
-			language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING, Locale.getDefault().getLanguage());
-			language_index = sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, -1);
+//			Log.e(TAG, "initView: ===============language_local_str==============" + language_local_str);
+			if (Build.VERSION.SDK_INT> Build.VERSION_CODES.N){
+				language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING, Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage());
+			}else {
+				language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING, Resources.getSystem().getConfiguration().locale.getLanguage());
+			}
+			//	private DisplayMetrics metrics;
+			//	private Configuration  configuration;
+			//语言的 索引下标
+			int language_index = sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, -1);
 			if (new Locale("zh").getLanguage().equals(language_local_str)) {
 				language_index = 0;
 			} else {

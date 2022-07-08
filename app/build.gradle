@@ -180,7 +180,7 @@ android {
             buildConfigField "int", "COMPANY_H", '145'
             // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE         : "victorPir"
-                                    , app_icon            : "@mipmap/ic_launcher_victor"
+                                    , app_icon            : "@mipmap/ic_launcher_victor_forground"
                                     , APP_ID              : "1"
                                     , APP_Version         : "2"
                                     , APP_Channel         : rootProject.ext.envInfo.VICTORConfig.appPackageName

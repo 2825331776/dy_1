@@ -1265,9 +1265,6 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     }
 
                     //读取配置文件的 加密SN
-                    const char * file_f = ".txt";
-                    strcat(app_private_path,file_f);
-                    file_f = NULL;
                     FILE *inFile = NULL;
                     inFile = fopen(
                             app_private_path,
@@ -1621,7 +1618,9 @@ UVCPreviewIR::draw_preview_one(uint8_t *frameData, ANativeWindow **window, convF
 }
 void UVCPreviewIR::setResourcePath(const char * path) {
     strcpy(app_private_path, path);
-    LOGE("====================app_private_path=%s======",app_private_path);
+    const char * file_f = ".txt";
+    strcat(app_private_path,file_f);
+    file_f = NULL;
     if (mFrameImage){
         std::vector<std::string> split_result = split(path, "config");
         mFrameImage->setResourcePath(split_result[0].c_str());

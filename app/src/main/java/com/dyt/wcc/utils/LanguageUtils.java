@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.LocaleList;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -46,6 +47,8 @@ public class LanguageUtils {
 		Configuration configuration = res.getConfiguration();
 		//获得你想切换的语言，可以用SharedPreferences保存读取
 		Locale newLocale = Locale.getDefault();
+//		Log.e("LanguageUtils", "wrap: ======================="+ configuration.locale.getLanguage());
+//		Log.e("LanguageUtils", "wrap: =================newLocale======"+ newLocale.getLanguage());
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 			configuration.setLocale(newLocale);
 			LocaleList localeList = new LocaleList(newLocale);
@@ -54,9 +57,9 @@ public class LanguageUtils {
 			context = context.createConfigurationContext(configuration);
 		}
 		//		else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-		//			configuration.setLocale(newLocale);
-		//			context = context.createConfigurationContext(configuration);
-		//		}
+		//					configuration.setLocale(newLocale);
+		//					context = context.createConfigurationContext(configuration);
+		//				}
 		else {
 			configuration.locale = newLocale;
 			res.updateConfiguration(configuration, res.getDisplayMetrics());
@@ -74,6 +77,8 @@ public class LanguageUtils {
 		Resources resources = context.getResources();
 		Configuration config = resources.getConfiguration();
 		Locale contextLocale = config.locale;
+		Log.e("===updateLanguage====", "updateLanguage: =======现有语言contextLocale.getLanguage()==============="+ contextLocale.getLanguage());
+		Log.e("===updateLanguage====", "updateLanguage: =======目标切换getLanguage()==============="+ contextLocale.getLanguage());
 		if (isSameLocale(contextLocale, locale)) {
 			return;
 		}

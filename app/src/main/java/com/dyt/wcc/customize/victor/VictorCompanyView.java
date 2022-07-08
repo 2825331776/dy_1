@@ -13,6 +13,8 @@ import com.dyt.wcc.R;
 import com.dyt.wcc.customize.CustomizeCompany;
 import com.dyt.wcc.databinding.PopCompanyVictorBinding;
 
+import java.util.Objects;
+
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
  * <p>Author：stefan cheng        </p>
@@ -37,7 +39,7 @@ public class VictorCompanyView extends CustomizeCompany {
 	public void initListener (View view) {
 		PopCompanyVictorBinding popCompanyInfoBinding = DataBindingUtil.bind(view);
 		//根据是中文还是因为 区分是主营/邮箱反馈
-		popCompanyInfoBinding.tvAboutMainBusinessContent.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+		Objects.requireNonNull(popCompanyInfoBinding).tvAboutMainBusinessContent.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
 		popCompanyInfoBinding.tvAboutMainBusinessContent.setOnClickListener(v19 -> {
 			//				if (sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, -1) == 0) {//中文
 			//					Intent intent = new Intent();
