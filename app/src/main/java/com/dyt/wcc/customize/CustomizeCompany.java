@@ -13,7 +13,7 @@ import android.widget.PopupWindow;
  */
 public abstract class CustomizeCompany {
 	protected Context mContext;
-	protected PopupWindow popupWindow;
+//	protected PopupWindow popupWindow;
 	/**
 	 * 设置显示的公司布局
 	 * @param context 填充的context

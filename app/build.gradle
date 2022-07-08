@@ -120,15 +120,17 @@ android {
 //            resValue "string", "app_name", "web"
 //            resValue "bool", "auto_updates", 'false'
             // 动态修改 常量 字段
-           buildConfigField "String", "CONFIGS_NAME", '"configs_dyt"'
+            buildConfigField "String", "CONFIGS_NAME", '"configs_dyt"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_DY"'
             buildConfigField "int", "COMPANY_H", '110'
             // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE         : "DYTPir"
                                     , app_icon            : "@mipmap/ic_launcher_dy_foreground"
 //                                    , applicationId :"${rootProject.ext.envInfo.DYTConfig.appId}.dytpir"
-                                    , APP_ID              : "1"
-                                    , APP_Version         : "2"
+                                    , BUGLYAPPID          : "253f40d84b"
+                                    , BUGLYAPPVersion     : "3.4.4"
+                                    , BUGLYAPPChannel     : "dyt"
+                                    , BUGLYENABLEDEBUG  : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.DYTConfig.appPackageName
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.dytpir.FileProvider"]
             //, app_icon   : "@mipmap/delete_all"
@@ -148,11 +150,13 @@ android {
             buildConfigField "String", "CONFIGS_NAME", '"configs_jms"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_JMS"'
             buildConfigField "int", "COMPANY_H", '145'
-            // 修改 AndroidManifest.xml 里渠道变量
+            // 修改 AndroidManifest.xml 里渠道变量 false
             manifestPlaceholders = [CHANNEL_VALUE         : "jmsPir"
                                     , app_icon            : "@mipmap/ic_launcher_jms_round"
-                                    , APP_ID              : "1"
-                                    , APP_Version         : "2"
+                                    , BUGLYAPPID          : "af50f10806"
+                                    , BUGLYAPPVersion     : "3.4.4"
+                                    , BUGLYAPPChannel     : "jms"
+                                    , BUGLYENABLEDEBUG  : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.JMSConfig.appPackageName
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.jms.FileProvider"]
             // , app_icon   : "@mipmap/delete_all"
@@ -181,8 +185,10 @@ android {
             // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE         : "victorPir"
                                     , app_icon            : "@mipmap/ic_launcher_victor_forground"
-                                    , APP_ID              : "1"
-                                    , APP_Version         : "2"
+                                    , BUGLYAPPID          : "c61a63bdf6"
+                                    , BUGLYAPPVersion     : "3.4.4"
+                                    , BUGLYAPPChannel     : "victor"
+                                    , BUGLYENABLEDEBUG  : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.VICTORConfig.appPackageName
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.victor.FileProvider"]
             flavorDimensions "demo1"

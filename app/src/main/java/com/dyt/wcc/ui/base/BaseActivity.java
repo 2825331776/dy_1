@@ -1,4 +1,4 @@
-package com.dyt.wcc.utils;
+package com.dyt.wcc.ui.base;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -20,6 +20,7 @@ import androidx.databinding.ViewDataBinding;
 
 import com.dyt.wcc.common.utils.KeyboardsUtils;
 import com.dyt.wcc.constans.DYConstants;
+import com.dyt.wcc.utils.LanguageUtil;
 
 import java.lang.ref.WeakReference;
 

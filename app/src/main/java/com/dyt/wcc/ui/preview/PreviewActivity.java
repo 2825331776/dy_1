@@ -63,9 +63,9 @@ import com.dyt.wcc.databinding.PopHighlowcenterTraceBinding;
 import com.dyt.wcc.databinding.PopPaletteChoiceBinding;
 import com.dyt.wcc.databinding.PopSettingBinding;
 import com.dyt.wcc.databinding.PopTempModeChoiceBinding;
+import com.dyt.wcc.ui.base.BaseActivity;
 import com.dyt.wcc.ui.gallery.GlideEngine;
 import com.dyt.wcc.utils.AssetCopyer;
-import com.dyt.wcc.utils.BaseActivity;
 import com.dyt.wcc.utils.ByteUtilsCC;
 import com.dyt.wcc.utils.CreateBitmap;
 import com.dyt.wcc.utils.LanguageUtils;
@@ -79,6 +79,7 @@ import com.king.app.updater.AppUpdater;
 import com.king.app.updater.http.OkHttpManager;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -97,10 +98,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//jni测试按钮状态记录
 	//	private final int jni_status = 0;
 
-//	private static final int REQUEST_CODE_CHOOSE  = 23;
-	private static final int     MSG_CHECK_UPDATE  = 1;
-	private static final int     MSG_CAMERA_PARAMS = 2;
-	public static long startTime = 0;
+	//	private static final int REQUEST_CODE_CHOOSE  = 23;
+	private static final int  MSG_CHECK_UPDATE  = 1;
+	private static final int  MSG_CAMERA_PARAMS = 2;
+	public static        long startTime         = 0;
 	CompoundButton.OnCheckedChangeListener highLowCenterCheckListener = (buttonView, isChecked) -> {
 		switch (buttonView.getId()) {
 			case R.id.cb_main_preview_highlowcenter_trace_high:
@@ -126,11 +127,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				break;
 		}
 	};
-	private UVCCameraHandler   mUvcCameraHandler;
+	private UVCCameraHandler mUvcCameraHandler;
 	//点线矩形测温弹窗
-	private PopupWindow        PLRPopupWindows;
+	private PopupWindow      PLRPopupWindows;
 	//用户添加 测温模式 切换
-	View.OnClickListener                   tempModeCheckListener      = new View.OnClickListener() {
+	View.OnClickListener tempModeCheckListener = new View.OnClickListener() {
 		@Override
 		public void onClick (View v) {
 			switch (v.getId()) {
@@ -159,7 +160,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private Map<String, Float> cameraParams;
 	private SharedPreferences  sp;
 	//色板切换
-	View.OnClickListener                   paletteChoiceListener      = v -> {
+	View.OnClickListener paletteChoiceListener = v -> {
 		switch (v.getId()) {
 			case R.id.palette_layout_Tiehong:
 				setPalette(0);
@@ -188,17 +189,17 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		}
 	};
 	//设备 vid pid
-	private int                mVid, mPid;
+	private int mVid, mPid;
 	private USBMonitor mUsbMonitor;
-	private int    mFontSize;
-	private String palettePath;
-	private Bitmap tiehong = null, caihong = null, baire = null, heire = null, hongre = null, lenglan = null;
+	private int        mFontSize;
+	private String     palettePath;
+	private Bitmap     tiehong = null, caihong = null, baire = null, heire = null, hongre = null, lenglan = null;
 	private SendCommand mSendCommand;
-	private int screenWidth, screenHeight;
+	private int         screenWidth, screenHeight;
 	private Bitmap highTempBt, lowTempBt, centerTempBt, normalPointBt;
-//	private DisplayMetrics metrics;
-//	private Configuration  configuration;
-	private boolean        isFirstRun         = false;
+	//	private DisplayMetrics metrics;
+	//	private Configuration  configuration;
+	private       boolean                                 isFirstRun              = false;
 	//	//校正输入框 过滤器
 	//	private TextWatcher reviseTextWatcher;
 	//	//发射率输入框 拦截器
@@ -208,15 +209,15 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//	//环境温度 输入框 拦截器
 	//	private TextWatcher environmentTextWatcher;
 	// 重置参数 返回值
-	private              int defaultSettingReturn = -1;
+	private       int                                     defaultSettingReturn    = -1;
 	//更新工具类对象
-	private AppUpdater                              mAppUpdater;
-	private int                                     maxIndex = 0;
-	private List<UpdateObj>                         updateObjList;
+	private       AppUpdater                              mAppUpdater;
+	private       int                                     maxIndex                = 0;
+	private       List<UpdateObj>                         updateObjList;
 	//传感器
-	private AbstractUVCCameraHandler.CameraCallback cameraCallback;
-	private LoadingDialog                           loadingDialog;
-	private final        Handler mHandler          = new Handler(new Handler.Callback() {
+	private       AbstractUVCCameraHandler.CameraCallback cameraCallback;
+	private       LoadingDialog                           loadingDialog;
+	private final Handler                                 mHandler                = new Handler(new Handler.Callback() {
 		@Override
 		public boolean handleMessage (@NonNull Message msg) {
 			switch (msg.what) {
@@ -262,7 +263,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						popSettingBinding.tvCameraSettingHumidity.setVisibility(View.GONE);
 					}
 					popSettingBinding.btCheckVersion.setVisibility(View.GONE);
-					if (DYConstants.COMPANY_DYT.equals(BuildConfig.FLAVOR)){
+					if (DYConstants.COMPANY_DYT.equals(BuildConfig.FLAVOR)) {
 						popSettingBinding.btCheckVersion.setVisibility(View.VISIBLE);
 						popSettingBinding.btCheckVersion.setOnClickListener(v1 -> {
 							OkHttpClient client = new OkHttpClient();
@@ -659,8 +660,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			return false;
 		}
 	});
-	private Surface stt;
-	private final USBMonitor.OnDeviceConnectListener onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
+	private       Surface                                 stt;
+	private final USBMonitor.OnDeviceConnectListener      onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
 		@Override
 		public void onAttach (UsbDevice device) {
 			//			if (isDebug)Log.e(TAG, "DD  onAttach: "+ device.toString());
@@ -773,7 +774,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				Log.e(TAG, "DD  onCancel: ");
 		}
 	};
-	private MyNumberPicker myNumberPicker;
+	private       MyNumberPicker                          myNumberPicker;
 
 	//	private final SensorEventListener sensorEventListener = new SensorEventListener() {
 	//		@Override
@@ -1155,7 +1156,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		});
 
 		int paletteType = sp.getInt(DYConstants.PALETTE_NUMBER, 1);
-		mUvcCameraHandler.PreparePalette(palettePath, paletteType,BuildConfig.CONFIGS_NAME);
+		mUvcCameraHandler.PreparePalette(palettePath, paletteType, BuildConfig.CONFIGS_NAME);
 		mUvcCameraHandler.setAreaCheck(0);
 
 		//是否进行温度的绘制
@@ -1325,8 +1326,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	protected void initView () {
 		//		Log.e(TAG, "initView: ==========================手机型号为：===" + Build.MODEL);
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
-//		configuration = getResources().getConfiguration();
-//		metrics = getResources().getDisplayMetrics();
+		//		configuration = getResources().getConfiguration();
+		//		metrics = getResources().getDisplayMetrics();
 		loadingDialog = LoadingDialog.get(mContext.get());
 
 
@@ -1430,10 +1431,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 			String language_local_str;
 			//		if (isDebug)
-//			Log.e(TAG, "initView: ===============language_local_str==============" + language_local_str);
-			if (Build.VERSION.SDK_INT> Build.VERSION_CODES.N){
+			//			Log.e(TAG, "initView: ===============language_local_str==============" + language_local_str);
+			if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N) {
 				language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING, Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage());
-			}else {
+			} else {
 				language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING, Resources.getSystem().getConfiguration().locale.getLanguage());
 			}
 			//	private DisplayMetrics metrics;
@@ -1476,14 +1477,14 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				if (all) {
 					mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);//
 					//					if (isDebug)Log.e(TAG, "onResult: mFontSize ==========> " + mFontSize);
-					switch (BuildConfig.FLAVOR){
+					switch (BuildConfig.FLAVOR) {
 						case DYConstants.COMPANY_DYT:
 							Log.e(TAG, "onGranted: =========调用 COMPANY_DYT 的函数====================");
-//							com.dyt.wcc.dytpir.DYTDO.PrintSomething();
+							//							com.dyt.wcc.dytpir.DYTDO.PrintSomething();
 							break;
 						case DYConstants.COMPANY_JMS:
 							Log.e(TAG, "onGranted: ===========调用 COMPANY_JMS 的函数====================");
-//							com.dyt.wcc.jms.JMSTODO.jmstodo();
+							//							com.dyt.wcc.jms.JMSTODO.jmstodo();
 							break;
 						case DYConstants.COMPANY_VICTOR:
 							Log.e(TAG, "onGranted: ============调用 COMPANY_VICTOR 的函数====================");
@@ -1491,7 +1492,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					}
 
 					AssetCopyer.copyAllAssets(DYTApplication.getInstance(), mContext.get().getExternalFilesDir(null).getAbsolutePath());
-							Log.e(TAG,"===========getExternalFilesDir=========="+mContext.get().getExternalFilesDir(null).getAbsolutePath());
+					Log.e(TAG, "===========getExternalFilesDir==========" + mContext.get().getExternalFilesDir(null).getAbsolutePath());
 					palettePath = mContext.get().getExternalFilesDir(null).getAbsolutePath();
 					Log.e(TAG, "onGranted: ===========palettePath=============》" + palettePath);
 					CreateBitmap createBitmap = new CreateBitmap();
@@ -1543,8 +1544,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	 */
 	private void initListener () {
 		//测试的 监听器
-		//		mDataBinding.btTest01.setVisibility(View.VISIBLE);
+//		mDataBinding.btTest01.setVisibility(View.VISIBLE);
 		mDataBinding.btTest01.setOnClickListener(v -> {
+//			CrashReport.testJavaCrash();
 			//******************************testJNi***************************************
 			//			mUvcCameraHandler.testJNi(Build.MODEL);
 			//			Log.e(TAG, "initListener: " + mDataBinding.textureViewPreviewActivity.getTemperatureCallback());
@@ -1918,13 +1920,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				//				mHandler.sendEmptyMessage(MSG_CAMERA_PARAMS);
 			}
 		});
-//		initCompanyPop();
+		//		initCompanyPop();
 		//公司信息弹窗   监听器使用的图表的监听器对象
 		mDataBinding.ivPreviewLeftCompanyInfo.setOnClickListener(v -> {
 			//请求权限
 			CustomizeCompany customizeCompany;
 			View view;
-			switch (BuildConfig.FLAVOR){
+			switch (BuildConfig.FLAVOR) {
 				case DYConstants.COMPANY_JMS:
 					customizeCompany = new JMSCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
@@ -1932,8 +1934,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				case DYConstants.COMPANY_VICTOR:
 					customizeCompany = new VictorCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
-					view.findViewById(R.id.tv_about_main_user_manual_info).setOnClickListener(v2 ->{
-						if (companyPopWindows !=null && companyPopWindows.isShowing()){companyPopWindows.dismiss();}
+					view.findViewById(R.id.tv_about_main_user_manual_info).setOnClickListener(v2 -> {
+						if (companyPopWindows != null && companyPopWindows.isShowing()) {
+							companyPopWindows.dismiss();
+						}
 						startActivity(new Intent(PreviewActivity.this, PdfActivity.class));
 					});
 					break;
