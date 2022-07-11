@@ -75,6 +75,12 @@ android {
             java.srcDirs = ['src/dytPir/java']
             manifest.srcFile 'src/dytPir/AndroidManifest.xml'
         }
+        heika {
+            assets.srcDirs = ['src/heika/assets']
+            res.srcDirs = ['src/heika/res-heika']
+            java.srcDirs = ['src/heika/java']
+            manifest.srcFile 'src/heika/AndroidManifest.xml'
+        }
         jms {
             assets.srcDirs = ['src/jmsPir/assets']
             res.srcDirs = ['src/jmsPir/res-jms']
@@ -136,6 +142,35 @@ android {
             //, app_icon   : "@mipmap/delete_all"
             dimension "demo1"
         }
+        //黑卡
+        heika {
+//              // 每个环境包名不同
+//            dimension 'dyt'
+//            applicationId versions.appId
+            applicationIdSuffix ".heika"
+            versionCode rootProject.ext.envInfo.DYTConfig.VCode
+            versionName rootProject.ext.envInfo.DYTConfig.VName
+            // 动态添加 string.xml 字段；
+            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
+//            resValue "string", "app_name", "web"
+//            resValue "bool", "auto_updates", 'false'
+            // 动态修改 常量 字段
+            buildConfigField "String", "CONFIGS_NAME", '"configs_dyt"'
+            buildConfigField "String", "SP_NAME", '"DYT_IR_SP_HEIKA"'
+            //公司 信息页 的 高度
+            buildConfigField "int", "COMPANY_H", '110'
+            // 修改 AndroidManifest.xml 里渠道变量
+            manifestPlaceholders = [CHANNEL_VALUE         : "heika"
+                                    , app_icon            : "@mipmap/ic_launcher_dy_foreground"
+//                                    , applicationId :"${rootProject.ext.envInfo.DYTConfig.appId}.dytpir"
+                                    , BUGLYAPPID          : "253f40d84b"
+                                    , BUGLYAPPVersion     : "3.4.4"
+                                    , BUGLYAPPChannel     : "heika"
+                                    , BUGLYENABLEDEBUG  : "false"
+                                    , APP_Channel         : rootProject.ext.envInfo.DYTConfig.appPackageName
+                                    , PROVIDER_AUTHORITIES: "com.dyt.wcc.heika.FileProvider"]
+            dimension "demo1"
+        }
         //精明鼠   NOYAFA
         jms {
             // 每个环境包名不同
@@ -184,7 +219,7 @@ android {
             buildConfigField "int", "COMPANY_H", '145'
             // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE         : "victorPir"
-                                    , app_icon            : "@mipmap/ic_launcher_victor_forground"
+                                    , app_icon            : "@mipmap/ic_launcher_victor_foreground"
                                     , BUGLYAPPID          : "c61a63bdf6"
                                     , BUGLYAPPVersion     : "3.4.4"
                                     , BUGLYAPPChannel     : "victor"

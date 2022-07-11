@@ -7,6 +7,7 @@
 #include <android/native_window.h>
 #include "objectarray.h"
 #include "cstring"
+//#include "toojpeg.h"
 
 
 
@@ -91,6 +92,7 @@ private:
     unsigned char *RgbaOutBuffer;//上一张图幅
     unsigned char *RgbaHoldBuffer;//当前图幅
     unsigned char *backUpBuffer;
+    unsigned char JPEGBuffer;
     irBuffer *irBuffers;//使用专业级图像算法所需要的缓存
     size_t frameBytes;
 

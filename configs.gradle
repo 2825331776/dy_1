@@ -20,27 +20,27 @@ ext {
                     // 应用 id
                     appId : "com.dyt.wcc",
                     // 构建版本号
-                    VCode         : 105,
+                    VCode         : 107,
                     // 版本名称
-                    VName         : "1.1.5",
-                    appPackageName: "DytSpectrumOwl",
+                    VName         : "1.1.7",
+                    appPackageName: "黑卡",
             ],
             JMSConfig   : [
                     // 应用 id
                     appId : "com.dyt.wcc",
                     // 构建版本号
-                    VCode         : 105,
+                    VCode         : 107,
                     // 版本名称
-                    VName         : "1.1.5",
+                    VName         : "1.1.7",
                     appPackageName: "NOYAFA",
             ],
             VICTORConfig: [
                     // 应用 id
                     appId : "com.dyt.wcc",
                     // 构建版本号
-                    VCode         : 105,
+                    VCode         : 107,
                     // 版本名称
-                    VName         : "1.1.5",
+                    VName         : "1.1.7",
                     appPackageName: "VICTOR",
             ],
     ]

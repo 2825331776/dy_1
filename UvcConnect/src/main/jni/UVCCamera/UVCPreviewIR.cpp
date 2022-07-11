@@ -1288,7 +1288,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     //切割结果
                     std::vector<std::string> split_result = split(fileStore, ";");
                     int splitSize = split_result.size();
-                    LOGE("==================configs.txt split size == %d=========",splitSize);
+//                    LOGE("==================configs.txt split size == %d=========",splitSize);
 
 //                    FILE* outFile = NULL;
 //                    outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
@@ -1317,10 +1317,10 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             }
                         }
                         if (flag) {
-                            LOGE("=============sn解码成功========");
+//                            LOGE("=============sn解码成功========");
                             snIsRight = true;
                         } else {
-                            LOGE("==============sn解码失败========");
+//                            LOGE("==============sn解码失败========");
                             snIsRight = snIsRight | 0;
                         }
                         delete[]decryptionChild;
@@ -2206,8 +2206,12 @@ void UVCPreviewIR::shutRefresh() {
 
 void UVCPreviewIR::testJNI(const char *phoneStr) {
     LOGE("==========================testJNI=======================%s==", phoneStr);
+//    auto pixels = new unsigned char[frameWidth*frameHeight*3];
+//    unsigned char optput = '1';
+//    TooJpeg::writeJpeg((**optput),pixels,frameWidth,frameHeight,true,95,false,NULL);
 //    temperature_thread
 //    if (temperature_thread = NULL){
 //
 //    }
+//    delete [] pixels;
 }

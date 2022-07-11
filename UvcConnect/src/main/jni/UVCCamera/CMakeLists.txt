@@ -4,14 +4,13 @@ cmake_minimum_required(VERSION 3.10.2)
 
 project("UvcConnect")
 
-if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
+if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
     include_directories(${ANDROID_SYSROOT}/usr/include/arm-linux-androideabi)
-elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
+elseif (${ANDROID_ABI} STREQUAL "arm64-v8a")
     include_directories(${ANDROID_SYSROOT}/usr/include/aarch64-linux-android)
-else()
+else ()
     include_directories(${ANDROID_SYSROOT}/usr/include/arm-linux-androideabi)
-endif()
-
+endif ()
 
 
 #C 的编译选项是 CMAKE_C_FLAGS
@@ -19,7 +18,7 @@ endif()
 SET(CMAKE_CXX_FLAGS "-Wno-error=format-security -Wno-error=pointer-sign")
 
 
-#设置第三方so库路径
+#--------------设置第三方libsimplePictureProcessing.so库路径---------------------------------
 set(my_lib_path ${CMAKE_SOURCE_DIR}/libs)
 
 
@@ -34,18 +33,26 @@ set_target_properties(libsimplePictureProcessing
         PROPERTIES IMPORTED_LOCATION
         ${my_lib_path}/${ANDROID_ABI}/libsimplePictureProcessing.so)
 
+##--------------设置第三方 libjpeg.so库路径---------------------------------
+##将第三方库作为动态库引用
+#add_library(libjpeg
+#        SHARED
+#        IMPORTED)
+#
+#
+##指定第三方库的绝对路径
+#set_target_properties(libjpeg
+#        PROPERTIES IMPORTED_LOCATION
+#        ${my_lib_path}/${ANDROID_ABI}/liblibjpeg.so)
 
-#将第三方库作为动态库引用
+#--------------设置第三方 libthermometry.so库路径---------------------------------
 add_library(libthermometry
         SHARED
         IMPORTED)
-
-
 #指定第三方库的绝对路径
 set_target_properties(libthermometry
         PROPERTIES IMPORTED_LOCATION
         ${my_lib_path}/${ANDROID_ABI}/libthermometry.so)
-
 
 
 #将第三方库作为动态库引用
@@ -101,9 +108,9 @@ find_library(log-lib log)
 
 #设置头文件搜索路径（和此txt同个路径的头文件无需设置），可选
 include_directories(${CMAKE_SOURCE_DIR}/../
-                    ${CMAKE_SOURCE_DIR}/include
-                    ${CMAKE_SOURCE_DIR}/../rapidjson/include
-                   )
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/../rapidjson/include
+        )
 
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
@@ -123,16 +130,16 @@ set(SRC_LISTS
         )
 
 add_library( # Sets the name of the library.  设置库的名称。
-             UVCCamera
+        UVCCamera
 
-             # Sets the library as a shared library. 将library设置为一个共享库
-             SHARED
+        # Sets the library as a shared library. 将library设置为一个共享库
+        SHARED
 
-             # Provides a relative path to your source file(s).为源文件提供一个相对路径
+        # Provides a relative path to your source file(s).为源文件提供一个相对路径
         ${SRC_LISTS})
 
 
-
+#target_link_libraries(UVCCamera libjpeg)
 target_link_libraries(UVCCamera libusb100)
 target_link_libraries(UVCCamera libuvc)
 target_link_libraries(UVCCamera libjpeg-turbo1500)
