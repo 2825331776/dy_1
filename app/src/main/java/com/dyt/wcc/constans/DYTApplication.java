@@ -63,7 +63,7 @@ public class DYTApplication extends BaseApplication {
 			@Override
 			public void onActivityCreated (@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
 				// 对Application和Activity更新上下文的语言环境
-				LanguageUtils.applyAppLanguage(activity);
+//				LanguageUtils.applyAppLanguage(activity);
 			}
 
 			@Override

@@ -1,4 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="turn_on">SU</string>
+    <string name="turn_off">Spento</string>
+
+    <string name="preview_hint_not_connect">Collegare la termocamera e abilitare la funzione OTG</string>
 
 </resources>

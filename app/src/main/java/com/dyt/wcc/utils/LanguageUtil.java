@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import java.util.Locale;
 
@@ -26,7 +27,6 @@ public class LanguageUtil {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 			// apply locale
 			configuration.setLocale(locale);
-
 		} else {
 			// updateConfiguration
 			configuration.locale = locale;
@@ -36,6 +36,7 @@ public class LanguageUtil {
 	}
 
 	public static Context attachBaseContext(Context context, String language) {
+		Log.e("attachBaseContext", "attachBaseContext: ====="+ Build.VERSION.SDK_INT);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 			return createConfigurationResources(context, language);
 		} else {

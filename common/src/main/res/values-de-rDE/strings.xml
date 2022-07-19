@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="turn_on">开</string>
-    <string name="turn_off">关</string>
+    <string name="turn_on">An</string>
+    <string name="turn_off">Aus</string>
 
-    <string name="preview_hint_not_connect">请插入设备并打开OTG功能</string>
+    <string name="preview_hint_not_connect">Bitte schließen Sie die Wärmebildkamera an und aktivieren Sie die OTG-Funktion</string>
+
 </resources>

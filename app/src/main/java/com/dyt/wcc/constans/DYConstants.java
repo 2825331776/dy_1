@@ -27,10 +27,12 @@ public class DYConstants {
 	public static final String COMPANY_JMS = "jms";
 	public static final String COMPANY_DYT = "dyt";
 	public static final String COMPANY_VICTOR = "victor";
+	public static final String COMPANY_QIANLI = "qianli";
+	public static final String COMPANY_TESLONG = "teslong";
 
 	public static final String PIC_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + File.separator + "DYTCamera";
 
-	public static final String[] languageArray                     = new String[]{"中文", "English"};
+//	public static final String[] languageArray                     = new String[]{"中文", "English"};
 	public static final String[] tempUnit                          = new String[]{"℃", "℉", "K"};
 	//设置界面六个设置的值：保存在本地的sp  当中的都是 摄氏度
 	//发射率

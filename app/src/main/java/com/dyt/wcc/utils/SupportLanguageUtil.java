@@ -3,6 +3,7 @@ package com.dyt.wcc.utils;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.LocaleList;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -18,13 +19,14 @@ import java.util.Map;
  * <p>PackagePath: com.dyt.wcc.victor.utils     </p>
  */
 public class SupportLanguageUtil {
-	private static Map<String, Locale> mSupportLanguages = new HashMap<String, Locale>(7) {{
-		put(LanguageConstants.ENGLISH, Locale.ENGLISH);
+	private static Map<String, Locale> mSupportLanguages = new HashMap<String, Locale>(6) {{
 		put(LanguageConstants.SIMPLIFIED_CHINESE, Locale.SIMPLIFIED_CHINESE);
-		put(LanguageConstants.TRADITIONAL_CHINESE, Locale.TRADITIONAL_CHINESE);
-		put(LanguageConstants.FRANCE, Locale.FRANCE);
+		put(LanguageConstants.ENGLISH, Locale.ENGLISH);
+//		put(LanguageConstants.TRADITIONAL_CHINESE, Locale.TRADITIONAL_CHINESE);
+//		put(LanguageConstants.FRANCE, Locale.FRANCE);
 		put(LanguageConstants.GERMAN, Locale.GERMANY);
 		put(LanguageConstants.ITALIAN, Locale.ITALY);
+		put(LanguageConstants.KOREA,Locale.KOREA);
 		put(LanguageConstants.JAPAN, Locale.JAPAN);
 	}};
 
@@ -47,6 +49,7 @@ public class SupportLanguageUtil {
 	@TargetApi(Build.VERSION_CODES.N)
 	public static Locale getSupportLanguage(String language) {
 		if (isSupportLanguage(language)) {
+			Log.e("getSupportLanguage", "======getSupportLanguage: ==========================");
 			return mSupportLanguages.get(language);
 		}
 		return getSystemPreferredLanguage();

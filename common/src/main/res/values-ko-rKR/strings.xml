@@ -1,4 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="turn_on">에</string>
+    <string name="turn_off">끄다</string>
+
+    <string name="preview_hint_not_connect">열화상 카메라를 연결하고 OTG 기능을 활성화하십시오</string>
 
 </resources>

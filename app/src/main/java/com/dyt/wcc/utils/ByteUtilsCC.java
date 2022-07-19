@@ -88,7 +88,8 @@ public class ByteUtilsCC {
 		DecimalFormat df = new DecimalFormat("##0.00");
 		//		params = Math.round(params* 100f) / 100f ;
 		params = Math.round(params);
-		params = Float.parseFloat(df.format(params));
+//		Log.e(TAG, "tinyCByte2HashMap: ====params===111=====" + params);
+		params = Float.parseFloat(df.format(params).replace(",","."));
 		//		Log.e(TAG, "反射温度: numberData " +numberData);
 		//		Log.e(TAG, "反射温度: params " + params);
 		result.put(DYConstants.setting_reflect, params);//反射温度 =》 反射温度
@@ -98,7 +99,8 @@ public class ByteUtilsCC {
 		params = numberData - 273.15f;
 		//		params = Math.round(params* 100f) / 100f ;
 		params = Math.round(params);
-		params = Float.parseFloat(df.format(params));
+//		Log.e(TAG, "tinyCByte2HashMap: ====params===222=====" + params);
+		params = Float.parseFloat(df.format(params).replace(",","."));
 		//		Log.e(TAG, "环境温度: numberData " +numberData);
 		//		Log.e(TAG, "环境温度: params " + params);
 		result.put(DYConstants.setting_environment, params);//环境温度 =》 大气温度
@@ -106,7 +108,8 @@ public class ByteUtilsCC {
 		numberData = (short) (data[7] & 0xff);
 		params = numberData / 128.0f;
 		params = Math.round(params * 100f) / 100f;
-		params = Float.parseFloat(df.format(params));
+//		Log.e(TAG, "tinyCByte2HashMap: ====params===333=====" + params);
+		params = Float.parseFloat(df.format(params).replace(",","."));
 		//		Log.e(TAG, "湿度: numberData " +numberData);
 		//		Log.e(TAG, "湿度: params " + params);
 		result.put(DYConstants.setting_humidity, params);//湿度 =》 大气透过率
@@ -114,7 +117,7 @@ public class ByteUtilsCC {
 		numberData = (short) (data[1] & 0xff);
 		params = numberData / 128.0f;
 		params = Math.round(params * 100f) / 100f;
-		params = Float.parseFloat(df.format(params));
+		params = Float.parseFloat(df.format(params).replace(",","."));
 		//		Log.e(TAG, "发射率: numberData " +numberData);
 		//		Log.e(TAG, "发射率: params " + params);
 		result.put(DYConstants.setting_emittance, params);//发射率 = 》 发射率

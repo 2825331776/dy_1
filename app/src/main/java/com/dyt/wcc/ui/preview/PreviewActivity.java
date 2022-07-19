@@ -3,6 +3,7 @@ package com.dyt.wcc.ui.preview;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -54,10 +55,19 @@ import com.dyt.wcc.constans.DYConstants;
 import com.dyt.wcc.constans.DYTApplication;
 import com.dyt.wcc.constans.DYTRobotSingle;
 import com.dyt.wcc.customize.CustomizeCompany;
+import com.dyt.wcc.customize.LanguageFactory;
 import com.dyt.wcc.customize.dyt.DytCompanyView;
+import com.dyt.wcc.customize.dyt.DytLanguageFactory;
 import com.dyt.wcc.customize.jms.JMSCompanyView;
+import com.dyt.wcc.customize.jms.JMSLanguageFactory;
+import com.dyt.wcc.customize.qianli.QianLiLanguageFactory;
+import com.dyt.wcc.customize.qianli.QianliCompanyView;
+import com.dyt.wcc.customize.qianli.ReadPdfActivity;
+import com.dyt.wcc.customize.teslong.TeslongCompanyView;
+import com.dyt.wcc.customize.teslong.TeslongLanguageFactory;
 import com.dyt.wcc.customize.victor.PdfActivity;
 import com.dyt.wcc.customize.victor.VictorCompanyView;
+import com.dyt.wcc.customize.victor.VictorLanguageFactory;
 import com.dyt.wcc.databinding.ActivityPreviewBinding;
 import com.dyt.wcc.databinding.PopHighlowcenterTraceBinding;
 import com.dyt.wcc.databinding.PopPaletteChoiceBinding;
@@ -640,20 +650,52 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					});
 					//					sp.getString(DYConstants.LANGUAGE_SETTING, "ch");
 					// 切换语言 spinner
-					popSettingBinding.btShowChoiceLanguage.setText(DYConstants.languageArray[sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0)]);
+					final LanguageFactory factory;
+					switch (BuildConfig.FLAVOR){
+						case DYConstants.COMPANY_JMS:
+							factory = new JMSLanguageFactory(mContext.get());
+							break;
+						case DYConstants.COMPANY_VICTOR:
+							factory = new VictorLanguageFactory(mContext.get());
+							break;
+						case DYConstants.COMPANY_QIANLI:
+							factory = new QianLiLanguageFactory(mContext.get());
+							break;
+						case DYConstants.COMPANY_TESLONG:
+							factory = new TeslongLanguageFactory(mContext.get());
+							break;
+						default:
+							factory = new DytLanguageFactory(mContext.get());
+							break;
+					}
+					popSettingBinding.btShowChoiceLanguage.setText(factory.getLanguageByIndex(sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0)));
+//					popSettingBinding.btShowChoiceLanguage.setText(DYConstants.languageArray[sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0)]);
 					popSettingBinding.btShowChoiceLanguage.setOnClickListener(v18 -> {
-						AlertDialog.Builder builder = new AlertDialog.Builder(mContext.get());
-						builder.setSingleChoiceItems(DYConstants.languageArray, sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0), (dialog, which) -> {
-							if (which != sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0)) {
-								sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, which).apply();
-								sp.edit().putString(DYConstants.LANGUAGE_SETTING, DYConstants.languageArray[which]).apply();
+						AlertDialog alertDialog;
+						factory.setListener((dialog, index) -> {
+							if (index != sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0)) {
+								sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, index).apply();
+								sp.edit().putString(DYConstants.LANGUAGE_SETTING, factory.getLanguageArray()[index]).apply();
 								if (settingPopWindows != null)
 									settingPopWindows.dismiss();
-								toSetLanguage(which);
+								toSetLanguage(index);
 							}
 							dialog.dismiss();
-						}).create();
-						builder.show();
+						});
+						factory.createDialogListener();
+						alertDialog = factory.createAlertDialog();
+//						AlertDialog.Builder builder = new AlertDialog.Builder(mContext.get());
+//						builder.setSingleChoiceItems(DYConstants.languageArray, sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0), (dialog, which) -> {
+//							if (which != sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0)) {
+//								sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, which).apply();
+//								sp.edit().putString(DYConstants.LANGUAGE_SETTING, DYConstants.languageArray[which]).apply();
+//								if (settingPopWindows != null)
+//									settingPopWindows.dismiss();
+//								toSetLanguage(which);
+//							}
+//							dialog.dismiss();
+//						}).create();
+						alertDialog.show();
 					});
 					break;
 			}
@@ -1226,11 +1268,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		return defaultSettingReturn;
 	}
 
-	//	@Override
-	//	protected void attachBaseContext (Context newBase) {
-	//		//		mContext = newBase;
-	//		super.attachBaseContext(wrap(newBase));
-	//	}
 	//
 	//	private ContextWrapper wrap (Context context) {
 	//		Resources res = context.getResources();
@@ -1289,15 +1326,57 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	private void toSetLanguage (int type) {//切换语言
 		Locale locale;
 		Context context = DYTApplication.getInstance();
-		if (type == 0) {
-			locale = Locale.SIMPLIFIED_CHINESE;
-			LanguageUtils.saveAppLocaleLanguage(locale.getLanguage());
-		} else if (type == 1) {
-			locale = Locale.US;
-			LanguageUtils.saveAppLocaleLanguage(locale.getLanguage());
-		} else {
-			return;
+		Log.e(TAG, "toSetLanguage: type===========" + type);
+		switch (type){
+			case 0://中文
+				locale = Locale.SIMPLIFIED_CHINESE;
+				break;
+			case 1://英语
+				locale = Locale.US;
+				break;
+			case 2://德语 ge-rGE
+				locale = Locale.GERMAN;
+				break;
+//			case 3://法语 fr-rFR
+//				locale = Locale.FRENCH;
+//				break;
+			case 3://意大利语   it-rIT
+				locale = Locale.ITALY;
+				break;
+//			case 5://西班牙语
+////				locale = Locale.;
+//				break;
+//			case 6://芬兰语
+//				locale = Locale.s;
+//				break;
+//			case 7://波兰语
+//				locale = Locale.p;
+//				break;
+//			case 8://葡萄牙语
+//				locale = Locale.ITALY;
+//				break;
+			case 4://韩语
+				locale = Locale.KOREA;
+				break;
+			case 5://日语
+				locale = Locale.JAPAN;
+				break;
+//			case 11:
+//				break;
+			default:
+				locale = Locale.SIMPLIFIED_CHINESE;
+				break;
 		}
+		LanguageUtils.saveAppLocaleLanguage(locale.getLanguage());
+//		if (type == 0) {
+//			locale = Locale.SIMPLIFIED_CHINESE;
+//			LanguageUtils.saveAppLocaleLanguage(locale.getLanguage());
+//		} else if (type == 1) {
+//			locale = Locale.US;
+//			LanguageUtils.saveAppLocaleLanguage(locale.getLanguage());
+//		} else {
+//			return;
+//		}
 		if (LanguageUtils.isSimpleLanguage(context, locale)) {
 			showToast(R.string.toast_select_same_language);
 			return;
@@ -1457,6 +1536,31 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 1).apply();
 					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
 					break;
+				case 2:
+					LanguageUtils.updateLanguage(mContext.get(), Locale.GERMAN);
+					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 1).apply();
+					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+					break;
+				case 3:
+					LanguageUtils.updateLanguage(mContext.get(), Locale.ITALY);
+					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 1).apply();
+					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+					break;
+				case 4:
+					LanguageUtils.updateLanguage(mContext.get(), Locale.KOREA);
+					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 1).apply();
+					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+					break;
+				case 5:
+					LanguageUtils.updateLanguage(mContext.get(), Locale.JAPAN);
+					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 1).apply();
+					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+					break;
+				default:
+					LanguageUtils.updateLanguage(mContext.get(), Locale.SIMPLIFIED_CHINESE);
+					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 0).apply();
+					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+					break;
 			}
 		}
 
@@ -1477,19 +1581,19 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				if (all) {
 					mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);//
 					//					if (isDebug)Log.e(TAG, "onResult: mFontSize ==========> " + mFontSize);
-					switch (BuildConfig.FLAVOR) {
-						case DYConstants.COMPANY_DYT:
-							Log.e(TAG, "onGranted: =========调用 COMPANY_DYT 的函数====================");
-							//							com.dyt.wcc.dytpir.DYTDO.PrintSomething();
-							break;
-						case DYConstants.COMPANY_JMS:
-							Log.e(TAG, "onGranted: ===========调用 COMPANY_JMS 的函数====================");
-							//							com.dyt.wcc.jms.JMSTODO.jmstodo();
-							break;
-						case DYConstants.COMPANY_VICTOR:
-							Log.e(TAG, "onGranted: ============调用 COMPANY_VICTOR 的函数====================");
-							break;
-					}
+//					switch (BuildConfig.FLAVOR) {
+//						case DYConstants.COMPANY_DYT:
+//							Log.e(TAG, "onGranted: =========调用 COMPANY_DYT 的函数====================");
+//							//							com.dyt.wcc.dytpir.DYTDO.PrintSomething();
+//							break;
+//						case DYConstants.COMPANY_JMS:
+//							Log.e(TAG, "onGranted: ===========调用 COMPANY_JMS 的函数====================");
+//							//							com.dyt.wcc.jms.JMSTODO.jmstodo();
+//							break;
+//						case DYConstants.COMPANY_VICTOR:
+//							Log.e(TAG, "onGranted: ============调用 COMPANY_VICTOR 的函数====================");
+//							break;
+//					}
 
 					AssetCopyer.copyAllAssets(DYTApplication.getInstance(), mContext.get().getExternalFilesDir(null).getAbsolutePath());
 					Log.e(TAG, "===========getExternalFilesDir==========" + mContext.get().getExternalFilesDir(null).getAbsolutePath());
@@ -1940,6 +2044,20 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						}
 						startActivity(new Intent(PreviewActivity.this, PdfActivity.class));
 					});
+					break;
+				case DYConstants.COMPANY_QIANLI:
+					customizeCompany = new QianliCompanyView();
+					view = customizeCompany.getCompanyView(mContext.get());
+					view.findViewById(R.id.tv_about_main_user_manual_info_qianli).setOnClickListener(v3 -> {
+						if (companyPopWindows != null && companyPopWindows.isShowing()) {
+							companyPopWindows.dismiss();
+						}
+						startActivity(new Intent(PreviewActivity.this, ReadPdfActivity.class));
+					});
+					break;
+				case DYConstants.COMPANY_TESLONG:
+					customizeCompany = new TeslongCompanyView();
+					view = customizeCompany.getCompanyView(mContext.get());
 					break;
 				default:
 					customizeCompany = new DytCompanyView();

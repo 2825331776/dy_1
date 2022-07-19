@@ -20,9 +20,9 @@ ext {
                     // 应用 id
                     appId : "com.dyt.wcc",
                     // 构建版本号
-                    VCode         : 107,
+                    VCode         : 110,
                     // 版本名称
-                    VName         : "1.1.7",
+                    VName         : "1.1.10",
                     appPackageName: "黑卡",
             ],
             JMSConfig   : [
@@ -34,6 +34,27 @@ ext {
                     VName         : "1.1.7",
                     appPackageName: "NOYAFA",
             ],
+            // 潜力  定制版
+            QianLiConfig   : [
+                    // 应用 id
+                    appId : "com.dyt.wcc",
+                    // 构建版本号
+                    VCode         : 1,
+                    // 版本名称
+                    VName         : "1.1.1",
+                    appPackageName: "QianLiIR",
+            ],
+            // 泰视朗  定制版
+            TeslongConfig   : [
+                    // 应用 id
+                    appId : "com.dyt.wcc",
+                    // 构建版本号
+                    VCode         : 1,
+                    // 版本名称
+                    VName         : "1.1.1",
+                    appPackageName: "TeslongIR",
+            ],
+            //胜利 定制版
             VICTORConfig: [
                     // 应用 id
                     appId : "com.dyt.wcc",

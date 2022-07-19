@@ -1,4 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="turn_on">の上</string>
+    <string name="turn_off">オフ</string>
+
+    <string name="preview_hint_not_connect">サーマルカメラを接続し、OTG機能を有効にしてください</string>
 
 </resources>

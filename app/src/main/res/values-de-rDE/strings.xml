@@ -1,0 +1,69 @@
+<resources>
+    <!--关于页面-->
+    <string name="preview_about_company_website">Webseite：</string>
+    <string name="preview_about_contact_us">Contact us：</string>
+    <string name="about_tel_info">Telefon：</string>
+
+<!--    精明鼠定制 字符串 -->
+    <string name="about_companyName_jms">SHENZHEN NOYAFA ELECTRONIC CO.,LTD</string>
+    <string name="about_companyWebsite_jms">www.noyafa.com</string>
+    <string name="about_tel_content_jms">0086–755–27786545</string>
+    <string name="about_contactEmail_jms">sale@nayafa.com</string>
+    <string name="about_mainBusiness_jms">Email：</string>
+    <string name="about_mainBusiness_content_jms">sale@noyafa.com</string>
+
+    <!--    页面名称-->
+    <string name="app_name">Pir</string>
+
+    <!--    超温警告弹窗文字-->
+    <string name="AlarmTempInput">Input</string>
+    <string name="cancel">Absagen</string>
+    <string name="confirm">OK</string>
+
+    <string name="check_updates">Aktualisierung</string>
+    <string name="VersionName">Ausführung: </string>
+
+    <!--    设置页-->
+    <string name="SettingGeneral">Allgemein</string>
+    <string name="SettingLanguage">Sprache</string>
+    <string name="SettingTemperatureUnit">Temperatureinheit</string>
+    <string name="SettingIsRecordAudio">Mit Audio aufnehmen</string>
+    <string name="SettingCameraParams">Thermische Parameter</string>
+    <string name="SettingCameraParams_Emittance">Emissionsgrad</string>
+    <string name="SettingCameraParams_Distance">Distanz</string>
+    <string name="SettingCameraParams_ReflectTemp">Reflexionstemperatur</string>
+    <string name="SettingCameraParams_Revise">Temperatureinstellung</string>
+    <string name="SettingCameraParams_FreeAirTemp">Umgebungstemperatur</string>
+    <string name="SettingCameraParams_Humidity">Feuchtigkeit (%)</string>
+    <string name="SettingCameraParams_Reset">Standard</string>
+    <string name="setting_update">Aktualisierung</string>
+    <string name="setting_check_version_info">App-Version:%s</string>
+    <string name="setting_high_low_temp_gain_toggle_info">Schalter für hohe und niedrige Temperatur</string>
+    <string name="setting_high_gain">Hohe Temperatur</string>
+    <string name="setting_low_gain">Niedrige Temperatur</string>
+
+    <!--  设置======更新操作-->
+    <string name="toast_downloading_background">wird heruntergeladen…</string>
+    <string name="pop_version">Die neueste version:</string>
+    <string name="toast_already_latest_version">Bereits die neuste Version</string>
+    <string name="pop_update_now">Jetzt aktualisieren</string>
+    <string name="pop_ignore">Ignorieren</string>
+
+    <string name="toast_is_recording">Jetzt Video aufnehmen…</string>
+    <string name="toast_need_connect_camera">Bitte verbinden Sie die Kamera</string>
+    <string name="toast_dont_have_permission">Keine entsprechende Erlaubnis erteilt.</string>
+    <string name="toast_base_permission_explain">Ohne Lese-Schreib-Speicherberechtigung können Sie die Seite nicht in der Vorschau anzeigen, Bilder aufnehmen, aufzeichnen und andere Funktionen ausführen. Ob autorisieren?</string>
+    <string name="toast_base_permission_tosetting">Ohne Erlaubnis können Sie die Seite nicht in der Vorschau anzeigen, Bilder aufnehmen, aufzeichnen und andere Funktionen nutzen. Möchten Sie es aktivieren?</string>
+
+    <!--    取值范围设置 -->
+    <string name="toast_range_int">"Der Wertebereich ist (%1$d ~ %2$d)"</string>
+    <string name="toast_range_float">"Der Wertebereich ist (%1$.2f ~ %2$.2f)"</string>
+    <string name="toast_complete_Emittance">Emissionsgrad Einstellung abgeschlossen</string>
+    <string name="toast_complete_Distance">Distanz Einstellung abgeschlossen</string>
+    <string name="toast_complete_Reflect">Reflexionstemperatur Einstellung abgeschlossen</string>
+    <string name="toast_complete_Revise">Temperatureinstellung Einstellung abgeschlossen</string>
+    <string name="toast_complete_FreeAirTemp">Umgebungstemperatur Einstellung abgeschlossen</string>
+    <string name="toast_complete_Humidity">Feuchtigkeit Einstellung abgeschlossen</string>
+
+
+</resources>

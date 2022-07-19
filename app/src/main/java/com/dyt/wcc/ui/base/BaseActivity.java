@@ -162,6 +162,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 	protected void attachBaseContext (Context newBase) {
 		SharedPreferences preferences = newBase.getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
 		String selectedLanguage = preferences.getString(DYConstants.LANGUAGE_SETTING, "");
+		Log.e(TAG, "attachBaseContext: ==========selectedLanguage====" + selectedLanguage);
 		super.attachBaseContext(LanguageUtil.attachBaseContext(newBase, selectedLanguage));
 	}
 
