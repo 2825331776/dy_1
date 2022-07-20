@@ -23,7 +23,7 @@ public class SupportLanguageUtil {
 		put(LanguageConstants.SIMPLIFIED_CHINESE, Locale.SIMPLIFIED_CHINESE);
 		put(LanguageConstants.ENGLISH, Locale.ENGLISH);
 //		put(LanguageConstants.TRADITIONAL_CHINESE, Locale.TRADITIONAL_CHINESE);
-//		put(LanguageConstants.FRANCE, Locale.FRANCE);
+		put(LanguageConstants.RUSSIAN, new Locale("ru","RU"));
 		put(LanguageConstants.GERMAN, Locale.GERMANY);
 		put(LanguageConstants.ITALIAN, Locale.ITALY);
 		put(LanguageConstants.KOREA,Locale.KOREA);

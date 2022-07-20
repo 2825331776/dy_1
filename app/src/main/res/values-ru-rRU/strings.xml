@@ -1,0 +1,69 @@
+<resources>
+    <!--关于页面-->
+    <string name="preview_about_company_website">Веб-сайт：</string>
+    <string name="preview_about_contact_us">Contact us：</string>
+    <string name="about_tel_info">телефон：</string>
+
+<!--    精明鼠定制 字符串 -->
+    <string name="about_companyName_jms">SHENZHEN NOYAFA ELECTRONIC CO.,LTD</string>
+    <string name="about_companyWebsite_jms">www.noyafa.com</string>
+    <string name="about_tel_content_jms">0086–755–27786545</string>
+    <string name="about_contactEmail_jms">sale@nayafa.com</string>
+    <string name="about_mainBusiness_jms">Эл. почта：</string>
+    <string name="about_mainBusiness_content_jms">sale@noyafa.com</string>
+
+    <!--    页面名称-->
+    <string name="app_name">Pir</string>
+
+    <!--    超温警告弹窗文字-->
+    <string name="AlarmTempInput">Input</string>
+    <string name="cancel">Отмена</string>
+    <string name="confirm">ХОРОШО</string>
+
+    <string name="check_updates">Обновить</string>
+    <string name="VersionName">Версия: </string>
+
+    <!--    设置页-->
+    <string name="SettingGeneral">Общий</string>
+    <string name="SettingLanguage">Язык</string>
+    <string name="SettingTemperatureUnit">Единица измерения температуры</string>
+    <string name="SettingIsRecordAudio">Запись со звуком</string>
+    <string name="SettingCameraParams">Тепловые параметры</string>
+    <string name="SettingCameraParams_Emittance">Коэффициент излучения</string>
+    <string name="SettingCameraParams_Distance">Расстояние</string>
+    <string name="SettingCameraParams_ReflectTemp">Температура отражения</string>
+    <string name="SettingCameraParams_Revise">Регулировка температуры</string>
+    <string name="SettingCameraParams_FreeAirTemp">Температура окружающей среды</string>
+    <string name="SettingCameraParams_Humidity">Влажность (%)</string>
+    <string name="SettingCameraParams_Reset">По умолчанию</string>
+    <string name="setting_update">Обновление</string>
+    <string name="setting_check_version_info">Версия приложения:%s</string>
+    <string name="setting_high_low_temp_gain_toggle_info">Переключатель высокой и низкой температуры</string>
+    <string name="setting_high_gain">Высокая температура</string>
+    <string name="setting_low_gain">Низкая температура</string>
+
+    <!--  设置======更新操作-->
+    <string name="toast_downloading_background">Загрузка</string>
+    <string name="pop_version">Последняя версия:</string>
+    <string name="toast_already_latest_version">Уже последняя версия</string>
+    <string name="pop_update_now">Обновить сейчас</string>
+    <string name="pop_ignore">Игнорировать</string>
+
+    <string name="toast_is_recording">Запись видео сейчас…</string>
+    <string name="toast_need_connect_camera">Пожалуйста, подключите камеру</string>
+    <string name="toast_dont_have_permission">Соответствующее разрешение не предоставлено</string>
+    <string name="toast_base_permission_explain">Без разрешения на чтение-запись вы не сможете просматривать страницу, делать снимки, записывать и выполнять другие функции. Авторизовать ли?</string>
+    <string name="toast_base_permission_tosetting">Без разрешения вы не сможете просматривать страницу, делать снимки, записывать и выполнять другие функции. Вы хотите установить его?</string>
+
+    <!--    取值范围设置 -->
+    <string name="toast_range_int">"Диапазон значений (%1$d ~ %2$d)"</string>
+    <string name="toast_range_float">"Диапазон значений (%1$.2f ~ %2$.2f)"</string>
+    <string name="toast_complete_Emittance">Коэффициент излучения Настройка завершена</string>
+    <string name="toast_complete_Distance">Расстояние Настройка завершена</string>
+    <string name="toast_complete_Reflect">Температура отражения Настройка завершена</string>
+    <string name="toast_complete_Revise">Регулировка температуры Настройка завершена</string>
+    <string name="toast_complete_FreeAirTemp">Температура окружающей среды Настройка завершена</string>
+    <string name="toast_complete_Humidity">Влажность Настройка завершена</string>
+
+
+</resources>

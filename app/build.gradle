@@ -63,24 +63,20 @@ android {
 
     sourceSets {
 //        println("===============sourceSets=================");
-//        main {
-//            assets.srcDirs = ['src/main/assets']
-//            res.srcDirs = ['src/main/res']
-//            java.srcDirs = ['src/main/java']
-//            manifest.srcFile 'src/main/AndroidManifest.xml'
-//        }
         dyt {
             assets.srcDirs = ['src/dytPir/assets']
             res.srcDirs = ['src/dytPir/res-dyt']
             java.srcDirs = ['src/dytPir/java']
             manifest.srcFile 'src/dytPir/AndroidManifest.xml'
         }
+        //黑卡
         heika {
             assets.srcDirs = ['src/heika/assets']
             res.srcDirs = ['src/heika/res-heika']
             java.srcDirs = ['src/heika/java']
             manifest.srcFile 'src/heika/AndroidManifest.xml'
         }
+        // 精明鼠 定制版
         jms {
             assets.srcDirs = ['src/jmsPir/assets']
             res.srcDirs = ['src/jmsPir/res-jms']
@@ -101,65 +97,42 @@ android {
             java.srcDirs = ['src/teslong/java']
             manifest.srcFile 'src/teslong/AndroidManifest.xml'
         }
-
-//        }
+        // 胜利 定制版
         victor {
             java.srcDirs = ['src/victorPir/java']
             assets.srcDirs = ['src/victorPir/assets']
             res.srcDirs = ['src/victorPir/res-victor']
             manifest.srcFile 'src/victorPir/AndroidManifest.xml'
         }
-        // young 这里新增指定prd环境的资源文件，也就是这里的文件会覆盖 res 的同名文件
-        // 这里的 huawei.res.srcDirs 中的 huawei 是渠道名称
-        // 然后这里指向的资源路径，是渠道特有的资源，总而言之，就是这里的资源会覆盖，正常 res 目录下的资源
-        //放入渠道特有的 资源，需要替换对应的资源时，在 productFlavors 的渠道名称{} 里的 manifestPlaceholders
-        //加上 替换的资源为那个名称
-//        DYTPir.res.srcDirs = ['src/main/res']
-////        DYTPir.assets.dirs = ["src/main/assets"]
-////        DYTPir.resources.srcDir('src/main/java')
-//        jmsPir.res.srcDirs = ['src/main/res-victor']
-////        jmsPir.resources.srcDir('src/main/jmsPir')
-//        victorPir.res.srcDirs = ['src/main/res-victor']
-//        victorPir.resources.srcDir('src/main/victorPir')
     }
 
-//    flavorDimensions('dyt', 'victor', 'dytpir')//,
     productFlavors {
         println("===============productFlavors=================");
         //点扬红外
         dyt {
-//              // 每个环境包名不同
-//            dimension 'dyt'
-
-//            applicationId versions.appId
             applicationIdSuffix ".dytpir"
             versionCode rootProject.ext.envInfo.DYTConfig.VCode
             versionName rootProject.ext.envInfo.DYTConfig.VName
             // 动态添加 string.xml 字段；
             // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
 //            resValue "string", "app_name", "web"
-//            resValue "bool", "auto_updates", 'false'
             // 动态修改 常量 字段
             buildConfigField "String", "CONFIGS_NAME", '"configs_dyt"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_DY"'
             buildConfigField "int", "COMPANY_H", '110'
-            // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE         : "DYTPir"
                                     , app_icon            : "@mipmap/ic_launcher_dy_foreground"
 //                                    , applicationId :"${rootProject.ext.envInfo.DYTConfig.appId}.dytpir"
                                     , BUGLYAPPID          : "253f40d84b"
                                     , BUGLYAPPVersion     : "3.4.4"
                                     , BUGLYAPPChannel     : "dyt"
-                                    , BUGLYENABLEDEBUG  : "false"
+                                    , BUGLYENABLEDEBUG    : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.DYTConfig.appPackageName
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.dytpir.FileProvider"]
-            //, app_icon   : "@mipmap/delete_all"
             dimension "demo1"
         }
         //黑卡
         heika {
-//              // 每个环境包名不同
-//            dimension 'dyt'
 //            applicationId versions.appId
             applicationIdSuffix ".heika"
             versionCode rootProject.ext.envInfo.DYTConfig.VCode
@@ -171,23 +144,20 @@ android {
             // 动态修改 常量 字段
             buildConfigField "String", "CONFIGS_NAME", '"configs_dyt"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_HEIKA"'
-            //公司 信息页 的 高度
             buildConfigField "int", "COMPANY_H", '110'
-            // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE         : "heika"
                                     , app_icon            : "@mipmap/ic_launcher_dy_foreground"
 //                                    , applicationId :"${rootProject.ext.envInfo.DYTConfig.appId}.dytpir"
                                     , BUGLYAPPID          : "253f40d84b"
                                     , BUGLYAPPVersion     : "3.4.4"
                                     , BUGLYAPPChannel     : "heika"
-                                    , BUGLYENABLEDEBUG  : "false"
+                                    , BUGLYENABLEDEBUG    : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.DYTConfig.appPackageName
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.heika.FileProvider"]
             dimension "demo1"
         }
         //精明鼠   NOYAFA
         jms {
-            // 每个环境包名不同
             applicationIdSuffix ".jms"
             versionCode rootProject.ext.envInfo.DYTConfig.VCode
             versionName rootProject.ext.envInfo.DYTConfig.VName
@@ -195,13 +165,12 @@ android {
             buildConfigField "String", "CONFIGS_NAME", '"configs_jms"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_JMS"'
             buildConfigField "int", "COMPANY_H", '145'
-            // 修改 AndroidManifest.xml 里渠道变量 false
             manifestPlaceholders = [CHANNEL_VALUE         : "jmsPir"
                                     , app_icon            : "@mipmap/ic_launcher_jms_round"
                                     , BUGLYAPPID          : "af50f10806"
                                     , BUGLYAPPVersion     : "3.4.4"
                                     , BUGLYAPPChannel     : "jms"
-                                    , BUGLYENABLEDEBUG  : "false"
+                                    , BUGLYENABLEDEBUG    : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.JMSConfig.appPackageName
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.jms.FileProvider"]
             flavorDimensions "demo1"
@@ -216,16 +185,14 @@ android {
             buildConfigField "String", "CONFIGS_NAME", '"configs_qianli"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_QIANLI"'
             buildConfigField "int", "COMPANY_H", '145'
-            // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE         : "QianLiPir"
                                     , app_icon            : "@mipmap/ic_launcher_qianli"
                                     , BUGLYAPPID          : "9086b0a6ab"
                                     , BUGLYAPPVersion     : "3.4.4"
                                     , BUGLYAPPChannel     : "qianli"
-                                    , BUGLYENABLEDEBUG  : "false"
+                                    , BUGLYENABLEDEBUG    : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.QianLiConfig.appPackageName
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.qianli.FileProvider"]
-            //, app_icon   : "@mipmap/delete_all"
             dimension "demo1"
         }
 
@@ -238,16 +205,14 @@ android {
             buildConfigField "String", "CONFIGS_NAME", '"configs_teslong"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_TESLONG"'
             buildConfigField "int", "COMPANY_H", '110'
-            // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE         : "TeslongPir"
                                     , app_icon            : "@mipmap/ic_launcher_teslong"
                                     , BUGLYAPPID          : "020120f2ec"
                                     , BUGLYAPPVersion     : "3.4.4"
                                     , BUGLYAPPChannel     : "teslong"
-                                    , BUGLYENABLEDEBUG  : "false"
+                                    , BUGLYENABLEDEBUG    : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.TeslongConfig.appPackageName
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.teslong.FileProvider"]
-            //, app_icon   : "@mipmap/delete_all"
             dimension "demo1"
         }
 
@@ -264,13 +229,12 @@ android {
             buildConfigField "String", "CONFIGS_NAME", '"configs_victor"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_VICTOR"'
             buildConfigField "int", "COMPANY_H", '145'
-            // 修改 AndroidManifest.xml 里渠道变量
             manifestPlaceholders = [CHANNEL_VALUE         : "victorPir"
                                     , app_icon            : "@mipmap/ic_launcher_victor_foreground"
                                     , BUGLYAPPID          : "c61a63bdf6"
                                     , BUGLYAPPVersion     : "3.4.4"
                                     , BUGLYAPPChannel     : "victor"
-                                    , BUGLYENABLEDEBUG  : "false"
+                                    , BUGLYENABLEDEBUG    : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.VICTORConfig.appPackageName
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.victor.FileProvider"]
             flavorDimensions "demo1"

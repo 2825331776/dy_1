@@ -14,11 +14,11 @@ import androidx.appcompat.app.AlertDialog;
  * <p>PackagePath: com.dyt.wcc.customize     </p>
  */
 public abstract class LanguageFactory {
-	protected static final String[] language_dyt_array    = new String[]{"中文", "English"};
-	protected static final String[] language_victor_array = new String[]{"中文", "English"};
-	protected static final String[] language_qianli_array = new String[]{"中文", "English"};
+	protected static final String[] language_dyt_array     = new String[]{"中文", "English"};
+	protected static final String[] language_victor_array  = new String[]{"中文", "English"};
+	protected static final String[] language_qianli_array  = new String[]{"中文", "English"};
 	protected static final String[] language_teslong_array = new String[]{"中文", "English"};
-	protected static final String[] language_jms_array    = new String[]{"中文", "English", "Deutsch", "意大利语", "韩语", "日语",};
+	protected static final String[] language_jms_array     = new String[]{"中文", "English","Русский", "Deutsch", "Italiano", "한국인", "日本",};
 	protected              Context  mContext;
 
 	protected switchListener listener;
@@ -33,6 +33,7 @@ public abstract class LanguageFactory {
 	public interface switchListener {
 		/**
 		 * 点击 嘎嘎
+		 *
 		 * @param index
 		 */
 		void onItemClickListener (DialogInterface dialog, int index);
@@ -66,7 +67,8 @@ public abstract class LanguageFactory {
 
 	/**
 	 * 无参获取 语言数组
+	 *
 	 * @return
 	 */
-	public abstract String [] getLanguageArray();
+	public abstract String[] getLanguageArray ();
 }

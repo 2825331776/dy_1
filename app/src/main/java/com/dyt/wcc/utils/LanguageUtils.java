@@ -77,8 +77,8 @@ public class LanguageUtils {
 		Resources resources = context.getResources();
 		Configuration config = resources.getConfiguration();
 		Locale contextLocale = config.locale;
-		Log.e("===updateLanguage====", "updateLanguage: =======现有语言contextLocale.getLanguage()==============="+ contextLocale.getLanguage());
-		Log.e("===updateLanguage====", "updateLanguage: =======目标切换getLanguage()==============="+ contextLocale.getLanguage());
+//		Log.e("===updateLanguage====", "updateLanguage: =======现有语言contextLocale.getLanguage()==============="+ contextLocale.getLanguage());
+//		Log.e("===updateLanguage====", "updateLanguage: =======目标切换getLanguage()==============="+ contextLocale.getLanguage());
 		if (isSameLocale(contextLocale, locale)) {
 			return;
 		}

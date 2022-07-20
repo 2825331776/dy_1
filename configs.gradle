@@ -1,33 +1,33 @@
 ext {
     projectVersions = [
             //编译及其构建版本
-            compileSdkV  : 30,
-            buildToolsV  : "30.0.3",
+            compileSdkV: 30,
+            buildToolsV: "30.0.3",
             //支持的sdk范围21-29
-            minSdkV      : 23,
-            targetSdkV   : 27,
+            minSdkV    : 23,
+            targetSdkV : 27,
             //版本号和名字
-            VCode        : 105,
-            VName        : "1.1.5",
+            VCode      : 105,
+            VName      : "1.1.5",
 
-            supportV     : "27.0.0",
-            appId: "com.dyt.wcc"
+            supportV   : "27.0.0",
+            appId      : "com.dyt.wcc"
     ]
 
     // 多渠道产品信息
     envInfo = [
-            DYTConfig   : [
+            DYTConfig    : [
                     // 应用 id
-                    appId : "com.dyt.wcc",
+                    appId         : "com.dyt.wcc",
                     // 构建版本号
-                    VCode         : 110,
+                    VCode         : 111,
                     // 版本名称
-                    VName         : "1.1.10",
-                    appPackageName: "黑卡",
+                    VName         : "1.1.11",
+                    appPackageName: "DytSpectrumOwl",
             ],
-            JMSConfig   : [
+            JMSConfig    : [
                     // 应用 id
-                    appId : "com.dyt.wcc",
+                    appId         : "com.dyt.wcc",
                     // 构建版本号
                     VCode         : 107,
                     // 版本名称
@@ -35,9 +35,9 @@ ext {
                     appPackageName: "NOYAFA",
             ],
             // 潜力  定制版
-            QianLiConfig   : [
+            QianLiConfig : [
                     // 应用 id
-                    appId : "com.dyt.wcc",
+                    appId         : "com.dyt.wcc",
                     // 构建版本号
                     VCode         : 1,
                     // 版本名称
@@ -45,9 +45,9 @@ ext {
                     appPackageName: "QianLiIR",
             ],
             // 泰视朗  定制版
-            TeslongConfig   : [
+            TeslongConfig: [
                     // 应用 id
-                    appId : "com.dyt.wcc",
+                    appId         : "com.dyt.wcc",
                     // 构建版本号
                     VCode         : 1,
                     // 版本名称
@@ -55,9 +55,9 @@ ext {
                     appPackageName: "TeslongIR",
             ],
             //胜利 定制版
-            VICTORConfig: [
+            VICTORConfig : [
                     // 应用 id
-                    appId : "com.dyt.wcc",
+                    appId         : "com.dyt.wcc",
                     // 构建版本号
                     VCode         : 107,
                     // 版本名称

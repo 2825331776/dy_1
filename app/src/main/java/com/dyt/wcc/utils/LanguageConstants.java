@@ -14,8 +14,8 @@ public class LanguageConstants {
 	public static final String ENGLISH = "en";
 //	// 繁体中文
 //	public static final String TRADITIONAL_CHINESE = "zh-hant";
-//	// 法语
-//	public static final String FRANCE = "fr";
+	// 俄语
+	public static final String RUSSIAN = "ru";
 	// 德语
 	public static final String GERMAN = "de";
 	// 意大利语
