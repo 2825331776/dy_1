@@ -69,6 +69,13 @@ android {
             java.srcDirs = ['src/dytPir/java']
             manifest.srcFile 'src/dytPir/AndroidManifest.xml'
         }
+        //中性版
+        neutral {
+            assets.srcDirs = ['src/neutral/assets']
+            res.srcDirs = ['src/neutral/res-neutral']
+            java.srcDirs = ['src/neutral/java']
+            manifest.srcFile 'src/neutral/AndroidManifest.xml'
+        }
         //黑卡
         heika {
             assets.srcDirs = ['src/heika/assets']
@@ -129,6 +136,25 @@ android {
                                     , BUGLYENABLEDEBUG    : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.DYTConfig.appPackageName
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.dytpir.FileProvider"]
+            dimension "demo1"
+        }
+        //中性版
+        neutral {
+            applicationIdSuffix ".neutral"
+            versionCode rootProject.ext.envInfo.DYTConfig.VCode
+            versionName rootProject.ext.envInfo.DYTConfig.VName
+            // 动态修改 常量 字段
+            buildConfigField "String", "CONFIGS_NAME", '"configs_neutral"'
+            buildConfigField "String", "SP_NAME", '"DYT_IR_SP_NEUTRAL"'
+            buildConfigField "int", "COMPANY_H", '110'
+            manifestPlaceholders = [CHANNEL_VALUE         : "NeutralPir"
+                                    , app_icon            : "@mipmap/ic_launcher_neutral"
+                                    , BUGLYAPPID          : "253f40d84b"
+                                    , BUGLYAPPVersion     : "3.4.4"
+                                    , BUGLYAPPChannel     : "neutral"
+                                    , BUGLYENABLEDEBUG    : "false"
+                                    , APP_Channel         : rootProject.ext.envInfo.NeutralConfig.appPackageName
+                                    , PROVIDER_AUTHORITIES: "com.dyt.wcc.neutral.FileProvider"]
             dimension "demo1"
         }
         //黑卡

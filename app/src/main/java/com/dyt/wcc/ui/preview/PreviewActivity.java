@@ -59,6 +59,8 @@ import com.dyt.wcc.customize.dyt.DytCompanyView;
 import com.dyt.wcc.customize.dyt.DytLanguageFactory;
 import com.dyt.wcc.customize.jms.JMSCompanyView;
 import com.dyt.wcc.customize.jms.JMSLanguageFactory;
+import com.dyt.wcc.customize.neutral.NeutralCompanyView;
+import com.dyt.wcc.customize.neutral.NeutralLanguageFactory;
 import com.dyt.wcc.customize.qianli.QianLiLanguageFactory;
 import com.dyt.wcc.customize.qianli.QianliCompanyView;
 import com.dyt.wcc.customize.qianli.ReadPdfActivity;
@@ -661,6 +663,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 							break;
 						case DYConstants.COMPANY_TESLONG:
 							factory = new TeslongLanguageFactory(mContext.get());
+							break;
+						case DYConstants.COMPANY_NEUTRAL:
+							factory = new NeutralLanguageFactory(mContext.get());
 							break;
 						default:
 							factory = new DytLanguageFactory(mContext.get());
@@ -2060,6 +2065,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					break;
 				case DYConstants.COMPANY_TESLONG:
 					customizeCompany = new TeslongCompanyView();
+					view = customizeCompany.getCompanyView(mContext.get());
+					break;
+				case DYConstants.COMPANY_NEUTRAL:
+					customizeCompany = new NeutralCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
 					break;
 				default:

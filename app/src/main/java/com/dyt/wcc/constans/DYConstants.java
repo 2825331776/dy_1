@@ -24,15 +24,17 @@ public class DYConstants {
 	public static final int REFLECT_MAX     = 120;
 	public static final int ENVIRONMENT_MIN = -20;
 	public static final int ENVIRONMENT_MAX = 50;
-	public static final String COMPANY_JMS = "jms";
-	public static final String COMPANY_DYT = "dyt";
-	public static final String COMPANY_VICTOR = "victor";
-	public static final String COMPANY_QIANLI = "qianli";
+
+	public static final String COMPANY_DYT     = "dyt";
+	public static final String COMPANY_NEUTRAL = "neutral";
+	public static final String COMPANY_VICTOR  = "victor";
+	public static final String COMPANY_JMS     = "jms";
+	public static final String COMPANY_QIANLI  = "qianli";
 	public static final String COMPANY_TESLONG = "teslong";
 
 	public static final String PIC_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + File.separator + "DYTCamera";
 
-//	public static final String[] languageArray                     = new String[]{"中文", "English"};
+	//	public static final String[] languageArray                     = new String[]{"中文", "English"};
 	public static final String[] tempUnit                          = new String[]{"℃", "℉", "K"};
 	//设置界面六个设置的值：保存在本地的sp  当中的都是 摄氏度
 	//发射率
@@ -68,8 +70,8 @@ public class DYConstants {
 	public static final String LANGUAGE_SETTING_INDEX = "language_setting_index";//语言设置的下标
 	public static final String TEMP_UNIT_SETTING      = "temp_unit";//温度单位
 
-//	public static final String SP_NAME              = "DYT_IR_SP_DY";
-public static final String SP_NAME              = BuildConfig.SP_NAME;
+	//	public static final String SP_NAME              = "DYT_IR_SP_DY";
+	public static final String SP_NAME              = BuildConfig.SP_NAME;
 	public static final String RECORD_AUDIO_SETTING = "record_audio_setting";
 	public static final String GAIN_TOGGLE_SETTING  = "gain_toggle_setting";
 	public static final String FIRST_RUN            = "first_run";//是否第一次打开应用， 第一打开时，int 值为 0.以后为1

@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog;
  */
 public abstract class LanguageFactory {
 	protected static final String[] language_dyt_array     = new String[]{"中文", "English"};
+	protected static final String[] language_neutral_array = new String[]{"中文", "English"};
 	protected static final String[] language_victor_array  = new String[]{"中文", "English"};
 	protected static final String[] language_qianli_array  = new String[]{"中文", "English"};
 	protected static final String[] language_teslong_array = new String[]{"中文", "English"};

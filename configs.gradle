@@ -25,6 +25,15 @@ ext {
                     VName         : "1.1.11",
                     appPackageName: "DytSpectrumOwl",
             ],
+            NeutralConfig    : [
+                    // 应用 id
+                    appId         : "com.dyt.wcc",
+                    // 构建版本号
+                    VCode         : 1,
+                    // 版本名称
+                    VName         : "0.0.1",
+                    appPackageName: "Neutral",
+            ],
             JMSConfig    : [
                     // 应用 id
                     appId         : "com.dyt.wcc",
