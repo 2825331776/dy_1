@@ -1323,7 +1323,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	/**
 	 * 切换语言
-	 *
+	 * <p>  法语fr-rFR、西班牙语es-rES、芬兰语fi-rFI、波兰语pl-rPL、葡萄牙语pt-rPT</p>
+	 * <p> "Français","Español","Suomalainen","Polski","Português"</p>
 	 * @param type 语言下标
 	 */
 	private void toSetLanguage (int type) {//切换语言
@@ -1346,26 +1347,27 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			case 4://意大利语   it-rIT
 				locale = Locale.ITALY;
 				break;
-			//			case 5://西班牙语
-			////				locale = Locale.;
-			//				break;
-			//			case 6://芬兰语
-			//				locale = Locale.s;
-			//				break;
-			//			case 7://波兰语
-			//				locale = Locale.p;
-			//				break;
-			//			case 8://葡萄牙语
-			//				locale = Locale.ITALY;
-			//				break;
 			case 5://韩语
 				locale = Locale.KOREA;
 				break;
 			case 6://日语
 				locale = Locale.JAPAN;
 				break;
-			//			case 11:
-			//				break;
+			case 7://法语
+				locale = Locale.FRANCE;
+				break;
+			case 8://西班牙语
+				locale = new Locale("es","ES");;
+				break;
+			case 9://芬兰语
+				locale = new Locale("fi","FI");
+				break;
+			case 10://波兰语
+				locale = new Locale("pl","PL");
+				break;
+			case 11://葡萄牙语
+				locale = new Locale("pt","PT");
+				break;
 			default:
 				locale = Locale.SIMPLIFIED_CHINESE;
 				break;
@@ -1564,6 +1566,32 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 6).apply();
 					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
 					break;
+				case 7://法语
+					LanguageUtils.updateLanguage(mContext.get(), Locale.FRANCE);
+					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 7).apply();
+					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+					break;
+				case 8://西班牙语
+					LanguageUtils.updateLanguage(mContext.get(), new Locale("es","ES"));
+					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 8).apply();
+					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+					break;
+				case 9://芬兰语
+					LanguageUtils.updateLanguage(mContext.get(), new Locale("fi","FI"));
+					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 9).apply();
+					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+					break;
+				case 10://波兰语
+					LanguageUtils.updateLanguage(mContext.get(), new Locale("pl","PL"));
+					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 10).apply();
+					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+					break;
+				case 11://葡萄牙语
+					LanguageUtils.updateLanguage(mContext.get(), new Locale("pt","pT"));
+					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 11).apply();
+					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+					break;
+
 				default:
 					LanguageUtils.updateLanguage(mContext.get(), Locale.SIMPLIFIED_CHINESE);
 					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 0).apply();

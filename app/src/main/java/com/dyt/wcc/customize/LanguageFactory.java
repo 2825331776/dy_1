@@ -19,7 +19,10 @@ public abstract class LanguageFactory {
 	protected static final String[] language_victor_array  = new String[]{"中文", "English"};
 	protected static final String[] language_qianli_array  = new String[]{"中文", "English"};
 	protected static final String[] language_teslong_array = new String[]{"中文", "English"};
-	protected static final String[] language_jms_array     = new String[]{"中文", "English","Русский", "Deutsch", "Italiano", "한국인", "日本",};
+	protected static final String[] language_jms_array     = new String[]{"中文", "English","Русский", "Deutsch",
+			"Italiano", "한국인", "日本",
+			//法语fr-rFR、西班牙语es-rES、芬兰语fi-rFI、波兰语pl-rPL、葡萄牙语pt-rPT
+			"Français","Español","Suomalainen","Polski","Português"};
 	protected              Context  mContext;
 
 	protected switchListener listener;

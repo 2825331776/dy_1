@@ -1,0 +1,7 @@
+<resources>
+    <string name="turn_on">Päällä</string>
+    <string name="turn_off">Vinossa</string>
+
+    <string name="preview_hint_not_connect">Liitä lämpökamera ja ota OTG-toiminto käyttöön</string>
+
+</resources>

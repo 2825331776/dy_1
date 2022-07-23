@@ -24,5 +24,15 @@ public class LanguageConstants {
 	public static final String KOREA = "ko";
 	//日语
 	public static final String JAPAN = "ja";
+	//法语
+	public static final String FRANCE = "fr";
+	//西班牙语
+	public static final String SPANISH = "es";
+	//芬兰语
+	public static final String FINNISH = "fi";
+	//波兰语
+	public static final String POLISH = "pl";
+	//葡萄牙语
+	public static final String PORTUGUESE = "pt";
 }
 

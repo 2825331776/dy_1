@@ -1,0 +1,7 @@
+<resources>
+    <string name="turn_on">Sur</string>
+    <string name="turn_off">À l\'arrêt</string>
+
+    <string name="preview_hint_not_connect">Veuillez brancher la caméra thermique et activer la fonction OTG</string>
+
+</resources>

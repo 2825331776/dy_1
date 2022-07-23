@@ -1,0 +1,7 @@
+<resources>
+    <string name="turn_on">Na</string>
+    <string name="turn_off">Wyłączony</string>
+
+    <string name="preview_hint_not_connect">Podłącz kamerę termowizyjną i włącz funkcję OTG</string>
+
+</resources>

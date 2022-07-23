@@ -1,0 +1,7 @@
+<resources>
+    <string name="turn_on">En</string>
+    <string name="turn_off">Apagado</string>
+
+    <string name="preview_hint_not_connect">Conecte la cámara térmica y habilite la función OTG</string>
+
+</resources>

@@ -28,6 +28,12 @@ public class SupportLanguageUtil {
 		put(LanguageConstants.ITALIAN, Locale.ITALY);
 		put(LanguageConstants.KOREA,Locale.KOREA);
 		put(LanguageConstants.JAPAN, Locale.JAPAN);
+		//法语fr-rFR、西班牙语es-rES、芬兰语fi-rFI、波兰语pl-rPL、葡萄牙语pt-rPT
+		put(LanguageConstants.FRANCE, Locale.FRANCE);
+		put(LanguageConstants.SPANISH, new Locale("es","ES"));
+		put(LanguageConstants.FINNISH, new Locale("fi","FI"));
+		put(LanguageConstants.POLISH, new Locale("pl","PL"));
+		put(LanguageConstants.PORTUGUESE, new Locale("pt","PT"));
 	}};
 
 	/**
