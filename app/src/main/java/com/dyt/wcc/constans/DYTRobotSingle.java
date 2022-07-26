@@ -8,5 +8,5 @@ package com.dyt.wcc.constans;
  * <p>PackagePath: com.dyt.wcc.constans     </p>
  */
 public enum DYTRobotSingle {
-	S0_256_196, TinYC_256_192, ROBOT_Undefined, NO_DEVICE
+	S0_256_196, TinYC_256_192, TinyC_160_120, S0_384_292, ROBOT_Undefined, NO_DEVICE
 }

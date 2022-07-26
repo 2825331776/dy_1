@@ -1231,37 +1231,42 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         *(dytSn + 15) = '\0';
                     } else if (mVid == 5396 && mPid == 1)//S0机芯
                     {
-                        //***********************S0机芯 384*288 分辨率 读取SN号**********************
-                        //if(is_getSN){
+                        unsigned char *fourLinePara = NULL;
+
+                        if(requestWidth == 384 && requestHeight == 292){
+                            //***********************S0机芯 384*288 分辨率 读取SN号**********************
+                            LOGE("****************S0机芯 384*288 分辨率 读取SN号**********************");
+                            fourLinePara = HoldBuffer + ((384 * (288)) << 1);
 //                        BYTE * fourLinPara = pDataGet + ((WIDTH * HEIGHT) << 1);
-//                        int amountPixels = (WIDTH << 1) ;
-//                        if(WIDTH > 256){
-//                             amountPixels = ((WIDTH * 3) << 1);
+                        int amountPixels = (384 << 1) ;
+//                        if(384 > 256){
+                             amountPixels = ((384 * 3) << 1);
 //                        }
-//                         int userAread = amountPixels + (127 << 1) ;
-//                        memcpy((void *) &machine_sn, fourLinePara + amountPixels + (32 << 1),(sizeof(char) << 5)); // ir序列号
-//                        memcpy((void *) &user_sn, fourLinePara + userArea + 100,sizeof(char) * sn_length);//序列号
+                         int userAread = amountPixels + (127 << 1) ;
+                        memcpy((void *) &machine_sn, fourLinePara + amountPixels + (32 << 1),(sizeof(char) << 5)); // ir序列号
+                        memcpy((void *) &user_sn, fourLinePara + userAread + 100,sizeof(char) * sn_length);//序列号
 //                          is_getSN = false;
-//                      }
-                        //*************************************************************************
-
-                        //根据 标识  去设置是否渲染 画面 读取SN号
-                        unsigned char *fourLinePara = HoldBuffer + ((256 * (192)) << 1);
-                        int amountPixels = (256 << 1);
-
-                        int userArea = amountPixels + (127 << 1);
-                        memcpy((void *) &machine_sn, fourLinePara + amountPixels + (32 << 1),
-                               (sizeof(char) << 5)); // ir序列号
-                        memcpy((void *) &user_sn, fourLinePara + userArea + 100,
-                               sizeof(char) * sn_length);//序列号
+                            //*************************************************************************
+                        }
+                        else{
+                            //根据 标识  去设置是否渲染 画面 读取SN号
+                            fourLinePara = HoldBuffer + ((256 * (192)) << 1);
+                            int amountPixels = (256 << 1);
+                            int userArea = amountPixels + (127 << 1);
+                            memcpy((void *) &machine_sn, fourLinePara + amountPixels + (32 << 1),
+                                   (sizeof(char) << 5)); // ir序列号
+                            memcpy((void *) &user_sn, fourLinePara + userArea + 100,
+                                   sizeof(char) * sn_length);//序列号
 //                        LOGE(" ir_sn ======= > %s",machine_sn);
 //                        LOGE(" sn_char ===== > %s",user_sn);
+                        }
                         //解密之后的数据
                         (unsigned char *) DecryptSN(user_sn, machine_sn, dytSn);
                         *(dytSn + 15) = '\0';
-                        // LOGE("==============destr =============%s", dytSn);
+                        LOGE("==============机芯用户区SN=============%s", dytSn);
                         //释放用到的指针资源
                         fourLinePara = NULL;
+
                     }
 
                     //读取配置文件的 加密SN
@@ -1317,10 +1322,10 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                             }
                         }
                         if (flag) {
-//                            LOGE("=============sn解码成功========");
+                            LOGE("=============sn解码成功========");
                             snIsRight = true;
                         } else {
-//                            LOGE("==============sn解码失败========");
+                            LOGE("==============sn解码失败========");
                             snIsRight = snIsRight | 0;
                         }
                         delete[]decryptionChild;

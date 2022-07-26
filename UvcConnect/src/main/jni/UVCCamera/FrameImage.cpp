@@ -68,15 +68,15 @@ const unsigned char *FrameImage::DYgetPalette(int typeOfPalette) {
 void FrameImage::setResourcePath(const char *path) {
     ENTER();
     strcpy(resPath, path);
-    LOGE("=============this app C++ set palette resource path == >%s",resPath);
+    LOGE("this app C++ set palette resource path :%s",resPath);
     EXIT();
 }
 
 //打快门 更新 温度对照表
 void FrameImage::shutRefresh() {
     isNeedWriteTable = true;
-    if (DEBUG)
-        LOGE("===================shutRefresh=============update isNeedWriteTable===============");
+//    if (DEBUG)
+//        LOGE("===================shutRefresh=============update isNeedWriteTable===============");
 }
 
 //二分法查找

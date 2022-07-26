@@ -36,7 +36,7 @@ public class LanguageUtil {
 	}
 
 	public static Context attachBaseContext(Context context, String language) {
-		Log.e("attachBaseContext", "attachBaseContext: ====="+ Build.VERSION.SDK_INT);
+//		Log.e("attachBaseContext", "attachBaseContext: ====="+ Build.VERSION.SDK_INT);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 			return createConfigurationResources(context, language);
 		} else {
