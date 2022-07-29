@@ -31,11 +31,13 @@ FrameImage::FrameImage(uvc_device_handle_t *devh) {
     floatFpaTmp = correction = Refltmp = Airtmp = humi = emiss = distance = 0;
     cameraLens = 130;
     shutterFix = 0;
-    rangeMode = 120;//可更改
+    rangeMode = 400;//可更改
     mTemperatureCallbackObj = NULL;
 
     maxThumbAD = 0;
     minThumbAD = 0;
+    maxThumbValue = 0;
+    minThumbValue = 0;
 
     isNeedFreshAD = false;
 }
@@ -68,7 +70,7 @@ const unsigned char *FrameImage::DYgetPalette(int typeOfPalette) {
 void FrameImage::setResourcePath(const char *path) {
     ENTER();
     strcpy(resPath, path);
-    LOGE("this app C++ set palette resource path :%s",resPath);
+    LOGE("this app C++ set palette resource path :%s", resPath);
     EXIT();
 }
 
@@ -80,40 +82,43 @@ void FrameImage::shutRefresh() {
 }
 
 //二分法查找
-int FrameImage::getDichotomySearch(const float *data, int length, float value, int startIndex,
+int FrameImage::getDichotomySearch(float *data, int length, float value, int startIndex,
                                    int endIndex) {
+    float * headPoint = data;
 //    LOGE("=================    > %f" , data[8000]);
 //    LOGE("enter :  length =  %d, value = %f , startIndex = %d  , endIndex = %d" ,length,value , startIndex , endIndex);
-    if (endIndex > length) return -1;
+    if (endIndex > length) return 0;
     int start = startIndex;
     int end = endIndex - 1;//下标
-    int valueIndex = -1;
+    int valueIndex = 0;
 
-    if (end <= 0)return -1;
+
+    if (end <= 0)return 0;
     while (start <= end) {
-        int midPont = (start + end + 1) / 2;//记录的是坐标，所以要在取中点之前+1
-        if (value == data[midPont]) {//如果中点坐标的值 恰好等于 目标值，则返回这个 中点坐标
+        int midPont = (start + end) / 2;//记录的是坐标，所以要在取中点之前+1
+        if (value == headPoint[midPont]) {//如果中点坐标的值 恰好等于 目标值，则返回这个 中点坐标
             valueIndex = midPont;
             return valueIndex;
         }
 
-        if (value > data[midPont]) {
+        if (value > headPoint[midPont]) {
             start = midPont + 1;
-            if ((start) <= end && value < data[start]) {
+            if ((start) <= end && value < headPoint[start]) {
                 valueIndex = midPont;
                 return valueIndex;
             }
         }
-        if (value < data[midPont]) {
+        if (value < headPoint[midPont]) {
             end = midPont - 1;
-            if ((end) >= start && value > data[end]) {//中点値小志 目标值。但中点値前一位的值又大于了目标值。则返回中点前一位的坐标
+            if ((end) >= start && value > headPoint[end]) {//中点値小志 目标值。但中点値前一位的值又大于了目标值。则返回中点前一位的坐标
                 valueIndex = end;
                 return valueIndex;
             }
         }
     }
+
     LOGE("exit");
-//    position = NULL;
+    headPoint = NULL;
     return valueIndex;
 }
 
@@ -643,15 +648,28 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
     if (mPid == 1 && mVid == 5396) {
         unsigned short *fourLinePara = orgData + requestWidth * (requestHeight - 4);//后四行参数
         if (UNLIKELY(isNeedWriteTable)) {
-            LOGE("===================isNeedWriteTable================update temperatureTable===============");
+//            LOGE("=============do_temperature_callback======isNeedWriteTable========before=update temperatureTable==============");
             //根据后四行参数，填充整个的温度对照表 rangeMode设置的固定120
             thermometryT4Line(requestWidth, requestHeight, temperatureTable, fourLinePara,
                               &floatFpaTmp, &correction, &Refltmp, &Airtmp, &humi, &emiss,
                               &distance,
                               cameraLens, shutterFix, rangeMode);
-            isNeedFreshAD = true;
-            isNeedWriteTable = false;
+
+            if (correction == Refltmp&& Airtmp == Refltmp && emiss == Airtmp){
+//                LOGE("========================查询温度对照表表有妖气==========================");
+                isNeedFreshAD = false;
+                isNeedWriteTable = true;
+                fourLinePara = NULL;
+                orgData  = NULL;
+                return;
+            } else{
+                isNeedFreshAD = true;
+                isNeedWriteTable = false;
+            }
+
+//            LOGE("==========do_temperature_callback=========isNeedWriteTable========behind=update temperatureTable===============");
         }
+//        LOGE("============do_temperature_callback=========== start ============update temperatureTable===============");
         //temperatureData指向mCbTemper的首地址，更改temperatureData也就是更改mCbTemper
         float *temperatureData = mCbTemper;
         //根据8004或者8005模式来查表，8005模式下仅输出以上注释的10个参数，8004模式下数据以上参数+全局温度数据
@@ -680,21 +698,22 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
 //                fourLinePara = NULL;
 //                temperatureData = NULL;
 //                env->DeleteLocalRef(mNCbTemper);
-//                LOGE("========================mTemperatureCallbackObj == ExceptionCheck====occur=====================");
+            LOGE("========================mTemperatureCallbackObj == ExceptionCheck====occur=====================");
 //                env->ExceptionClear();
 //                return;
 //            }
-        } else {
-            LOGE("========================mTemperatureCallbackObj====null=============================");
         }
         //固定温度条： 刷新 最大 最小AD的 ，S0通过查表刷新。
         if (isNeedFreshAD) {
-//            LOGE("refresh AD ====  maxThumbValue == %f ,  minThumbValue ==== %f " , maxThumbValue , minThumbValue);
+            LOGE("refresh AD ====  maxThumbValue == %f ,  minThumbValue ==== %f ", maxThumbValue,
+                 minThumbValue);
+
             maxThumbAD = getDichotomySearch(temperatureTable, 16384, maxThumbValue, 0, 16384);
             minThumbAD = getDichotomySearch(temperatureTable, 16384, minThumbValue, 0, 16384);
             isNeedFreshAD = false;
             //3 全幅最高温 ，6 是全幅最低温 AD值
-//        LOGE("max temp   = %f  , min temp = %f",)
+            LOGE("refresh AD ==1111==  maxThumbValue == %f ,  minThumbValue ==== %f ",
+                 maxThumbValue, minThumbValue);
         }
         env->DeleteLocalRef(mNCbTemper);
 

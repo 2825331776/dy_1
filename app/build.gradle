@@ -131,7 +131,7 @@ android {
                                     , app_icon            : "@mipmap/ic_launcher_dy_foreground"
 //                                    , applicationId :"${rootProject.ext.envInfo.DYTConfig.appId}.dytpir"
                                     , BUGLYAPPID          : "253f40d84b"
-                                    , BUGLYAPPVersion     : "3.4.4"
+                                    , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "dyt"
                                     , BUGLYENABLEDEBUG    : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.DYTConfig.appPackageName
@@ -150,7 +150,7 @@ android {
             manifestPlaceholders = [CHANNEL_VALUE         : "NeutralPir"
                                     , app_icon            : "@mipmap/ic_launcher_neutral"
                                     , BUGLYAPPID          : "253f40d84b"
-                                    , BUGLYAPPVersion     : "3.4.4"
+                                    , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "neutral"
                                     , BUGLYENABLEDEBUG    : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.NeutralConfig.appPackageName
@@ -175,7 +175,7 @@ android {
                                     , app_icon            : "@mipmap/ic_launcher_dy_foreground"
 //                                    , applicationId :"${rootProject.ext.envInfo.DYTConfig.appId}.dytpir"
                                     , BUGLYAPPID          : "253f40d84b"
-                                    , BUGLYAPPVersion     : "3.4.4"
+                                    , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "heika"
                                     , BUGLYENABLEDEBUG    : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.DYTConfig.appPackageName

@@ -1227,28 +1227,33 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                         //获取 机器的SN 和 用户区的SN
 //                        LOGE("========tinyC_RobotSn_sixLast == %s =========",tinyC_UserSn_sixLast);
 //                        *(tinyUserSn+15) = '\0';
+
+
                         DecryptSN(TinyUserSN, tinyC_UserSn_sixLast, dytSn);
                         *(dytSn + 15) = '\0';
+                        LOGE("==========Tinyc====机芯用户区SN=============%s", dytSn);
+
                     } else if (mVid == 5396 && mPid == 1)//S0机芯
                     {
                         unsigned char *fourLinePara = NULL;
 
-                        if(requestWidth == 384 && requestHeight == 292){
+                        if (requestWidth == 384 && requestHeight == 292) {
                             //***********************S0机芯 384*288 分辨率 读取SN号**********************
                             LOGE("****************S0机芯 384*288 分辨率 读取SN号**********************");
                             fourLinePara = HoldBuffer + ((384 * (288)) << 1);
 //                        BYTE * fourLinPara = pDataGet + ((WIDTH * HEIGHT) << 1);
-                        int amountPixels = (384 << 1) ;
+                            int amountPixels = (384 << 1);
 //                        if(384 > 256){
-                             amountPixels = ((384 * 3) << 1);
+                            amountPixels = ((384 * 3) << 1);
 //                        }
-                         int userAread = amountPixels + (127 << 1) ;
-                        memcpy((void *) &machine_sn, fourLinePara + amountPixels + (32 << 1),(sizeof(char) << 5)); // ir序列号
-                        memcpy((void *) &user_sn, fourLinePara + userAread + 100,sizeof(char) * sn_length);//序列号
+                            int userAread = amountPixels + (127 << 1);
+                            memcpy((void *) &machine_sn, fourLinePara + amountPixels + (32 << 1),
+                                   (sizeof(char) << 5)); // ir序列号
+                            memcpy((void *) &user_sn, fourLinePara + userAread + 100,
+                                   sizeof(char) * sn_length);//序列号
 //                          is_getSN = false;
                             //*************************************************************************
-                        }
-                        else{
+                        } else {
                             //根据 标识  去设置是否渲染 画面 读取SN号
                             fourLinePara = HoldBuffer + ((256 * (192)) << 1);
                             int amountPixels = (256 << 1);
@@ -1437,8 +1442,12 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
 //            LOGE("=============mIsTemperaturing==唤醒温度回调线程=%d==========",mIsTemperaturing);
             if (mIsTemperaturing)//绘制的时候唤醒温度绘制的线程
             {
-//                LOGE("do_preview=========================唤醒温度回调线程===============");
-                pthread_cond_signal(&temperature_sync);
+                if (LIKELY(temperature_thread)) {
+                    LOGE("do_preview====温度线程还在=====================唤醒温度回调线程===============");
+                    pthread_cond_signal(&temperature_sync);
+                } else {
+                    LOGE("do_preview====温度线程不存在=====================需要重新创建温度线程===============");
+                }
             }
             //LOGE("do_preview4");
         }
@@ -1621,12 +1630,13 @@ UVCPreviewIR::draw_preview_one(uint8_t *frameData, ANativeWindow **window, convF
         copyToSurface(RgbaHoldBuffer, window);
     }
 }
-void UVCPreviewIR::setResourcePath(const char * path) {
+
+void UVCPreviewIR::setResourcePath(const char *path) {
     strcpy(app_private_path, path);
-    const char * file_f = ".txt";
-    strcat(app_private_path,file_f);
+    const char *file_f = ".txt";
+    strcat(app_private_path, file_f);
     file_f = NULL;
-    if (mFrameImage){
+    if (mFrameImage) {
         std::vector<std::string> split_result = split(path, "config");
         mFrameImage->setResourcePath(split_result[0].c_str());
     }
@@ -2017,7 +2027,7 @@ int UVCPreviewIR::setUVCStatusCallBack(JNIEnv *env, jobject uvc_connect_status_c
         if (!env->IsSameObject(mUvcStatusCallbackObj, uvc_connect_status_callback)) {
             iUvcStatusCallback.onUVCCurrentStatus = NULL;
             if (mUvcStatusCallbackObj) {
-                env->DeleteGlobalRef(mUvcStatusCallbackObj);
+                env->DeleteLocalRef(mUvcStatusCallbackObj);
             }
             mUvcStatusCallbackObj = uvc_connect_status_callback;
             if (mUvcStatusCallbackObj) {
@@ -2028,7 +2038,7 @@ int UVCPreviewIR::setUVCStatusCallBack(JNIEnv *env, jobject uvc_connect_status_c
                                                                              "onUVCCurrentStatus",
                                                                              "(I)V");
                 } else {
-                    LOGE("failed to get object class");
+                    LOGE("UVCPreviewIR::setUVCStatusCallBack failed to get object class");
                 }
                 env->ExceptionClear();
                 if (!iUvcStatusCallback.onUVCCurrentStatus) {
@@ -2070,7 +2080,7 @@ int UVCPreviewIR::startTemp() {
     pthread_mutex_lock(&temperature_mutex);
     {
         if (isRunning() && (!mIsTemperaturing)) {
-            LOGE("startTemp=======isRunning&!mIsTemperaturing==========");
+//            LOGE("startTemp=======isRunning&!mIsTemperaturing==========");
             mIsTemperaturing = true;
         }
     }
@@ -2093,8 +2103,8 @@ int UVCPreviewIR::stopTemp() {
 //            LOGE("stopTemp");
             mIsTemperaturing = false;
             pthread_cond_signal(&temperature_sync);
-            pthread_cond_wait(&temperature_sync,
-                              &temperature_mutex);    // wait finishing Temperatur
+//            pthread_cond_wait(&temperature_sync,
+//                              &temperature_mutex);    // wait finishing Temperatur
         }
     }
     pthread_mutex_unlock(&temperature_mutex);
@@ -2116,7 +2126,7 @@ void *UVCPreviewIR::temperature_thread_func(void *vptr_args) {
         JNIEnv *env;
         //attach to JavaVM
         vm->AttachCurrentThread(&env, NULL);
-        LOGE("temperature_thread_func do_temperature");
+//        LOGE("temperature_thread_func do_temperature");
         preview->do_temperature(env);    // never return until finish previewing
         //detach from JavaVM
         vm->DetachCurrentThread();
@@ -2143,11 +2153,17 @@ void UVCPreviewIR::do_temperature(JNIEnv *env) {
 //        LOGE("=====do_temperature=====for==both=== true============");
         pthread_mutex_lock(&temperature_mutex);
         {
-//            LOGE("do_temperature========wait=======callback==========");
+            LOGE("do_temperature========wait=======callback==========");
             pthread_cond_wait(&temperature_sync, &temperature_mutex);
-//            LOGE("do_temperature02");
+            LOGE("do_temperature02============================");
             if (mIsTemperaturing) {
-                env->CallVoidMethod(mUvcStatusCallbackObj,iUvcStatusCallback.onUVCCurrentStatus,UVC_STATUS);
+//                if (LIKELY(mUvcStatusCallbackObj) &&
+//                    LIKELY(iUvcStatusCallback.onUVCCurrentStatus)) {
+//                    //有导致空引用
+//                    env->CallVoidMethod(mUvcStatusCallbackObj,
+//                                        iUvcStatusCallback.onUVCCurrentStatus, UVC_STATUS);
+////                    env->ExceptionClear();
+//                }
                 mFrameImage->do_temperature_callback(env, HoldBuffer);
             }
 //            LOGE("do_temperature03");

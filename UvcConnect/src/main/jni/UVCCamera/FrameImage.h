@@ -134,7 +134,7 @@ public:
 	void do_temperature_callback(JNIEnv *env, uint8_t *frameData);//设置温度回调
 	void shutRefresh();
 
-	int getDichotomySearch( const float * data, int length ,float value, int startIndex, int endIndex);//二分法查找
+	int getDichotomySearch( float * data, int length ,float value, int startIndex, int endIndex);//二分法查找
 
 /*******************************录制*******************************************/
 //	int setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format);

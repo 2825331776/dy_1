@@ -44,6 +44,7 @@ import android.os.Message;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
 
@@ -125,6 +126,12 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			mTempBitmap = null;
 		}
 	}
+
+//	@Override
+//	public boolean onTouchEvent (MotionEvent event) {
+//		Log.e(TAG, "=========UVCCameraTextureView onTouchEvent: ");
+//		return super.onTouchEvent(event);
+//	}
 
 	@Override
 	public void onSurfaceTextureAvailable (final SurfaceTexture surface, final int width, final int height) {

@@ -1199,7 +1199,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		private int     UVCStatus         = -1;
 		private int     autoSaveCount     = 0;
 		private boolean needSendSaveOrder = false;
-		IUVCStatusCallBack iuvcStatusCallBack = new IUVCStatusCallBack() {
+		public final IUVCStatusCallBack iuvcStatusCallBack = new IUVCStatusCallBack() {
 			@Override
 			public void onUVCCurrentStatus (int uvcStatus) {
 				//				Log.e(TAG, "onUVCCurrentStatus:  ===========回调保存指令=========111111111111111111==uvcStatus===>"+uvcStatus );
@@ -1485,6 +1485,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 					Log.e(TAG, "================SurfaceTexture:");
 					mUVCCamera.setPreviewTexture((SurfaceTexture) surface);
 				}
+
 				//Log.e(TAG, "handleStartPreview: startPreview1");
 				mUVCCamera.startPreview();
 
