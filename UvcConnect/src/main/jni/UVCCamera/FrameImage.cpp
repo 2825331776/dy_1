@@ -36,8 +36,8 @@ FrameImage::FrameImage(uvc_device_handle_t *devh) {
 
     maxThumbAD = 0;
     minThumbAD = 0;
-    maxThumbValue = 0;
-    minThumbValue = 0;
+//    maxThumbValue = 0;
+//    minThumbValue = 0;
 
     isNeedFreshAD = false;
 }
@@ -89,14 +89,24 @@ int FrameImage::getDichotomySearch(float *data, int length, float value, int sta
 //    LOGE("enter :  length =  %d, value = %f , startIndex = %d  , endIndex = %d" ,length,value , startIndex , endIndex);
     if (endIndex > length) return 0;
     int start = startIndex;
-    int end = endIndex - 1;//下标
+    int end = endIndex;//下标
     int valueIndex = 0;
 
 
     if (end <= 0)return 0;
     while (start <= end) {
+        if (value != value){
+            return 0;
+        }
+
         int midPont = (start + end) / 2;//记录的是坐标，所以要在取中点之前+1
-        if (value == headPoint[midPont]) {//如果中点坐标的值 恰好等于 目标值，则返回这个 中点坐标
+        //缺少判断 目标值是否是nan ，和 中点值是否是nan
+        if (headPoint[midPont] != headPoint[midPont]){
+            start = midPont;
+            break;
+        }
+
+        if (value == headPoint[midPont]) {//如果"中点"坐标的值等于目标值，则返回这个"中点"坐标
             valueIndex = midPont;
             return valueIndex;
         }
@@ -654,9 +664,14 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
                               &floatFpaTmp, &correction, &Refltmp, &Airtmp, &humi, &emiss,
                               &distance,
                               cameraLens, shutterFix, rangeMode);
-
-            if (correction == Refltmp&& Airtmp == Refltmp && emiss == Airtmp){
-//                LOGE("========================查询温度对照表表有妖气==========================");
+            LOGE("====================查询温度对照表表==temperatureTable[0]=%f==temperatureTable[16383]=%f=====",temperatureTable[0],temperatureTable[16383]);
+            if (temperatureTable[0] < 1){LOGE("====================查询温度对照表表==nan比大小===1===");}
+            else{
+                LOGE("=======查询温度对照表表==nan比大小===1======else======");
+            }
+            if (temperatureTable[0] < -1){LOGE("====================查询温度对照表表==nan比大小==-1====");}
+            if (temperatureTable[0] == temperatureTable[16383]){
+                LOGE("====================查询温度对照表表==temperatureTable========");
                 isNeedFreshAD = false;
                 isNeedWriteTable = true;
                 fourLinePara = NULL;
@@ -698,22 +713,22 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
 //                fourLinePara = NULL;
 //                temperatureData = NULL;
 //                env->DeleteLocalRef(mNCbTemper);
-            LOGE("========================mTemperatureCallbackObj == ExceptionCheck====occur=====================");
+//            LOGE("========================mTemperatureCallbackObj == ExceptionCheck====occur=====================");
 //                env->ExceptionClear();
 //                return;
 //            }
         }
         //固定温度条： 刷新 最大 最小AD的 ，S0通过查表刷新。
         if (isNeedFreshAD) {
-            LOGE("refresh AD ====  maxThumbValue == %f ,  minThumbValue ==== %f ", maxThumbValue,
-                 minThumbValue);
+//            LOGE("refresh AD ====  maxThumbValue == %f ,  minThumbValue ==== %f ", maxThumbValue,
+//                 minThumbValue);
 
-            maxThumbAD = getDichotomySearch(temperatureTable, 16384, maxThumbValue, 0, 16384);
-            minThumbAD = getDichotomySearch(temperatureTable, 16384, minThumbValue, 0, 16384);
+            maxThumbAD = getDichotomySearch(temperatureTable, 16384, maxThumbValue, 0, 16383);
+            minThumbAD = getDichotomySearch(temperatureTable, 16384, minThumbValue, 0, 16383);
             isNeedFreshAD = false;
             //3 全幅最高温 ，6 是全幅最低温 AD值
-            LOGE("refresh AD ==1111==  maxThumbValue == %f ,  minThumbValue ==== %f ",
-                 maxThumbValue, minThumbValue);
+//            LOGE("refresh AD ==1111==  maxThumbValue == %f ,  minThumbValue ==== %f ",
+//                 maxThumbValue, minThumbValue);
         }
         env->DeleteLocalRef(mNCbTemper);
 

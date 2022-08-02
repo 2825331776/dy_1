@@ -219,6 +219,8 @@ private:
     pthread_t temperature_thread;
     pthread_cond_t temperature_sync;
     pthread_mutex_t temperature_mutex;
+    //uvc状态回调 互斥变量。
+//    pthread_mutex_t uvc_status_mutex;
 
 //	pthread_mutex_t fixed_mutex;
 

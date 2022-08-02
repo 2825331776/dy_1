@@ -50,6 +50,7 @@ import com.dyt.wcc.cameracommon.encoder.MediaVideoEncoder;
 import com.dyt.wcc.cameracommon.utils.ByteUtil;
 import com.dyt.wcc.cameracommon.widget.UVCCameraTextureView;
 import com.dyt.wcc.common.BuildConfig;
+import com.dyt.wcc.common.widget.MyToggleView;
 import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
 import com.serenegiant.usb.IFrameCallback;
 import com.serenegiant.usb.ITemperatureCallback;
@@ -1202,7 +1203,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		public final IUVCStatusCallBack iuvcStatusCallBack = new IUVCStatusCallBack() {
 			@Override
 			public void onUVCCurrentStatus (int uvcStatus) {
-				//				Log.e(TAG, "onUVCCurrentStatus:  ===========回调保存指令=========111111111111111111==uvcStatus===>"+uvcStatus );
+				Log.e(TAG, "onUVCCurrentStatus:  ======每帧=====回调保存指令=========111111111111111111==uvcStatus===>"+uvcStatus );
 				if (uvcStatus != UVCStatus) {
 					UVCStatus = uvcStatus;
 				} else {
@@ -1210,7 +1211,13 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 						autoSaveCount++;
 					} else if (autoSaveCount > 80 && UVCStatus == 3 && !needSendSaveOrder) {
 						needSendSaveOrder = true;
-						//						Log.e(TAG, "onUVCCurrentStatus:  ==================回调保存指令================");
+						Log.e(TAG, "onUVCCurrentStatus:  ==================回调保存指令================");
+						mHandler.postDelayed(() -> {
+							mUVCCamera.setZoom(0x8000);
+						}, 200);
+						mHandler.postDelayed(() -> {
+							mUVCCamera.whenShutRefresh();
+						}, 500);
 						mUVCCamera.TinySaveCameraParams();
 					}
 				}
@@ -1467,7 +1474,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 					if (mContainerView.get() != null) {
 						mContainerView.get().setFrameWH(mWidth, mHeight);
 					}
-
 					mUVCCamera.setPreviewSize(mWidth, mHeight, 1, 25, mPreviewMode, mBandwidthFactor, currentAndroidVersion);
 					//Log.e(TAG, "handleStartPreview3 mWidth: " + mWidth + "mHeight:" + mHeight);
 				} catch (final IllegalArgumentException e) {
@@ -1485,7 +1491,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 					Log.e(TAG, "================SurfaceTexture:");
 					mUVCCamera.setPreviewTexture((SurfaceTexture) surface);
 				}
-
+				mUVCCamera.setUVCStatusCallBack(iuvcStatusCallBack);
 				//Log.e(TAG, "handleStartPreview: startPreview1");
 				mUVCCamera.startPreview();
 
@@ -1512,7 +1518,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 				ITemperatureCallback mTempCb = mWeakCameraView.get().getTemperatureCallback();
 				mUVCCamera.setTemperatureCallback(mTempCb);//将温度回调的对象  发送到底层
 				//				mWeakCameraView.get().setTemperatureCbing(false);//测温开关
-				mUVCCamera.setUVCStatusCallBack(iuvcStatusCallBack);
 
 				mUVCCamera.updateCameraParams();
 				synchronized (mSync) {

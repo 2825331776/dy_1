@@ -73,6 +73,8 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh, FrameImage *frameImage) {
 
     pthread_cond_init(&temperature_sync, NULL);
     pthread_mutex_init(&temperature_mutex, NULL);//初始化温度线程对象
+    //uvc状态回调 互斥变量初始化。
+//    pthread_mutex_init(&uvc_status_mutex,NULL);
 
     pthread_mutex_init(&data_callback_mutex, NULL);
 
@@ -105,6 +107,8 @@ UVCPreviewIR::~UVCPreviewIR() {
     pthread_cond_destroy(&screenShot_sync);
     pthread_mutex_destroy(&temperature_mutex);//析构函数内释放内存
     pthread_cond_destroy(&temperature_sync);
+    //uvc状态回调 互斥变量初始化。
+//    pthread_mutex_destroy(&uvc_status_mutex);
 
     pthread_mutex_destroy(&data_callback_mutex);
 
@@ -1443,7 +1447,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
             if (mIsTemperaturing)//绘制的时候唤醒温度绘制的线程
             {
                 if (LIKELY(temperature_thread)) {
-                    LOGE("do_preview====温度线程还在=====================唤醒温度回调线程===============");
+//                    LOGE("do_preview====温度线程还在=====================唤醒温度回调线程===============");
                     pthread_cond_signal(&temperature_sync);
                 } else {
                     LOGE("do_preview====温度线程不存在=====================需要重新创建温度线程===============");
@@ -2022,7 +2026,7 @@ void UVCPreviewIR::savePicDefineData() {
 
 //add by 吴长城 获取UVC连接状态回调
 int UVCPreviewIR::setUVCStatusCallBack(JNIEnv *env, jobject uvc_connect_status_callback) {
-    pthread_mutex_lock(&temperature_mutex);
+//    pthread_mutex_lock(&uvc_status_mutex);
     {
         if (!env->IsSameObject(mUvcStatusCallbackObj, uvc_connect_status_callback)) {
             iUvcStatusCallback.onUVCCurrentStatus = NULL;
@@ -2050,7 +2054,7 @@ int UVCPreviewIR::setUVCStatusCallBack(JNIEnv *env, jobject uvc_connect_status_c
             }
         }
     }
-    pthread_mutex_unlock(&temperature_mutex);
+//    pthread_mutex_unlock(&uvc_status_mutex);
     RETURN(0, int);
 }
 
@@ -2153,17 +2157,18 @@ void UVCPreviewIR::do_temperature(JNIEnv *env) {
 //        LOGE("=====do_temperature=====for==both=== true============");
         pthread_mutex_lock(&temperature_mutex);
         {
-            LOGE("do_temperature========wait=======callback==========");
+//            LOGE("do_temperature========wait=======callback==========");
             pthread_cond_wait(&temperature_sync, &temperature_mutex);
-            LOGE("do_temperature02============================");
+//            LOGE("do_temperature02============================");
             if (mIsTemperaturing) {
-//                if (LIKELY(mUvcStatusCallbackObj) &&
-//                    LIKELY(iUvcStatusCallback.onUVCCurrentStatus)) {
-//                    //有导致空引用
-//                    env->CallVoidMethod(mUvcStatusCallbackObj,
-//                                        iUvcStatusCallback.onUVCCurrentStatus, UVC_STATUS);
-////                    env->ExceptionClear();
-//                }
+                if (LIKELY(mUvcStatusCallbackObj) &&
+                    LIKELY(iUvcStatusCallback.onUVCCurrentStatus)) {
+                    //有导致空引用
+                    UVC_STATUS = 3;
+                    env->CallVoidMethod(mUvcStatusCallbackObj,
+                                        iUvcStatusCallback.onUVCCurrentStatus, UVC_STATUS);
+//                    env->ExceptionClear();
+                }
                 mFrameImage->do_temperature_callback(env, HoldBuffer);
             }
 //            LOGE("do_temperature03");

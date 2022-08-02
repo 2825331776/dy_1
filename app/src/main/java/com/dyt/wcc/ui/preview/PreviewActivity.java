@@ -600,9 +600,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						Log.e(TAG, "handleMessage: 111111111============" + position);
 						if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
 							if (position == 0) {
-								mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8021), 200); //最高200度
+								mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8020), 200); //最高200度
 							} else {
-								mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8020), 200);//最高599度
+								mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8021), 200);//最高599度
 							}
 							mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000), 1000);
 							mHandler.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), 1800);

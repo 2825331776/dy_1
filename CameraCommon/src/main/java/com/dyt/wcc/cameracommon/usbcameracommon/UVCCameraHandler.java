@@ -39,14 +39,14 @@ public class UVCCameraHandler extends AbstractUVCCameraHandler {
 	public static final  int              UVC_STATUS_SN_ERROR   = 1;
 	private static final String           TAG                   = "UVCCameraHandler";
 	private static       UVCCameraHandler mUVCCameraHandler;
-	/**
-	 * create UVCCameraHandler, use MediaVideoEncoder, try MJPEG, default bandwidth
-	 * @param parent
-	 * @param cameraView
-	 * @param width
-	 * @param height
-	 * @return
-	 */
+//	/**
+//	 * create UVCCameraHandler, use MediaVideoEncoder, try MJPEG, default bandwidth
+//	 * @param parent
+//	 * @param cameraView
+//	 * @param width
+//	 * @param height
+//	 * @return
+//	 */
 	/*
 	public static final UVCCameraHandler createHandler(
 			final Activity parent, final UVCCameraTextureView cameraView,
@@ -56,15 +56,15 @@ public class UVCCameraHandler extends AbstractUVCCameraHandler {
 	}
 	 */
 
-	/**
-	 * create UVCCameraHandler, use MediaVideoEncoder, try MJPEG
-	 * @param parent
-	 * @param cameraView
-	 * @param width
-	 * @param height
-	 * @param bandwidthFactor
-	 * @return
-	 */
+//	/**
+//	 * create UVCCameraHandler, use MediaVideoEncoder, try MJPEG
+//	 * @param parent
+//	 * @param cameraView
+//	 * @param width
+//	 * @param height
+//	 * @param bandwidthFactor
+//	 * @return
+//	 */
 	/*
 	public static final UVCCameraHandler createHandler(
 			final Activity parent, final UVCCameraTextureView cameraView,
@@ -74,16 +74,16 @@ public class UVCCameraHandler extends AbstractUVCCameraHandler {
 	}
 	 */
 
-	/**
-	 * create UVCCameraHandler, try MJPEG, default bandwidth
-	 *
-	 * @param parent
-	 * @param cameraView
-	 * @param encoderType 0: use MediaSurfaceEncoder, 1: use MediaVideoEncoder, 2: use MediaVideoBufferEncoder
-	 * @param width
-	 * @param height
-	 * @return
-	 */
+//	/**
+//	 * create UVCCameraHandler, try MJPEG, default bandwidth
+//	 *
+//	 * @param parent
+//	 * @param cameraView
+//	 * @param encoderType 0: use MediaSurfaceEncoder, 1: use MediaVideoEncoder, 2: use MediaVideoBufferEncoder
+//	 * @param width
+//	 * @param height
+//	 * @return
+//	 */
 	/*
 	public static final UVCCameraHandler createHandler(
             final Activity parent, final UVCCameraTextureView cameraView,
