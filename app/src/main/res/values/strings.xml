@@ -31,8 +31,13 @@
     <string name="about_companyWebsite_content_teslong">www.teslong.com</string>
     <string name="about_contactEmail_content_teslong">support@teslong.com</string>
 
+    <!--    迈测 定制版-->
+    <string name="about_companyName_mileseey">Shenzhen Mileseey Technology Co., Ltd.</string>
+    <string name="about_companyWebsite_content_mileseey">www.mileseeytools.com</string>
+    <string name="about_contactEmail_content_mileseey">service@mileseey.com</string>
+
     <!--    页面名称-->
-    <string name="app_name">Pir</string>
+<!--    <string name="app_name">Pir</string>-->
     <string name="Gallery">Gallery</string>
     <string name="Welcome">Welcome</string>
     <string name="MediaBrowser">Gallery</string>

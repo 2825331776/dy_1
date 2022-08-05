@@ -25,12 +25,13 @@ public class DYConstants {
 	public static final int ENVIRONMENT_MIN = -20;
 	public static final int ENVIRONMENT_MAX = 50;
 
-	public static final String COMPANY_DYT     = "dyt";
-	public static final String COMPANY_NEUTRAL = "neutral";
-	public static final String COMPANY_VICTOR  = "victor";
-	public static final String COMPANY_JMS     = "jms";
-	public static final String COMPANY_QIANLI  = "qianli";
-	public static final String COMPANY_TESLONG = "teslong";
+	public static final String COMPANY_DYT     = "dyt";//点扬
+	public static final String COMPANY_NEUTRAL = "neutral";//中性版
+	public static final String COMPANY_VICTOR  = "victor";//胜利
+	public static final String COMPANY_JMS     = "jms";//精明鼠
+	public static final String COMPANY_QIANLI  = "qianli";//潜力
+	public static final String COMPANY_TESLONG = "teslong";//泰视朗
+	public static final String COMPANY_MAILSEEY = "mileseey";//迈测
 
 	public static final String PIC_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + File.separator + "DYTCamera";
 

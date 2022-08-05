@@ -23,7 +23,7 @@
     <string name="about_main_user_manual_victor">User manual</string>
 
     <!--    页面名称-->
-    <string name="app_name">Pir</string>
+<!--    <string name="app_name">Pir</string>-->
     <string name="Gallery">Gallery</string>
     <string name="Welcome">Welcome</string>
     <string name="MediaBrowser">Gallery</string>

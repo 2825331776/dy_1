@@ -59,6 +59,8 @@ import com.dyt.wcc.customize.dyt.DytCompanyView;
 import com.dyt.wcc.customize.dyt.DytLanguageFactory;
 import com.dyt.wcc.customize.jms.JMSCompanyView;
 import com.dyt.wcc.customize.jms.JMSLanguageFactory;
+import com.dyt.wcc.customize.mailseey.MileSeeYCompanyView;
+import com.dyt.wcc.customize.mailseey.MileSeeYLanguageFactory;
 import com.dyt.wcc.customize.neutral.NeutralCompanyView;
 import com.dyt.wcc.customize.neutral.NeutralLanguageFactory;
 import com.dyt.wcc.customize.qianli.QianLiLanguageFactory;
@@ -666,6 +668,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 							break;
 						case DYConstants.COMPANY_NEUTRAL:
 							factory = new NeutralLanguageFactory(mContext.get());
+							break;
+						case DYConstants.COMPANY_MAILSEEY:
+							factory = new MileSeeYLanguageFactory(mContext.get());
 							break;
 						default:
 							factory = new DytLanguageFactory(mContext.get());
@@ -2098,6 +2103,16 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				case DYConstants.COMPANY_NEUTRAL:
 					customizeCompany = new NeutralCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
+					break;
+				case DYConstants.COMPANY_MAILSEEY:
+					customizeCompany = new MileSeeYCompanyView();
+					view = customizeCompany.getCompanyView(mContext.get());
+					view.findViewById(R.id.tv_about_main_user_manual_info_mileseey).setOnClickListener(v3 -> {
+						if (companyPopWindows != null && companyPopWindows.isShowing()) {
+							companyPopWindows.dismiss();
+						}
+						startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.mailseey.PdfActivity.class));
+					});
 					break;
 				default:
 					customizeCompany = new DytCompanyView();

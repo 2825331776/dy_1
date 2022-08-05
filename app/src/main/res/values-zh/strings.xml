@@ -35,8 +35,13 @@
     <string name="about_companyWebsite_content_teslong">www.teslong.com</string>
     <string name="about_contactEmail_content_teslong">support@teslong.com</string>
 
+    <!--    迈测 定制版-->
+    <string name="about_companyName_mileseey">深圳市迈测科技股份有限公司</string>
+    <string name="about_companyWebsite_content_mileseey">www.mileseey.com</string>
+    <string name="about_contactEmail_content_mileseey">0755–86329055</string>
+
     <!--    页面名称-->
-    <string name="app_name">红外</string>
+<!--    <string name="app_name">红外</string>-->
     <string name="Gallery">相册</string>
     <string name="Welcome">欢迎</string>
     <string name="MediaBrowser">图库</string>

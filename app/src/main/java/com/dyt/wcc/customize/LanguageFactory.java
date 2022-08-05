@@ -23,6 +23,8 @@ public abstract class LanguageFactory {
 			"Italiano", "한국인", "日本",
 			//法语fr-rFR、西班牙语es-rES、芬兰语fi-rFI、波兰语pl-rPL、葡萄牙语pt-rPT
 			"Français","Español","Suomalainen","Polski","Português"};
+	protected static final String[] language_mileseey_array     = new String[]{"中文", "English"};
+
 	protected              Context  mContext;
 
 	protected switchListener listener;

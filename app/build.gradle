@@ -111,6 +111,13 @@ android {
             res.srcDirs = ['src/victorPir/res-victor']
             manifest.srcFile 'src/victorPir/AndroidManifest.xml'
         }
+        // 胜利 定制版
+        mileseey {
+            java.srcDirs = ['src/mileseey/java']
+            assets.srcDirs = ['src/mileseey/assets']
+            res.srcDirs = ['src/mileseey/res-mileseey']
+            manifest.srcFile 'src/mileseey/AndroidManifest.xml'
+        }
     }
 
     productFlavors {
@@ -194,7 +201,7 @@ android {
             manifestPlaceholders = [CHANNEL_VALUE         : "jmsPir"
                                     , app_icon            : "@mipmap/ic_launcher_jms_round"
                                     , BUGLYAPPID          : "af50f10806"
-                                    , BUGLYAPPVersion     : "3.4.4"
+                                    , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "jms"
                                     , BUGLYENABLEDEBUG    : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.JMSConfig.appPackageName
@@ -214,7 +221,7 @@ android {
             manifestPlaceholders = [CHANNEL_VALUE         : "QianLiPir"
                                     , app_icon            : "@mipmap/ic_launcher_qianli"
                                     , BUGLYAPPID          : "9086b0a6ab"
-                                    , BUGLYAPPVersion     : "3.4.4"
+                                    , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "qianli"
                                     , BUGLYENABLEDEBUG    : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.QianLiConfig.appPackageName
@@ -234,7 +241,7 @@ android {
             manifestPlaceholders = [CHANNEL_VALUE         : "TeslongPir"
                                     , app_icon            : "@mipmap/ic_launcher_teslong"
                                     , BUGLYAPPID          : "020120f2ec"
-                                    , BUGLYAPPVersion     : "3.4.4"
+                                    , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "teslong"
                                     , BUGLYENABLEDEBUG    : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.TeslongConfig.appPackageName
@@ -258,11 +265,35 @@ android {
             manifestPlaceholders = [CHANNEL_VALUE         : "victorPir"
                                     , app_icon            : "@mipmap/ic_launcher_victor_foreground"
                                     , BUGLYAPPID          : "c61a63bdf6"
-                                    , BUGLYAPPVersion     : "3.4.4"
+                                    , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "victor"
                                     , BUGLYENABLEDEBUG    : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.VICTORConfig.appPackageName
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.victor.FileProvider"]
+            flavorDimensions "demo1"
+        }
+        //迈测 定制
+        mileseey {
+            // 每个环境包名不同
+            applicationIdSuffix ".mileseey"
+            versionCode rootProject.ext.envInfo.DYTConfig.VCode
+            versionName rootProject.ext.envInfo.DYTConfig.VName
+            // 动态添加 string.xml 字段；
+            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
+//            resValue "string", "app_name", "xiaomi"
+//            resValue "bool", "auto_updates", 'false'
+            // 动态修改 常量 字段
+            buildConfigField "String", "CONFIGS_NAME", '"configs_mileseey"'
+            buildConfigField "String", "SP_NAME", '"DYT_IR_SP_MILESEEY"'
+            buildConfigField "int", "COMPANY_H", '145'
+            manifestPlaceholders = [CHANNEL_VALUE         : "mileseey"
+                                    , app_icon            : "@mipmap/ic_launcher_mileseey_foreground"
+                                    , BUGLYAPPID          : "9a1f6ff8a4"
+                                    , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
+                                    , BUGLYAPPChannel     : "mileseey"
+                                    , BUGLYENABLEDEBUG    : "false"
+                                    , APP_Channel         : rootProject.ext.envInfo.MILESEEYConfig.appPackageName
+                                    , PROVIDER_AUTHORITIES: "com.dyt.wcc.mileseey.FileProvider"]
             flavorDimensions "demo1"
         }
     }

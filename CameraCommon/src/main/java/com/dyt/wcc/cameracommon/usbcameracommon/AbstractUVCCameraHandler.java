@@ -1203,7 +1203,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		public final IUVCStatusCallBack iuvcStatusCallBack = new IUVCStatusCallBack() {
 			@Override
 			public void onUVCCurrentStatus (int uvcStatus) {
-				Log.e(TAG, "onUVCCurrentStatus:  ======每帧=====回调保存指令=========111111111111111111==uvcStatus===>"+uvcStatus );
+//				Log.e(TAG, "onUVCCurrentStatus:  ======每帧=====回调保存指令=========111111111111111111==uvcStatus===>"+uvcStatus );
 				if (uvcStatus != UVCStatus) {
 					UVCStatus = uvcStatus;
 				} else {

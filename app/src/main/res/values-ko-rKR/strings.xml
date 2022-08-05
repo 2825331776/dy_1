@@ -13,7 +13,7 @@
     <string name="about_mainBusiness_content_jms">sale@noyafa.com</string>
 
     <!--    页面名称-->
-    <string name="app_name">Pir</string>
+<!--    <string name="app_name">Pir</string>-->
 
     <!--    超温警告弹窗文字-->
     <string name="cancel">취소</string>

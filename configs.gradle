@@ -73,6 +73,16 @@ ext {
                     VName         : "1.1.7",
                     appPackageName: "VICTOR",
             ],
+            //迈测定制
+            MILESEEYConfig : [
+                    // 应用 id
+                    appId         : "com.dyt.wcc",
+                    // 构建版本号
+                    VCode         : 107,
+                    // 版本名称
+                    VName         : "1.1.7",
+                    appPackageName: "MILESEEY",
+            ],
     ]
 
 
