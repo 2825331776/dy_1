@@ -1474,6 +1474,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 					if (mContainerView.get() != null) {
 						mContainerView.get().setFrameWH(mWidth, mHeight);
 					}
+					mUVCCamera.setUVCStatusCallBack(iuvcStatusCallBack);
 					mUVCCamera.setPreviewSize(mWidth, mHeight, 1, 25, mPreviewMode, mBandwidthFactor, currentAndroidVersion);
 					//Log.e(TAG, "handleStartPreview3 mWidth: " + mWidth + "mHeight:" + mHeight);
 				} catch (final IllegalArgumentException e) {
@@ -1491,7 +1492,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 					Log.e(TAG, "================SurfaceTexture:");
 					mUVCCamera.setPreviewTexture((SurfaceTexture) surface);
 				}
-				mUVCCamera.setUVCStatusCallBack(iuvcStatusCallBack);
+
 				//Log.e(TAG, "handleStartPreview: startPreview1");
 				mUVCCamera.startPreview();
 

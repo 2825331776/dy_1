@@ -2111,6 +2111,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						if (companyPopWindows != null && companyPopWindows.isShowing()) {
 							companyPopWindows.dismiss();
 						}
+						if (mUvcCameraHandler != null && !mUvcCameraHandler.snRightIsPreviewing()) {
+							mUvcCameraHandler.close();
+						}
+						if (mUsbMonitor!=null && mUsbMonitor.isRegistered()) {
+							mUsbMonitor.unregister();
+						}
 						startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.mailseey.PdfActivity.class));
 					});
 					break;

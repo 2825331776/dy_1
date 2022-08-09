@@ -108,7 +108,7 @@ UVCPreviewIR::~UVCPreviewIR() {
     pthread_mutex_destroy(&temperature_mutex);//析构函数内释放内存
     pthread_cond_destroy(&temperature_sync);
     //uvc状态回调 互斥变量初始化。
-//    pthread_mutex_destroy(&uvc_status_mutex);
+    pthread_mutex_destroy(&uvc_status_mutex);
 
     pthread_mutex_destroy(&data_callback_mutex);
 
@@ -2026,7 +2026,7 @@ void UVCPreviewIR::savePicDefineData() {
 
 //add by 吴长城 获取UVC连接状态回调
 int UVCPreviewIR::setUVCStatusCallBack(JNIEnv *env, jobject uvc_connect_status_callback) {
-//    pthread_mutex_lock(&uvc_status_mutex);
+    pthread_mutex_lock(&temperature_mutex);
     {
         if (!env->IsSameObject(mUvcStatusCallbackObj, uvc_connect_status_callback)) {
             iUvcStatusCallback.onUVCCurrentStatus = NULL;
@@ -2054,7 +2054,7 @@ int UVCPreviewIR::setUVCStatusCallBack(JNIEnv *env, jobject uvc_connect_status_c
             }
         }
     }
-//    pthread_mutex_unlock(&uvc_status_mutex);
+    pthread_mutex_unlock(&temperature_mutex);
     RETURN(0, int);
 }
 

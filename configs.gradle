@@ -20,9 +20,9 @@ ext {
                     // 应用 id
                     appId         : "com.dyt.wcc",
                     // 构建版本号
-                    VCode         : 201,
+                    VCode         : 203,
                     // 版本名称
-                    VName         : "1.2.1",
+                    VName         : "1.2.3",
                     appPackageName: "DytSpectrumOwl",
             ],
             NeutralConfig    : [
