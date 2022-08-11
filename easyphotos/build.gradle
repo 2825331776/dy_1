@@ -15,6 +15,12 @@ android {
         versionName versions.VName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++11"
+                abiFilters 'armeabi-v7a','arm64-v8a','x86_64','x86'
+            }
+        }
 //        consumerProguardFiles "consumer-rules.pro"
     }
 
@@ -28,11 +34,18 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.10.2'
+        }
+    }
 }
 
 dependencies {
     //依赖于Common  作为Lib
     implementation project(path: ':common')
+//    implementation project(path: ':UvcConnect')
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'

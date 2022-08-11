@@ -1210,15 +1210,17 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 					if (autoSaveCount <= 80 && UVCStatus == 3 && !needSendSaveOrder) {
 						autoSaveCount++;
 					} else if (autoSaveCount > 80 && UVCStatus == 3 && !needSendSaveOrder) {
-						needSendSaveOrder = true;
-						Log.e(TAG, "onUVCCurrentStatus:  ==================回调保存指令================");
-						mHandler.postDelayed(() -> {
-							mUVCCamera.setZoom(0x8000);
-						}, 200);
-						mHandler.postDelayed(() -> {
-							mUVCCamera.whenShutRefresh();
-						}, 500);
-						mUVCCamera.TinySaveCameraParams();
+						if (mUVCCamera!=null){
+							needSendSaveOrder = true;
+							Log.e(TAG, "onUVCCurrentStatus:  ==================回调保存指令================");
+							mHandler.postDelayed(() -> {
+								mUVCCamera.setZoom(0x8000);
+							}, 200);
+							mHandler.postDelayed(() -> {
+								mUVCCamera.whenShutRefresh();
+							}, 500);
+							mUVCCamera.TinySaveCameraParams();
+						}
 					}
 				}
 			}
@@ -1671,7 +1673,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 						//                        }
 						os.flush();
 						//吴长城 add
-						//                        mHandler.setSavePicture(outputFile.getPath());
+//						mHandler.setSavePicture(outputFile.getPath());
 						mHandler.sendMessage(mHandler.obtainMessage(MSG_MEDIA_UPDATE, outputFile.getPath()));
 					} catch (final IOException e) {
 					}

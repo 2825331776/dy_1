@@ -1809,12 +1809,12 @@ void UVCPreviewIR::savePicDefineData() {
     unsigned short *adPicbuffer = (unsigned short *) picOutBuffer;
 
     D_IR_DATA_PAR irDataPar;
-    irDataPar.ir_w = 256;
-    irDataPar.ir_h = 192;
-    int fourLineIndex = 256 * 192;
+    irDataPar.ir_w = frameWidth;
+    irDataPar.ir_h = frameHeight;
+    int fourLineIndex = frameWidth * (frameHeight-4);
 
-    irDataPar.raw_max = adPicbuffer[fourLineIndex + 4];
-    irDataPar.raw_min = adPicbuffer[fourLineIndex + 7];
+    irDataPar.raw_max = 22132;
+    irDataPar.raw_min = 19524;
 //    irDataPar.raw_max = 8000;
 //    irDataPar.raw_min = 5000;
 
@@ -1893,7 +1893,7 @@ void UVCPreviewIR::savePicDefineData() {
     // 图像信息
     D_IMAGE_INFO imageInfo;
     imageInfo.tempUnit = 1;
-    imageInfo.lutCode = 10;
+    imageInfo.lutCode = 1;
     memset(imageInfo.reserved, 0, 26);
     len += sizeof(imageInfo);
 //    LOGE("===D_IMAGE_INFO=========%d",sizeof(imageInfo));
@@ -2005,7 +2005,7 @@ void UVCPreviewIR::savePicDefineData() {
     for (int i = 0; i < dataLen; i++) {
         dataParBuf[i] = picOutBuffer[i];
     }
-    LOGE("====================dataLen===============%d", dataLen);
+    LOGI("====================dataLen===============%d", dataLen);
     LOGE("====================len===============%d", len);
 
     int fileLen = len + dataLen;

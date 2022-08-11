@@ -18,6 +18,10 @@ endif ()
 SET(CMAKE_CXX_FLAGS "-Wno-error=format-security -Wno-error=pointer-sign")
 
 
+# 设置生成的so动态库最后输出的路径，set后面两个参数，
+# 前面一个是命令，后面是路径。
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../oplibs/${ANDROID_ABI})
+
 #--------------设置第三方libsimplePictureProcessing.so库路径---------------------------------
 set(my_lib_path ${CMAKE_SOURCE_DIR}/libs)
 
@@ -150,9 +154,7 @@ target_link_libraries(UVCCamera android)
 target_link_libraries(UVCCamera dytjpegaec)#通过jpegext.cpp源文件生成 这个.so库,然后引用进来
 
 
-# 设置生成的so动态库最后输出的路径，set后面两个参数，
-# 前面一个是命令，后面是路径。
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../oplibs/${ANDROID_ABI})
+
 
 
 

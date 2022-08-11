@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
@@ -29,6 +30,8 @@ import com.huantansheng.easyphotos.constant.Code;
 import com.huantansheng.easyphotos.constant.Key;
 import com.huantansheng.easyphotos.models.album.AlbumModel;
 import com.huantansheng.easyphotos.models.album.entity.Photo;
+import com.huantansheng.easyphotos.picNative.PhotoHandler;
+import com.huantansheng.easyphotos.picNative.PhotoNativeHelper;
 import com.huantansheng.easyphotos.result.Result;
 import com.huantansheng.easyphotos.setting.Setting;
 import com.huantansheng.easyphotos.ui.adapter.PreviewPhotosAdapter;
@@ -43,11 +46,11 @@ import java.util.List;
  */
 public class PreviewActivity extends AppCompatActivity implements PreviewPhotosAdapter.OnClickListener, View.OnClickListener, PreviewFragment.OnPreviewFragmentClickListener {
 
-	public static void start (Activity act, int albumItemIndex, int currIndex,int typeShowing) {
+	public static void start (Activity act, int albumItemIndex, int currIndex, int typeShowing) {
 		Intent intent = new Intent(act, PreviewActivity.class);
 		intent.putExtra(Key.PREVIEW_ALBUM_ITEM_INDEX, albumItemIndex);
 		intent.putExtra(Key.PREVIEW_PHOTO_INDEX, currIndex);
-        intent.putExtra(Key.PREVIEW_TYPE_SHOWING,typeShowing);
+		intent.putExtra(Key.PREVIEW_TYPE_SHOWING, typeShowing);
 		act.startActivityForResult(intent, Code.REQUEST_PREVIEW_ACTIVITY);
 	}
 
@@ -96,6 +99,10 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 
 	private ImageView ivBack;
 
+	private PhotoHandler photoHandler;
+	private ImageView    iv1, iv2, iv3;
+	private static String currentPicPath = null;
+
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -104,6 +111,21 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 		SystemUtils.getInstance().systemUiInit(this, decorView);
 
 		setContentView(R.layout.activity_preview_easy_photos);
+		iv1 = findViewById(R.id.iv_pic_analysis_tools_1);
+		iv2 = findViewById(R.id.iv_pic_analysis_tools_2);
+		iv3 = findViewById(R.id.iv_pic_analysis_tools_3);
+		photoHandler = new PhotoHandler(new PhotoNativeHelper());
+		//		currentPicPath = "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/aa.jpg";
+		iv1.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick (View v) {
+				Log.e("TAG", "onClick: " + photoHandler.verifyFilePath(currentPicPath));
+			}
+		});
+		iv2.setOnClickListener(v -> {
+			Log.e("TAG", "onClick: " + photoHandler.getByteArrayByFilePath(currentPicPath));
+		});
+
 
 		hideActionBar();
 		adaptationStatusBar();
@@ -143,23 +165,23 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 			photos.addAll(Result.photos);
 		} else {
 			List<Photo> list = new ArrayList<>();
-			for (Photo photo : AlbumModel.instance.getCurrAlbumItemPhotos(albumItemIndex)){
-			    switch (type_showing){
-                    case 0:
-                      list.add(photo);
-                        break;
-                    case 1:
-                        if (photo.path.contains("jpg")){
-                            list.add(photo);
-                        }
-                        break;
-                    case 2:
-                        if (photo.path.contains("mp4")){
-                            list.add(photo);
-                        }
-                        break;
-                }
-            }
+			for (Photo photo : AlbumModel.instance.getCurrAlbumItemPhotos(albumItemIndex)) {
+				switch (type_showing) {
+					case 0:
+						list.add(photo);
+						break;
+					case 1:
+						if (photo.path.contains("jpg")) {
+							list.add(photo);
+						}
+						break;
+					case 2:
+						if (photo.path.contains("mp4")) {
+							list.add(photo);
+						}
+						break;
+				}
+			}
 			photos.addAll(list);
 			Setting.showVideo = true;
 		}
@@ -229,6 +251,21 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 	}
 
 	@Override
+	public void onShowItemChanged (int lastPosition, boolean isPic) {
+		//		Log.e("TAG", "onShowItemChanged: lastPosition==="+ lastPosition + "===photoSize="+ photos.size());
+		if (isPic) {
+			if ((lastPosition == 0 || (lastPosition == photos.size() - 1))) {
+				currentPicPath = photos.get(lastPosition).path;
+				Log.e("TAG", "onShowItemChanged: ====111==currentPicPath=" + currentPicPath);
+			}
+			if (lastPosition > 0 && lastPosition < photos.size() - 2) {
+				currentPicPath = photos.get(lastPosition - 1).path;
+				Log.e("TAG", "onShowItemChanged: ====222==currentPicPath=" + currentPicPath);
+			}
+		}
+	}
+
+	@Override
 	public void onPhotoScaleChanged () {
 		if (mVisible)
 			hide();
@@ -274,11 +311,11 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 		//        flFragment = (FrameLayout) findViewById(R.id.fl_fragment);
 		//        previewFragment =
 		//                (PreviewFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_preview);
-		if (Setting.showOriginalMenu) {
-			processOriginalMenu();
-		} else {
-			//            tvOriginal.setVisibility(View.GONE);
-		}
+		//		if (Setting.showOriginalMenu) {
+		//			processOriginalMenu();
+		//		} else {
+		//			//            tvOriginal.setVisibility(View.GONE);
+		//		}
 
 		//        setClick(tvOriginal, tvDone, ivSelector);
 
@@ -292,6 +329,7 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 		lm = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
 		rvPhotos.setLayoutManager(lm);
 		rvPhotos.setAdapter(adapter);
+		//		rvPhotos.getChildAdapterPosition()
 		rvPhotos.scrollToPosition(index);
 		toggleSelector();
 		snapHelper = new PagerSnapHelper();
@@ -358,19 +396,19 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 		//        }
 	}
 
-	private void processOriginalMenu () {
-		//        if (Setting.selectedOriginal) {
-		//            tvOriginal.setTextColor(ContextCompat.getColor(this, R.color.easy_photos_fg_accent));
-		//        } else {
-		//            if (Setting.originalMenuUsable) {
-		//                tvOriginal.setTextColor(ContextCompat.getColor(this,
-		//                        R.color.easy_photos_fg_primary));
-		//            } else {
-		//                tvOriginal.setTextColor(ContextCompat.getColor(this,
-		//                        R.color.easy_photos_fg_primary_dark));
-		//            }
-		//        }
-	}
+	//	private void processOriginalMenu () {
+	//        if (Setting.selectedOriginal) {
+	//            tvOriginal.setTextColor(ContextCompat.getColor(this, R.color.easy_photos_fg_accent));
+	//        } else {
+	//            if (Setting.originalMenuUsable) {
+	//                tvOriginal.setTextColor(ContextCompat.getColor(this,
+	//                        R.color.easy_photos_fg_primary));
+	//            } else {
+	//                tvOriginal.setTextColor(ContextCompat.getColor(this,
+	//                        R.color.easy_photos_fg_primary_dark));
+	//            }
+	//        }
+	//	}
 
 	private void toggleSelector () {
 		if (photos.get(lastPosition).selected) {
