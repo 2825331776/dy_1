@@ -290,7 +290,7 @@ void FrameImage::setPreviewSize(int width, int height, int mode) {
  * @param size
  * @param type
  */
-void SearchMaxMin(unsigned short *tempAD_data, int size, unsigned short *max, unsigned short *min) {
+void FrameImage::SearchMaxMin(unsigned short *tempAD_data, int size, unsigned short *max, unsigned short *min) {
     if (tempAD_data != NULL) {
         *min = tempAD_data[0];
         *max = tempAD_data[0];

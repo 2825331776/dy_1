@@ -304,6 +304,8 @@ public:
     void testJNI(const char * phoneStr);
 
     void shutRefresh();
+
+    int DYT_DeleteAPP2(const char* fileName) ;
 };
 
 #endif /* UVCPREVIEW_H_ */

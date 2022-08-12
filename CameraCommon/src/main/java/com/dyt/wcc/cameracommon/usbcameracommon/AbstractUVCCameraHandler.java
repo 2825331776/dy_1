@@ -1674,7 +1674,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 						//                        }
 						os.flush();
 						//吴长城 add
-//						mHandler.setSavePicture(outputFile.getPath());
+						mHandler.setSavePicture(outputFile.getPath());
 						mHandler.sendMessage(mHandler.obtainMessage(MSG_MEDIA_UPDATE, outputFile.getPath()));
 					} catch (final IOException e) {
 					}
