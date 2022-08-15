@@ -128,6 +128,7 @@ public:
 	void getCameraPara(uint8_t *frame);//得到机芯的参数,用于查表(温度对照表)
 	int getByteArrayTemperaturePara(uint8_t* para ,uint8_t * data);
 	void setVidPid(int vid ,int pid);
+	void SearchMaxMin(unsigned short *tempAD_data, int size, unsigned short *max, unsigned short *min);
 
 	/*******************************温度数据*******************************************/
 	int setTemperatureCallback(JNIEnv *env, jobject temperature_callback_obj);//设置温度回调对象

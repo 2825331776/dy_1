@@ -44,6 +44,12 @@ public class PreviewPhotosAdapter extends RecyclerView.Adapter<PreviewPhotosAdap
 	public interface OnClickListener {
 		void onPhotoClick ();
 
+		/**
+		 * 当前显示的 item变化的时候就会调用。
+		 * @param position
+		 */
+		void onShowItemChanged(int position, boolean isPic);
+
 		void onPhotoScaleChanged ();
 	}
 
@@ -100,10 +106,13 @@ public class PreviewPhotosAdapter extends RecyclerView.Adapter<PreviewPhotosAdap
 					toPlayVideo(v, uri, type);
 				}
 			});
+			listener.onShowItemChanged(position , false);
 		} else if (path.endsWith(Type.GIF) || type.endsWith(Type.GIF)) {
 			holder.ivPhotoView.setVisibility(View.VISIBLE);
 			Setting.imageEngine.loadGif(holder.ivPhotoView.getContext(), uri, holder.ivPhotoView);
+			listener.onShowItemChanged(position , false);
 		} else {
+
 			if (ratio > 2.3) {
 				holder.ivLongPhoto.setVisibility(View.VISIBLE);
 				holder.ivLongPhoto.setImage(ImageSource.uri(path));
@@ -111,7 +120,9 @@ public class PreviewPhotosAdapter extends RecyclerView.Adapter<PreviewPhotosAdap
 				holder.ivPhotoView.setVisibility(View.VISIBLE);
 				Setting.imageEngine.loadPhoto(holder.ivPhotoView.getContext(), uri, holder.ivPhotoView);
 			}
+			listener.onShowItemChanged(position , true);
 		}
+
 
 		holder.ivLongPhoto.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -168,6 +179,9 @@ public class PreviewPhotosAdapter extends RecyclerView.Adapter<PreviewPhotosAdap
 			return Uri.fromFile(file);
 		}
 	}
+
+
+
 
 	@Override
 	public int getItemCount () {
