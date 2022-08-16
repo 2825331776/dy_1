@@ -203,7 +203,7 @@ android {
                                     , BUGLYAPPID          : "af50f10806"
                                     , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "jms"
-                                    , BUGLYENABLEDEBUG    : "false"
+                                    , BUGLYENABLEDEBUG    : "true"
                                     , APP_Channel         : rootProject.ext.envInfo.JMSConfig.appPackageName
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.jms.FileProvider"]
             flavorDimensions "demo1"

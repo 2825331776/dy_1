@@ -3,6 +3,7 @@ package com.dyt.wcc.constans;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,14 +50,15 @@ public class DYTApplication extends BaseApplication {
 		registerActivityLifecycleCallbacks();
 	}
 
-	@Override
-	protected void attachBaseContext (Context base) {
-		//		if (instance != null) {
-		//		}else{
-		//			SharedPreferences sp = instance.getSharedPreferences(DYConstants.SP_NAME,Context.MODE_PRIVATE);
-		super.attachBaseContext(LanguageUtils.wrap(base));
-		//		}
-	}
+//	@Override
+//	protected void attachBaseContext (Context base) {
+//		Log.e(TAG, "=====app override===========attachBaseContext: ========================");
+//		//		if (instance != null) {
+//		//		}else{
+//		//			SharedPreferences sp = instance.getSharedPreferences(DYConstants.SP_NAME,Context.MODE_PRIVATE);
+//		super.attachBaseContext(LanguageUtils.wrap(base));
+//		//		}
+//	}
 
 	private void registerActivityLifecycleCallbacks () {
 		instance.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {

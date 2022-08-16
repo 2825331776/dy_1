@@ -351,7 +351,7 @@ int D_saveData(const char* fileName, unsigned char*& dataBuf_ptr, int fileLen) {
 	memcpy(pTempPosition, pOriginFileBuffer, nOriginalHeadCopyLength);
 	pTempPosition += nOriginalHeadCopyLength;
 
-	// 开辟一块65533大小的空间  注：不是 65537？ 无关键字代码打印相加为65537
+	// 开辟一块65533大小的空间
 	unsigned char* lsBuff = (unsigned char*)malloc(0xffff + 2);
 
 	// 写入图像信息

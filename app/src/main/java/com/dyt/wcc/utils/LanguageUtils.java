@@ -186,6 +186,7 @@ public class LanguageUtils {
 	 */
 	public static boolean isSimpleLanguage (Context context, Locale locale) {
 		Locale appLocale = context.getResources().getConfiguration().locale;
+		Log.e("Language Util =", "isSimpleLanguage: context lang = " + appLocale.getLanguage() + " locale =" + locale.getLanguage() );
 		return appLocale.equals(locale);
 	}
 

@@ -37,7 +37,7 @@
         android:theme="@style/MyTheme">
 
         <activity
-            android:name=".customize.qianli.ReadPdfActivity"
+            android:name=".customize.qianli.PdfActivity"
             android:configChanges="locale|orientation|screenSize|keyboardHidden|layoutDirection"
             android:exported="false"
             android:launchMode="singleTop"

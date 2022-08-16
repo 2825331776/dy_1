@@ -65,7 +65,6 @@ import com.dyt.wcc.customize.neutral.NeutralCompanyView;
 import com.dyt.wcc.customize.neutral.NeutralLanguageFactory;
 import com.dyt.wcc.customize.qianli.QianLiLanguageFactory;
 import com.dyt.wcc.customize.qianli.QianliCompanyView;
-import com.dyt.wcc.customize.qianli.ReadPdfActivity;
 import com.dyt.wcc.customize.teslong.TeslongCompanyView;
 import com.dyt.wcc.customize.teslong.TeslongLanguageFactory;
 import com.dyt.wcc.customize.victor.PdfActivity;
@@ -110,7 +109,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//jni测试按钮状态记录
 	//	private final int jni_status = 0;
 
-	//	private static final int REQUEST_CODE_CHOOSE  = 23;
+	//	private static final int PERMISSIONS_REQUEST_CODE = 1000;
 	private static final int  MSG_CHECK_UPDATE  = 1;
 	private static final int  MSG_CAMERA_PARAMS = 2;
 	public static        long startTime         = 0;
@@ -1041,12 +1040,21 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		return false;
 	}
 
-	@Override
-	protected void onActivityResult (int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		//		if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
-		//		}
-	}
+	//	@Override
+	//	protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+	//		super.onActivityResult(requestCode, resultCode, data);
+	//
+	//	}
+	//
+	//	@Override
+	//	public void onRequestPermissionsResult (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+	//		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+	//		if (requestCode == PERMISSIONS_REQUEST_CODE) {
+	//			if (ActivityCompat.checkSelfPermission(this,Manifest.permission.MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+	//
+	//			}
+	//		}
+	//	}
 
 	@Override
 	protected void onPause () {
@@ -1330,6 +1338,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	 * 切换语言
 	 * <p>  法语fr-rFR、西班牙语es-rES、芬兰语fi-rFI、波兰语pl-rPL、葡萄牙语pt-rPT</p>
 	 * <p> "Français","Español","Suomalainen","Polski","Português"</p>
+	 *
 	 * @param type 语言下标
 	 */
 	private void toSetLanguage (int type) {//切换语言
@@ -1344,7 +1353,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				locale = Locale.US;
 				break;
 			case 2://俄文 ru-rRU
-				locale =  new Locale("ru", "RU");
+				locale = new Locale("ru", "RU");
 				break;
 			case 3://德语 ge-rGE
 				locale = Locale.GERMAN;
@@ -1362,35 +1371,28 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				locale = Locale.FRANCE;
 				break;
 			case 8://西班牙语
-				locale = new Locale("es","ES");;
+				locale = new Locale("es", "ES");
+				;
 				break;
 			case 9://芬兰语
-				locale = new Locale("fi","FI");
+				locale = new Locale("fi", "FI");
 				break;
 			case 10://波兰语
-				locale = new Locale("pl","PL");
+				locale = new Locale("pl", "PL");
 				break;
 			case 11://葡萄牙语
-				locale = new Locale("pt","PT");
+				locale = new Locale("pt", "PT");
 				break;
 			default:
 				locale = Locale.SIMPLIFIED_CHINESE;
 				break;
 		}
-		LanguageUtils.saveAppLocaleLanguage(locale.getLanguage());
-		//		if (type == 0) {
-		//			locale = Locale.SIMPLIFIED_CHINESE;
-		//			LanguageUtils.saveAppLocaleLanguage(locale.getLanguage());
-		//		} else if (type == 1) {
-		//			locale = Locale.US;
-		//			LanguageUtils.saveAppLocaleLanguage(locale.getLanguage());
-		//		} else {
-		//			return;
-		//		}
 		if (LanguageUtils.isSimpleLanguage(context, locale)) {
 			showToast(R.string.toast_select_same_language);
 			return;
 		}
+		LanguageUtils.saveAppLocaleLanguage(locale.getLanguage());
+
 		LanguageUtils.updateLanguage(context, locale);//更新语言参数
 		Intent intent = new Intent(context, PreviewActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -1509,101 +1511,103 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			}
 		};
 
-
-		if (sp.getInt(DYConstants.FIRST_RUN, -1) == -1) {
+//		isFirstRun = (sp.getInt(DYConstants.FIRST_RUN, 0) == 1);
+		if (sp.getInt(DYConstants.FIRST_RUN, 0) == 0) {
 			isFirstRun = true;
 			sp.edit().putInt(DYConstants.FIRST_RUN, 1).apply();
 		}
+
+		String language_local_str = "";
+		int language_index = 0;
+		language_index = sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, -1);
+		language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING, "en");
 		if (isFirstRun) {//第一次打开应用
 			//默认不打开音频录制
 			sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING, 1).apply();
-
-			String language_local_str;
 			//		if (isDebug)
-			//			Log.e(TAG, "initView: ===============language_local_str==============" + language_local_str);
+
 			if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N) {
 				language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING, Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage());
 			} else {
 				language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING, Resources.getSystem().getConfiguration().locale.getLanguage());
 			}
-			//	private DisplayMetrics metrics;
-			//	private Configuration  configuration;
 			//语言的 索引下标
-			int language_index = sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, -1);
 			if (new Locale("zh").getLanguage().equals(language_local_str)) {
 				language_index = 0;
-			} else {
+			} else if (new Locale("en").getLanguage().equals(language_local_str)) {
 				language_index = 1;
-			}
-			switch (language_index) {
-				case 0:
-					LanguageUtils.updateLanguage(mContext.get(), Locale.SIMPLIFIED_CHINESE);
-					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 0).apply();
-					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-					break;
-				case 1:
-					LanguageUtils.updateLanguage(mContext.get(), Locale.UK);
-					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 1).apply();
-					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-					break;
-				case 2:
-					LanguageUtils.updateLanguage(mContext.get(), new Locale("ru","RU"));
-					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 2).apply();
-					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-					break;
-				case 3:
-					LanguageUtils.updateLanguage(mContext.get(), Locale.GERMAN);
-					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 3).apply();
-					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-					break;
-				case 4:
-					LanguageUtils.updateLanguage(mContext.get(), Locale.ITALY);
-					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 4).apply();
-					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-					break;
-				case 5:
-					LanguageUtils.updateLanguage(mContext.get(), Locale.KOREA);
-					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 5).apply();
-					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-					break;
-				case 6:
-					LanguageUtils.updateLanguage(mContext.get(), Locale.JAPAN);
-					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 6).apply();
-					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-					break;
-				case 7://法语
-					LanguageUtils.updateLanguage(mContext.get(), Locale.FRANCE);
-					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 7).apply();
-					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-					break;
-				case 8://西班牙语
-					LanguageUtils.updateLanguage(mContext.get(), new Locale("es","ES"));
-					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 8).apply();
-					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-					break;
-				case 9://芬兰语
-					LanguageUtils.updateLanguage(mContext.get(), new Locale("fi","FI"));
-					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 9).apply();
-					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-					break;
-				case 10://波兰语
-					LanguageUtils.updateLanguage(mContext.get(), new Locale("pl","PL"));
-					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 10).apply();
-					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-					break;
-				case 11://葡萄牙语
-					LanguageUtils.updateLanguage(mContext.get(), new Locale("pt","pT"));
-					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 11).apply();
-					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-					break;
-
-				default:
-					LanguageUtils.updateLanguage(mContext.get(), Locale.SIMPLIFIED_CHINESE);
-					sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 0).apply();
-					sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-					break;
+			} else if (new Locale("ru", "RU").getLanguage().equals(language_local_str)) {
+				language_index = 2;
+			} else if (new Locale("de").getLanguage().equals(language_local_str)) {
+				language_index = 3;
+			} else if (new Locale("it").getLanguage().equals(language_local_str)) {
+				language_index = 4;
+			} else if (new Locale("ko").getLanguage().equals(language_local_str)) {
+				language_index = 5;
+			} else if (new Locale("ja").getLanguage().equals(language_local_str)) {
+				language_index = 6;
+			} else {
+				language_index = 7;
 			}
 		}
+//		Log.e(TAG, "initView: ===============language_local_str==============" + language_local_str);
+//		Log.e(TAG, "initView: ===============language_index==============" + language_index);
+		switch (language_index) {
+			case 0:
+				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 0).apply();
+				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+				break;
+			case 1:
+				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 1).apply();
+				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+				break;
+			case 2:
+				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 2).apply();
+				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+				break;
+			case 3:
+				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 3).apply();
+				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+				break;
+			case 4:
+				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 4).apply();
+				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+				break;
+			case 5:
+				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 5).apply();
+				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+				break;
+			case 6:
+				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 6).apply();
+				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+				break;
+			case 7://法语
+				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 7).apply();
+				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+				break;
+			case 8://西班牙语
+				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 8).apply();
+				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+				break;
+			case 9://芬兰语
+				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 9).apply();
+				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+				break;
+			case 10://波兰语
+				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 10).apply();
+				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+				break;
+			case 11://葡萄牙语
+				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 11).apply();
+				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+				break;
+
+			default:
+				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 0).apply();
+				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+				break;
+		}
+
 
 		highTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_high);
 		lowTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_low);
@@ -1614,6 +1618,17 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		screenWidth = dm.widthPixels;
 		screenHeight = dm.heightPixels;
 		mSendCommand = new SendCommand();
+
+		//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+		//			if (Environment.isExternalStorageManager()){
+		//				showToast("Returns whether the calling app has All Files Access on the primary shared/external storage media.");
+		//			}else {
+		//				Toast.makeText(this, "Android VERSION  R OR ABOVE，NO MANAGE_EXTERNAL_STORAGE GRANTED!", Toast.LENGTH_LONG).show();
+		//				Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+		//				intent.setData(Uri.parse("package:" + this.getPackageName()));
+		//				startActivityForResult(intent, PERMISSIONS_REQUEST_CODE);
+		//			}
+		//		}
 
 
 		XXPermissions.with(this).permission(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO).request(new OnPermissionCallback() {
@@ -2093,7 +2108,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						if (companyPopWindows != null && companyPopWindows.isShowing()) {
 							companyPopWindows.dismiss();
 						}
-						startActivity(new Intent(PreviewActivity.this, ReadPdfActivity.class));
+						startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.qianli.PdfActivity.class));
 					});
 					break;
 				case DYConstants.COMPANY_TESLONG:
@@ -2114,7 +2129,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 						if (mUvcCameraHandler != null && !mUvcCameraHandler.snRightIsPreviewing()) {
 							mUvcCameraHandler.close();
 						}
-						if (mUsbMonitor!=null && mUsbMonitor.isRegistered()) {
+						if (mUsbMonitor != null && mUsbMonitor.isRegistered()) {
 							mUsbMonitor.unregister();
 						}
 						startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.mailseey.PdfActivity.class));

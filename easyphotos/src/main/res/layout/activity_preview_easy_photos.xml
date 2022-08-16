@@ -41,10 +41,10 @@
 
     <!--    显示 图片分析的 工具栏-->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:visibility="gone"
         android:id="@+id/cl_pic_analysis_tools"
         android:layout_width="@dimen/dimen_150dp"
         android:layout_height="0dp"
+        android:visibility="gone"
         android:layout_marginRight="@dimen/dimen_50dp"
         android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="@id/iv_preview_back"
