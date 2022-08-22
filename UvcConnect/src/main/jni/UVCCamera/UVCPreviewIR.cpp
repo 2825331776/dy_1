@@ -1139,7 +1139,9 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     //解码用户区 写入的 用户SN号
                     unsigned char *tinyUserSn = TinyUserSN;
                     unsigned char *tinyRobotSn = TinyRobotSn;
-                    unsigned char *tinyC_UserSn_sixLast = TinyRobotSn + 6;//指向机器SN的第六位之后
+                    //= TinyRobotSn + 6
+                    unsigned char *tinyC_RobotSn_sixLast= TinyRobotSn + 6;
+                    unsigned char *robot_sn_six = new unsigned char[6];
                     unsigned char *readData = TinyUserSN;
                     unsigned char *flashId = TinyRobotSn;
 
@@ -1207,7 +1209,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                                 if ((status1 & 0x02) == 0x00) {
                                     break;
                                 } else if ((status1 & 0xFC) != 0x00) {
-                                    LOGE("=====读取Sn ====RETURN================= ");
+//                                    LOGE("=====读取Sn ====RETURN================= ");
 //                                    RETURN(-1,int);
                                 }
                             }
@@ -1226,17 +1228,23 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                                                       0x0078, 0x1d00, dataa,
                                                       sizeof(dataa), 1000);
                         }
+                        for (int count_index = 0; count_index < 15; count_index++) {
+                            if (flashId[count_index] == 0) {
+                                flashId[count_index] = 48;
+                            }
+                        }
+//                        LOGE("==========robot_sn_count=%d=======", robot_sn_count);
+                        memcpy(robot_sn_six, tinyC_RobotSn_sixLast, 6);
+//                            LOGE("========robot_sn_six == %s =========",
+//                        robot_sn_six);
+//                        for (int index = 0; index < 15; index++) {
+//                            LOGE("========index=%d======char===%d=========",index,flashId[index]);
+//                        }
 
-//                        pthread_mutex_lock(&tinyC_send_order_mutex);
-                        //获取 机器的SN 和 用户区的SN
-//                        LOGE("========tinyC_RobotSn_sixLast == %s =========",tinyC_UserSn_sixLast);
-//                        *(tinyUserSn+15) = '\0';
-
-
-                        DecryptSN(TinyUserSN, tinyC_UserSn_sixLast, dytSn);
+                        DecryptSN(TinyUserSN, robot_sn_six, dytSn);
                         *(dytSn + 15) = '\0';
-                        LOGE("==========Tinyc====机芯用户区SN=============%s", dytSn);
-
+//                            LOGE("==========Tinyc====机芯用户区SN=============%s", dytSn);
+//                        }
                     } else if (mVid == 5396 && mPid == 1)//S0机芯
                     {
                         unsigned char *fourLinePara = NULL;
@@ -1343,9 +1351,10 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     }
                     readData = NULL;
                     flashId = NULL;
-                    tinyC_UserSn_sixLast = NULL;
+                    tinyC_RobotSn_sixLast = NULL;
                     tinyRobotSn = NULL;
                     tinyUserSn = NULL;
+                    free(robot_sn_six);
 
                     inFile = NULL;
                     free(fileStore);
