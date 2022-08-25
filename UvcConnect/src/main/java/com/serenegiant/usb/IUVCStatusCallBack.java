@@ -13,4 +13,6 @@ public interface IUVCStatusCallBack {
 	 * @param uvcStatus 当前连接状态。
 	 */
 	void onUVCCurrentStatus(int uvcStatus);
+
+
 }

@@ -430,6 +430,19 @@ static jint nativeSetUVCStatusCallBack(JNIEnv *env, jobject thiz,
     RETURN(result, jint);
 }
 
+////added by 吴长城, 更新媒体库
+static jint nativeSetUpdateMediaCallBack(JNIEnv *env, jobject thiz,
+                                         ID_TYPE id_camera, jobject jIUpdateMedia) {
+    jint result = JNI_ERR;
+    ENTER();
+    UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
+    if (LIKELY(camera)) {
+        jobject update_media_callback_obj = env->NewGlobalRef(jIUpdateMedia);
+        result = camera->setUpdateMediaCallBack(env, update_media_callback_obj);
+    }
+    RETURN(result, jint);
+}
+
 static void nativeWhenShutRefresh(JNIEnv *env, jobject thiz, ID_TYPE id_camera) {
 //LOGE("nativeWhenShutRefresh");
     ENTER();
@@ -640,18 +653,19 @@ nativeSaveFiveSecondsData(JNIEnv *env, jobject thiz, ID_TYPE id_camera, jstring 
 }
 
 //长城:截屏
-static void nativeSavePicture(JNIEnv *env, jobject thiz, ID_TYPE id_camera, jstring picPath) {
+static jint nativeSavePicture(JNIEnv *env, jobject thiz, ID_TYPE id_camera, jstring picPath) {
     ENTER();
+    jint result = 0;
     UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
     if (LIKELY(camera)) {
         const char *respath = env->GetStringUTFChars(picPath, 0);
 
 //		LOGE(" nativeSavePicture  Path == %s  ", respath);
-        camera->savePicture(respath);
+        result = camera->savePicture(respath);
 
         env->ReleaseStringUTFChars(picPath, respath);
     }
-    EXIT();
+    RETURN(result, jint);
 }
 
 
@@ -2093,6 +2107,7 @@ static jint nativeSendOrder(JNIEnv *env, jobject thiz,
     }
     RETURN(result, jint);
 }
+
 ////发送int 类型的指令。
 //static jint nativeSendOrder(JNIEnv *env, jobject thiz,
 //                          ID_TYPE id_camera, jint order) {
@@ -2104,11 +2119,11 @@ static jint nativeSendOrder(JNIEnv *env, jobject thiz,
 //    }
 //    RETURN(result, jint);
 //}
-static void nativeTestJNI(JNIEnv *env ,jobject thiz , ID_TYPE id_camera , jstring str){
+static void nativeTestJNI(JNIEnv *env, jobject thiz, ID_TYPE id_camera, jstring str) {
     ENTER();
     UVCCamera *camera = reinterpret_cast<UVCCamera *>(id_camera);
     if (LIKELY(camera)) {
-        const char * phoneStr = env->GetStringUTFChars(str, 0);
+        const char *phoneStr = env->GetStringUTFChars(str, 0);
         camera->testJNI(phoneStr);
     }
     EXIT()
@@ -2440,12 +2455,13 @@ static JNINativeMethod methods[] = {
         {"nativeRelease",                           "(J)I",                                           (void *) nativeRelease},
 
         {"nativeSetTemperatureCallback",            "(JLcom/serenegiant/usb/ITemperatureCallback;)I", (void *) nativeSetTemperatureCallback},
-        {"nativeSetUVCStatusCallBack",            "(JLcom/serenegiant/usb/IUVCStatusCallBack;)I", (void *) nativeSetUVCStatusCallBack},
+        {"nativeSetUVCStatusCallBack",              "(JLcom/serenegiant/usb/IUVCStatusCallBack;)I",   (void *) nativeSetUVCStatusCallBack},
+        {"nativeSetUpdateMediaCallBack",            "(JLcom/serenegiant/usb/IUpdateMedia;)I",         (void *) nativeSetUpdateMediaCallBack},
         {"nativeWhenShutRefresh",                   "(J)V",                                           (void *) nativeWhenShutRefresh},
         {"nativeWhenChangeTempPara",                "(J)V",                                           (void *) nativeWhenChangeTempPara},
         {"nativeSetAddress",                        "(JLjava/lang/String;)V",                         (void *) nativeSetAddress},
         {"nativeSaveFiveSecondsData",               "(JLjava/lang/String;)V",                         (void *) nativeSaveFiveSecondsData},//长城 保存五帧原始数据
-        {"nativeSavePicture",                       "(JLjava/lang/String;)V",                         (void *) nativeSavePicture},//长城 截屏
+        {"nativeSavePicture",                       "(JLjava/lang/String;)I",                         (void *) nativeSavePicture},//长城 截屏
 
         {"nativeSetStatusCallback",                 "(JLcom/serenegiant/usb/IStatusCallback;)I",      (void *) nativeSetStatusCallback},
 
@@ -2612,7 +2628,7 @@ static JNINativeMethod methods[] = {
         {"nativeUpdateZoomLimit",                   "(J)I",                                           (void *) nativeUpdateZoomLimit},
         {"nativeSetZoom",                           "(JI)I",                                          (void *) nativeSetZoom},
         {"nativeGetZoom",                           "(J)I",                                           (void *) nativeGetZoom},
-        {"nativeTestJNI",                           "(JLjava/lang/String;)V",                                          (void *) nativeTestJNI},
+        {"nativeTestJNI",                           "(JLjava/lang/String;)V",                         (void *) nativeTestJNI},
 
         {"nativeSendOrder",                         "(JFI)I",                                         (void *) nativeSendOrder},
 //    { "nativeSendOrder",					"(J)I", (void *) nativeSendOrder },

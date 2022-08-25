@@ -1731,7 +1731,7 @@ int UVCPreviewIR::savePicture(const char *path) {
     } else {
         LOGE("UVCPreviewIR::savePicture screenShot_thread_func: pthread_create failed");
     }
-    return 0;
+    return 1;
 }
 
 /**
@@ -1746,16 +1746,30 @@ void *UVCPreviewIR::screenShot_thread_func(void *vptr_args) {
     UVCPreviewIR *preview = reinterpret_cast<UVCPreviewIR *>(vptr_args);
     if (LIKELY(preview)) {
         //todo 从 holdbuffer拷贝出一个ad值备份，然后此处开始组装数据
-        preview->do_savePicture();
+        JavaVM *vm = getVM();
+        JNIEnv *env;
+        //attach to JavaVM
+        vm->AttachCurrentThread(&env, NULL);
+
+        preview->do_savePicture(env);
+
+
+//        LOGE("temperature_thread_func do_temperature");
+//        preview->do_temperature(env);    // never return until finish previewing
+
+        //detach from JavaVM
+        vm->DetachCurrentThread();
 //        //LOGE("capture_thread_func do_capture");
 ////        preview->do_capture(env);	// never return until finish previewing
 //        LOGE("=============screenShot_thread_func====run ================= %d",getpid());
+
+
     }
     PRE_EXIT();
     pthread_exit(NULL);
 }
 
-void UVCPreviewIR::do_savePicture() {
+void UVCPreviewIR::do_savePicture(JNIEnv * env) {
     if (isRunning()) {
         pthread_mutex_lock(&screenShot_mutex);
         {
@@ -1765,6 +1779,14 @@ void UVCPreviewIR::do_savePicture() {
             //此时拿到关键的帧数据后，线程被唤醒，执行，包装插入数据：自定义结构体数据、  插入ad值数据。
 //            LOGE("=======do_savePicture======pthread_cond_wait================ ");
             savePicDefineData();
+            if (LIKELY(mUpdateMediaObj)){
+                LOGE("==============mUpdateMediaObj===============likely===============");
+                jstring path = env->NewStringUTF(savePicPath);
+                env->CallVoidMethod(mUpdateMediaObj,
+                                    iUpdateMedia.onUpdateMedia, path);
+            } else{
+                LOGE("==============mUpdateMediaObj============un===likely===============");
+            }
         }
         pthread_mutex_unlock(&screenShot_mutex);
     }
@@ -2204,6 +2226,40 @@ int UVCPreviewIR::setUVCStatusCallBack(JNIEnv *env, jobject uvc_connect_status_c
         }
     }
     pthread_mutex_unlock(&temperature_mutex);
+    RETURN(0, int);
+}
+
+//add by 吴长城 媒体回调。
+int UVCPreviewIR::setUpdateMediaCallBack(JNIEnv *env, jobject update_media_callback_obj) {
+    pthread_mutex_lock(&screenShot_mutex);
+    {
+        if (!env->IsSameObject(mUpdateMediaObj, update_media_callback_obj)) {
+            iUpdateMedia.onUpdateMedia = NULL;
+            if (mUpdateMediaObj) {
+                env->DeleteLocalRef(mUpdateMediaObj);
+            }
+            mUpdateMediaObj = update_media_callback_obj;
+            if (mUpdateMediaObj) {
+                // get method IDs of Java object for callback
+                jclass clazz = env->GetObjectClass(mUpdateMediaObj);
+                if (LIKELY(clazz)) {
+                    iUpdateMedia.onUpdateMedia = env->GetMethodID(clazz,
+                                                                             "onUpdateMedia",
+                                                                             "(Ljava/lang/String;)V");
+                } else {
+                    LOGE("UVCPreviewIR::setUpdateMediaCallBack failed to get object class");
+                }
+                env->ExceptionClear();
+                if (!iUpdateMedia.onUpdateMedia) {
+                    LOGE("Can't find iUpdateMedia.onUpdateMedia");
+                    env->DeleteGlobalRef(update_media_callback_obj);
+                    mUpdateMediaObj = NULL;
+                    update_media_callback_obj = NULL;
+                }
+            }
+        }
+    }
+    pthread_mutex_unlock(&screenShot_mutex);
     RETURN(0, int);
 }
 

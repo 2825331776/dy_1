@@ -409,6 +409,16 @@ int UVCCamera::setUVCStatusCallBack(JNIEnv *env, jobject uvc_status_callback_obj
     RETURN(result, int);
 }
 
+int UVCCamera::setUpdateMediaCallBack(JNIEnv *env, jobject update_media_callback_obj) {
+    ENTER();
+    int result = EXIT_FAILURE;
+    if (mPreview) {
+        //吴长城
+        result = mPreview->setUpdateMediaCallBack(env, update_media_callback_obj);
+    }
+    RETURN(result, int);
+}
+
 int UVCCamera::startPreview() {
     ENTER();
 
@@ -627,12 +637,14 @@ void UVCCamera::setExternalPath(const char *path) {
     EXIT();
 }
 
-void UVCCamera::savePicture(const char *picPath) {
+int UVCCamera::savePicture(const char *picPath) {
     ENTER();
+    int result = 0;
     if (mDeviceHandle) {
-        mPreview->savePicture(picPath);
+        result =  mPreview->savePicture(picPath);
     }
-    EXIT();
+//    EXIT();
+    return result;
 }
 
 void UVCCamera::setCameraLens(int mCameraLens) {

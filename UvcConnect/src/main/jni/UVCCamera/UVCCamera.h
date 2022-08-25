@@ -267,6 +267,9 @@ public:
 	//add by 吴长城 获取uvc连接状态回调
 	int setUVCStatusCallBack(JNIEnv *env, jobject uvc_status_callback_obj);
 
+    //add by 吴长城 更新媒体库
+    int setUpdateMediaCallBack(JNIEnv *env, jobject update_media_callback_obj);
+
     int startPreview();
 
     int stopPreview();
@@ -560,7 +563,7 @@ public:
 
     void setExternalPath(const char *externalpath);
 
-    void savePicture(const char *picPath);
+    int savePicture(const char *picPath);
 
     void setCameraLens(int mCameraLens);
 

@@ -33,6 +33,10 @@ typedef struct {
     jmethodID onUVCCurrentStatus;
 } Fields_iUVCStatusCallback;//结构体: 温度回调时回调java层对象的onReceiveTemperature函数
 
+typedef struct {
+    jmethodID onUpdateMedia;
+} Fields_iUVCUpdateMedia; //结构体:回调 媒体库更新方法
+
 
 //S0发送指令函数
 typedef uvc_error_t (*paramset_func_u16)(uvc_device_handle_t *devh, uint16_t value);
@@ -75,6 +79,10 @@ private:
     volatile int UVC_STATUS = -1;
     jobject mUvcStatusCallbackObj = NULL;//java 回调接口的对象
     Fields_iUVCStatusCallback iUvcStatusCallback;
+
+//更新媒体库
+    jobject mUpdateMediaObj = NULL;//java 回调接口的对象
+    Fields_iUVCUpdateMedia  iUpdateMedia;
 
     ANativeWindow *mPreviewWindow;
 
@@ -171,7 +179,7 @@ private:
 
     static void *screenShot_thread_func(void *vptr_args);//screenShot_thread线程的具体定义
     void signal_save_picture_thread();//唤醒preview_thread线程
-    void do_savePicture();//保存照片的函数
+    void do_savePicture(JNIEnv * env);//保存照片的函数
     void savePicDefineData();//保存自定义结构体数据到图片里面
 
     volatile bool mIsCapturing;
@@ -297,6 +305,10 @@ public:
     int startTemp();
     //add by 吴长城 获取UVC连接状态回调
     int setUVCStatusCallBack(JNIEnv *env, jobject uvc_connect_status_callback);
+
+    //add by 吴长城 获取UVC连接状态回调
+    int setUpdateMediaCallBack(JNIEnv *env, jobject update_media_callback_obj);
+
     int setTemperatureCallback(JNIEnv *env, jobject temperature_callback_obj);//关联温度回调接口 的对象
     int getByteArrayTemperaturePara(uint8_t *para);//得到机芯参数
 

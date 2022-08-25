@@ -50,11 +50,11 @@ import com.dyt.wcc.cameracommon.encoder.MediaVideoEncoder;
 import com.dyt.wcc.cameracommon.utils.ByteUtil;
 import com.dyt.wcc.cameracommon.widget.UVCCameraTextureView;
 import com.dyt.wcc.common.BuildConfig;
-import com.dyt.wcc.common.widget.MyToggleView;
 import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
 import com.serenegiant.usb.IFrameCallback;
 import com.serenegiant.usb.ITemperatureCallback;
 import com.serenegiant.usb.IUVCStatusCallBack;
+import com.serenegiant.usb.IUpdateMedia;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 
@@ -1224,6 +1224,11 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 					}
 				}
 			}
+
+//			@Override
+//			public void onUpdateMedia (String path) {
+//				MediaScannerConnection.scanFile(mWeakParent.get().getApplicationContext(), new String[]{path}, null, ScanCompletedListener);
+//			}
 		};
 
 		/**
@@ -1462,6 +1467,14 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 			//            }
 
 		}
+		public final IUpdateMedia iUpdateMedia = new IUpdateMedia() {
+			@Override
+			public void onUpdateMedia (String path) {
+				Log.e(TAG, "onUpdateMedia: =========================================");
+				MediaScannerConnection.scanFile(mWeakParent.get().getApplicationContext(), new String[]{path}, null, ScanCompletedListener);
+			}
+		};
+
 
 		public void handleStartPreview (final Object surface) {
 			//            Log.e(TAG, "handleStartPreview:mUVCCamera" + mUVCCamera + " mIsPreviewing:" + mIsPreviewing);
@@ -1494,6 +1507,8 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 					Log.e(TAG, "================SurfaceTexture:");
 					mUVCCamera.setPreviewTexture((SurfaceTexture) surface);
 				}
+
+				mUVCCamera.setIUpdateMedia(iUpdateMedia);
 
 				//Log.e(TAG, "handleStartPreview: startPreview1");
 				mUVCCamera.startPreview();
@@ -1675,7 +1690,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 						os.flush();
 						//吴长城 add
 						mHandler.setSavePicture(outputFile.getPath());
-						mHandler.sendMessage(mHandler.obtainMessage(MSG_MEDIA_UPDATE, outputFile.getPath()));
+//						mHandler.sendMessage(mHandler.obtainMessage(MSG_MEDIA_UPDATE, outputFile.getPath()));
 					} catch (final IOException e) {
 					}
 				} finally {
@@ -2041,7 +2056,13 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 				try {
 					if (DEBUG)
 						Log.i(TAG, "MediaScannerConnection#scanFile");
-					MediaScannerConnection.scanFile(parent.getApplicationContext(), new String[]{path}, null, ScanCompletedListener);
+//					mHandler.postDelayed(new Runnable() {
+//						@Override
+//						public void run () {
+							MediaScannerConnection.scanFile(parent.getApplicationContext(), new String[]{path}, null, ScanCompletedListener);
+//						}
+//					},1000);
+
 
 					for (final CameraCallback callback : mCallbacks) {
 						try {
@@ -2254,7 +2275,12 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 			if ((mUVCCamera == null)) {
 				return;
 			}
+//			if (mUVCCamera.savePicture(path) ==1){
 			mUVCCamera.savePicture(path);
+//				Log.e(TAG, "handleSavePicture: ===============================================================11111111111111=====");
+				mHandler.sendMessage(mHandler.obtainMessage(MSG_MEDIA_UPDATE, path));
+//			}
+			
 		}
 
 		public void handleDisWenKuan () {

@@ -500,6 +500,17 @@ public class UVCCamera {
 	}
 
 	/**
+	 * set ir IUpdateMedia updateMedia
+	 *
+	 * @param updateMedia
+	 */
+	public void setIUpdateMedia (final IUpdateMedia updateMedia) {
+		if (mNativePtr != 0) {
+			nativeSetUpdateMediaCallBack(mNativePtr, updateMedia);
+		}
+	}
+
+	/**
 	 * start preview
 	 */
 	public synchronized void startPreview () {
@@ -1175,6 +1186,8 @@ public class UVCCamera {
 
 	private static final native int nativeSetUVCStatusCallBack (final long mNativePtr, final IUVCStatusCallBack iuvcStatusCallBack);
 
+	private static final native int nativeSetUpdateMediaCallBack (final long mNativePtr, final IUpdateMedia iUpdateMediaCallback);
+
 	private static final native void nativeWhenShutRefresh (final long mNativePtr);
 
 	private static final native void nativeWhenChangeTempPara (final long mNativePtr);
@@ -1291,11 +1304,12 @@ public class UVCCamera {
 		}
 	}
 
-	public void savePicture (String path) {//长城 :截屏
+	public int savePicture (String path) {//长城 :截屏
+		int result = 0;
 		if (mCtrlBlock != null) {
-			//			Log.e(TAG, "savePicture");
-			nativeSavePicture(mNativePtr, path);
+			result = nativeSavePicture(mNativePtr, path);
 		}
+		return result;
 	}
 
 	//seekbar拖动温宽
@@ -1391,7 +1405,7 @@ public class UVCCamera {
 
 	private static final native void nativeSaveFiveSecondsData (final long id_camera, final String externalPath); //长城添加  保存五秒的数据
 
-	private static final native void nativeSavePicture (final long id_camera, final String picPath);//长城添加  截屏
+	private static final native int nativeSavePicture (final long id_camera, final String picPath);//长城添加  截屏
 
 	private static final native void nativeSetSavePictureParams ();
 

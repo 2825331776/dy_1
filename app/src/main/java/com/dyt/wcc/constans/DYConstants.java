@@ -1,5 +1,6 @@
 package com.dyt.wcc.constans;
 
+
 import android.os.Environment;
 
 import com.dyt.wcc.BuildConfig;
@@ -80,8 +81,8 @@ public class DYConstants {
 	public static final String[] paletteArrays = new String[]{"1.dat", "2.dat", "3.dat", "4.dat", "5.dat", "6.dat"};
 
 	//下载更新api
-	public static final String UPDATE_CHECK_INFO    = "http://114.115.130.132:8080/dytfile/getVersion?objPath=files/Apks/NF/";
-	public static final String UPDATE_DOWNLOAD_API  = "http://114.115.130.132:8080/dytfile/downloadGET?fileName=Apks/NF/";
+	public static final String UPDATE_CHECK_INFO    = "http://114.115.130.132:8080/dytfile/getVersion?objPath=files/Apks/H2/";
+	public static final String UPDATE_DOWNLOAD_API  = "http://114.115.130.132:8080/dytfile/downloadGET?fileName=Apks/H2/";
 	public static final String UPDATE_DOWNLOAD_BASE = "http://114.115.130.132:8080/dytfile/downloadGET?fileName=Apks/";
 
 	// tinyc 机芯的 距离点64个， 大气温度 温度点14个 ，湿度 等级4个

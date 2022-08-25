@@ -284,41 +284,14 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 									Response response = client.newCall(request).execute();
 									byte[] responseByte = response.body().bytes();
 									String checkAPIData = new String(responseByte, StandardCharsets.UTF_8);
-									//									if (isDebug)Log.i(TAG, "run:responseByte ==========>  " + checkAPIData);
-									//分割 checkAPIData 得到具体信息
-									String[] AppVersionNameList = checkAPIData.split(";");//切割
-									updateObjList = new ArrayList<>(AppVersionNameList.length);
-									//去掉apk
-									for (int i = 0; i < AppVersionNameList.length; i++) {
-										UpdateObj updateObj = new UpdateObj();
-										AppVersionNameList[i] = AppVersionNameList[i].replace(".apk", "");
-										updateObj.setPackageName(AppVersionNameList[i]);
-										updateObjList.add(updateObj);
-									}
-									//									if (isDebug)Log.i(TAG, "run: =====AppVersionNameList====" + Arrays.toString(AppVersionNameList));
-									String[] AppVersionCodeList = new String[AppVersionNameList.length];//保存app 版本号
-									//筛选最大 VersionCode 的index
-									int maxCode = 0;
-									int currentVersionCode;
-									for (int i = 0; i < AppVersionNameList.length; i++) {
-										AppVersionCodeList[i] = AppVersionNameList[i].split("_b")[1].split("_")[0];
-										currentVersionCode = Integer.parseInt(AppVersionCodeList[i]);
+									if (isDebug)Log.i(TAG, "run:responseByte ==========>  " + checkAPIData);
+									getVersionCodeArray(checkAPIData);
 
-										updateObjList.get(i).setAppVersionCode(currentVersionCode);
-										updateObjList.get(i).setAppVersionName(AppVersionNameList[i].split("_v")[1].split("_b")[0]);
-
-										if (maxCode == 0) {
-											maxCode = currentVersionCode;
-											maxIndex = 0;
-										}
-										if (maxCode < currentVersionCode) {
-											maxCode = currentVersionCode;
-											maxIndex = i;
-										}
-									}
-									//									if (isDebug)Log.i(TAG, "run: 最大的 VersionCode 为： " + maxCode + " codeIndex = " + maxIndex + " 完成版本为： " + AppVersionNameList[maxIndex]);
-									//									if (isDebug)Log.i(TAG, "run: ======AppVersionCodeList===" + Arrays.toString(AppVersionCodeList));
-									int thisVersionCode = mContext.get().getPackageManager().getPackageInfo(mContext.get().getPackageName(), 0).versionCode;
+									//if (isDebug)Log.i(TAG, "run: 最大的 VersionCode 为： " + maxCode + " codeIndex = " + maxIndex + " 完成版本为： " + AppVersionNameList[maxIndex]);
+									//if (isDebug)Log.i(TAG, "run: ======AppVersionCodeList===" + Arrays.toString(AppVersionCodeList));
+									int thisVersionCode = Integer.parseInt(mContext.get().getPackageManager()
+											.getPackageInfo(mContext.get().getPackageName(), 0)
+											.versionName.split("-")[0].replace(".",""));
 									//									if (isDebug)Log.i(TAG, "run: versionName === 》" + thisVersionCode);
 									//判断是否需要更新
 									if (thisVersionCode < updateObjList.get(maxIndex).getAppVersionCode()) {
@@ -1397,6 +1370,46 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		Intent intent = new Intent(context, PreviewActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		context.startActivity(intent);
+	}
+
+	/**
+	 * 通过服务器数据，返回数据。
+	 * @param strData
+	 * @return
+	 */
+	private int[] getVersionCodeArray(String strData){
+		//step one :split the "strDate" by ";"
+		String[] appNameList = strData.split(";");//切割
+		updateObjList = new ArrayList<>(appNameList.length);
+		//去掉apk
+		for (int i = 0; i < appNameList.length; i++) {
+			UpdateObj updateObj = new UpdateObj();
+			appNameList[i] = appNameList[i].replace(".apk", "");
+			updateObj.setPackageName(appNameList[i]);
+			updateObjList.add(updateObj);
+		}
+		//									if (isDebug)Log.i(TAG, "run: =====AppVersionNameList====" + Arrays.toString(AppVersionNameList));
+		String[] appVersionCodeList = new String[appNameList.length];//保存app 版本号
+		//筛选最大 VersionCode 的index
+		int maxCode = 0;
+		int currentVersionCode;
+		for (int i = 0; i < appNameList.length; i++) {
+			appVersionCodeList[i] = appNameList[i].split("_v")[1].split("_b")[0];
+			updateObjList.get(i).setAppVersionName(appVersionCodeList[i]);
+			currentVersionCode = Integer.parseInt(appVersionCodeList[i].replace(".",""));
+
+			updateObjList.get(i).setAppVersionCode(currentVersionCode);
+
+			if (maxCode == 0) {
+				maxCode = currentVersionCode;
+				maxIndex = 0;
+			}
+			if (maxCode < currentVersionCode) {
+				maxCode = currentVersionCode;
+				maxIndex = i;
+			}
+		}
+		return null;
 	}
 
 	@Override
