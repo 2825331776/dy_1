@@ -1642,9 +1642,18 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		//				startActivityForResult(intent, PERMISSIONS_REQUEST_CODE);
 		//			}
 		//		}
+		List<String> permissions = new ArrayList<>();
+		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q){
+			permissions.add(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+		}else {
+			permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+			permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+		}
+//		Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
+		permissions.add(Manifest.permission.CAMERA);
+		permissions.add(Manifest.permission.RECORD_AUDIO);
 
-
-		XXPermissions.with(this).permission(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO).request(new OnPermissionCallback() {
+		XXPermissions.with(this).permission(permissions).request(new OnPermissionCallback() {
 			@Override
 			public void onGranted (List<String> permissions, boolean all) {
 				if (all) {

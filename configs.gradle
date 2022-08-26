@@ -1,11 +1,11 @@
 ext {
     projectVersions = [
             //编译及其构建版本
-            compileSdkV: 30,
+            compileSdkV: 31,
             buildToolsV: "30.0.3",
             //支持的sdk范围21-29
             minSdkV    : 23,
-            targetSdkV : 27,
+            targetSdkV : 31,
             //版本号和名字
             VCode      : 105,
             VName      : "1.1.5",
@@ -20,9 +20,9 @@ ext {
                     // 应用 id
                     appId         : "com.dyt.wcc",
                     // 构建版本号
-                    VCode         : 208,
+                    VCode         : 2101,
                     // 版本名称
-                    VName         : "1.2.8",
+                    VName         : "2.1.01",
                     appPackageName: "DytSpectrumOwl",
             ],
             NeutralConfig    : [

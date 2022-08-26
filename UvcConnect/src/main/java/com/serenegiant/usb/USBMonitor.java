@@ -23,8 +23,6 @@
 
 package com.serenegiant.usb;
 
-import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
-
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -173,7 +171,7 @@ public final class USBMonitor {
 			final Context context = mWeakContext.get();
 			LogUtils.e("=====register============before==========PendingIntent.getBroadcast=======");
 			if (context != null) {
-				mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), FLAG_CANCEL_CURRENT);
+				mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE);
 				final IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
 				// ACTION_USB_DEVICE_ATTACHED never comes on some devices so it should not be added here
 				filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
