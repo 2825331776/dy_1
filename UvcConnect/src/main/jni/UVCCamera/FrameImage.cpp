@@ -84,7 +84,7 @@ void FrameImage::shutRefresh() {
 //二分法查找
 int FrameImage::getDichotomySearch(float *data, int length, float value, int startIndex,
                                    int endIndex) {
-    float * headPoint = data;
+    float *headPoint = data;
 //    LOGE("=================    > %f" , data[8000]);
 //    LOGE("enter :  length =  %d, value = %f , startIndex = %d  , endIndex = %d" ,length,value , startIndex , endIndex);
     if (endIndex > length) return 0;
@@ -95,13 +95,13 @@ int FrameImage::getDichotomySearch(float *data, int length, float value, int sta
 
     if (end <= 0)return 0;
     while (start <= end) {
-        if (value != value){
+        if (value != value) {
             return 0;
         }
 
         int midPont = (start + end) / 2;//记录的是坐标，所以要在取中点之前+1
         //缺少判断 目标值是否是nan ，和 中点值是否是nan
-        if (headPoint[midPont] != headPoint[midPont]){
+        if (headPoint[midPont] != headPoint[midPont]) {
             start = midPont;
             break;
         }
@@ -290,7 +290,8 @@ void FrameImage::setPreviewSize(int width, int height, int mode) {
  * @param size
  * @param type
  */
-void FrameImage::SearchMaxMin(unsigned short *tempAD_data, int size, unsigned short *max, unsigned short *min) {
+void FrameImage::SearchMaxMin(unsigned short *tempAD_data, int size, unsigned short *max,
+                              unsigned short *min) {
     if (tempAD_data != NULL) {
         *min = tempAD_data[0];
         *max = tempAD_data[0];
@@ -644,6 +645,28 @@ int FrameImage::setTemperatureCallback(JNIEnv *env, jobject temperature_callback
     }
     RETURN(0, int);
 }
+
+/**
+ *  * temperatureData[0]=centerTmp;
+	* 	temperatureData[1]=(float)maxx1;
+	* 	temperatureData[2]=(float)maxy1;
+	 * 	temperatureData[3]=maxTmp;
+	 * 	temperatureData[4]=(float)minx1;
+	 * 	temperatureData[5]=(float)miny1;
+	 * 	temperatureData[6]=minTmp;
+ * @param temperatureData
+ */
+void FrameImage::S0MaxMinRotate_180(float *temperatureData) {
+    temperatureData[1] = requestWidth - temperatureData[1] - 1;
+    temperatureData[2] = requestHeight - temperatureData[2] - 1;
+
+    temperatureData[4] = requestWidth - temperatureData[4] - 1;
+    temperatureData[5] = requestHeight - temperatureData[5] - 1;
+}
+
+void FrameImage::setRotateMatrix_180(bool isRotate) {
+    isRotateMatrix_180 = isRotate;
+}
 /**
  *
  * @param env
@@ -664,20 +687,21 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
                               &floatFpaTmp, &correction, &Refltmp, &Airtmp, &humi, &emiss,
                               &distance,
                               cameraLens, shutterFix, rangeMode);
-            LOGE("====================查询温度对照表表==temperatureTable[0]=%f==temperatureTable[16383]=%f=====",temperatureTable[0],temperatureTable[16383]);
-            if (temperatureTable[0] < 1){LOGE("====================查询温度对照表表==nan比大小===1===");}
-            else{
-                LOGE("=======查询温度对照表表==nan比大小===1======else======");
+//            LOGE("====================查询温度对照表表==temperatureTable[0]=%f==temperatureTable[16383]=%f=====",
+//                 temperatureTable[0], temperatureTable[16383]);
+            if (temperatureTable[0] < 1) { LOGE("====================查询温度对照表表==nan比大小===1==="); }
+            else {
+//                LOGE("=======查询温度对照表表==nan比大小===1======else======");
             }
-            if (temperatureTable[0] < -1){LOGE("====================查询温度对照表表==nan比大小==-1====");}
-            if (temperatureTable[0] == temperatureTable[16383]){
-                LOGE("====================查询温度对照表表==temperatureTable========");
+//            if (temperatureTable[0] < -1) { LOGE("====================查询温度对照表表==nan比大小==-1===="); }
+            if (temperatureTable[0] == temperatureTable[16383]) {
+//                LOGE("====================查询温度对照表表==temperatureTable========");
                 isNeedFreshAD = false;
                 isNeedWriteTable = true;
                 fourLinePara = NULL;
-                orgData  = NULL;
+                orgData = NULL;
                 return;
-            } else{
+            } else {
                 isNeedFreshAD = true;
                 isNeedWriteTable = false;
             }
@@ -687,9 +711,13 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
 //        LOGE("============do_temperature_callback=========== start ============update temperatureTable===============");
         //temperatureData指向mCbTemper的首地址，更改temperatureData也就是更改mCbTemper
         float *temperatureData = mCbTemper;
+
         //根据8004或者8005模式来查表，8005模式下仅输出以上注释的10个参数，8004模式下数据以上参数+全局温度数据
         thermometrySearch(requestWidth, requestHeight, temperatureTable, orgData, temperatureData,
                           rangeMode, OUTPUTMODE);
+        if (isRotateMatrix_180) {
+            S0MaxMinRotate_180(temperatureData);
+        }
 //        LOGE("=====temperatureData======= %f", temperatureData[8000]);
 //        LOGE("centerTmp:%.2f,maxTmp:%.2f,minTmp:%.2f,avgTmp:%.2f\n", temperatureData[0],
 //             temperatureData[3], temperatureData[6], temperatureData[9]);
@@ -700,7 +728,10 @@ void FrameImage::do_temperature_callback(JNIEnv *env, uint8_t *frameData) {
          *从mCbTemper 取出10+requestWidth*(requestHeight-4) 个长度的值给 mNCbTemper（这个值要传递给Java层）
          */
         env->SetFloatArrayRegion(mNCbTemper, 0, 10 + requestWidth * (requestHeight - 4), mCbTemper);
+
+
         if (mTemperatureCallbackObj != NULL) {
+
 //            LOGE("========================mTemperatureCallbackObj===!= null=========================");
 //            if (iTemperatureCallback.onReceiveTemperature == NULL) {
 //                LOGE("========================iTemperatureCallback.onReceiveTemperature == null=========================");

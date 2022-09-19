@@ -200,7 +200,7 @@ private:
 
     volatile bool isRotateMatrix_180 = false;//是否旋转180
     //旋转180度
-    void rotateMatrix_180(short src_frameData[], short dst_frameData[], int width, int height);
+    void rotateMatrix_180(short *src_frameData, short dst_frameData[], int width, int height);
 
     void clearDisplay();
 

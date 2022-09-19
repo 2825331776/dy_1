@@ -9,6 +9,10 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.hardware.usb.UsbDevice;
 import android.os.Build;
 import android.os.Bundle;
@@ -105,7 +109,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 //@RuntimePermissions
-public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
+public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implements SensorEventListener {
 	//jni测试按钮状态记录
 	//	private final int jni_status = 0;
 
@@ -284,14 +288,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 									Response response = client.newCall(request).execute();
 									byte[] responseByte = response.body().bytes();
 									String checkAPIData = new String(responseByte, StandardCharsets.UTF_8);
-									if (isDebug)Log.i(TAG, "run:responseByte ==========>  " + checkAPIData);
+									if (isDebug)
+										Log.i(TAG, "run:responseByte ==========>  " + checkAPIData);
 									getVersionCodeArray(checkAPIData);
 
 									//if (isDebug)Log.i(TAG, "run: 最大的 VersionCode 为： " + maxCode + " codeIndex = " + maxIndex + " 完成版本为： " + AppVersionNameList[maxIndex]);
 									//if (isDebug)Log.i(TAG, "run: ======AppVersionCodeList===" + Arrays.toString(AppVersionCodeList));
-									int thisVersionCode = Integer.parseInt(mContext.get().getPackageManager()
-											.getPackageInfo(mContext.get().getPackageName(), 0)
-											.versionName.split("-")[0].replace(".",""));
+									int thisVersionCode = Integer.parseInt(mContext.get().getPackageManager().getPackageInfo(mContext.get().getPackageName(), 0).versionName.split("-")[0].replace(".", ""));
 									//									if (isDebug)Log.i(TAG, "run: versionName === 》" + thisVersionCode);
 									//判断是否需要更新
 									if (thisVersionCode < updateObjList.get(maxIndex).getAppVersionCode()) {
@@ -798,192 +801,177 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	};
 	private       MyNumberPicker                          myNumberPicker;
 
-	//	private final SensorEventListener sensorEventListener = new SensorEventListener() {
-	//		@Override
-	//		public void onSensorChanged (SensorEvent event) {
-	//			if (event.sensor.getStringType().equals(Sensor.STRING_TYPE_ACCELEROMETER)) {//								Log.e(TAG, "onSensorChanged: Sensor.STRING_TYPE_ACCELEROMETER");
-	//				float x = event.values[0];
-	//				float y = event.values[1];
-	//				float z = event.values[2];
-	////				relayout(x, y, z);
-	//			}
-	//		}
-	//
-	//		@Override
-	//		public void onAccuracyChanged (Sensor sensor, int accuracy) {
-	//		}
-	//	};
-	//	private       int                 oldRotation         = 0;
+	private int oldRotation = 0;
 
-	//	private void relayout (float x, float y, float z) {
-	//		if (x > -2.5 && x <= 2.5 && y > 7.5 && y <= 10 && oldRotation != 270) {
-	//			oldRotation = 270;
-	//			mDataBinding.clMainPreview.setRotation(0);
-	//			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
-	//				mUvcCameraHandler.setRotateMatrix_180(false);
-	//			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(false);
-	//
-	//			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(false);
-	//
-	//			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
-	//				PLRPopupWindows.dismiss();
-	//				if (oldRotation == 0 || oldRotation == 270) {
-	//					int offsetX = 0;
-	//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
-	//					PLRPopupWindows.getContentView().setRotation(0);
-	//				}
-	//			}
-	//
-	//			if (settingPopWindows != null && settingPopWindows.isShowing()) {
-	//				settingPopWindows.dismiss();
-	//				if (oldRotation == 0 || oldRotation == 270) {
-	//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-	//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
-	//					settingPopWindows.getContentView().setRotation(0);
-	//				}
-	//			}
-	//
-	//			if (companyPopWindows != null && companyPopWindows.isShowing()) {
-	//				companyPopWindows.dismiss();
-	//				if (oldRotation == 0 || oldRotation == 270) {
-	//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-	//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
-	//					companyPopWindows.getContentView().setRotation(0);
-	//				}
-	//			}
-	//			if (myNumberPicker != null && myNumberPicker.isVisible()) {
-	//				myNumberPicker.dismiss();
-	//				myNumberPicker.setRotation(false);
-	//				myNumberPicker.show(getSupportFragmentManager(), null);
-	//			}
-	//			setMRotation(0);
-	//		} else if (x > 7.5 && x <= 10 && y > -2.5 && y <= 2.5 && oldRotation != 0) {
-	//			oldRotation = 0;
-	//			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
-	//				mUvcCameraHandler.setRotateMatrix_180(false);
-	//			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(false);
-	//
-	//			mDataBinding.clMainPreview.setRotation(0);
-	//			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(false);
-	//			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
-	//				PLRPopupWindows.dismiss();
-	//				if (oldRotation == 0 || oldRotation == 270) {
-	//					int offsetX = 0;
-	//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
-	//					PLRPopupWindows.getContentView().setRotation(0);
-	//				}
-	//			}
-	//			if (settingPopWindows != null && settingPopWindows.isShowing()) {
-	//				settingPopWindows.dismiss();
-	//				if (oldRotation == 0 || oldRotation == 270) {
-	//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-	//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
-	//					settingPopWindows.getContentView().setRotation(0);
-	//				}
-	//			}
-	//
-	//			if (companyPopWindows != null && companyPopWindows.isShowing()) {
-	//				companyPopWindows.dismiss();
-	//				if (oldRotation == 0 || oldRotation == 270) {
-	//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-	//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
-	//					companyPopWindows.getContentView().setRotation(0);
-	//				}
-	//			}
-	//
-	//			if (myNumberPicker != null && myNumberPicker.isVisible()) {
-	//				myNumberPicker.dismiss();
-	//				myNumberPicker.setRotation(false);
-	//				myNumberPicker.show(getSupportFragmentManager(), null);
-	//			}
-	//			setMRotation(0);
-	//		} else if (x > -2.5 && x <= 2.5 && y > -10 && y <= -7.5 && oldRotation != 90) {
-	//			oldRotation = 90;
-	//			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
-	//				mUvcCameraHandler.setRotateMatrix_180(true);
-	//			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(true);
-	//			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
-	//			//			mDataBinding.textureViewPreviewActivity.setRotation(180);
-	//			mDataBinding.clMainPreview.setRotation(180);
-	//			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
-	//			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(true);
-	//			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
-	//				PLRPopupWindows.dismiss();
-	//				if (oldRotation == 90 || oldRotation == 180) {
-	//					int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
-	//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
-	//					PLRPopupWindows.getContentView().setRotation(180);
-	//				}
-	//			}
-	//			if (settingPopWindows != null && settingPopWindows.isShowing()) {
-	//				settingPopWindows.dismiss();
-	//				//第四步：显示控件
-	//				if (oldRotation == 90 || oldRotation == 180) {
-	//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-	//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
-	//					settingPopWindows.getContentView().setRotation(180);
-	//				}
-	//			}
-	//
-	//			if (companyPopWindows != null && companyPopWindows.isShowing()) {
-	//				companyPopWindows.dismiss();
-	//				if (oldRotation == 90 || oldRotation == 180) {
-	//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-	//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
-	//					companyPopWindows.getContentView().setRotation(180);
-	//				}
-	//			}
-	//
-	//			if (myNumberPicker != null && myNumberPicker.isVisible()) {
-	//				myNumberPicker.dismiss();
-	//				myNumberPicker.setRotation(true);
-	//				myNumberPicker.show(getSupportFragmentManager(), null);
-	//			}
-	//			setMRotation(180);
-	//		} else if (x > -10 && x <= -7.5 && y > -2.5 && y < 2.5 && oldRotation != 180) {
-	//			oldRotation = 180;
-	//			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
-	//				mUvcCameraHandler.setRotateMatrix_180(true);
-	//			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(true);
-	//			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
-	//			//			mDataBinding.textureViewPreviewActivity.setRotation(180);
-	//			mDataBinding.clMainPreview.setRotation(180);
-	//			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(true);
-	//			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
-	//				PLRPopupWindows.dismiss();
-	//				if (oldRotation == 90 || oldRotation == 180) {
-	//					int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
-	//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
-	//					PLRPopupWindows.getContentView().setRotation(180);
-	//				}
-	//			}
-	//			if (settingPopWindows != null && settingPopWindows.isShowing()) {
-	//				settingPopWindows.dismiss();
-	//				//第四步：显示控件
-	//				if (oldRotation == 90 || oldRotation == 180) {
-	//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-	//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
-	//					settingPopWindows.getContentView().setRotation(180);
-	//				}
-	//			}
-	//
-	//			if (companyPopWindows != null && companyPopWindows.isShowing()) {
-	//				companyPopWindows.dismiss();
-	//				if (oldRotation == 90 || oldRotation == 180) {
-	//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-	//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
-	//					companyPopWindows.getContentView().setRotation(180);
-	//				}
-	//			}
-	//
-	//			if (myNumberPicker != null && myNumberPicker.isVisible()) {
-	//				myNumberPicker.dismiss();
-	//				myNumberPicker.setRotation(true);
-	//				myNumberPicker.show(getSupportFragmentManager(), null);
-	//			}
-	//			setMRotation(180);
-	//		}
-	//	}
+	private void relayout (float x, float y, float z) {
+		//		if (x > -2.5 && x <= 2.5 && y > 7.5 && y <= 10 && oldRotation != 270) {
+		//			oldRotation = 270;
+		//			mDataBinding.clMainPreview.setRotation(0);
+		//			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
+		//				mUvcCameraHandler.setRotateMatrix_180(false);
+		//			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(false);
+		//
+		//			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(false);
+		//
+		//			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
+		//				PLRPopupWindows.dismiss();
+		//				if (oldRotation == 0 || oldRotation == 270) {
+		//					int offsetX = 0;
+		//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+		//					PLRPopupWindows.getContentView().setRotation(0);
+		//				}
+		//			}
+		//
+		//			if (settingPopWindows != null && settingPopWindows.isShowing()) {
+		//				settingPopWindows.dismiss();
+		//				if (oldRotation == 0 || oldRotation == 270) {
+		//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+		//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
+		//					settingPopWindows.getContentView().setRotation(0);
+		//				}
+		//			}
+		//
+		//			if (companyPopWindows != null && companyPopWindows.isShowing()) {
+		//				companyPopWindows.dismiss();
+		//				if (oldRotation == 0 || oldRotation == 270) {
+		//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+		//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+		//					companyPopWindows.getContentView().setRotation(0);
+		//				}
+		//			}
+		//			if (myNumberPicker != null && myNumberPicker.isVisible()) {
+		//				myNumberPicker.dismiss();
+		//				myNumberPicker.setRotation(false);
+		//				myNumberPicker.show(getSupportFragmentManager(), null);
+		//			}
+		//			setMRotation(0);
+		//		} else if (x > 7.5 && x <= 10 && y > -2.5 && y <= 2.5 && oldRotation != 0) {
+		//			oldRotation = 0;
+		//			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
+		//				mUvcCameraHandler.setRotateMatrix_180(false);
+		//			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(false);
+		//
+		//			mDataBinding.clMainPreview.setRotation(0);
+		//			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(false);
+		//			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
+		//				PLRPopupWindows.dismiss();
+		//				if (oldRotation == 0 || oldRotation == 270) {
+		//					int offsetX = 0;
+		//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+		//					PLRPopupWindows.getContentView().setRotation(0);
+		//				}
+		//			}
+		//			if (settingPopWindows != null && settingPopWindows.isShowing()) {
+		//				settingPopWindows.dismiss();
+		//				if (oldRotation == 0 || oldRotation == 270) {
+		//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+		//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
+		//					settingPopWindows.getContentView().setRotation(0);
+		//				}
+		//			}
+		//
+		//			if (companyPopWindows != null && companyPopWindows.isShowing()) {
+		//				companyPopWindows.dismiss();
+		//				if (oldRotation == 0 || oldRotation == 270) {
+		//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+		//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+		//					companyPopWindows.getContentView().setRotation(0);
+		//				}
+		//			}
+		//
+		//			if (myNumberPicker != null && myNumberPicker.isVisible()) {
+		//				myNumberPicker.dismiss();
+		//				myNumberPicker.setRotation(false);
+		//				myNumberPicker.show(getSupportFragmentManager(), null);
+		//			}
+		//			setMRotation(0);
+		//		} else if (x > -2.5 && x <= 2.5 && y > -10 && y <= -7.5 && oldRotation != 90) {
+		//			oldRotation = 90;
+		//			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
+		//				mUvcCameraHandler.setRotateMatrix_180(true);
+		//			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(true);
+		//			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
+		//			//			mDataBinding.textureViewPreviewActivity.setRotation(180);
+		//			mDataBinding.clMainPreview.setRotation(180);
+		//			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
+		//			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(true);
+		//			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
+		//				PLRPopupWindows.dismiss();
+		//				if (oldRotation == 90 || oldRotation == 180) {
+		//					int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
+		//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+		//					PLRPopupWindows.getContentView().setRotation(180);
+		//				}
+		//			}
+		//			if (settingPopWindows != null && settingPopWindows.isShowing()) {
+		//				settingPopWindows.dismiss();
+		//				//第四步：显示控件
+		//				if (oldRotation == 90 || oldRotation == 180) {
+		//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
+		//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
+		//					settingPopWindows.getContentView().setRotation(180);
+		//				}
+		//			}
+		//
+		//			if (companyPopWindows != null && companyPopWindows.isShowing()) {
+		//				companyPopWindows.dismiss();
+		//				if (oldRotation == 90 || oldRotation == 180) {
+		//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
+		//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+		//					companyPopWindows.getContentView().setRotation(180);
+		//				}
+		//			}
+		//
+		//			if (myNumberPicker != null && myNumberPicker.isVisible()) {
+		//				myNumberPicker.dismiss();
+		//				myNumberPicker.setRotation(true);
+		//				myNumberPicker.show(getSupportFragmentManager(), null);
+		//			}
+		//			setMRotation(180);
+		//		} else if (x > -10 && x <= -7.5 && y > -2.5 && y < 2.5 && oldRotation != 180) {
+		//			oldRotation = 180;
+		//			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
+		//				mUvcCameraHandler.setRotateMatrix_180(true);
+		//			mDataBinding.textureViewPreviewActivity.S0_RotateMatrix_180(true);
+		//			//			mDataBinding.dragTempContainerPreviewActivity.setRotation(180);
+		//			//			mDataBinding.textureViewPreviewActivity.setRotation(180);
+		//			mDataBinding.clMainPreview.setRotation(180);
+		//			mDataBinding.dragTempContainerPreviewActivity.setAllChildViewRotate(true);
+		//			if (PLRPopupWindows != null && PLRPopupWindows.isShowing()) {
+		//				PLRPopupWindows.dismiss();
+		//				if (oldRotation == 90 || oldRotation == 180) {
+		//					int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
+		//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+		//					PLRPopupWindows.getContentView().setRotation(180);
+		//				}
+		//			}
+		//			if (settingPopWindows != null && settingPopWindows.isShowing()) {
+		//				settingPopWindows.dismiss();
+		//				//第四步：显示控件
+		//				if (oldRotation == 90 || oldRotation == 180) {
+		//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
+		//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
+		//					settingPopWindows.getContentView().setRotation(180);
+		//				}
+		//			}
+		//
+		//			if (companyPopWindows != null && companyPopWindows.isShowing()) {
+		//				companyPopWindows.dismiss();
+		//				if (oldRotation == 90 || oldRotation == 180) {
+		//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
+		//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+		//					companyPopWindows.getContentView().setRotation(180);
+		//				}
+		//			}
+		//
+		//			if (myNumberPicker != null && myNumberPicker.isVisible()) {
+		//				myNumberPicker.dismiss();
+		//				myNumberPicker.setRotation(true);
+		//				myNumberPicker.show(getSupportFragmentManager(), null);
+		//			}
+		//			setMRotation(180);
+		//		}
+	}
 
 	/**
 	 * <p>判断是否连续点击</p>
@@ -1028,6 +1016,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 	//			}
 	//		}
 	//	}
+	private SensorManager mSensorManager;
+	private Sensor        mAccelerometerSensor;//加速度传感器
+	private Sensor        mMagneticSensor;//重力传感器
 
 	@Override
 	protected void onPause () {
@@ -1039,7 +1030,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			//			if (BuildConfig.DEBUG)
 			//				Log.e(TAG, "onPause: 停止温度回调");
 		}
-		//		mSensorManager.unregisterListener(sensorEventListener, mAccelerometerSensor);
+		mSensorManager.unregisterListener(this, mAccelerometerSensor);
+		mSensorManager.unregisterListener(this, mMagneticSensor);
 		super.onPause();
 	}
 
@@ -1098,6 +1090,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	@Override
 	protected void onResume () {
+		mSensorManager.registerListener(this, mAccelerometerSensor, SensorManager.SENSOR_DELAY_UI);
+		mSensorManager.registerListener(this, mMagneticSensor, SensorManager.SENSOR_DELAY_UI);
 		if (isDebug)
 			Log.e(TAG, "onResume: ");
 		if (mUsbMonitor != null && !mUsbMonitor.isRegistered()) {
@@ -1374,10 +1368,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 
 	/**
 	 * 通过服务器数据，返回数据。
+	 *
 	 * @param strData
 	 * @return
 	 */
-	private int[] getVersionCodeArray(String strData){
+	private int[] getVersionCodeArray (String strData) {
 		//step one :split the "strDate" by ";"
 		String[] appNameList = strData.split(";");//切割
 		updateObjList = new ArrayList<>(appNameList.length);
@@ -1396,7 +1391,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		for (int i = 0; i < appNameList.length; i++) {
 			appVersionCodeList[i] = appNameList[i].split("_v")[1].split("_b")[0];
 			updateObjList.get(i).setAppVersionName(appVersionCodeList[i]);
-			currentVersionCode = Integer.parseInt(appVersionCodeList[i].replace(".",""));
+			currentVersionCode = Integer.parseInt(appVersionCodeList[i].replace(".", ""));
 
 			updateObjList.get(i).setAppVersionCode(currentVersionCode);
 
@@ -1524,7 +1519,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			}
 		};
 
-//		isFirstRun = (sp.getInt(DYConstants.FIRST_RUN, 0) == 1);
+		//		isFirstRun = (sp.getInt(DYConstants.FIRST_RUN, 0) == 1);
 		if (sp.getInt(DYConstants.FIRST_RUN, 0) == 0) {
 			isFirstRun = true;
 			sp.edit().putInt(DYConstants.FIRST_RUN, 1).apply();
@@ -1563,8 +1558,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				language_index = 7;
 			}
 		}
-//		Log.e(TAG, "initView: ===============language_local_str==============" + language_local_str);
-//		Log.e(TAG, "initView: ===============language_index==============" + language_index);
+		//		Log.e(TAG, "initView: ===============language_local_str==============" + language_local_str);
+		//		Log.e(TAG, "initView: ===============language_index==============" + language_index);
 		switch (language_index) {
 			case 0:
 				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 0).apply();
@@ -1643,13 +1638,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		//			}
 		//		}
 		List<String> permissions = new ArrayList<>();
-		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q){
+		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
 			permissions.add(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
-		}else {
+		} else {
 			permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
 			permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 		}
-//		Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
+		//		Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
 		permissions.add(Manifest.permission.CAMERA);
 		permissions.add(Manifest.permission.RECORD_AUDIO);
 
@@ -1719,14 +1714,20 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 				showToast(getString(R.string.toast_dont_have_permission));
 			}
 		});
+
+		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		mAccelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		mMagneticSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 	}
 
+	private boolean isRotate = false;
+	private boolean isSavePhoto = false;
 	/**
 	 * 初始化界面的监听器
 	 */
 	private void initListener () {
 		//测试的 监听器
-		//		mDataBinding.btTest01.setVisibility(View.VISIBLE);
+//		mDataBinding.btTest01.setVisibility(View.VISIBLE);
 		mDataBinding.btTest01.setOnClickListener(v -> {
 			//			CrashReport.testJavaCrash();
 			//******************************testJNi***************************************
@@ -1804,6 +1805,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			//				Log.e(TAG, "onClick: " + dd);
 			//				mUvcCameraHandler.startTemperaturing();
 			//*****************************************************************
+
+			//*****************************旋转180************************************
+//			isRotate = !isRotate;
+//			mUvcCameraHandler.setRotateMatrix_180(isRotate);
 		});
 		//
 		/**
@@ -2033,11 +2038,19 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 		mDataBinding.ivPreviewLeftTakePhoto.setOnClickListener(v -> {
 			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()) {
 				String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
-				//					if (mUvcCameraHandler.captureStill(picPath))
-				//						showToast(getResources().getString(R.string.toast_save_path) + picPath);
-				mUvcCameraHandler.captureStill(picPath);
-
-				//						if (isDebug)Log.e(TAG, "onResult: java path === "+ picPath);
+				if (!isSavePhoto){
+					isSavePhoto = true;
+					mUvcCameraHandler.captureStill(picPath);
+					mHandler.postDelayed(new Runnable() {
+						@Override
+						public void run () {
+							isSavePhoto = false;
+						}
+					},500);
+				}
+				//				else {
+				//					Log.e(TAG, "=========正在保存图片==============");
+				//				}
 			} else {
 				showToast(getResources().getString(R.string.toast_need_connect_camera));
 			}
@@ -2440,6 +2453,86 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> {
 			PLRPopupWindows.dismiss();
 		super.onBackPressed();
 		Log.e(TAG, "onBackPressed: ");
+	}
+
+	private int     intFlag               = 0;
+	private int     oldIntFlag            = 0;
+
+	private float[] mLastAccelerometer    = new float[3];
+	private float[] mLastMagnetometer     = new float[3];
+	private boolean mLastAccelerometerSet = false;
+	private boolean mLastMagnetometerSet  = false;
+
+	private float[] mR           = new float[9];
+	private float[] mOrientation = new float[3];
+
+	/**
+	 * Called when there is a new sensor event.  Note that "on changed"
+	 * is somewhat of a misnomer, as this will also be called if we have a
+	 * new reading from a sensor with the exact same sensor values (but a
+	 * newer timestamp).
+	 *
+	 * <p>See {@link SensorManager SensorManager}
+	 * for details on possible sensor types.
+	 * <p>See also {@link SensorEvent SensorEvent}.
+	 *
+	 * <p><b>NOTE:</b> The application doesn't own the
+	 * {@link SensorEvent event}
+	 * object passed as a parameter and therefore cannot hold on to it.
+	 * The object may be part of an internal pool and may be reused by
+	 * the framework.
+	 *
+	 * @param event the {@link SensorEvent SensorEvent}.
+	 */
+	@Override
+	public void onSensorChanged (SensorEvent event) {
+		if (event.sensor == mAccelerometerSensor) {
+			System.arraycopy(event.values, 0, mLastAccelerometer, 0, event.values.length);
+			mLastAccelerometerSet = true;
+		} else if (event.sensor == mMagneticSensor) {
+			System.arraycopy(event.values, 0, mLastMagnetometer, 0, event.values.length);
+			mLastMagnetometerSet = true;
+		}
+		if (mLastAccelerometerSet && mLastMagnetometerSet) {
+			SensorManager.getRotationMatrix(mR, null, mLastAccelerometer, mLastMagnetometer);
+			SensorManager.getOrientation(mR, mOrientation);
+			mLastMagnetometerSet = false;
+			mLastAccelerometerSet = false;
+
+			double degreeValue = (mOrientation[2]) / Math.PI * 180f;
+
+			if (degreeValue < -26) {
+				intFlag = 1;
+			} else if (degreeValue > 26) {
+				intFlag = -1;
+			} else {
+				intFlag = 0;
+			}
+			if (intFlag == -1 && oldIntFlag != -1) {
+				mUvcCameraHandler.setRotateMatrix_180(true);
+				oldIntFlag = intFlag;
+			}
+			if (intFlag == 1 && oldIntFlag != 1) {
+				mUvcCameraHandler.setRotateMatrix_180(false);
+				oldIntFlag = intFlag;
+			}
+		}
+	}
+
+	/**
+	 * Called when the accuracy of the registered sensor has changed.  Unlike
+	 * onSensorChanged(), this is only called when this accuracy value changes.
+	 *
+	 * <p>See the SENSOR_STATUS_* constants in
+	 * {@link SensorManager SensorManager} for details.
+	 *
+	 * @param sensor
+	 * @param accuracy The new accuracy of this sensor, one of
+	 *                 {@code SensorManager.SENSOR_STATUS_*}
+	 */
+	@Override
+	public void onAccuracyChanged (Sensor sensor, int accuracy) {
+
 	}
 
 	//修改S0机芯参数

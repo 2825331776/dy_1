@@ -90,16 +90,8 @@ private:
 	int mVid;
 	int mPid;
 
-	//读写文件的操作
-//	int file_count = 0;
-//	int file_count_limit = 50;
-//	volatile bool isWriteFile = false;
-
-
-	/**********************录制*******************************/
-//	Fields_iframecallback iframecallback_fields;//对java层回调的函数onFrame
-//	jobject mFrameCallbackObj;
-//	int OutPixelFormat;//回调图像输出形式,rgba=0, 原始输出或者yuyv=1
+	volatile bool isRotateMatrix_180 = false;//是否旋转180
+	void S0MaxMinRotate_180(float *temperatureData);
 
 
 //	int mcount = 0;
@@ -129,6 +121,7 @@ public:
 	int getByteArrayTemperaturePara(uint8_t* para ,uint8_t * data);
 	void setVidPid(int vid ,int pid);
 	void SearchMaxMin(unsigned short *tempAD_data, int size, unsigned short *max, unsigned short *min);
+	void setRotateMatrix_180(bool isRotate);
 
 	/*******************************温度数据*******************************************/
 	int setTemperatureCallback(JNIEnv *env, jobject temperature_callback_obj);//设置温度回调对象

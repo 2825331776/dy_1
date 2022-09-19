@@ -1,6 +1,5 @@
 package com.huantansheng.easyphotos.models.album;
 
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -9,9 +8,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
-
-import androidx.core.content.PermissionChecker;
 
 import com.huantansheng.easyphotos.R;
 import com.huantansheng.easyphotos.constant.Type;
@@ -63,11 +59,11 @@ public class AlbumModel {
 
 	public void query (Context context, final CallBack callBack) {
 		final Context appCxt = context.getApplicationContext();
-		if (PermissionChecker.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PermissionChecker.PERMISSION_GRANTED) {
+//		if (PermissionChecker.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PermissionChecker.PERMISSION_GRANTED) {
 			if (null != callBack)
 				callBack.onAlbumWorkedCallBack();
-			return;
-		}
+//			return;
+//		}
 		canRun = true;
 		new Thread(new Runnable() {
 			@Override
@@ -199,7 +195,7 @@ public class AlbumModel {
 //					bitmap = mediaMetadataRetriever.getFrameAtTime(1000000,MediaMetadataRetriever.OPTION_CLOSEST);
 //					mediaMetadataRetriever.release();
 
-					Log.e(TAG, "initAlbum: isVideo==before= " + System.currentTimeMillis());
+//					Log.e(TAG, "initAlbum: isVideo==before= " + System.currentTimeMillis());
 				} else {
 					if (orientationCol != -1) {
 						orientation = cursor.getInt(orientationCol);

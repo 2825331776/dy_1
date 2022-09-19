@@ -487,6 +487,9 @@ float UVCPreviewIR::getMachineSetting(int flag, int value,
 
 void UVCPreviewIR::setRotateMatrix_180(bool isRotate) {
     isRotateMatrix_180 = isRotate;
+    if (mFrameImage){
+         mFrameImage->setRotateMatrix_180(isRotate);
+    }
 }
 
 int UVCPreviewIR::sendTinyCOrder(uint32_t *value, diy func_diy) {
@@ -1140,7 +1143,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                     unsigned char *tinyUserSn = TinyUserSN;
                     unsigned char *tinyRobotSn = TinyRobotSn;
                     //= TinyRobotSn + 6
-                    unsigned char *tinyC_RobotSn_sixLast= TinyRobotSn + 6;
+                    unsigned char *tinyC_RobotSn_sixLast = TinyRobotSn + 6;
                     unsigned char *robot_sn_six = new unsigned char[6];
                     unsigned char *readData = TinyUserSN;
                     unsigned char *flashId = TinyRobotSn;
@@ -1659,13 +1662,13 @@ void UVCPreviewIR::setResourcePath(const char *path) {
 inline const bool UVCPreviewIR::IsRotateMatrix_180() const { return isRotateMatrix_180; }
 
 //图像 旋转180度  S0 机芯后面 四行参数不变，TinyC 全部都要改变
-void UVCPreviewIR::rotateMatrix_180(short src_frameData[], short dst_frameData[], int width,
+void UVCPreviewIR::rotateMatrix_180(short *src_frameData, short dst_frameData[], int width,
                                     int height) {
 //    LOGE("=============width ====%d========height=====%d=========", width, height);
     for (int h = 0; h < height; h++) {
         for (int w = 0; w < width; w++) {
-            dst_frameData[h * width + w] = src_frameData[(height - h - 1) * width +
-                                                         (width - w - 1)];
+                dst_frameData[h * width + w] = src_frameData[(height - h - 1) * width +
+                                                             (width - w - 1)];
         }
     }
 }
@@ -1723,7 +1726,7 @@ int UVCPreviewIR::copyToSurface(uint8_t *frameData, ANativeWindow **window) {
 int UVCPreviewIR::savePicture(const char *path) {
 //    LOGE("UVCPreviewIR savePicture  pathlength ==   %d" , strlen(path));
     mIsCopyPicture = true;
-//    memset(savePicPath,'0',strlen(savePicPath));
+    memset(savePicPath,'0',strlen(savePicPath));
     memcpy(&savePicPath, path, strlen(path));
 
     if (pthread_create(&screenShot_thread, NULL, screenShot_thread_func, (void *) this) == 0) {
@@ -1769,7 +1772,7 @@ void *UVCPreviewIR::screenShot_thread_func(void *vptr_args) {
     pthread_exit(NULL);
 }
 
-void UVCPreviewIR::do_savePicture(JNIEnv * env) {
+void UVCPreviewIR::do_savePicture(JNIEnv *env) {
     if (isRunning()) {
         pthread_mutex_lock(&screenShot_mutex);
         {
@@ -1779,12 +1782,12 @@ void UVCPreviewIR::do_savePicture(JNIEnv * env) {
             //此时拿到关键的帧数据后，线程被唤醒，执行，包装插入数据：自定义结构体数据、  插入ad值数据。
 //            LOGE("=======do_savePicture======pthread_cond_wait================ ");
             savePicDefineData();
-            if (LIKELY(mUpdateMediaObj)){
+            if (LIKELY(mUpdateMediaObj)) {
                 LOGE("==============mUpdateMediaObj===============likely===============");
                 jstring path = env->NewStringUTF(savePicPath);
                 env->CallVoidMethod(mUpdateMediaObj,
                                     iUpdateMedia.onUpdateMedia, path);
-            } else{
+            } else {
                 LOGE("==============mUpdateMediaObj============un===likely===============");
             }
         }
@@ -2244,8 +2247,8 @@ int UVCPreviewIR::setUpdateMediaCallBack(JNIEnv *env, jobject update_media_callb
                 jclass clazz = env->GetObjectClass(mUpdateMediaObj);
                 if (LIKELY(clazz)) {
                     iUpdateMedia.onUpdateMedia = env->GetMethodID(clazz,
-                                                                             "onUpdateMedia",
-                                                                             "(Ljava/lang/String;)V");
+                                                                  "onUpdateMedia",
+                                                                  "(Ljava/lang/String;)V");
                 } else {
                     LOGE("UVCPreviewIR::setUpdateMediaCallBack failed to get object class");
                 }

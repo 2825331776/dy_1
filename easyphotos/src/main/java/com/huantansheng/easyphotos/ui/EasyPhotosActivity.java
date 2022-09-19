@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.exifinterface.media.ExifInterface;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -150,7 +151,7 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 	private DisplayMetrics metrics;
 	private Configuration  configuration;
 	private String         locale_language;
-	private int            language   = -1;//语言的 索引下标
+	private int            language = -1;//语言的 索引下标
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
@@ -159,8 +160,8 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 		configuration = getApplicationContext().getResources().getConfiguration();
 		metrics = getResources().getDisplayMetrics();
 		locale_language = Locale.getDefault().getLanguage();
-		Log.e(TAG, "onCreate: =app=="+ configuration.locale.getDisplayLanguage());
-		Log.e(TAG, "onCreate: ==="+Locale.getDefault().getDisplayLanguage());
+//		Log.e(TAG, "onCreate: =app==" + configuration.locale.getDisplayLanguage());
+//		Log.e(TAG, "onCreate: ===" + Locale.getDefault().getDisplayLanguage());
 
 		hideActionBar();
 		adaptationStatusBar();
@@ -171,11 +172,21 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 			return;
 		}
 		initSomeViews();
-		if (PermissionUtil.checkAndRequestPermissionsInActivity(this, getNeedPermissions())) {
-			hasPermissions();
-		} else {
-			permissionView.setVisibility(View.VISIBLE);
-		}
+//		if (PermissionUtil.checkAndRequestPermissionsInActivity(this, getNeedPermissions())) {
+//			hasPermissions();
+//			Log.e(TAG, "=====EasyPhotos: check Permission =====Has=================");
+//		}
+
+//		if (ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+//
+//		}
+//		else {
+//			ActivityCompat.requestPermissions(this,getNeedPermissions(),Code.REQUEST_PERMISSION);
+//			Log.e(TAG, "=====EasyPhotos: check Permission =====don't Has=================");
+////			permissionView.setVisibility(View.VISIBLE);
+//		}
+
+		hasPermissions();
 	}
 
 	private void adaptationStatusBar () {
@@ -197,9 +208,9 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 		tvPermission = findViewById(R.id.tv_permission);
 		rootViewAlbumItems = findViewById(R.id.root_view_album_items);
 		tvTitle = findViewById(R.id.tv_title);
-//		if (Setting.isOnlyVideo()) {//判断是否仅仅显示视频，此时未用到
-//			tvTitle.setText(R.string.video_selection_easy_photos);
-//		}
+		//		if (Setting.isOnlyVideo()) {//判断是否仅仅显示视频，此时未用到
+		//			tvTitle.setText(R.string.video_selection_easy_photos);
+		//		}
 		//        findViewById(R.id.iv_second_menu).setVisibility(Setting.showPuzzleMenu || Setting.showCleanMenu || Setting.showOriginalMenu ? View.VISIBLE : View.GONE);
 		setClick(R.id.iv_back);
 	}
@@ -231,17 +242,18 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 	}
 
 	protected String[] getNeedPermissions () {
-//		if (Setting.isShowCamera) {
-//			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-//				return new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-//			}
-//			return new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-//		} else {
-//			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-				return new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-//			}
-//			return new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-//		}
+		//		if (Setting.isShowCamera) {
+		//			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+		//				return new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+		//			}
+		//			return new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+		//		} else {
+		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+			return new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE};
+
+		}
+		return new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+		//		}
 	}
 
 
@@ -678,15 +690,15 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 		if (albumModel.getAlbumItems().isEmpty()) {
 			if (Setting.isOnlyVideo()) {
 				Toast.makeText(getApplicationContext(), R.string.no_videos_easy_photos, Toast.LENGTH_LONG).show();
-//				finish();
+				//				finish();
 				return;
 			}
 			//
-//			Toast.makeText(getApplicationContext(), R.string.no_photos_easy_photos, Toast.LENGTH_LONG).show();
-//			if (Setting.isShowCamera)
-//				launchCamera(Code.REQUEST_CAMERA);
-//			else
-//				finish();
+			//			Toast.makeText(getApplicationContext(), R.string.no_photos_easy_photos, Toast.LENGTH_LONG).show();
+			//			if (Setting.isShowCamera)
+			//				launchCamera(Code.REQUEST_CAMERA);
+			//			else
+			//				finish();
 			return;
 		}
 
@@ -872,14 +884,14 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 		//            processSecondMenu();
 		//        }
 		else if (R.id.tv_preview == id) {
-			if (!onlyVideo && !onlyPic){
-				PreviewActivity.start(EasyPhotosActivity.this, -1, 0,0);
+			if (!onlyVideo && !onlyPic) {
+				PreviewActivity.start(EasyPhotosActivity.this, -1, 0, 0);
 			}
-			if (onlyVideo){
-				PreviewActivity.start(EasyPhotosActivity.this, -1, 0,2);
+			if (onlyVideo) {
+				PreviewActivity.start(EasyPhotosActivity.this, -1, 0, 2);
 			}
-			if (onlyPic){
-				PreviewActivity.start(EasyPhotosActivity.this, -1, 0,1);
+			if (onlyPic) {
+				PreviewActivity.start(EasyPhotosActivity.this, -1, 0, 1);
 			}
 
 		} else if (R.id.fab_camera == id) {
@@ -1045,19 +1057,19 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 					}
 				} else if (onlyVideo) {
 					if ((photo.name).contains("mp4")) {
-//						MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-//						mediaMetadataRetriever.setDataSource(photo.path);
-//						photo.setBitmap(mediaMetadataRetriever.getFrameAtTime(1000000));
-//						mediaMetadataRetriever.release();
+						//						MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+						//						mediaMetadataRetriever.setDataSource(photo.path);
+						//						photo.setBitmap(mediaMetadataRetriever.getFrameAtTime(1000000));
+						//						mediaMetadataRetriever.release();
 						dataList.add(photo);
 					}
 				} else {
-//					if ((photo.name).contains("mp4")) {
-//						MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-//						mediaMetadataRetriever.setDataSource(photo.path);
-//						photo.setBitmap(mediaMetadataRetriever.getFrameAtTime(1000000));
-//						mediaMetadataRetriever.release();
-//					}
+					//					if ((photo.name).contains("mp4")) {
+					//						MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+					//						mediaMetadataRetriever.setDataSource(photo.path);
+					//						photo.setBitmap(mediaMetadataRetriever.getFrameAtTime(1000000));
+					//						mediaMetadataRetriever.release();
+					//					}
 					dataList.add(photo);
 				}
 			}
@@ -1123,16 +1135,16 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 
 	@Override
 	public void onPhotoClick (int position, int realPosition) {
-		Log.e(TAG, "onPhotoClick: ===========photoList.size=" + photoList.size() +" == realPosition === " + realPosition );
-//		PreviewActivity.start(EasyPhotosActivity.this, currAlbumItemIndex, realPosition);
-		if (!onlyVideo && !onlyPic){
-			PreviewActivity.start(EasyPhotosActivity.this, currAlbumItemIndex, realPosition,0);
+		Log.e(TAG, "onPhotoClick: ===========photoList.size=" + photoList.size() + " == realPosition === " + realPosition);
+		//		PreviewActivity.start(EasyPhotosActivity.this, currAlbumItemIndex, realPosition);
+		if (!onlyVideo && !onlyPic) {
+			PreviewActivity.start(EasyPhotosActivity.this, currAlbumItemIndex, realPosition, 0);
 		}
-		if (onlyVideo){
-			PreviewActivity.start(EasyPhotosActivity.this, currAlbumItemIndex, realPosition,2);
+		if (onlyVideo) {
+			PreviewActivity.start(EasyPhotosActivity.this, currAlbumItemIndex, realPosition, 2);
 		}
-		if (onlyPic){
-			PreviewActivity.start(EasyPhotosActivity.this, currAlbumItemIndex, realPosition,1);
+		if (onlyPic) {
+			PreviewActivity.start(EasyPhotosActivity.this, currAlbumItemIndex, realPosition, 1);
 		}
 	}
 

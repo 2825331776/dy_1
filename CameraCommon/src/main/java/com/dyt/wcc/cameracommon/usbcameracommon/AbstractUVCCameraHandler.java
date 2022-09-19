@@ -1214,10 +1214,14 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 							needSendSaveOrder = true;
 							Log.e(TAG, "onUVCCurrentStatus:  ==================回调保存指令================");
 							mHandler.postDelayed(() -> {
-								mUVCCamera.setZoom(0x8000);
+								if (mUVCCamera != null) {
+									mUVCCamera.setZoom(0x8000);
+								}
 							}, 200);
 							mHandler.postDelayed(() -> {
-								mUVCCamera.whenShutRefresh();
+								if (mUVCCamera != null){
+									mUVCCamera.whenShutRefresh();
+								}
 							}, 500);
 							mUVCCamera.TinySaveCameraParams();
 						}
@@ -1427,10 +1431,10 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 					handleStopRecording();
 				}
 
-				if (mIsTemperaturing) {
-					mIsTemperaturing = false;
-					handleStopTemperaturing();
-				}
+//				if (mIsTemperaturing) {
+//					mIsTemperaturing = false;
+//					handleStopTemperaturing();
+//				}
 				//mIsTemperaturing disable by wupei
 
 				//                if(mIsTemperaturing){
