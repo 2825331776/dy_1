@@ -25,6 +25,7 @@ import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -95,7 +96,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 	//温度数值的模式。0摄氏度， 1华氏度， 2开氏度
 	private       int      tempSuffixMode = 0;
 	//绘制OTG提示文字
-	private TextPaint testPaint;
+	private TextPaint otgHintPaint;
 	private int       OTGTextLength = 0;
 	//	private StaticLayout staticLayout ;
 	private Rect      OTGRect;
@@ -219,7 +220,6 @@ public class MeasureTempContainerView extends RelativeLayout {
 					//						}
 					//						selectChild.requestLayout();
 					//					}
-
 
 					break;
 			}
@@ -414,10 +414,10 @@ public class MeasureTempContainerView extends RelativeLayout {
 	}
 
 	private void initAttrs () {
-		testPaint = new TextPaint();
-		testPaint.setTextSize(DensityUtil.sp2px(mContext.get(), 16));
-		testPaint.setStyle(Paint.Style.STROKE);
-		testPaint.setColor(getResources().getColor(R.color.white));
+		otgHintPaint = new TextPaint();
+		otgHintPaint.setTextSize(DensityUtil.sp2px(mContext.get(), 16));
+		otgHintPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+		otgHintPaint.setColor(getResources().getColor(R.color.white));
 		OTGRect = new Rect();
 		Log.e(TAG, "initAttrs: ==== screenWidth " + screenWidth);
 	}
@@ -439,7 +439,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 	private void lineFeed (Canvas canvas, String str, int heigth) {
 		int lineWidth = partScreenWidth;
 		//计算当前宽度(width)能显示多少个汉字
-		int oneLineMaxIndex = testPaint.breakText(str, 0, str.length(), false, lineWidth, null);
+		int oneLineMaxIndex = otgHintPaint.breakText(str, 0, str.length(), false, lineWidth, null);
 		//截取可以显示的汉字
 		String[] splitStr = str.split(" ");
 		//		Log.e(TAG, "============lineFeed: ===beginStr.length========" + splitStr.length);
@@ -455,10 +455,10 @@ public class MeasureTempContainerView extends RelativeLayout {
 		}
 		//		Log.e(TAG, "lineFeed: ===============oneLineStr.length()==" + oneLineStr.length() +" str.length()======" + str.length());
 
-		testPaint.getTextBounds(oneLineStr, 0, oneLineStr.length(), OTGRect);
+		otgHintPaint.getTextBounds(oneLineStr, 0, oneLineStr.length(), OTGRect);
 		OTGTextLength = OTGRect.width();
 
-		canvas.drawText(oneLineStr, (screenWidth - OTGTextLength) / 2.0f, heigth, testPaint);
+		canvas.drawText(oneLineStr, (screenWidth - OTGTextLength) / 2.0f, heigth, otgHintPaint);
 		//计算剩下的汉字
 		String lastStr = "";
 		if (str.length() >= oneLineStr.length()) {
@@ -467,7 +467,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 			lastStr = str.substring(str.length(), str.length());
 		}
 		if (lastStr.length() > 0) {
-			lineFeed(canvas, lastStr, heigth + (int) testPaint.getTextSize() + 10);
+			lineFeed(canvas, lastStr, heigth + (int) otgHintPaint.getTextSize() + 10);
 		}
 	}
 
@@ -477,7 +477,7 @@ public class MeasureTempContainerView extends RelativeLayout {
 			if (partScreenWidth <= 0) {
 				partScreenWidth = screenWidth / 3 * 2;
 			}
-			lineFeed(canvas, mContext.get().getString(R.string.preview_hint_not_connect), screenHeight / 2 - (int) testPaint.descent());
+			lineFeed(canvas, mContext.get().getString(R.string.preview_hint_not_connect), screenHeight / 2 - (int) otgHintPaint.descent());
 		}
 		super.onDraw(canvas);
 	}
@@ -833,7 +833,10 @@ public class MeasureTempContainerView extends RelativeLayout {
 	}
 
 	private float getFormatFloat (float value) {
-		DecimalFormat df = new DecimalFormat("0.0");
+//		DecimalFormat df = new DecimalFormat("0.0");
+		DecimalFormat df = (DecimalFormat) DecimalFormat.getInstance(Locale.CHINA);
+		df.applyPattern("0.0");
+
 		if (value < Float.MAX_VALUE || value > Float.MIN_VALUE) {
 			return Float.parseFloat(df.format(value));
 		} else {

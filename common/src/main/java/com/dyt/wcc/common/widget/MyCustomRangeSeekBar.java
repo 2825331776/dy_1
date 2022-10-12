@@ -25,6 +25,7 @@ import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
 
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -60,7 +61,8 @@ public class MyCustomRangeSeekBar extends View {
 	//	private float mViewHeight;
 	private              int    thumbMaxCount     = 0;
 	private              int    thumbMinCount     = 0;
-	private              DecimalFormat df              = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
+	private DecimalFormat df ;
+//	private              DecimalFormat df              = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
 	private              Rect          maxTempTextRect;//最大值温度文字的矩形
 	/**
 	 * 最大值温度文字的宽度
@@ -159,6 +161,9 @@ public class MyCustomRangeSeekBar extends View {
 
 	public MyCustomRangeSeekBar (Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
+		df = (DecimalFormat) DecimalFormat.getInstance(Locale.CHINA);
+		df.applyPattern("0.0");
+
 		TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.MyCustomRangeSeekBar, 0, 0);
 
 		mProgressBarBg = BitmapFactory.decodeResource(getResources(), R.mipmap.seekbar_bg);//整体的背景颜色

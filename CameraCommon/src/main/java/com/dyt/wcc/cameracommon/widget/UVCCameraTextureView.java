@@ -60,6 +60,7 @@ import com.serenegiant.usb.ITemperatureCallback;
 import com.serenegiant.utils.FpsCounter;
 
 import java.text.DecimalFormat;
+import java.util.Locale;
 
 
 /**
@@ -758,7 +759,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 			private boolean highTempToggle = false, lowTempToggle = false;
 			private      boolean              isTempShow             = true;
 			private      DrawLineRectHint     myDrawHint             = null;
-			private      DecimalFormat        decimalFormat          = new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
+			private      DecimalFormat        decimalFormat     ;
+//					= new DecimalFormat("0.0");//构造方法的字符格式这里如果小数不足2位,会以0补足.
 			//            public void setUnitTemperature(int mode) {
 			//                this.UnitTemperature = mode;
 			//            }
@@ -807,6 +809,8 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 				mViewWidth = width;
 				mViewHeight = height;
 				mCamera2Helper = Camera2Helper.getInstance();
+				decimalFormat = (DecimalFormat) DecimalFormat.getInstance(Locale.CHINA);
+				decimalFormat.applyPattern("0.0");
 				// this.highTempRect,lowTempRect,bounds ;//创建一个指定的新矩形的坐标
 
 				setName("RenderThread");
