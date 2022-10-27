@@ -58,6 +58,14 @@ public class MyNumberPicker extends DialogFragment implements NumberPickerView.O
 		Log.e(TAG, "OverTempDialog: " + oldValue);
 	}
 
+	public int getmType () {
+		return mType;
+	}
+
+	public void setmType (int mType) {
+		this.mType = mType;
+	}
+
 	public SetCompleteListener getListener () {
 		return mListener;
 	}

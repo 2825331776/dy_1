@@ -118,6 +118,22 @@ android {
             res.srcDirs = ['src/mileseey/res-mileseey']
             manifest.srcFile 'src/mileseey/AndroidManifest.xml'
         }
+
+        //光智
+        votin{
+            java.srcDirs = ['src/votin/java']
+            assets.srcDirs = ['src/votin/assets']
+            res.srcDirs = ['src/votin/res-votin']
+            manifest.srcFile 'src/votin/AndroidManifest.xml'
+        }
+
+        //睿迪菲尔
+        radifeel{
+            java.srcDirs = ['src/radifeel/java']
+            assets.srcDirs = ['src/radifeel/assets']
+            res.srcDirs = ['src/radifeel/res-radifeel']
+            manifest.srcFile 'src/radifeel/AndroidManifest.xml'
+        }
     }
 
     productFlavors {
@@ -296,6 +312,50 @@ android {
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.mileseey.FileProvider"]
             flavorDimensions "demo1"
         }
+        //光智 定制
+        votin {
+            // 每个环境包名不同
+            applicationIdSuffix ".votin"
+            versionCode rootProject.ext.envInfo.DYTConfig.VCode
+            versionName rootProject.ext.envInfo.DYTConfig.VName
+            // 动态添加 string.xml 字段；
+            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
+//            resValue "string", "app_name", "xiaomi"
+//            resValue "bool", "auto_updates", 'false'
+            // 动态修改 常量 字段
+            buildConfigField "String", "CONFIGS_NAME", '"configs_votin"'
+            buildConfigField "String", "SP_NAME", '"DYT_IR_SP_VOTIN"'
+            buildConfigField "int", "COMPANY_H", '180'
+            manifestPlaceholders = [CHANNEL_VALUE         : "votin"
+                                    , app_icon            : "@mipmap/ic_launcher_votin_foreground"
+                                    , BUGLYAPPID          : "72679bcf60"
+                                    , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
+                                    , BUGLYAPPChannel     : "votin"
+                                    , BUGLYENABLEDEBUG    : "false"
+                                    , APP_Channel         : rootProject.ext.envInfo.VOTINConfig.appPackageName
+                                    , PROVIDER_AUTHORITIES: "com.dyt.wcc.votin.FileProvider"]
+            flavorDimensions "demo1"
+        }
+        //睿迪菲尔 定制
+        radifeel{
+            applicationIdSuffix ".radifeel"
+            versionCode rootProject.ext.envInfo.DYTConfig.VCode
+            versionName rootProject.ext.envInfo.DYTConfig.VName
+            // 动态修改 常量 字段
+            buildConfigField "String", "CONFIGS_NAME", '"configs_radifeel"'
+            buildConfigField "String", "SP_NAME", '"DYT_IR_SP_RADIFEEL"'
+            buildConfigField "int", "COMPANY_H", '160'
+            manifestPlaceholders = [CHANNEL_VALUE         : "radifeel"
+                                    , app_icon            : "@mipmap/ic_launcher_radifeel_foreground"
+                                    , BUGLYAPPID          : "14e9b39799"
+                                    , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
+                                    , BUGLYAPPChannel     : "radifeel"
+                                    , BUGLYENABLEDEBUG    : "false"
+                                    , APP_Channel         : rootProject.ext.envInfo.RADIFEEL.appPackageName
+                                    , PROVIDER_AUTHORITIES: "com.dyt.wcc.radifeel.FileProvider"]
+            flavorDimensions "demo1"
+        }
+
     }
 
 

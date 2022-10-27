@@ -69,11 +69,15 @@ import com.dyt.wcc.customize.neutral.NeutralCompanyView;
 import com.dyt.wcc.customize.neutral.NeutralLanguageFactory;
 import com.dyt.wcc.customize.qianli.QianLiLanguageFactory;
 import com.dyt.wcc.customize.qianli.QianliCompanyView;
+import com.dyt.wcc.customize.radifeel.RadiFeelCompanyView;
+import com.dyt.wcc.customize.radifeel.RadiFeelLanguageFactory;
 import com.dyt.wcc.customize.teslong.TeslongCompanyView;
 import com.dyt.wcc.customize.teslong.TeslongLanguageFactory;
 import com.dyt.wcc.customize.victor.PdfActivity;
 import com.dyt.wcc.customize.victor.VictorCompanyView;
 import com.dyt.wcc.customize.victor.VictorLanguageFactory;
+import com.dyt.wcc.customize.votin.VotinCompanyView;
+import com.dyt.wcc.customize.votin.VotinLanguageFactory;
 import com.dyt.wcc.databinding.ActivityPreviewBinding;
 import com.dyt.wcc.databinding.PopHighlowcenterTraceBinding;
 import com.dyt.wcc.databinding.PopPaletteChoiceBinding;
@@ -117,6 +121,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 	private static final int  MSG_CHECK_UPDATE  = 1;
 	private static final int  MSG_CAMERA_PARAMS = 2;
 	public static        long startTime         = 0;
+
+	private int tempUnitPosition = 0;
 	CompoundButton.OnCheckedChangeListener highLowCenterCheckListener = (buttonView, isChecked) -> {
 		switch (buttonView.getId()) {
 			case R.id.cb_main_preview_highlowcenter_trace_high:
@@ -647,6 +653,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						case DYConstants.COMPANY_MAILSEEY:
 							factory = new MileSeeYLanguageFactory(mContext.get());
 							break;
+						case DYConstants.COMPANY_VOTIN:
+							factory = new VotinLanguageFactory(mContext.get());
+							break;
+						case DYConstants.COMPANY_RADIFEEL:
+							factory = new RadiFeelLanguageFactory(mContext.get());
+							break;
 						default:
 							factory = new DytLanguageFactory(mContext.get());
 							break;
@@ -761,6 +773,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			runOnUiThread(() -> {
 				//拔出设备之后，重置为低温增益模式
 				sp.edit().putInt(DYConstants.GAIN_TOGGLE_SETTING, 0).apply();
+
+				if (mDataBinding.toggleHighTempAlarm.isSelected()) {
+					mDataBinding.textureViewPreviewActivity.stopTempAlarm();
+					mDataBinding.dragTempContainerPreviewActivity.closeHighTempAlarm();
+				}
 				//断开连接之时, 恢复UI
 				mDataBinding.toggleAreaCheck.setSelected(false);
 				mDataBinding.toggleHighTempAlarm.setSelected(false);
@@ -1020,15 +1037,24 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 	private Sensor        mAccelerometerSensor;//加速度传感器
 	private Sensor        mMagneticSensor;//重力传感器
 
+	private boolean checkRecording () {
+		return mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing() && mDataBinding.btPreviewLeftRecord.isSelected();
+
+	}
+
+	private void closeRecording () {
+		mDataBinding.btPreviewLeftRecord.setSelected(false);
+		stopTimer();
+		mUvcCameraHandler.stopRecording();
+	}
+
 	@Override
 	protected void onPause () {
 		if (isDebug)
 			Log.e(TAG, "onPause: ");
 
-		if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()) {
-			//			mUvcCameraHandler.stopTemperaturing();
-			//			if (BuildConfig.DEBUG)
-			//				Log.e(TAG, "onPause: 停止温度回调");
+		if (checkRecording()) {
+			closeRecording();
 		}
 		mSensorManager.unregisterListener(this, mAccelerometerSensor);
 		mSensorManager.unregisterListener(this, mMagneticSensor);
@@ -1088,6 +1114,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		super.onDestroy();
 	}
 
+	private int originalOritation = 0;
+
 	@Override
 	protected void onResume () {
 		mSensorManager.registerListener(this, mAccelerometerSensor, SensorManager.SENSOR_DELAY_UI);
@@ -1098,6 +1126,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			mUsbMonitor.register();
 		}
 		super.onResume();
+		originalOritation = this.getWindowManager().getDefaultDisplay().getRotation();
 	}
 
 	/**
@@ -1251,56 +1280,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		return defaultSettingReturn;
 	}
 
-	//
-	//	private ContextWrapper wrap (Context context) {
-	//		Resources res = context.getResources();
-	//		Configuration configuration = res.getConfiguration();
-	//		//获得你想切换的语言，可以用SharedPreferences保存读取
-	//		Locale newLocale = new Locale(getLanguageStr());
-	//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-	//			configuration.setLocale(newLocale);
-	//			LocaleList localeList = new LocaleList(newLocale);
-	//			LocaleList.setDefault(localeList);
-	//			configuration.setLocales(localeList);
-	//			context = context.createConfigurationContext(configuration);
-	//		} else {
-	//			configuration.locale = newLocale;
-	//			res.updateConfiguration(configuration, res.getDisplayMetrics());
-	//		}
-	//		return new ContextWrapper(context);
-	//	}
-
-	//	@Override
-	//	public void onConfigurationChanged (@NonNull Configuration newConfig) {
-	//		Log.e(TAG, "onConfigurationChanged: ===========");
-	//		//		DisplayMetrics metrics = getResources().getDisplayMetrics();
-	//		////		Configuration configuration = getResources().getConfiguration();
-	//		//		if (getApplicationContext().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE)
-	//		//				.getInt(DYConstants.LANGUAGE_SETTING, 0) == 0) {
-	//		//			newConfig.setLocale(Locale.SIMPLIFIED_CHINESE);
-	//		//		} else {
-	//		//			newConfig.setLocale(Locale.US);
-	//		//		}
-	//		//		getResources().updateConfiguration(newConfig, metrics);
-	//		// 这边只是切回英文，可以执行编写自己的业务逻辑
-	//		// super.onConfigurationChanged(newConfig);	  改成以下即可
-	//		super.onConfigurationChanged(newConfig);
-	//		String languageToLoad = "en";
-	//
-	//		Locale locale = new Locale(languageToLoad);
-	//
-	//		Locale.setDefault(locale);
-	//
-	//		Configuration config = getResources().getConfiguration();
-	//
-	//		DisplayMetrics metrics = getResources().getDisplayMetrics();
-	//
-	//		config.locale = Locale.ENGLISH;
-	//
-	//		getResources().updateConfiguration(config, metrics);
-	//
-	//	}
-
 	/**
 	 * 切换语言
 	 * <p>  法语fr-rFR、西班牙语es-rES、芬兰语fi-rFI、波兰语pl-rPL、葡萄牙语pt-rPT</p>
@@ -1423,12 +1402,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 
 	@Override
 	protected void initView () {
-		//		Log.e(TAG, "initView: ==========================手机型号为：===" + Build.MODEL);
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
-		//		configuration = getResources().getConfiguration();
-		//		metrics = getResources().getDisplayMetrics();
 		loadingDialog = LoadingDialog.get(mContext.get());
-
 
 		cameraCallback = new AbstractUVCCameraHandler.CameraCallback() {
 			@Override
@@ -1442,6 +1417,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 
 			@Override
 			public void onStartPreview () {
+				if (originalOritation == 3) {
+					mUvcCameraHandler.setRotateMatrix_180(true);
+				} else {
+					mUvcCameraHandler.setRotateMatrix_180(false);
+				}
 			}
 
 			@Override
@@ -1476,10 +1456,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						mDataBinding.ivSaveImgAnimator.setImageBitmap(bitmap);
 
 						AnimationSet setAnimation = new AnimationSet(true);
-						// 特别说明以下情况
-						// 因为在下面的旋转动画设置了无限循环(RepeatCount = INFINITE)
-						// 所以动画不会结束，而是无限循环
-						// 所以组合动画的下面两行设置是无效的， 以后设置的为准
 						setAnimation.setRepeatMode(Animation.RESTART);
 						setAnimation.setRepeatCount(1);// 设置了循环一次,但无效
 						// 透明度动画
@@ -1519,7 +1495,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			}
 		};
 
-		//		isFirstRun = (sp.getInt(DYConstants.FIRST_RUN, 0) == 1);
 		if (sp.getInt(DYConstants.FIRST_RUN, 0) == 0) {
 			isFirstRun = true;
 			sp.edit().putInt(DYConstants.FIRST_RUN, 1).apply();
@@ -1532,7 +1507,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		if (isFirstRun) {//第一次打开应用
 			//默认不打开音频录制
 			sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING, 1).apply();
-			//		if (isDebug)
 
 			if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N) {
 				language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING, Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage());
@@ -1616,7 +1590,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 				break;
 		}
 
-
 		highTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_high);
 		lowTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_low);
 		centerTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_center);
@@ -1627,16 +1600,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		screenHeight = dm.heightPixels;
 		mSendCommand = new SendCommand();
 
-		//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
-		//			if (Environment.isExternalStorageManager()){
-		//				showToast("Returns whether the calling app has All Files Access on the primary shared/external storage media.");
-		//			}else {
-		//				Toast.makeText(this, "Android VERSION  R OR ABOVE，NO MANAGE_EXTERNAL_STORAGE GRANTED!", Toast.LENGTH_LONG).show();
-		//				Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-		//				intent.setData(Uri.parse("package:" + this.getPackageName()));
-		//				startActivityForResult(intent, PERMISSIONS_REQUEST_CODE);
-		//			}
-		//		}
 		List<String> permissions = new ArrayList<>();
 		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
 			permissions.add(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
@@ -1644,7 +1607,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
 			permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 		}
-		//		Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
 		permissions.add(Manifest.permission.CAMERA);
 		permissions.add(Manifest.permission.RECORD_AUDIO);
 
@@ -1652,26 +1614,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			@Override
 			public void onGranted (List<String> permissions, boolean all) {
 				if (all) {
-					mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);//
-					//					if (isDebug)Log.e(TAG, "onResult: mFontSize ==========> " + mFontSize);
-					//					switch (BuildConfig.FLAVOR) {
-					//						case DYConstants.COMPANY_DYT:
-					//							Log.e(TAG, "onGranted: =========调用 COMPANY_DYT 的函数====================");
-					//							//							com.dyt.wcc.dytpir.DYTDO.PrintSomething();
-					//							break;
-					//						case DYConstants.COMPANY_JMS:
-					//							Log.e(TAG, "onGranted: ===========调用 COMPANY_JMS 的函数====================");
-					//							//							com.dyt.wcc.jms.JMSTODO.jmstodo();
-					//							break;
-					//						case DYConstants.COMPANY_VICTOR:
-					//							Log.e(TAG, "onGranted: ============调用 COMPANY_VICTOR 的函数====================");
-					//							break;
-					//					}
+					mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);
 
 					AssetCopyer.copyAllAssets(DYTApplication.getInstance(), mContext.get().getExternalFilesDir(null).getAbsolutePath());
-					Log.e(TAG, "===========getExternalFilesDir==========" + mContext.get().getExternalFilesDir(null).getAbsolutePath());
 					palettePath = mContext.get().getExternalFilesDir(null).getAbsolutePath();
-					Log.e(TAG, "onGranted: ===========palettePath=============》" + palettePath);
 					CreateBitmap createBitmap = new CreateBitmap();
 					try {
 						tiehong = createBitmap.GenerateBitmap(mContext.get(), "1.dat");
@@ -1690,9 +1636,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 					bitmaps.add(heire);
 					bitmaps.add(baire);
 					bitmaps.add(lenglan);
-					//		Log.e(TAG, "initView:  ==222222= " + System.currentTimeMillis());
 					mDataBinding.customSeekbarPreviewFragment.setmProgressBarSelectBgList(bitmaps);
-					//		Log.e(TAG, "initView: sp.get Palette_Number = " + sp.getInt(DYConstants.PALETTE_NUMBER,0));
 					mDataBinding.customSeekbarPreviewFragment.setPalette(sp.getInt(DYConstants.PALETTE_NUMBER, 1) - 1);
 					initListener();
 
@@ -1720,7 +1664,26 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		mMagneticSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 	}
 
-	private boolean isRotate = false;
+	/**
+	 * 判断是否在录像
+	 */
+	private boolean isRecording () {
+		if (!mUvcCameraHandler.snRightIsPreviewing()) {
+			return false;
+		}
+		if (mDataBinding.btPreviewLeftRecord.isSelected()) {
+			mUvcCameraHandler.close();
+			mUsbMonitor.unregister();
+
+			//			showToast(getResources().getString(R.string.toast_is_recording));
+			return true;
+		} else {
+			mUvcCameraHandler.close();
+			mUsbMonitor.unregister();
+		}
+		return false;
+	}
+
 	private boolean isSavePhoto = false;
 	/**
 	 * 初始化界面的监听器
@@ -1815,10 +1778,14 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		 * 超温警告 ， 预览层去绘制框， DragTempContainer 控件去播放声音
 		 */
 		mDataBinding.toggleHighTempAlarm.setOnClickListener(v -> {
+			tempUnitPosition = sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0);
 			mDataBinding.toggleHighTempAlarm.setSelected(!mDataBinding.toggleHighTempAlarm.isSelected());
 			if (mDataBinding.toggleHighTempAlarm.isSelected()) {
+				Log.e(TAG, "initListener: ========================tempUnitPosition================================" + tempUnitPosition);
 				if (myNumberPicker == null) {
-					myNumberPicker = new MyNumberPicker(mContext.get(), sp.getFloat("overTemp", 0.0f), mDataBinding.dragTempContainerPreviewActivity.getTempSuffixMode());
+					myNumberPicker = new MyNumberPicker(mContext.get(), sp.getFloat("overTemp", 0.0f), tempUnitPosition);
+				} else {
+					myNumberPicker.setmType(tempUnitPosition);
 				}
 				myNumberPicker.setListener(new MyNumberPicker.SetCompleteListener() {
 					@Override
@@ -2074,8 +2041,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		});
 		//相册按钮
 		mDataBinding.ivPreviewLeftGallery.setOnClickListener(v -> {
-			if (!mUvcCameraHandler.snRightIsPreviewing()) {
-				return;
+			if (checkRecording()) {
+				closeRecording();
 			}
 			if (mDataBinding.btPreviewLeftRecord.isSelected()) {
 				showToast(getResources().getString(R.string.toast_is_recording));
@@ -2133,7 +2100,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						if (companyPopWindows != null && companyPopWindows.isShowing()) {
 							companyPopWindows.dismiss();
 						}
-						startActivity(new Intent(PreviewActivity.this, PdfActivity.class));
+						if (!isRecording()) {
+							startActivity(new Intent(PreviewActivity.this, PdfActivity.class));
+						}
 					});
 					break;
 				case DYConstants.COMPANY_QIANLI:
@@ -2143,7 +2112,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						if (companyPopWindows != null && companyPopWindows.isShowing()) {
 							companyPopWindows.dismiss();
 						}
-						startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.qianli.PdfActivity.class));
+						if (!isRecording()) {
+							startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.qianli.PdfActivity.class));
+						}
 					});
 					break;
 				case DYConstants.COMPANY_TESLONG:
@@ -2167,7 +2138,42 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						if (mUsbMonitor != null && mUsbMonitor.isRegistered()) {
 							mUsbMonitor.unregister();
 						}
-						startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.mailseey.PdfActivity.class));
+						if (!isRecording()) {
+							startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.mailseey.PdfActivity.class));
+						}
+					});
+					break;
+				case DYConstants.COMPANY_VOTIN:
+					customizeCompany = new VotinCompanyView();
+					view = customizeCompany.getCompanyView(mContext.get());
+					TextView tvDeviceType = view.findViewById(R.id.tv_about_devices_type_votin);
+
+					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
+						tvDeviceType.setText("VOT-SP1A");
+					}
+					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 160 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 120) {
+						tvDeviceType.setText("VOT-SP1B");
+					}
+
+					view.findViewById(R.id.tv_about_main_user_manual_info_votin).setOnClickListener(v3 -> {
+						if (companyPopWindows != null && companyPopWindows.isShowing()) {
+							companyPopWindows.dismiss();
+						}
+						if (checkRecording()){closeRecording();}
+						startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.votin.PdfActivity.class));
+					});
+					break;
+				case DYConstants.COMPANY_RADIFEEL:
+					customizeCompany = new RadiFeelCompanyView();
+					view = customizeCompany.getCompanyView(mContext.get());
+
+					view.findViewById(R.id.tv_about_user_manual_title_radifeel).setOnClickListener(v3 -> {
+						if (companyPopWindows != null && companyPopWindows.isShowing()) {
+							companyPopWindows.dismiss();
+						}
+						Log.e(TAG, "initListener: =================" + BuildConfig.FLAVOR);
+						//						if (checkRecording()){closeRecording();}
+						startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.radifeel.RadiFeelPdfActivity.class));
 					});
 					break;
 				default:
@@ -2455,8 +2461,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		Log.e(TAG, "onBackPressed: ");
 	}
 
-	private int     intFlag               = 0;
-	private int     oldIntFlag            = 0;
+	private int intFlag    = 0;
+	private int oldIntFlag = 0;
 
 	private float[] mLastAccelerometer    = new float[3];
 	private float[] mLastMagnetometer     = new float[3];
@@ -2513,8 +2519,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 				oldIntFlag = intFlag;
 			}
 			if (intFlag == 1 && oldIntFlag != 1) {
-				mUvcCameraHandler.setRotateMatrix_180(false);
-				oldIntFlag = intFlag;
+				if (mUvcCameraHandler != null && mUvcCameraHandler.isPreviewing()) {
+					mUvcCameraHandler.setRotateMatrix_180(false);
+					oldIntFlag = intFlag;
+				}
 			}
 		}
 	}

@@ -40,6 +40,20 @@
     <string name="about_companyWebsite_content_mileseey">www.mileseey.com</string>
     <string name="about_contactEmail_content_mileseey">0755–86329055</string>
 
+    <!--    光智 定制版-->
+    <string name="about_companyName_votin">安徽光智科技有限公司</string>
+    <string name="about_companyWebsite_content_votin">http://www.votinfrared.com/</string>
+    <string name="about_contactEmail_content_votin">sales@votinfrared.com</string>
+
+    <!--    睿迪菲尔 定制版-->
+    <string name="about_companyName_radifeel">北京睿迪菲尔科技有限公司</string>
+    <string name="about_companyWebsite_content_radifeel">www.radifeel.com</string>
+    <string name="about_contactEmail_content_radifeel">service@radifeel.com</string>
+
+    <!--    页面名称-->
+    <!--    <string name="app_name">红外</string>-->
+    <string name="about_devices_type">型号：</string>
+    <string name="about_devices_default">默认</string>
     <!--    页面名称-->
 <!--    <string name="app_name">红外</string>-->
     <string name="Gallery">相册</string>

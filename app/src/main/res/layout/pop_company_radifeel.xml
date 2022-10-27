@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_140dp"
+        android:background="@drawable/bg_main_preview_setting_pop"
+        android:paddingStart="@dimen/dimen_20dp"
+        android:paddingEnd="@dimen/dimen_20dp">
+
+        <!--标题导航线-->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_setting_title"
+            android:layout_width="@dimen/dimen_5dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="@dimen/dimen_20dp" />
+        <!--公司名称-->
+        <TextView
+            android:id="@+id/tv_about_company_name_title_radifeel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:text="@string/about_companyName_radifeel"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_16sp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="@id/gl_setting_title"
+            app:layout_constraintTop_toTopOf="parent" />
+        <!--网址-->
+        <!--        超链接颜色设置-->
+        <!--        android:textColorLink="@color/white"-->
+        <TextView
+            android:id="@+id/tv_about_website_title_radifeel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:text="@string/preview_about_company_website"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintLeft_toLeftOf="@id/tv_about_company_name_title_radifeel"
+            app:layout_constraintTop_toBottomOf="@id/tv_about_company_name_title_radifeel" />
+
+        <TextView
+            android:id="@+id/tv_about_website_content_radifeel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:text="@string/about_companyWebsite_content_radifeel"
+            android:textColorLink="@color/white"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_about_website_title_radifeel"
+            app:layout_constraintLeft_toRightOf="@id/tv_about_website_title_radifeel"
+            app:layout_constraintTop_toTopOf="@id/tv_about_website_title_radifeel" />
+
+        <!--      瑞迪菲尔 定制版  邮箱 -->
+        <TextView
+            android:id="@+id/tv_about_email_title_radifeel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:layout_marginBottom="@dimen/dimen_10dp"
+            android:autoLink="web"
+            android:text="@string/preview_about_contact_us"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintLeft_toLeftOf="@id/tv_about_company_name_title_radifeel"
+            app:layout_constraintTop_toBottomOf="@id/tv_about_website_title_radifeel" />
+
+        <TextView
+            android:id="@+id/tv_about_email_content_radifeel"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:autoLink="email"
+            android:text="@string/about_contactEmail_content_radifeel"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textColorLink="@color/white"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_about_email_title_radifeel"
+            app:layout_constraintLeft_toRightOf="@id/tv_about_email_title_radifeel"
+            app:layout_constraintTop_toTopOf="@id/tv_about_email_title_radifeel" />
+
+        <!--        使用说明文档-->
+        <TextView
+            android:id="@+id/tv_about_user_manual_title_radifeel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:autoLink="all"
+            android:background="@drawable/txt_under_line"
+            android:text="@string/about_main_user_manual_victor"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintLeft_toLeftOf="@id/tv_about_company_name_title_radifeel"
+            app:layout_constraintTop_toBottomOf="@id/tv_about_email_content_radifeel" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

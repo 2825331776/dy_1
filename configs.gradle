@@ -20,9 +20,9 @@ ext {
                     // 应用 id
                     appId         : "com.dyt.wcc",
                     // 构建版本号
-                    VCode         : 231,
+                    VCode         : 232,
                     // 版本名称
-                    VName         : "1.4.02",
+                    VName         : "1.4.03",
                     appPackageName: "DytSpectrumOwl",
             ],
             NeutralConfig    : [
@@ -82,6 +82,26 @@ ext {
                     // 版本名称
                     VName         : "1.1.7",
                     appPackageName: "MILESEEY",
+            ],
+            //光智定制
+            VOTINConfig : [
+                    // 应用 id
+                    appId         : "com.dyt.wcc",
+                    // 构建版本号
+                    VCode         : 107,
+                    // 版本名称
+                    VName         : "1.1.7",
+                    appPackageName: "VOTIN",
+            ],
+            //睿迪菲尔 定制
+            RADIFEEL :[
+                    // 应用 id
+                    appId         : "com.dyt.wcc",
+                    // 构建版本号
+                    VCode         : 101,
+                    // 版本名称
+                    VName         : "1.1.1",
+                    appPackageName: "RADIFEEL",
             ],
     ]
 

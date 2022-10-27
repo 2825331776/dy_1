@@ -133,6 +133,8 @@ public class MeasureTempContainerView extends RelativeLayout {
 			return true;
 		}
 	});
+	public int getFrameWidth(){return mFrameWidth;}
+	public int getFrameHeight(){return mFrameHeight;}
 	/**
 	 * 新增测温模式时：绘制 测温线 或 矩形 时，在UVCCameraTextureView里 绘制提示线
 	 */

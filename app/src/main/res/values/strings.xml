@@ -35,7 +35,20 @@
     <string name="about_companyName_mileseey">Shenzhen Mileseey Technology Co., Ltd.</string>
     <string name="about_companyWebsite_content_mileseey">www.mileseeytools.com</string>
     <string name="about_contactEmail_content_mileseey">service@mileseey.com</string>
+    <!--    光智 定制版-->
+    <string name="about_companyName_votin">Vital Optics Technology Co., Ltd.</string>
+    <string name="about_companyWebsite_content_votin">http://www.votinfrared.com/en/index.html</string>
+    <string name="about_contactEmail_content_votin">sales@votinfrared.com</string>
 
+    <!--    睿迪菲尔 定制版-->
+    <string name="about_companyName_radifeel">Beijing Radifeel Technology Co., Ltd.</string>
+    <string name="about_companyWebsite_content_radifeel">www.radifeel.com</string>
+    <string name="about_contactEmail_content_radifeel">service@radifeel.com</string>
+
+    <!--    页面名称-->
+    <!--    <string name="app_name">Pir</string>-->
+    <string name="about_devices_type">Type：</string>
+    <string name="about_devices_default">default</string>
     <!--    页面名称-->
 <!--    <string name="app_name">Pir</string>-->
     <string name="Gallery">Gallery</string>
