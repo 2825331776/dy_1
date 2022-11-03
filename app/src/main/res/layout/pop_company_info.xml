@@ -6,7 +6,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_110dp"
+        android:layout_height="@dimen/dimen_145dp"
         android:background="@drawable/bg_main_preview_setting_pop"
         android:paddingStart="@dimen/dimen_20dp"
         android:paddingEnd="@dimen/dimen_20dp">
@@ -85,6 +85,34 @@
             app:layout_constraintBottom_toBottomOf="@id/tv_about_contact_us"
             app:layout_constraintLeft_toRightOf="@id/tv_about_contact_us"
             app:layout_constraintTop_toTopOf="@id/tv_about_contact_us" />
+
+        <!--        点扬定制版 设备类型-->
+        <TextView
+            android:id="@+id/tv_about_devices_type_info_dyt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:layout_marginBottom="@dimen/dimen_10dp"
+            android:autoLink="web"
+            android:text="@string/about_devices_type"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintLeft_toLeftOf="@id/tv_company_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_about_contact_us" />
+
+        <TextView
+            android:id="@+id/tv_about_devices_type_dyt"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textColorLink="@color/white"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/dimen_16sp"
+            android:layout_marginStart="@dimen/dimen_10dp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_about_devices_type_info_dyt"
+            app:layout_constraintLeft_toRightOf="@id/tv_about_devices_type_info_dyt"
+            app:layout_constraintTop_toTopOf="@id/tv_about_devices_type_info_dyt" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

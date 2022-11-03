@@ -6,7 +6,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_110dp"
+        android:layout_height="@dimen/dimen_165dp"
         android:background="@drawable/bg_main_preview_setting_pop"
         android:paddingStart="@dimen/dimen_20dp"
         android:paddingEnd="@dimen/dimen_20dp">
@@ -37,7 +37,7 @@
             android:id="@+id/tv_website_mailseey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimen_10dp"
+            android:layout_marginTop="@dimen/dimen_5dp"
             android:text="@string/preview_about_company_website"
             android:textColor="@color/white"
             android:textSize="@dimen/dimen_16sp"
@@ -62,7 +62,7 @@
             android:id="@+id/tv_about_contact_us_mailseey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimen_10dp"
+            android:layout_marginTop="@dimen/dimen_5dp"
             android:layout_marginBottom="@dimen/dimen_10dp"
             android:autoLink="web"
             android:text="@string/preview_about_contact_us"
@@ -90,7 +90,7 @@
             android:id="@+id/tv_about_main_user_manual_info_mileseey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimen_10dp"
+            android:layout_marginTop="@dimen/dimen_5dp"
             android:autoLink="all"
             android:background="@drawable/txt_under_line"
             android:text="@string/about_main_user_manual_victor"
@@ -98,6 +98,35 @@
             android:textSize="@dimen/dimen_16sp"
             app:layout_constraintLeft_toLeftOf="@id/tv_about_contact_us_mailseey"
             app:layout_constraintTop_toBottomOf="@id/tv_about_contact_us_mailseey" />
+
+
+        <!--     迈测 定制版 设备类型-->
+        <TextView
+            android:id="@+id/tv_about_devices_type_info_mileseey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:layout_marginBottom="@dimen/dimen_10dp"
+            android:autoLink="web"
+            android:text="@string/about_devices_type"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintLeft_toLeftOf="@id/tv_about_main_user_manual_info_mileseey"
+            app:layout_constraintTop_toBottomOf="@id/tv_about_main_user_manual_info_mileseey" />
+
+        <TextView
+            android:id="@+id/tv_about_devices_type_radifeel"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textColorLink="@color/white"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/dimen_16sp"
+            android:layout_marginStart="@dimen/dimen_10dp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_about_devices_type_info_mileseey"
+            app:layout_constraintLeft_toRightOf="@id/tv_about_devices_type_info_mileseey"
+            app:layout_constraintTop_toTopOf="@id/tv_about_devices_type_info_mileseey" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -149,9 +149,9 @@ android {
             // 动态修改 常量 字段
             buildConfigField "String", "CONFIGS_NAME", '"configs_dyt"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_DY"'
-            buildConfigField "int", "COMPANY_H", '110'
+            buildConfigField "int", "COMPANY_H", '145'
             manifestPlaceholders = [CHANNEL_VALUE         : "DYTPir"
-                                    , app_icon            : "@mipmap/ic_launcher_dy_foreground"
+                                    , app_icon            : "@mipmap/ic_logo_dyt_round"
 //                                    , applicationId :"${rootProject.ext.envInfo.DYTConfig.appId}.dytpir"
                                     , BUGLYAPPID          : "253f40d84b"
                                     , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
@@ -171,7 +171,7 @@ android {
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_NEUTRAL"'
             buildConfigField "int", "COMPANY_H", '110'
             manifestPlaceholders = [CHANNEL_VALUE         : "NeutralPir"
-                                    , app_icon            : "@mipmap/ic_launcher_neutral"
+                                    , app_icon            : "@mipmap/ic_launcher_neutral_round"
                                     , BUGLYAPPID          : "253f40d84b"
                                     , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "neutral"
@@ -213,9 +213,9 @@ android {
             // 动态修改 常量 字段
             buildConfigField "String", "CONFIGS_NAME", '"configs_jms"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_JMS"'
-            buildConfigField "int", "COMPANY_H", '145'
+            buildConfigField "int", "COMPANY_H", '160'
             manifestPlaceholders = [CHANNEL_VALUE         : "jmsPir"
-                                    , app_icon            : "@mipmap/ic_launcher_jms_round"
+                                    , app_icon            : "@mipmap/ic_logo_jms_round"
                                     , BUGLYAPPID          : "af50f10806"
                                     , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "jms"
@@ -235,7 +235,7 @@ android {
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_QIANLI"'
             buildConfigField "int", "COMPANY_H", '145'
             manifestPlaceholders = [CHANNEL_VALUE         : "QianLiPir"
-                                    , app_icon            : "@mipmap/ic_launcher_qianli"
+                                    , app_icon            : "@mipmap/ic_launcher_qianli_round"
                                     , BUGLYAPPID          : "9086b0a6ab"
                                     , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "qianli"
@@ -255,7 +255,7 @@ android {
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_TESLONG"'
             buildConfigField "int", "COMPANY_H", '110'
             manifestPlaceholders = [CHANNEL_VALUE         : "TeslongPir"
-                                    , app_icon            : "@mipmap/ic_launcher_teslong"
+                                    , app_icon            : "@mipmap/ic_launcher_teslong_round"
                                     , BUGLYAPPID          : "020120f2ec"
                                     , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "teslong"
@@ -277,9 +277,9 @@ android {
             // 动态修改 常量 字段
             buildConfigField "String", "CONFIGS_NAME", '"configs_victor"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_VICTOR"'
-            buildConfigField "int", "COMPANY_H", '145'
+            buildConfigField "int", "COMPANY_H", '175'
             manifestPlaceholders = [CHANNEL_VALUE         : "victorPir"
-                                    , app_icon            : "@mipmap/ic_launcher_victor_foreground"
+                                    , app_icon            : "@mipmap/ic_logo_victor_round"
                                     , BUGLYAPPID          : "c61a63bdf6"
                                     , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "victor"
@@ -301,9 +301,9 @@ android {
             // 动态修改 常量 字段
             buildConfigField "String", "CONFIGS_NAME", '"configs_mileseey"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_MILESEEY"'
-            buildConfigField "int", "COMPANY_H", '145'
+            buildConfigField "int", "COMPANY_H", '175'
             manifestPlaceholders = [CHANNEL_VALUE         : "mileseey"
-                                    , app_icon            : "@mipmap/ic_launcher_mileseey_foreground"
+                                    , app_icon            : "@mipmap/ic_launcher_mileseey_round"
                                     , BUGLYAPPID          : "9a1f6ff8a4"
                                     , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "mileseey"
@@ -327,7 +327,7 @@ android {
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_VOTIN"'
             buildConfigField "int", "COMPANY_H", '180'
             manifestPlaceholders = [CHANNEL_VALUE         : "votin"
-                                    , app_icon            : "@mipmap/ic_launcher_votin_foreground"
+                                    , app_icon            : "@mipmap/ic_launcher_votin_round"
                                     , BUGLYAPPID          : "72679bcf60"
                                     , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "votin"
@@ -344,9 +344,9 @@ android {
             // 动态修改 常量 字段
             buildConfigField "String", "CONFIGS_NAME", '"configs_radifeel"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_RADIFEEL"'
-            buildConfigField "int", "COMPANY_H", '160'
+            buildConfigField "int", "COMPANY_H", '165'
             manifestPlaceholders = [CHANNEL_VALUE         : "radifeel"
-                                    , app_icon            : "@mipmap/ic_launcher_radifeel_foreground"
+                                    , app_icon            : "@mipmap/ic_launcher_radifeel_round"
                                     , BUGLYAPPID          : "14e9b39799"
                                     , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "radifeel"

@@ -86,5 +86,33 @@
             app:layout_constraintLeft_toRightOf="@id/tv_about_contact_us"
             app:layout_constraintTop_toTopOf="@id/tv_about_contact_us" />
 
+        <!--&lt;!&ndash;     泰视朗 定制版 设备类型&ndash;&gt;
+        <TextView
+            android:id="@+id/tv_about_devices_type_info_teslong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:layout_marginBottom="@dimen/dimen_10dp"
+            android:autoLink="web"
+            android:text="@string/about_devices_type"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintLeft_toLeftOf="@id/tv_about_contact_us"
+            app:layout_constraintTop_toBottomOf="@id/tv_about_contact_us" />
+
+        <TextView
+            android:id="@+id/tv_about_devices_type_radifeel"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textColorLink="@color/white"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/dimen_16sp"
+            android:layout_marginStart="@dimen/dimen_10dp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_about_devices_type_info_teslong"
+            app:layout_constraintLeft_toRightOf="@id/tv_about_devices_type_info_teslong"
+            app:layout_constraintTop_toTopOf="@id/tv_about_devices_type_info_teslong" />-->
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

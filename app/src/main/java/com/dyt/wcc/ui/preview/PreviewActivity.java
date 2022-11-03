@@ -2092,10 +2092,27 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 				case DYConstants.COMPANY_JMS:
 					customizeCompany = new JMSCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
+
+					TextView jms_tv_type = view.findViewById(R.id.tv_about_devices_type_jms);
+					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
+						jms_tv_type.setText("NF-586S");
+					}
+					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 160 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 120) {
+						jms_tv_type.setText("NF-583S");
+					}
+
 					break;
 				case DYConstants.COMPANY_VICTOR:
 					customizeCompany = new VictorCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
+					TextView victorTvDeviceType = view.findViewById(R.id.tv_about_devices_type_victor);
+
+					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
+						victorTvDeviceType.setText("VICTOR 328B");
+					}
+					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 160 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 120) {
+						victorTvDeviceType.setText("VICTOR 328A");
+					}
 					view.findViewById(R.id.tv_about_main_user_manual_info).setOnClickListener(v2 -> {
 						if (companyPopWindows != null && companyPopWindows.isShowing()) {
 							companyPopWindows.dismiss();
@@ -2120,6 +2137,14 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 				case DYConstants.COMPANY_TESLONG:
 					customizeCompany = new TeslongCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
+//					TextView teslongTvDeviceType = view.findViewById(R.id.tv_about_devices_type_votin);
+//
+//					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
+//						teslongTvDeviceType.setText("TR256");
+//					}
+//					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 160 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 120) {
+//						teslongTvDeviceType.setText("TR256");
+//					}
 					break;
 				case DYConstants.COMPANY_NEUTRAL:
 					customizeCompany = new NeutralCompanyView();
@@ -2128,6 +2153,17 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 				case DYConstants.COMPANY_MAILSEEY:
 					customizeCompany = new MileSeeYCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
+
+					TextView mileseeyTvDeviceType = view.findViewById(R.id.tv_about_devices_type_radifeel);
+
+					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
+						mileseeyTvDeviceType.setText("TR256");
+					}
+					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 160 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 120) {
+						mileseeyTvDeviceType.setText("TR160");
+					}
+
+
 					view.findViewById(R.id.tv_about_main_user_manual_info_mileseey).setOnClickListener(v3 -> {
 						if (companyPopWindows != null && companyPopWindows.isShowing()) {
 							companyPopWindows.dismiss();
@@ -2167,6 +2203,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 					customizeCompany = new RadiFeelCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
 
+					TextView radifelTvDeviceType = view.findViewById(R.id.tv_about_devices_type_radifeel);
+
+					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
+						radifelTvDeviceType.setText("RF2");
+					}
+
+
 					view.findViewById(R.id.tv_about_user_manual_title_radifeel).setOnClickListener(v3 -> {
 						if (companyPopWindows != null && companyPopWindows.isShowing()) {
 							companyPopWindows.dismiss();
@@ -2179,6 +2222,15 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 				default:
 					customizeCompany = new DytCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
+
+					TextView dyt_tv_type = view.findViewById(R.id.tv_about_devices_type_dyt);
+
+					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
+						dyt_tv_type.setText("H2F");
+					}
+					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 160 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 120) {
+						dyt_tv_type.setText("H1F");
+					}
 					break;
 			}
 			customizeCompany.initListener(view);
@@ -2336,6 +2388,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		companyPopWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		companyPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 		companyPopWindows.setHeight(DensityUtil.dp2px(mContext.get(), BuildConfig.COMPANY_H));
+//		companyPopWindows.setHeight(ConstraintLayout.LayoutParams);
 		companyPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
 
 		companyPopWindows.setFocusable(false);
