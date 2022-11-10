@@ -243,6 +243,7 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
 // 释放照相机
 int UVCCamera::release() {
     ENTER();
+//    stopPreview();//拔出 相机、切换语言 出现闪退问题。
     // 相机关闭过程
     if (LIKELY(mDeviceHandle)) {
         MARK("如果相机是打开的，请打开它。");

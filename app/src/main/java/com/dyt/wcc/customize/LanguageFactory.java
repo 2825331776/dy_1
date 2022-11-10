@@ -14,18 +14,29 @@ import androidx.appcompat.app.AlertDialog;
  * <p>PackagePath: com.dyt.wcc.customize     </p>
  */
 public abstract class LanguageFactory {
+	//点扬
 	protected static final String[] language_dyt_array     = new String[]{"中文", "English"};
+	//中性版
 	protected static final String[] language_neutral_array = new String[]{"中文", "English"};
+	//胜利
 	protected static final String[] language_victor_array  = new String[]{"中文", "English"};
+	//潜力
 	protected static final String[] language_qianli_array  = new String[]{"中文", "English"};
+	//泰视朗
 	protected static final String[] language_teslong_array = new String[]{"中文", "English"};
+	//精明鼠
 	protected static final String[] language_jms_array     = new String[]{"中文", "English","Русский", "Deutsch",
 			"Italiano", "한국인", "日本",
 			//法语fr-rFR、西班牙语es-rES、芬兰语fi-rFI、波兰语pl-rPL、葡萄牙语pt-rPT
 			"Français","Español","Suomalainen","Polski","Português"};
+	//迈测
 	protected static final String[] language_mileseey_array     = new String[]{"中文", "English"};
+	//光智
 	protected static final String[] language_votin_array     = new String[]{"中文", "English"};
+	//睿迪菲尔
 	protected static final String[] language_radifeel_array     = new String[]{"中文", "English"};
+	//恒昕泰
+	protected static final String[] language_henxtech_array     = new String[]{"中文", "English"};
 
 	protected              Context  mContext;
 

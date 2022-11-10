@@ -50,6 +50,11 @@
     <string name="about_companyWebsite_content_radifeel">www.radifeel.com</string>
     <string name="about_contactEmail_content_radifeel">service@radifeel.com</string>
 
+    <!--    恒昕泰 -->
+    <string name="about_companyName_henxtech">深圳市恒昕泰实业有限公司</string>
+    <string name="about_companyWebsite_content_henxtech">www.henxtech.com</string>
+    <string name="about_contactEmail_content_henxtech">amanda@henxtech.com</string>
+
     <!--    页面名称-->
     <!--    <string name="app_name">红外</string>-->
     <string name="about_devices_type">型号：</string>

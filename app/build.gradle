@@ -134,6 +134,14 @@ android {
             res.srcDirs = ['src/radifeel/res-radifeel']
             manifest.srcFile 'src/radifeel/AndroidManifest.xml'
         }
+
+        //恒昕泰
+        henxtech{
+            java.srcDirs = ['src/henxtech/java']
+            assets.srcDirs = ['src/henxtech/assets']
+            res.srcDirs = ['src/henxtech/res-henxtech']
+            manifest.srcFile 'src/henxtech/AndroidManifest.xml'
+        }
     }
 
     productFlavors {
@@ -355,7 +363,25 @@ android {
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.radifeel.FileProvider"]
             flavorDimensions "demo1"
         }
-
+        //恒昕泰 定制
+        henxtech{
+            applicationIdSuffix ".henxtech"
+            versionCode rootProject.ext.envInfo.DYTConfig.VCode
+            versionName rootProject.ext.envInfo.DYTConfig.VName
+            // 动态修改 常量 字段
+            buildConfigField "String", "CONFIGS_NAME", '"configs_henxtech"'
+            buildConfigField "String", "SP_NAME", '"DYT_IR_SP_HENXTECH"'
+            buildConfigField "int", "COMPANY_H", '165'
+            manifestPlaceholders = [CHANNEL_VALUE         : "henxtech"
+                                    , app_icon            : "@mipmap/ic_logo_henxtech_round"
+                                    , BUGLYAPPID          : "e58bdac13f"
+                                    , BUGLYAPPVersion     : rootProject.ext.envInfo.HENXTECH.VName
+                                    , BUGLYAPPChannel     : "henxtech"
+                                    , BUGLYENABLEDEBUG    : "false"
+                                    , APP_Channel         : rootProject.ext.envInfo.HENXTECH.appPackageName
+                                    , PROVIDER_AUTHORITIES: "com.dyt.wcc.henxtech.FileProvider"]
+            flavorDimensions "demo1"
+        }
     }
 
 

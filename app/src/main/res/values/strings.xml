@@ -45,6 +45,11 @@
     <string name="about_companyWebsite_content_radifeel">www.radifeel.com</string>
     <string name="about_contactEmail_content_radifeel">service@radifeel.com</string>
 
+<!--    恒昕泰 -->
+    <string name="about_companyName_henxtech">Shenzhen Hengxintai Industrial CO,.LTD.</string>
+    <string name="about_companyWebsite_content_henxtech">www.henxtech.com</string>
+    <string name="about_contactEmail_content_henxtech">amanda@henxtech.com</string>
+
     <!--    页面名称-->
     <!--    <string name="app_name">Pir</string>-->
     <string name="about_devices_type">Type：</string>

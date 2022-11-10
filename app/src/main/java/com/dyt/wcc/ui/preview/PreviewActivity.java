@@ -61,6 +61,8 @@ import com.dyt.wcc.customize.CustomizeCompany;
 import com.dyt.wcc.customize.LanguageFactory;
 import com.dyt.wcc.customize.dyt.DytCompanyView;
 import com.dyt.wcc.customize.dyt.DytLanguageFactory;
+import com.dyt.wcc.customize.henxtech.HenxtechCompanyView;
+import com.dyt.wcc.customize.henxtech.HenxtechLanguageFactory;
 import com.dyt.wcc.customize.jms.JMSCompanyView;
 import com.dyt.wcc.customize.jms.JMSLanguageFactory;
 import com.dyt.wcc.customize.mailseey.MileSeeYCompanyView;
@@ -658,6 +660,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 							break;
 						case DYConstants.COMPANY_RADIFEEL:
 							factory = new RadiFeelLanguageFactory(mContext.get());
+							break;
+						case DYConstants.COMPANY_HENXTECH:
+							factory = new HenxtechLanguageFactory(mContext.get());
 							break;
 						default:
 							factory = new DytLanguageFactory(mContext.get());
@@ -2089,7 +2094,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			CustomizeCompany customizeCompany;
 			View view;
 			switch (BuildConfig.FLAVOR) {
-				case DYConstants.COMPANY_JMS:
+				case DYConstants.COMPANY_JMS://精明鼠
 					customizeCompany = new JMSCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
 
@@ -2102,7 +2107,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 					}
 
 					break;
-				case DYConstants.COMPANY_VICTOR:
+				case DYConstants.COMPANY_VICTOR://胜利
 					customizeCompany = new VictorCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
 					TextView victorTvDeviceType = view.findViewById(R.id.tv_about_devices_type_victor);
@@ -2122,7 +2127,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						}
 					});
 					break;
-				case DYConstants.COMPANY_QIANLI:
+				case DYConstants.COMPANY_QIANLI://潜力
 					customizeCompany = new QianliCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
 					view.findViewById(R.id.tv_about_main_user_manual_info_qianli).setOnClickListener(v3 -> {
@@ -2134,7 +2139,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						}
 					});
 					break;
-				case DYConstants.COMPANY_TESLONG:
+				case DYConstants.COMPANY_TESLONG://泰视朗
 					customizeCompany = new TeslongCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
 //					TextView teslongTvDeviceType = view.findViewById(R.id.tv_about_devices_type_votin);
@@ -2146,11 +2151,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 //						teslongTvDeviceType.setText("TR256");
 //					}
 					break;
-				case DYConstants.COMPANY_NEUTRAL:
+				case DYConstants.COMPANY_NEUTRAL://中性版
 					customizeCompany = new NeutralCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
 					break;
-				case DYConstants.COMPANY_MAILSEEY:
+				case DYConstants.COMPANY_MAILSEEY://迈测
 					customizeCompany = new MileSeeYCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
 
@@ -2179,7 +2184,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						}
 					});
 					break;
-				case DYConstants.COMPANY_VOTIN:
+				case DYConstants.COMPANY_VOTIN://光智
 					customizeCompany = new VotinCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
 					TextView tvDeviceType = view.findViewById(R.id.tv_about_devices_type_votin);
@@ -2199,7 +2204,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.votin.PdfActivity.class));
 					});
 					break;
-				case DYConstants.COMPANY_RADIFEEL:
+				case DYConstants.COMPANY_RADIFEEL://睿迪菲尔
 					customizeCompany = new RadiFeelCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
 
@@ -2214,11 +2219,21 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						if (companyPopWindows != null && companyPopWindows.isShowing()) {
 							companyPopWindows.dismiss();
 						}
-						Log.e(TAG, "initListener: =================" + BuildConfig.FLAVOR);
 						//						if (checkRecording()){closeRecording();}
 						startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.radifeel.RadiFeelPdfActivity.class));
 					});
 					break;
+				case DYConstants.COMPANY_HENXTECH://恒昕泰
+					customizeCompany = new HenxtechCompanyView();
+					view = customizeCompany.getCompanyView(mContext.get());
+					view.findViewById(R.id.tv_about_user_manual_henxtech).setOnClickListener(v3 -> {
+						if (companyPopWindows != null && companyPopWindows.isShowing()) {
+							companyPopWindows.dismiss();
+						}
+						startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.henxtech.HenxtechUserManualActivity.class));
+					});
+					break;
+
 				default:
 					customizeCompany = new DytCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());

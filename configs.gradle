@@ -16,16 +16,16 @@ ext {
 
     // 多渠道产品信息
     envInfo = [
-            DYTConfig    : [
+            DYTConfig     : [
                     // 应用 id
                     appId         : "com.dyt.wcc",
                     // 构建版本号
-                    VCode         : 233,
+                    VCode         : 235,
                     // 版本名称
-                    VName         : "1.4.04",
+                    VName         : "1.4.06",
                     appPackageName: "DytSpectrumOwl",
             ],
-            NeutralConfig    : [
+            NeutralConfig : [
                     // 应用 id
                     appId         : "com.dyt.wcc",
                     // 构建版本号
@@ -34,7 +34,7 @@ ext {
                     VName         : "0.0.1",
                     appPackageName: "Neutral",
             ],
-            JMSConfig    : [
+            JMSConfig     : [
                     // 应用 id
                     appId         : "com.dyt.wcc",
                     // 构建版本号
@@ -44,7 +44,7 @@ ext {
                     appPackageName: "NOYAFA",
             ],
             // 潜力  定制版
-            QianLiConfig : [
+            QianLiConfig  : [
                     // 应用 id
                     appId         : "com.dyt.wcc",
                     // 构建版本号
@@ -54,7 +54,7 @@ ext {
                     appPackageName: "QianLiIR",
             ],
             // 泰视朗  定制版
-            TeslongConfig: [
+            TeslongConfig : [
                     // 应用 id
                     appId         : "com.dyt.wcc",
                     // 构建版本号
@@ -64,7 +64,7 @@ ext {
                     appPackageName: "TeslongIR",
             ],
             //胜利 定制版
-            VICTORConfig : [
+            VICTORConfig  : [
                     // 应用 id
                     appId         : "com.dyt.wcc",
                     // 构建版本号
@@ -74,7 +74,7 @@ ext {
                     appPackageName: "VICTOR",
             ],
             //迈测定制
-            MILESEEYConfig : [
+            MILESEEYConfig: [
                     // 应用 id
                     appId         : "com.dyt.wcc",
                     // 构建版本号
@@ -84,7 +84,7 @@ ext {
                     appPackageName: "MILESEEY",
             ],
             //光智定制
-            VOTINConfig : [
+            VOTINConfig   : [
                     // 应用 id
                     appId         : "com.dyt.wcc",
                     // 构建版本号
@@ -94,7 +94,7 @@ ext {
                     appPackageName: "VOTIN",
             ],
             //睿迪菲尔 定制
-            RADIFEEL :[
+            RADIFEEL      : [
                     // 应用 id
                     appId         : "com.dyt.wcc",
                     // 构建版本号
@@ -102,6 +102,13 @@ ext {
                     // 版本名称
                     VName         : "1.1.1",
                     appPackageName: "RADIFEEL",
+            ],
+//          恒昕泰  henxtech
+            HENXTECH      : [
+                    appId         : "com.dyt.wcc",
+                    VCode         : 101,
+                    VName         : "1.1.1",
+                    appPackageName: "HENXTECH"
             ],
     ]
 
