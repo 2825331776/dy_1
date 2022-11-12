@@ -5,3 +5,8 @@ include ':CameraCommon'
 include ':UvcConnect'
 include ':easyphotos'
 include ':library'
+include ':PhotoHelper'
+
+include ':BaseJniLib'
+include ':BaseLib'
+include ':Build_So'
