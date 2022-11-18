@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
@@ -23,13 +22,9 @@ import com.huantansheng.easyphotos.R;
 import com.huantansheng.easyphotos.constant.Type;
 import com.huantansheng.easyphotos.models.album.entity.Photo;
 import com.huantansheng.easyphotos.setting.Setting;
-import com.huantansheng.easyphotos.utils.media.DurationUtils;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * 大图预览界面图片集合的适配器
@@ -76,20 +71,20 @@ public class PreviewPhotosAdapter extends RecyclerView.Adapter<PreviewPhotosAdap
 		holder.ivPhotoView.setVisibility(View.GONE);
 		holder.ivLongPhoto.setVisibility(View.GONE);
 
-		holder.tvDuration.setVisibility(View.INVISIBLE);
-
-		holder.tvFileName.setText(String.format("%s", photos.get(position).name));
-
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.US);
-		// Create a calendar object that will convert the date and time value in milliseconds to date.
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(photos.get(position).time * 1000);
-		holder.tvShootingTime.setText(String.format("%s", formatter.format(calendar.getTime())));
+//		holder.tvDuration.setVisibility(View.INVISIBLE);
+//
+//		holder.tvFileName.setText(String.format("%s", photos.get(position).name));
+//
+//		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.US);
+//		// Create a calendar object that will convert the date and time value in milliseconds to date.
+//		Calendar calendar = Calendar.getInstance();
+//		calendar.setTimeInMillis(photos.get(position).time * 1000);
+//		holder.tvShootingTime.setText(String.format("%s", formatter.format(calendar.getTime())));
 
 		if (type.contains(Type.VIDEO)) {
 			//            holder.tvDuration.setText(String.format("%ss", photos.get(position).duration/1000));
-			holder.tvDuration.setText(DurationUtils.format(photos.get(position).duration));
-			holder.tvDuration.setVisibility(View.VISIBLE);
+//			holder.tvDuration.setText(DurationUtils.format(photos.get(position).duration));
+//			holder.tvDuration.setVisibility(View.VISIBLE);
 			holder.ivPhotoView.setVisibility(View.VISIBLE);
 
 			//			MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
@@ -192,18 +187,18 @@ public class PreviewPhotosAdapter extends RecyclerView.Adapter<PreviewPhotosAdap
 		public SubsamplingScaleImageView ivLongPhoto;
 		ImageView ivPlay;
 		PhotoView ivPhotoView;
-		TextView  tvFileName;//文件名
-		TextView  tvShootingTime;//拍摄时间
-		TextView  tvDuration;//时长
+//		TextView  tvFileName;//文件名
+//		TextView  tvShootingTime;//拍摄时间
+//		TextView  tvDuration;//时长
 
 		PreviewPhotosViewHolder (View itemView) {
 			super(itemView);
 			ivLongPhoto = itemView.findViewById(R.id.iv_long_photo);
 			ivPhotoView = itemView.findViewById(R.id.iv_photo_view);
 			ivPlay = itemView.findViewById(R.id.iv_play);
-			tvFileName = itemView.findViewById(R.id.tv_file_name);
-			tvShootingTime = itemView.findViewById(R.id.tv_shooting_time);
-			tvDuration = itemView.findViewById(R.id.tv_file_duration);
+//			tvFileName = itemView.findViewById(R.id.tv_file_name);
+//			tvShootingTime = itemView.findViewById(R.id.tv_shooting_time);
+//			tvDuration = itemView.findViewById(R.id.tv_file_duration);
 		}
 	}
 }

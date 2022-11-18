@@ -14,6 +14,8 @@
 
     <!--    整体背景颜色-->
     <color name="bg_preview_right">#FF071132</color>
+<!--    jms MTI448 soft_bg-->
+    <color name="base_bg_app_mti448">#FF6E6F6D</color>
     <!--    布局右侧按钮颜色-->
     <color name="bg_preview_toggle_select">#FF4AD662</color>
     <color name="bg_preview_toggle_unselect">#FFDDDDDD</color>

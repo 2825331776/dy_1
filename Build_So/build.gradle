@@ -4,11 +4,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 32
+    def lib_version = rootProject.ext.projectVersions
+
+    compileSdkVersion lib_version.lib_compileSdk
 
     defaultConfig {
-        minSdkVersion 23
-        targetSdkVersion 32
+        minSdkVersion lib_version.lib_minSdk
+        targetSdkVersion lib_version.lib_targetSdk
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"

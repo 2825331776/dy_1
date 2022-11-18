@@ -40,6 +40,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.databinding.DataBindingUtil;
 
 import com.dyt.wcc.BuildConfig;
@@ -150,6 +151,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 				break;
 		}
 	};
+
+
 	private UVCCameraHandler mUvcCameraHandler;
 	//点线矩形测温弹窗
 	private PopupWindow      PLRPopupWindows;
@@ -702,6 +705,19 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			return false;
 		}
 	});
+	private void MTI448_relayout(){
+		//更改背景颜色
+		mDataBinding.clPreviewActivity.setBackgroundColor(R.color.base_bg_app_mti448);
+
+		ConstraintLayout.LayoutParams settingParams = new ConstraintLayout.LayoutParams(DensityUtil.dp2px(this,40),DensityUtil.dp2px(this,40));
+		settingParams.baselineToBaseline = R.id.gl_left_percent2;
+		mDataBinding.ivPreviewRightSetting.setLayoutParams(settingParams);
+
+		//
+
+
+	}
+
 	private       Surface                                 stt;
 	private final USBMonitor.OnDeviceConnectListener      onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
 		@Override

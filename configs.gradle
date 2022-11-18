@@ -1,17 +1,24 @@
 ext {
     projectVersions = [
             //编译及其构建版本
-            compileSdkV: 31,
-            buildToolsV: "30.0.3",
+            compileSdkV   : 31,
+            buildToolsV   : "30.0.3",
             //支持的sdk范围21-29
-            minSdkV    : 23,
-            targetSdkV : 31,
+            minSdkV       : 23,
+            targetSdkV    : 31,
             //版本号和名字
-            VCode      : 105,
-            VName      : "1.1.5",
+            VCode         : 105,
+            VName         : "1.1.5",
 
-            supportV   : "27.0.0",
-            appId      : "com.dyt.wcc"
+            supportV      : "27.0.0",
+            appId         : "com.dyt.wcc",
+
+            //base lib version: module:Base  BaseJni BuildSo Business GestureDetector
+            lib_compileSdk: 31,
+            lib_buildTools: "31.0.0",
+            lib_minSdk    : 23,
+            lib_targetSdk : 31,
+            lib_ndk :"21.4.7075529"
     ]
 
     // 多渠道产品信息
@@ -109,6 +116,14 @@ ext {
                     VCode         : 101,
                     VName         : "1.1.1",
                     appPackageName: "HENXTECH"
+            ],
+
+            //精明鼠 MTI_448
+            MTI_448      : [
+                    appId         : "com.dyt.wcc",
+                    VCode         : 101,
+                    VName         : "1.1.1",
+                    appPackageName: "MTI448"
             ],
     ]
 

@@ -142,6 +142,14 @@ android {
             res.srcDirs = ['src/henxtech/res-henxtech']
             manifest.srcFile 'src/henxtech/AndroidManifest.xml'
         }
+
+        //精明鼠 MTI448
+        MTI448{
+            java.srcDirs = ['src/mti448/java']
+            assets.srcDirs = ['src/mti448/assets']
+            res.srcDirs = ['src/mti448/res-mti448']
+            manifest.srcFile 'src/mti448/AndroidManifest.xml'
+        }
     }
 
     productFlavors {
@@ -151,8 +159,7 @@ android {
             applicationIdSuffix ".dytpir"
             versionCode rootProject.ext.envInfo.DYTConfig.VCode
             versionName rootProject.ext.envInfo.DYTConfig.VName
-            // 动态添加 string.xml 字段；
-            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
+            //动态添加 string.xml 字段； 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
 //            resValue "string", "app_name", "web"
             // 动态修改 常量 字段
             buildConfigField "String", "CONFIGS_NAME", '"configs_dyt"'
@@ -174,7 +181,6 @@ android {
             applicationIdSuffix ".neutral"
             versionCode rootProject.ext.envInfo.DYTConfig.VCode
             versionName rootProject.ext.envInfo.DYTConfig.VName
-            // 动态修改 常量 字段
             buildConfigField "String", "CONFIGS_NAME", '"configs_neutral"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_NEUTRAL"'
             buildConfigField "int", "COMPANY_H", '110'
@@ -190,15 +196,9 @@ android {
         }
         //黑卡
         heika {
-//            applicationId versions.appId
             applicationIdSuffix ".heika"
             versionCode rootProject.ext.envInfo.DYTConfig.VCode
             versionName rootProject.ext.envInfo.DYTConfig.VName
-            // 动态添加 string.xml 字段；
-            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
-//            resValue "string", "app_name", "web"
-//            resValue "bool", "auto_updates", 'false'
-            // 动态修改 常量 字段
             buildConfigField "String", "CONFIGS_NAME", '"configs_dyt"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_HEIKA"'
             buildConfigField "int", "COMPANY_H", '110'
@@ -274,15 +274,9 @@ android {
         }
 
         victor {
-            // 每个环境包名不同
             applicationIdSuffix ".victor"
             versionCode rootProject.ext.envInfo.DYTConfig.VCode
             versionName rootProject.ext.envInfo.DYTConfig.VName
-            // 动态添加 string.xml 字段；
-            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
-//            resValue "string", "app_name", "xiaomi"
-//            resValue "bool", "auto_updates", 'false'
-            // 动态修改 常量 字段
             buildConfigField "String", "CONFIGS_NAME", '"configs_victor"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_VICTOR"'
             buildConfigField "int", "COMPANY_H", '175'
@@ -298,15 +292,9 @@ android {
         }
         //迈测 定制
         mileseey {
-            // 每个环境包名不同
             applicationIdSuffix ".mileseey"
             versionCode rootProject.ext.envInfo.DYTConfig.VCode
             versionName rootProject.ext.envInfo.DYTConfig.VName
-            // 动态添加 string.xml 字段；
-            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
-//            resValue "string", "app_name", "xiaomi"
-//            resValue "bool", "auto_updates", 'false'
-            // 动态修改 常量 字段
             buildConfigField "String", "CONFIGS_NAME", '"configs_mileseey"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_MILESEEY"'
             buildConfigField "int", "COMPANY_H", '175'
@@ -322,15 +310,9 @@ android {
         }
         //光智 定制
         votin {
-            // 每个环境包名不同
             applicationIdSuffix ".votin"
             versionCode rootProject.ext.envInfo.DYTConfig.VCode
             versionName rootProject.ext.envInfo.DYTConfig.VName
-            // 动态添加 string.xml 字段；
-            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
-//            resValue "string", "app_name", "xiaomi"
-//            resValue "bool", "auto_updates", 'false'
-            // 动态修改 常量 字段
             buildConfigField "String", "CONFIGS_NAME", '"configs_votin"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_VOTIN"'
             buildConfigField "int", "COMPANY_H", '180'
@@ -349,7 +331,6 @@ android {
             applicationIdSuffix ".radifeel"
             versionCode rootProject.ext.envInfo.DYTConfig.VCode
             versionName rootProject.ext.envInfo.DYTConfig.VName
-            // 动态修改 常量 字段
             buildConfigField "String", "CONFIGS_NAME", '"configs_radifeel"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_RADIFEEL"'
             buildConfigField "int", "COMPANY_H", '165'
@@ -368,7 +349,6 @@ android {
             applicationIdSuffix ".henxtech"
             versionCode rootProject.ext.envInfo.DYTConfig.VCode
             versionName rootProject.ext.envInfo.DYTConfig.VName
-            // 动态修改 常量 字段
             buildConfigField "String", "CONFIGS_NAME", '"configs_henxtech"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_HENXTECH"'
             buildConfigField "int", "COMPANY_H", '165'
@@ -380,6 +360,24 @@ android {
                                     , BUGLYENABLEDEBUG    : "false"
                                     , APP_Channel         : rootProject.ext.envInfo.HENXTECH.appPackageName
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.henxtech.FileProvider"]
+            flavorDimensions "demo1"
+        }
+        //精明鼠 MTI448 版本
+        MTI448{
+            applicationIdSuffix ".mti448"
+            versionCode rootProject.ext.envInfo.DYTConfig.VCode
+            versionName rootProject.ext.envInfo.DYTConfig.VName
+            buildConfigField "String", "CONFIGS_NAME", '"configs_mti448"'
+            buildConfigField "String", "SP_NAME", '"DYT_IR_SP_MTI448"'
+            buildConfigField "int", "COMPANY_H", '165'
+            manifestPlaceholders = [CHANNEL_VALUE         : "mti448"
+                                    , app_icon            : "@mipmap/ic_logo_henxtech_round"
+                                    , BUGLYAPPID          : "e58bdac13f"
+                                    , BUGLYAPPVersion     : rootProject.ext.envInfo.MTI_448.VName
+                                    , BUGLYAPPChannel     : "mti448"
+                                    , BUGLYENABLEDEBUG    : "false"
+                                    , APP_Channel         : rootProject.ext.envInfo.MTI_448.appPackageName
+                                    , PROVIDER_AUTHORITIES: "com.dyt.wcc.mti448.FileProvider"]
             flavorDimensions "demo1"
         }
     }

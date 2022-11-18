@@ -100,7 +100,6 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 	private ImageView ivBack;
 
 	private PhotoHandler photoHandler;
-	private ImageView    iv1, iv2, iv3;
 	private static String currentPicPath = null;
 
 	@Override
@@ -111,20 +110,8 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 		SystemUtils.getInstance().systemUiInit(this, decorView);
 
 		setContentView(R.layout.activity_preview_easy_photos);
-		iv1 = findViewById(R.id.iv_pic_analysis_tools_1);
-		iv2 = findViewById(R.id.iv_pic_analysis_tools_2);
-		iv3 = findViewById(R.id.iv_pic_analysis_tools_3);
 		photoHandler = new PhotoHandler(new PhotoNativeHelper());
 		//		currentPicPath = "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/aa.jpg";
-		iv1.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick (View v) {
-				Log.e("TAG", "onClick: " + photoHandler.verifyFilePath(currentPicPath));
-			}
-		});
-		iv2.setOnClickListener(v -> {
-			Log.e("TAG", "onClick: " + photoHandler.getByteArrayByFilePath(currentPicPath));
-		});
 
 
 		hideActionBar();
