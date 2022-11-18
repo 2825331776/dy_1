@@ -707,13 +707,26 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 	});
 	private void MTI448_relayout(){
 		//更改背景颜色
-		mDataBinding.clPreviewActivity.setBackgroundColor(R.color.base_bg_app_mti448);
+		mDataBinding.clPreviewActivity.setBackgroundColor(getColor(R.color.base_bg_app_mti448));
+
+		//左侧 布局调整
+		ConstraintLayout.LayoutParams aboutParams = new ConstraintLayout.LayoutParams(DensityUtil.dp2px(this,40),DensityUtil.dp2px(this,40));
+		aboutParams.baselineToBaseline = R.id.gl_left_percent1;
+		mDataBinding.ivPreviewLeftCompanyInfo.setLayoutParams(aboutParams);
+		mDataBinding.ivPreviewLeftCompanyInfo.setBackgroundResource(R.drawable.selector_mti448_preview_aboutus);
 
 		ConstraintLayout.LayoutParams settingParams = new ConstraintLayout.LayoutParams(DensityUtil.dp2px(this,40),DensityUtil.dp2px(this,40));
 		settingParams.baselineToBaseline = R.id.gl_left_percent2;
 		mDataBinding.ivPreviewRightSetting.setLayoutParams(settingParams);
 
-		//
+		mDataBinding.ivPreviewLeftReset.setBackgroundResource(R.drawable.selector_mti448_preview_clear);
+
+
+		//右侧测温工具栏
+		mDataBinding.ivPreviewRightTempMode.setBackgroundResource(R.drawable.selector_mti448_preview_measure_temp);
+		mDataBinding.toggleShowHighLowTemp.setBackgroundResource(R.drawable.selector_mti448_preview_highlowtemp_trace);
+		mDataBinding.toggleHighTempAlarm.setBackgroundResource(R.drawable.selector_mti448_preview_over_alarm);
+		mDataBinding.toggleFixedTempBar.setBackgroundResource(R.drawable.selector_mti448_preview_fixtempstrip);
 
 
 	}

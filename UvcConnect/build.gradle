@@ -12,8 +12,6 @@ android {
     defaultConfig {
         minSdkVersion versions.minSdkV
         targetSdkVersion versions.targetSdkV
-        versionCode versions.VCode
-        versionName versions.VName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 //        consumerProguardFiles "consumer-rules.pro"
