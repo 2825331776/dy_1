@@ -225,7 +225,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 	private Bitmap highTempBt, lowTempBt, centerTempBt, normalPointBt;
 	//	private DisplayMetrics metrics;
 	//	private Configuration  configuration;
-	private       boolean                                 isFirstRun              = false;
+	private       boolean                                 isFirstRun           = false;
 	//	//校正输入框 过滤器
 	//	private TextWatcher reviseTextWatcher;
 	//	//发射率输入框 拦截器
@@ -235,15 +235,15 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 	//	//环境温度 输入框 拦截器
 	//	private TextWatcher environmentTextWatcher;
 	// 重置参数 返回值
-	private       int                                     defaultSettingReturn    = -1;
+	private       int                                     defaultSettingReturn = -1;
 	//更新工具类对象
 	private       AppUpdater                              mAppUpdater;
-	private       int                                     maxIndex                = 0;
+	private       int                                     maxIndex             = 0;
 	private       List<UpdateObj>                         updateObjList;
 	//传感器
 	private       AbstractUVCCameraHandler.CameraCallback cameraCallback;
 	private       LoadingDialog                           loadingDialog;
-	private final Handler                                 mHandler                = new Handler(new Handler.Callback() {
+	private final Handler                                 mHandler             = new Handler(new Handler.Callback() {
 		@Override
 		public boolean handleMessage (@NonNull Message msg) {
 			switch (msg.what) {
@@ -705,34 +705,45 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			return false;
 		}
 	});
-	private void MTI448_relayout(){
-		//更改背景颜色
-		mDataBinding.clPreviewActivity.setBackgroundColor(getColor(R.color.base_bg_app_mti448));
 
-		//左侧 布局调整
-		ConstraintLayout.LayoutParams aboutParams = new ConstraintLayout.LayoutParams(DensityUtil.dp2px(this,40),DensityUtil.dp2px(this,40));
-		aboutParams.baselineToBaseline = R.id.gl_left_percent1;
+	private void MTI448_relayout () {
+		//更改背景颜色
+		mDataBinding.clMainPreview.setBackgroundColor(getColor(R.color.base_bg_app_mti448));
+
+		//左侧 关于
+		ConstraintLayout.LayoutParams aboutParams = new ConstraintLayout.LayoutParams(DensityUtil.dp2px(this, 40), DensityUtil.dp2px(this, 40));
+		aboutParams.topToTop = R.id.gl_left_percent1;
+		aboutParams.bottomToBottom = R.id.gl_left_percent1;
+		aboutParams.leftToLeft = R.id.iv_preview_left_Reset;
+		aboutParams.rightToRight = R.id.iv_preview_left_Reset;
 		mDataBinding.ivPreviewLeftCompanyInfo.setLayoutParams(aboutParams);
 		mDataBinding.ivPreviewLeftCompanyInfo.setBackgroundResource(R.drawable.selector_mti448_preview_aboutus);
-
-		ConstraintLayout.LayoutParams settingParams = new ConstraintLayout.LayoutParams(DensityUtil.dp2px(this,40),DensityUtil.dp2px(this,40));
-		settingParams.baselineToBaseline = R.id.gl_left_percent2;
+		//左侧 设置
+		ConstraintLayout.LayoutParams settingParams = new ConstraintLayout.LayoutParams(DensityUtil.dp2px(this, 40), DensityUtil.dp2px(this, 40));
+		settingParams.topToTop = R.id.gl_left_percent2;
+		settingParams.bottomToBottom = R.id.gl_left_percent2;
+		settingParams.leftToLeft = R.id.iv_preview_left_Reset;
+		settingParams.rightToRight = R.id.iv_preview_left_Reset;
 		mDataBinding.ivPreviewRightSetting.setLayoutParams(settingParams);
-
 		mDataBinding.ivPreviewLeftReset.setBackgroundResource(R.drawable.selector_mti448_preview_clear);
 
-
 		//右侧测温工具栏
+		mDataBinding.ivPreviewLeftPalette.setBackgroundResource(R.drawable.selector_mti448_preview_palette);
 		mDataBinding.ivPreviewRightTempMode.setBackgroundResource(R.drawable.selector_mti448_preview_measure_temp);
 		mDataBinding.toggleShowHighLowTemp.setBackgroundResource(R.drawable.selector_mti448_preview_highlowtemp_trace);
 		mDataBinding.toggleHighTempAlarm.setBackgroundResource(R.drawable.selector_mti448_preview_over_alarm);
 		mDataBinding.toggleFixedTempBar.setBackgroundResource(R.drawable.selector_mti448_preview_fixtempstrip);
 
+		//remove cut line
+		mDataBinding.clMainPreview.removeView(mDataBinding.tvCutLineLeft);
+		mDataBinding.clMainPreview.removeView(mDataBinding.tvCutLineSeekbarLeft);
+		mDataBinding.clMainPreview.removeView(mDataBinding.tvCutLineSeekbarRight);
+
 
 	}
 
-	private       Surface                                 stt;
-	private final USBMonitor.OnDeviceConnectListener      onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
+	private       Surface                            stt;
+	private final USBMonitor.OnDeviceConnectListener onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
 		@Override
 		public void onAttach (UsbDevice device) {
 			//			if (isDebug)Log.e(TAG, "DD  onAttach: "+ device.toString());
@@ -850,7 +861,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 				Log.e(TAG, "DD  onCancel: ");
 		}
 	};
-	private       MyNumberPicker                          myNumberPicker;
+	private       MyNumberPicker                     myNumberPicker;
 
 	private int oldRotation = 0;
 
@@ -1436,6 +1447,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 
 	@Override
 	protected void initView () {
+		Log.e(TAG, "----------FLAVOR------------ " + BuildConfig.FLAVOR);
+		if (BuildConfig.FLAVOR.equals(DYConstants.COMPANY_DYT)) {
+			MTI448_relayout();
+		}
+
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
 		loadingDialog = LoadingDialog.get(mContext.get());
 
@@ -1719,12 +1735,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 	}
 
 	private boolean isSavePhoto = false;
+
 	/**
 	 * 初始化界面的监听器
 	 */
 	private void initListener () {
 		//测试的 监听器
-//		mDataBinding.btTest01.setVisibility(View.VISIBLE);
+		//		mDataBinding.btTest01.setVisibility(View.VISIBLE);
 		mDataBinding.btTest01.setOnClickListener(v -> {
 			//			CrashReport.testJavaCrash();
 			//******************************testJNi***************************************
@@ -1804,8 +1821,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			//*****************************************************************
 
 			//*****************************旋转180************************************
-//			isRotate = !isRotate;
-//			mUvcCameraHandler.setRotateMatrix_180(isRotate);
+			//			isRotate = !isRotate;
+			//			mUvcCameraHandler.setRotateMatrix_180(isRotate);
 		});
 		//
 		/**
@@ -2039,7 +2056,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		mDataBinding.ivPreviewLeftTakePhoto.setOnClickListener(v -> {
 			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()) {
 				String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
-				if (!isSavePhoto){
+				if (!isSavePhoto) {
 					isSavePhoto = true;
 					mUvcCameraHandler.captureStill(picPath);
 					mHandler.postDelayed(new Runnable() {
@@ -2047,7 +2064,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						public void run () {
 							isSavePhoto = false;
 						}
-					},500);
+					}, 500);
 				}
 				//				else {
 				//					Log.e(TAG, "=========正在保存图片==============");
@@ -2171,14 +2188,14 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 				case DYConstants.COMPANY_TESLONG://泰视朗
 					customizeCompany = new TeslongCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
-//					TextView teslongTvDeviceType = view.findViewById(R.id.tv_about_devices_type_votin);
-//
-//					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
-//						teslongTvDeviceType.setText("TR256");
-//					}
-//					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 160 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 120) {
-//						teslongTvDeviceType.setText("TR256");
-//					}
+					//					TextView teslongTvDeviceType = view.findViewById(R.id.tv_about_devices_type_votin);
+					//
+					//					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
+					//						teslongTvDeviceType.setText("TR256");
+					//					}
+					//					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 160 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 120) {
+					//						teslongTvDeviceType.setText("TR256");
+					//					}
 					break;
 				case DYConstants.COMPANY_NEUTRAL://中性版
 					customizeCompany = new NeutralCompanyView();
@@ -2229,7 +2246,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						if (companyPopWindows != null && companyPopWindows.isShowing()) {
 							companyPopWindows.dismiss();
 						}
-						if (checkRecording()){closeRecording();}
+						if (checkRecording()) {
+							closeRecording();
+						}
 						startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.votin.PdfActivity.class));
 					});
 					break;
@@ -2432,7 +2451,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		companyPopWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		companyPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 		companyPopWindows.setHeight(DensityUtil.dp2px(mContext.get(), BuildConfig.COMPANY_H));
-//		companyPopWindows.setHeight(ConstraintLayout.LayoutParams);
+		//		companyPopWindows.setHeight(ConstraintLayout.LayoutParams);
 		companyPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
 
 		companyPopWindows.setFocusable(false);

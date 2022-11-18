@@ -37,6 +37,8 @@ public class DYConstants {
 	public static final String COMPANY_RADIFEEL = "radifeel";//睿迪菲尔
 	public static final String COMPANY_HENXTECH = "henxtech";//恒昕泰
 
+	public static final String COMPANY_MTI448 = "MTI448";//恒昕泰
+
 	public static final String PIC_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + File.separator + "DYTCamera";
 
 	//	public static final String[] languageArray                     = new String[]{"中文", "English"};
