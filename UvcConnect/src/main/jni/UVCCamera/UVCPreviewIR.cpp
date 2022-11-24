@@ -1494,7 +1494,26 @@ UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_args, si
     if (UNLIKELY(hold_bytes < preview->frameBytes)) {   //有手机两帧才返回一帧的数据。
         LOGE("uvc_preview_frame_callback hold_bytes ===> %d < preview->frameBytes  ==== > %d",
              hold_bytes, preview->frameBytes);
-//        unsigned char *headData = preview->CacheBuffer;
+
+        //version 1.4.06
+        if (LIKELY(preview->isRunning() && preview->isComputed())) {
+//        pthread_mutex_lock(&preview->data_callback_mutex);
+//            unsigned  char * thedata = preview->OutBuffer;
+            //void *memcpy(void *destin, void *source, unsigned n);从源source中拷贝n个字节到目标destin中
+            memcpy(preview->OutBuffer, frameData,
+                   hold_bytes);
+            memcpy(preview->backUpBuffer, frameData,
+                   hold_bytes);
+            /* swap the buffers org */
+             //OutBuffer 用于接收 回调的数据流，接收完成后，和之前的HoldBuffer的地址互调。HoldBuffer用于渲染，绘制，查询。
+            uint8_t *tmp_buf = NULL;
+            tmp_buf = preview->OutBuffer;
+            preview->OutBuffer = preview->HoldBuffer;
+            preview->HoldBuffer = tmp_buf;
+            tmp_buf = NULL;
+            preview->signal_receive_frame_data();
+//        pthread_mutex_unlock(&preview->data_callback_mutex);
+        }
         return;
     }
     //preview->isComputed()是否绘制完

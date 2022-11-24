@@ -1,292 +1,390 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/m_root_view"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/easy_photos_bg_primary">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!--    <ImageView-->
-    <!--        android:id="@+id/iv_preview_back"-->
-    <!--        app:layout_constraintTop_toTopOf="parent"-->
-    <!--        app:layout_constraintLeft_toLeftOf="parent"-->
-    <!--        android:src="@color/teal_200"-->
-    <!--        android:layout_marginStart="@dimen/dimen_40dp"-->
-    <!--        android:layout_width="@dimen/dimen_30dp"-->
-    <!--        android:layout_height="@dimen/dimen_30dp"/>-->
+    <data>
 
-    <ImageView
-        android:id="@+id/iv_preview_back"
-        android:layout_width="@dimen/dimen_42dp"
-        android:layout_height="@dimen/dimen_42dp"
-        android:padding="@dimen/dimen_10dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_arrow_back_easy_photos" />
-
-    <View
-        android:id="@+id/m_back_line"
-        android:layout_width="@dimen/dimen_1dp"
-        android:layout_height="@dimen/dimen_18dp"
-        android:background="@color/easy_photos_bar_primary_dark"
-        app:layout_constraintBottom_toBottomOf="@+id/iv_preview_back"
-        app:layout_constraintLeft_toRightOf="@+id/iv_preview_back"
-        app:layout_constraintTop_toTopOf="@id/iv_preview_back" />
-
-    <com.huantansheng.easyphotos.ui.widget.PreviewRecyclerView
-        android:id="@+id/rv_photos"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_preview_back" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="@dimen/dimen_80dp"
-        android:layout_height="@dimen/dimen_200dp"
-        android:background="@drawable/bg_photo_detail_right_tools"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:id="@+id/m_root_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/base_bg_app_mti448">
 
-        <SeekBar
-            android:id="@+id/seekbar_tools"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="@id/ll1"
+        <!--    <ImageView-->
+        <!--        android:id="@+id/iv_preview_back"-->
+        <!--        app:layout_constraintTop_toTopOf="parent"-->
+        <!--        app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--        android:src="@color/teal_200"-->
+        <!--        android:layout_marginStart="@dimen/dimen_40dp"-->
+        <!--        android:layout_width="@dimen/dimen_30dp"-->
+        <!--        android:layout_height="@dimen/dimen_30dp"/>-->
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_photo_detail_actionbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_46dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/ll1"
-            app:layout_constraintTop_toTopOf="@id/ll1" />
-
-
-        <!--        分割线-->
-        <View
-            android:id="@+id/cut_line_seekbar_tools"
-            android:layout_width="1dp"
-            android:layout_height="wrap_content"
-            android:background="@color/easy_photos_bar_primary_dark"
-            app:layout_constraintLeft_toRightOf="@id/seekbar_tools"
-            app:layout_constraintRight_toLeftOf="@id/ll1"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!--    右侧 图片涂鸦工具栏 布局-->
-        <LinearLayout
-            android:id="@+id/ll1"
-            android:layout_width="@dimen/dimen_40dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:orientation="vertical"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/ib_detail_tools_palette"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
+            <ImageView
+                android:id="@+id/iv_preview_back"
+                android:layout_width="@dimen/dimen_42dp"
+                android:layout_height="@dimen/dimen_42dp"
+                android:padding="@dimen/dimen_10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_arrow_back_easy_photos" />
+
+            <View
+                android:id="@+id/m_back_line"
+                android:layout_width="@dimen/dimen_1dp"
+                android:layout_height="@dimen/dimen_18dp"
+                android:background="@color/cardview_dark_background"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_preview_back"
+                app:layout_constraintLeft_toRightOf="@+id/iv_preview_back"
+                app:layout_constraintTop_toTopOf="@id/iv_preview_back" />
+
+            <!--        右侧工具栏-->
+            <LinearLayout
+                android:id="@+id/ll_photo_detail_actionbar_right_tools"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/dimen_10dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="@dimen/dimen_40dp"
+                    android:layout_height="@dimen/dimen_40dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/dimen_5dp"
+                    android:padding="@dimen/dimen_10dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/selector_tools_undo" />
+
+                <ImageView
+                    android:layout_width="@dimen/dimen_40dp"
+                    android:layout_height="@dimen/dimen_40dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/dimen_5dp"
+                    android:padding="@dimen/dimen_10dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/selector_tools_do" />
+
+                <ImageView
+                    android:layout_width="@dimen/dimen_40dp"
+                    android:layout_height="@dimen/dimen_40dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/dimen_5dp"
+                    android:padding="@dimen/dimen_10dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/selector_tools_actionbar_confirm" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <com.huantansheng.easyphotos.ui.widget.PreviewRecyclerView
+            android:id="@+id/rv_photos"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/cl_photo_detail_right_tools"
+            app:layout_constraintTop_toBottomOf="@id/cl_photo_detail_actionbar" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_photo_detail_right_tools"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cl_photo_detail_actionbar">
+
+            <!--    右侧 图片涂鸦工具栏 布局-->
+            <LinearLayout
+                android:id="@+id/ll_palette_character_size_container"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="match_parent"
                 android:layout_margin="5dp"
-                android:background="@null"
-                android:contentDescription="tools_palette"
-                android:padding="5dp"
-                android:scaleType="fitCenter"
-                android:src="@mipmap/photo_detail_tools_palette" />
+                android:gravity="top"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/ll1"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/ib_detail_tools_character"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
+                <com.dyt.wcc.baselib.ui.widget.CirCleImageViewInfo
+                    android:id="@+id/circle_palette"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/dimen_5dp"
+                    android:padding="@dimen/dimen_2dp"
+                    app:default_borderColor="@color/teal_200"
+                    app:border_StrokeWidth="2"
+                    app:contentType="color"
+                    app:isSelect="true" />
+
+                <com.dyt.wcc.baselib.ui.widget.CirCleImageViewInfo
+                    android:id="@+id/circle_character_size"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:padding="@dimen/dimen_2dp"
+                    android:layout_margin="@dimen/dimen_5dp"
+                    app:default_borderColor="@color/teal_200"
+                    app:border_StrokeWidth="2"
+                    app:contentType="bitmap"
+                    app:default_Bitmap="@mipmap/photo_detail_tools_size_2_select" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="@dimen/dimen_3dp"
+                    android:layout_marginEnd="@dimen/dimen_3dp"
+                    android:background="@color/white" />
+                <!--            滑动条-->
+                <com.dyt.wcc.baselib.ui.widget.ColorPickBar
+                    android:id="@+id/edit_color_pick"
+                    android:layout_width="@dimen/dimen_40dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/dimen_10dp"
+
+                    app:bar_orientation="vertical" />
+                <!--            画笔 粗细 选择器-->
+                <com.dyt.wcc.baselib.ui.widget.PaintSizeSelector
+                    android:id="@+id/pss_detail_tools"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:fontSizeEnd="80"
+                    app:fontSizeStart="10"
+                    app:marginTopBottom="10dp"
+                    android:visibility="gone"
+                    app:itemCount="6"
+                    app:scrollOrientation="vertical" />
+
+
+            </LinearLayout>
+
+            <!--        分割线-->
+            <View
+                android:id="@+id/cut_line_seekbar_tools"
+                android:layout_width="1dp"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                app:layout_constraintLeft_toRightOf="@id/ll_palette_character_size_container"
+                app:layout_constraintRight_toLeftOf="@id/ll1"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!--    右侧 图片涂鸦工具栏 布局-->
+            <LinearLayout
+                android:id="@+id/ll1"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="match_parent"
                 android:layout_margin="5dp"
-                android:background="@null"
-                android:contentDescription="tools_character"
-                android:padding="5dp"
-                android:scaleType="fitCenter"
-                android:src="@mipmap/photo_detail_tools_character_red" />
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/ib_detail_tools_doodle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:layout_margin="5dp"
-                android:background="@null"
-                android:contentDescription="@string/app_name"
-                android:padding="5dp"
-                android:scaleType="fitCenter"
-                android:src="@mipmap/photo_detail_tools_doodle_pen" />
 
-            <!--        第二版替换成 图片分析-->
-            <ImageButton
-                android:id="@+id/ib_detail_tools_analyse"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:layout_margin="5dp"
-                android:background="@null"
-                android:contentDescription="character_size"
-                android:padding="5dp"
-                android:scaleType="fitCenter"
-                android:src="@mipmap/photo_detail_tools_analyse" />
+                <CheckBox
+                    android:id="@+id/cb_detail_tools_doodle"
+                    android:layout_width="@dimen/dimen_25dp"
+                    android:layout_height="@dimen/dimen_25dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/selector_tools_doodle"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="@dimen/dimen_5dp" />
 
-            <!--        分割线 -->
-        </LinearLayout>
+                <CheckBox
+                    android:id="@+id/cb_detail_tools_character"
+                    android:layout_width="@dimen/dimen_25dp"
+                    android:layout_height="@dimen/dimen_25dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/selector_tools_character"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="@dimen/dimen_5dp" />
 
+
+                <!--        第二版替换成 图片分析-->
+                <CheckBox
+                    android:id="@+id/cb_detail_tools_analyse"
+                    android:layout_width="@dimen/dimen_25dp"
+                    android:layout_height="@dimen/dimen_25dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/selector_tools_analyse_all"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="@dimen/dimen_5dp" />
+                <!--        分割线 -->
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <!--    <FrameLayout-->
+        <!--        android:id="@+id/m_bar_root_view"-->
+        <!--        android:layout_width="match_parent"-->
+        <!--        android:layout_height="match_parent"-->
+        <!--        android:fitsSystemWindows="true">-->
+
+        <!--        <FrameLayout-->
+        <!--            android:id="@+id/m_top_bar_layout"-->
+        <!--            style="?metaButtonBarStyle"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:background="@color/easy_photos_status_bar">-->
+
+        <!--            <RelativeLayout-->
+        <!--                android:id="@+id/m_top_bar"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="42dp"-->
+        <!--                android:layout_gravity="top"-->
+        <!--                android:background="@color/easy_photos_bar_primary"-->
+        <!--                android:clickable="true"-->
+        <!--                android:fitsSystemWindows="true"-->
+        <!--                android:focusable="true">-->
+
+        <!--                <ImageView-->
+        <!--                    android:id="@+id/iv_back"-->
+        <!--                    android:layout_width="42dp"-->
+        <!--                    android:layout_height="match_parent"-->
+        <!--                    android:layout_alignParentStart="true"-->
+        <!--                    android:layout_alignParentLeft="true"-->
+        <!--                    android:padding="10dp"-->
+        <!--                    app:srcCompat="@drawable/ic_arrow_back_easy_photos" />-->
+
+        <!--                <View-->
+        <!--                    android:id="@+id/m_back_line"-->
+        <!--                    android:layout_width="1dp"-->
+        <!--                    android:layout_height="22dp"-->
+        <!--                    android:layout_alignEnd="@+id/iv_back"-->
+        <!--                    android:layout_alignRight="@+id/iv_back"-->
+        <!--                    android:layout_centerVertical="true"-->
+        <!--                    android:layout_gravity="center_vertical"-->
+        <!--                    android:background="@color/easy_photos_bar_primary_dark" />-->
+
+        <!--                <com.huantansheng.easyphotos.ui.widget.PressedTextView-->
+        <!--                    android:id="@+id/tv_number"-->
+        <!--                    android:layout_width="wrap_content"-->
+        <!--                    android:layout_height="match_parent"-->
+        <!--                    android:layout_toEndOf="@+id/m_back_line"-->
+        <!--                    android:layout_toRightOf="@+id/m_back_line"-->
+        <!--                    android:gravity="center"-->
+        <!--                    android:paddingLeft="16dp"-->
+        <!--                    android:paddingRight="16dp"-->
+        <!--                    android:textColor="@color/easy_photos_fg_primary" />-->
+
+        <!--                <com.huantansheng.easyphotos.ui.widget.PressedTextView-->
+        <!--                    android:id="@+id/tv_done"-->
+        <!--                    android:layout_width="wrap_content"-->
+        <!--                    android:layout_height="wrap_content"-->
+        <!--                    android:layout_alignParentEnd="true"-->
+        <!--                    android:layout_alignParentRight="true"-->
+        <!--                    android:layout_centerVertical="true"-->
+        <!--                    android:layout_marginEnd="8dp"-->
+        <!--                    android:layout_marginRight="8dp"-->
+        <!--                    android:background="@drawable/bg_menu_done_easy_photos"-->
+        <!--                    android:gravity="center"-->
+        <!--                    android:maxWidth="200dp"-->
+        <!--                    android:padding="6dp"-->
+        <!--                    android:textColor="@color/menu_text_easy_photos"-->
+        <!--                    android:textSize="12sp"-->
+        <!--                    android:textStyle="bold" />-->
+
+        <!--            </RelativeLayout>-->
+        <!--        </FrameLayout>-->
+
+
+        <!--        <RelativeLayout-->
+        <!--            android:id="@+id/m_bottom_bar"-->
+        <!--            style="?metaButtonBarStyle"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_gravity="bottom"-->
+        <!--            android:background="@color/easy_photos_bar_primary_translation"-->
+        <!--            android:clickable="true"-->
+        <!--            android:fitsSystemWindows="true"-->
+        <!--            android:focusable="true">-->
+
+        <!--            <FrameLayout-->
+        <!--                android:id="@+id/fl_fragment"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_alignParentTop="true"-->
+        <!--                android:visibility="gone">-->
+
+        <!--                <fragment-->
+        <!--                    android:id="@+id/fragment_preview"-->
+        <!--                    android:name="com.huantansheng.easyphotos.ui.PreviewFragment"-->
+        <!--                    android:layout_width="match_parent"-->
+        <!--                    android:layout_height="wrap_content" />-->
+        <!--            </FrameLayout>-->
+
+        <!--            <com.huantansheng.easyphotos.ui.widget.PressedTextView-->
+        <!--                android:id="@+id/tv_edit"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="42dp"-->
+        <!--                android:layout_below="@+id/fl_fragment"-->
+        <!--                android:layout_alignParentStart="true"-->
+        <!--                android:layout_alignParentLeft="true"-->
+        <!--                android:gravity="center"-->
+        <!--                android:paddingLeft="16dp"-->
+        <!--                android:paddingRight="16dp"-->
+        <!--                android:text="@string/edit_easy_photos"-->
+        <!--                android:textColor="@color/easy_photos_fg_primary"-->
+        <!--                android:textStyle="bold"-->
+        <!--                android:visibility="gone" />-->
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/tv_original"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="42dp"-->
+        <!--                android:layout_below="@+id/fl_fragment"-->
+        <!--                android:layout_centerInParent="true"-->
+        <!--                android:gravity="center"-->
+        <!--                android:text="@string/original_easy_photos"-->
+        <!--                android:textColor="@color/easy_photos_fg_primary"-->
+        <!--                android:textStyle="bold" />-->
+
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/tv_selector"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="42dp"-->
+        <!--                android:layout_below="@+id/fl_fragment"-->
+        <!--                android:layout_toStartOf="@+id/iv_selector"-->
+        <!--                android:layout_toLeftOf="@+id/iv_selector"-->
+        <!--                android:gravity="center"-->
+        <!--                android:text="@string/selector_easy_photos"-->
+        <!--                android:textColor="@color/easy_photos_fg_primary"-->
+        <!--                android:textStyle="bold" />-->
+
+        <!--            <ImageView-->
+        <!--                android:id="@+id/iv_selector"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="42dp"-->
+        <!--                android:layout_below="@+id/fl_fragment"-->
+        <!--                android:layout_alignParentEnd="true"-->
+        <!--                android:layout_alignParentRight="true"-->
+        <!--                android:paddingStart="6dp"-->
+        <!--                android:paddingLeft="6dp"-->
+        <!--                android:paddingEnd="16dp"-->
+        <!--                android:paddingRight="16dp"-->
+        <!--                app:srcCompat="@drawable/ic_selector_easy_photos" />-->
+
+        <!--        </RelativeLayout>-->
+        <!--    </FrameLayout>-->
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <!--    <FrameLayout-->
-    <!--        android:id="@+id/m_bar_root_view"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:fitsSystemWindows="true">-->
-
-    <!--        <FrameLayout-->
-    <!--            android:id="@+id/m_top_bar_layout"-->
-    <!--            style="?metaButtonBarStyle"-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:background="@color/easy_photos_status_bar">-->
-
-    <!--            <RelativeLayout-->
-    <!--                android:id="@+id/m_top_bar"-->
-    <!--                android:layout_width="match_parent"-->
-    <!--                android:layout_height="42dp"-->
-    <!--                android:layout_gravity="top"-->
-    <!--                android:background="@color/easy_photos_bar_primary"-->
-    <!--                android:clickable="true"-->
-    <!--                android:fitsSystemWindows="true"-->
-    <!--                android:focusable="true">-->
-
-    <!--                <ImageView-->
-    <!--                    android:id="@+id/iv_back"-->
-    <!--                    android:layout_width="42dp"-->
-    <!--                    android:layout_height="match_parent"-->
-    <!--                    android:layout_alignParentStart="true"-->
-    <!--                    android:layout_alignParentLeft="true"-->
-    <!--                    android:padding="10dp"-->
-    <!--                    app:srcCompat="@drawable/ic_arrow_back_easy_photos" />-->
-
-    <!--                <View-->
-    <!--                    android:id="@+id/m_back_line"-->
-    <!--                    android:layout_width="1dp"-->
-    <!--                    android:layout_height="22dp"-->
-    <!--                    android:layout_alignEnd="@+id/iv_back"-->
-    <!--                    android:layout_alignRight="@+id/iv_back"-->
-    <!--                    android:layout_centerVertical="true"-->
-    <!--                    android:layout_gravity="center_vertical"-->
-    <!--                    android:background="@color/easy_photos_bar_primary_dark" />-->
-
-    <!--                <com.huantansheng.easyphotos.ui.widget.PressedTextView-->
-    <!--                    android:id="@+id/tv_number"-->
-    <!--                    android:layout_width="wrap_content"-->
-    <!--                    android:layout_height="match_parent"-->
-    <!--                    android:layout_toEndOf="@+id/m_back_line"-->
-    <!--                    android:layout_toRightOf="@+id/m_back_line"-->
-    <!--                    android:gravity="center"-->
-    <!--                    android:paddingLeft="16dp"-->
-    <!--                    android:paddingRight="16dp"-->
-    <!--                    android:textColor="@color/easy_photos_fg_primary" />-->
-
-    <!--                <com.huantansheng.easyphotos.ui.widget.PressedTextView-->
-    <!--                    android:id="@+id/tv_done"-->
-    <!--                    android:layout_width="wrap_content"-->
-    <!--                    android:layout_height="wrap_content"-->
-    <!--                    android:layout_alignParentEnd="true"-->
-    <!--                    android:layout_alignParentRight="true"-->
-    <!--                    android:layout_centerVertical="true"-->
-    <!--                    android:layout_marginEnd="8dp"-->
-    <!--                    android:layout_marginRight="8dp"-->
-    <!--                    android:background="@drawable/bg_menu_done_easy_photos"-->
-    <!--                    android:gravity="center"-->
-    <!--                    android:maxWidth="200dp"-->
-    <!--                    android:padding="6dp"-->
-    <!--                    android:textColor="@color/menu_text_easy_photos"-->
-    <!--                    android:textSize="12sp"-->
-    <!--                    android:textStyle="bold" />-->
-
-    <!--            </RelativeLayout>-->
-    <!--        </FrameLayout>-->
-
-
-    <!--        <RelativeLayout-->
-    <!--            android:id="@+id/m_bottom_bar"-->
-    <!--            style="?metaButtonBarStyle"-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:layout_gravity="bottom"-->
-    <!--            android:background="@color/easy_photos_bar_primary_translation"-->
-    <!--            android:clickable="true"-->
-    <!--            android:fitsSystemWindows="true"-->
-    <!--            android:focusable="true">-->
-
-    <!--            <FrameLayout-->
-    <!--                android:id="@+id/fl_fragment"-->
-    <!--                android:layout_width="match_parent"-->
-    <!--                android:layout_height="wrap_content"-->
-    <!--                android:layout_alignParentTop="true"-->
-    <!--                android:visibility="gone">-->
-
-    <!--                <fragment-->
-    <!--                    android:id="@+id/fragment_preview"-->
-    <!--                    android:name="com.huantansheng.easyphotos.ui.PreviewFragment"-->
-    <!--                    android:layout_width="match_parent"-->
-    <!--                    android:layout_height="wrap_content" />-->
-    <!--            </FrameLayout>-->
-
-    <!--            <com.huantansheng.easyphotos.ui.widget.PressedTextView-->
-    <!--                android:id="@+id/tv_edit"-->
-    <!--                android:layout_width="wrap_content"-->
-    <!--                android:layout_height="42dp"-->
-    <!--                android:layout_below="@+id/fl_fragment"-->
-    <!--                android:layout_alignParentStart="true"-->
-    <!--                android:layout_alignParentLeft="true"-->
-    <!--                android:gravity="center"-->
-    <!--                android:paddingLeft="16dp"-->
-    <!--                android:paddingRight="16dp"-->
-    <!--                android:text="@string/edit_easy_photos"-->
-    <!--                android:textColor="@color/easy_photos_fg_primary"-->
-    <!--                android:textStyle="bold"-->
-    <!--                android:visibility="gone" />-->
-
-    <!--            <TextView-->
-    <!--                android:id="@+id/tv_original"-->
-    <!--                android:layout_width="wrap_content"-->
-    <!--                android:layout_height="42dp"-->
-    <!--                android:layout_below="@+id/fl_fragment"-->
-    <!--                android:layout_centerInParent="true"-->
-    <!--                android:gravity="center"-->
-    <!--                android:text="@string/original_easy_photos"-->
-    <!--                android:textColor="@color/easy_photos_fg_primary"-->
-    <!--                android:textStyle="bold" />-->
-
-
-    <!--            <TextView-->
-    <!--                android:id="@+id/tv_selector"-->
-    <!--                android:layout_width="wrap_content"-->
-    <!--                android:layout_height="42dp"-->
-    <!--                android:layout_below="@+id/fl_fragment"-->
-    <!--                android:layout_toStartOf="@+id/iv_selector"-->
-    <!--                android:layout_toLeftOf="@+id/iv_selector"-->
-    <!--                android:gravity="center"-->
-    <!--                android:text="@string/selector_easy_photos"-->
-    <!--                android:textColor="@color/easy_photos_fg_primary"-->
-    <!--                android:textStyle="bold" />-->
-
-    <!--            <ImageView-->
-    <!--                android:id="@+id/iv_selector"-->
-    <!--                android:layout_width="wrap_content"-->
-    <!--                android:layout_height="42dp"-->
-    <!--                android:layout_below="@+id/fl_fragment"-->
-    <!--                android:layout_alignParentEnd="true"-->
-    <!--                android:layout_alignParentRight="true"-->
-    <!--                android:paddingStart="6dp"-->
-    <!--                android:paddingLeft="6dp"-->
-    <!--                android:paddingEnd="16dp"-->
-    <!--                android:paddingRight="16dp"-->
-    <!--                app:srcCompat="@drawable/ic_selector_easy_photos" />-->
-
-    <!--        </RelativeLayout>-->
-    <!--    </FrameLayout>-->
-</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

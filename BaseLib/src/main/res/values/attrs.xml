@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    颜色选择 tab-->
+    <declare-styleable name="ColorPickBar">
+        <attr name="bar_indicatorColor" format="color" />
+        <attr name="bar_orientation" format="integer">
+            <enum name="horizontal" value="0" />
+            <enum name="vertical" value="1" />
+        </attr>
+    </declare-styleable>
+<!--圆形 显示器 -->
+    <declare-styleable name="CirCleImageViewInfo">
+        <!--  borderColor 边框 颜色  -->
+        <attr name="isSelect" format="boolean" />
+        <attr name="selected_borderColor" format="color|reference"/>
+        <attr name="border_StrokeWidth" format="integer" />
+        <attr name="default_borderColor" format="color|reference" />
+        <attr name="default_Bitmap" format="integer|reference"/>
+        <attr name="contentType" format="integer">
+            <enum name="color" value="0" />
+            <enum name="bitmap" value="1" />
+        </attr>
+
+    </declare-styleable>
+
+<!--  粗细 选择器   -->
+    <declare-styleable name="PaintSizeSelector">
+        <attr name="itemCount" format="integer|reference" />
+        <attr name="marginTopBottom" format="dimension"/>
+        <attr name="bg_all" format="color|reference"/>
+        <attr name="fontSizeStart" format="integer|dimension"/>
+        <attr name="fontSizeEnd" format="integer|dimension"/>
+        <attr name="widthPercentWidget" format="float"/>
+        <attr name="scrollOrientation" format="integer">
+            <enum name="horizontal" value="0" />
+            <enum name="vertical" value="1" />
+        </attr>
+
+    </declare-styleable>
+
+
+</resources>

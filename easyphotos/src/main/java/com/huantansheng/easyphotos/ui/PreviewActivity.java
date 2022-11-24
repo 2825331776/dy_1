@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
@@ -17,17 +16,18 @@ import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.dyt.wcc.baselib.ui.widget.CirCleImageViewInfo;
+import com.dyt.wcc.baselib.ui.widget.ColorPickBar;
 import com.huantansheng.easyphotos.R;
 import com.huantansheng.easyphotos.constant.Code;
 import com.huantansheng.easyphotos.constant.Key;
+import com.huantansheng.easyphotos.databinding.ActivityPreviewEasyPhotosBinding;
 import com.huantansheng.easyphotos.models.album.AlbumModel;
 import com.huantansheng.easyphotos.models.album.entity.Photo;
 import com.huantansheng.easyphotos.picNative.PhotoHandler;
@@ -35,7 +35,6 @@ import com.huantansheng.easyphotos.picNative.PhotoNativeHelper;
 import com.huantansheng.easyphotos.result.Result;
 import com.huantansheng.easyphotos.setting.Setting;
 import com.huantansheng.easyphotos.ui.adapter.PreviewPhotosAdapter;
-import com.huantansheng.easyphotos.utils.Color.ColorUtils;
 import com.huantansheng.easyphotos.utils.system.SystemUtils;
 
 import java.util.ArrayList;
@@ -99,8 +98,8 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 
 	private ImageView ivBack;
 
-	private PhotoHandler photoHandler;
-	private static String currentPicPath = null;
+	private        PhotoHandler photoHandler;
+	private static String       currentPicPath = null;
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
@@ -109,13 +108,14 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 		//        requestWindowFeature(Window.FEATURE_NO_TITLE);
 		SystemUtils.getInstance().systemUiInit(this, decorView);
 
-		setContentView(R.layout.activity_preview_easy_photos);
+		mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_preview_easy_photos);
+		//		setContentView(R.layout.activity_preview_easy_photos);
 		photoHandler = new PhotoHandler(new PhotoNativeHelper());
 		//		currentPicPath = "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/aa.jpg";
 
 
-		hideActionBar();
-		adaptationStatusBar();
+		//		hideActionBar();
+		//		adaptationStatusBar();
 		if (null == AlbumModel.instance) {
 			finish();
 			return;
@@ -124,21 +124,21 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 		initView();
 	}
 
-	private void adaptationStatusBar () {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			statusColor = ContextCompat.getColor(this, R.color.easy_photos_status_bar);
-			if (ColorUtils.isWhiteColor(statusColor)) {
-				getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-			}
-		}
-	}
+	//	private void adaptationStatusBar () {
+	//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+	//			statusColor = ContextCompat.getColor(this, R.color.easy_photos_status_bar);
+	//			if (ColorUtils.isWhiteColor(statusColor)) {
+	//				getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+	//			}
+	//		}
+	//	}
 
-	private void hideActionBar () {
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.hide();
-		}
-	}
+	//	private void hideActionBar () {
+	//		ActionBar actionBar = getSupportActionBar();
+	//		if (actionBar != null) {
+	//			actionBar.hide();
+	//		}
+	//	}
 
 
 	private void initData () {
@@ -271,43 +271,118 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 	}
 
 	private void initView () {
-		//        setClick(R.id.iv_back, R.id.tv_edit, R.id.tv_selector);
-
-		//        mToolBar = (FrameLayout) findViewById(R.id.m_top_bar_layout);
-		if (!SystemUtils.getInstance().hasNavigationBar(this)) {
-			ConstraintLayout mRootView = (ConstraintLayout) findViewById(R.id.m_root_view);
-			mRootView.setFitsSystemWindows(true);
-			//            mToolBar.setPadding(0, SystemUtils.getInstance().getStatusBarHeight(this), 0, 0);
-			if (ColorUtils.isWhiteColor(statusColor)) {
-				SystemUtils.getInstance().setStatusDark(this, true);
-			}
-		}
 		ivBack = findViewById(R.id.iv_preview_back);
 		ivBack.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
-				//                Toast.makeText(PreviewActivity.this, "ivBack click", Toast.LENGTH_SHORT).show();
+				// Toast.makeText(PreviewActivity.this, "ivBack click", Toast.LENGTH_SHORT).show();
 				finish();
 			}
 		});
-		//        mBottomBar = (RelativeLayout) findViewById(R.id.m_bottom_bar);
-		//        ivSelector = (ImageView) findViewById(R.id.iv_selector);
-		//        tvNumber = (TextView) findViewById(R.id.tv_number);
-		//        tvDone = (PressedTextView) findViewById(R.id.tv_done);
-		//        tvOriginal = (TextView) findViewById(R.id.tv_original);
-		//        flFragment = (FrameLayout) findViewById(R.id.fl_fragment);
-		//        previewFragment =
-		//                (PreviewFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_preview);
-		//		if (Setting.showOriginalMenu) {
-		//			processOriginalMenu();
-		//		} else {
-		//			//            tvOriginal.setVisibility(View.GONE);
-		//		}
-
-		//        setClick(tvOriginal, tvDone, ivSelector);
 
 		initRecyclerView();
-		//        shouldShowMenuDone();
+
+		initTools();
+	}
+
+	//control field
+	//是否是我们的图片，item 中 每个都有一份。 控制 按钮 状态
+	private boolean                          myDefinePhoto          = true;
+	private ActivityPreviewEasyPhotosBinding mDataBinding;
+	private int                              type_palette_character = 0;
+
+
+	//my tools listener
+	private void initTools () {
+		mDataBinding.circlePalette.setSelected(true);
+		mDataBinding.circleCharacterSize.setSelected(false);
+		mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.GONE);
+		if (myDefinePhoto) {
+			//			涂鸦 文字 选择。
+			mDataBinding.cbDetailToolsDoodle.setOnClickListener(v -> {
+				//加载储存的 色板, 字号 inde 及其 字号大小
+				//todo ...
+
+				Log.e("TAG", "==========initTools: ========涂鸦=============");
+				mDataBinding.cbDetailToolsDoodle.setSelected(true);
+				mDataBinding.cbDetailToolsCharacter.setSelected(false);
+				type_palette_character = 0;
+				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.VISIBLE);
+			});
+			mDataBinding.cbDetailToolsCharacter.setOnClickListener(v -> {
+				//加载储存的 色板, 字号 inde 及其 字号大小
+				//todo ...
+
+				Log.e("TAG", "==========initTools: ============文字=========");
+				mDataBinding.cbDetailToolsDoodle.setSelected(false);
+				mDataBinding.cbDetailToolsCharacter.setSelected(true);
+				type_palette_character = 1;
+				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.VISIBLE);
+			});
+			//			色板  粗细 选择。
+			mDataBinding.circlePalette.setClickListener((currentData, cirCleImageType) -> {
+				Log.e("TAG", "initTools:circlePalette -------------");
+				mDataBinding.circleCharacterSize.setSelected(false);
+
+				mDataBinding.editColorPick.setVisibility(View.VISIBLE);
+				mDataBinding.pssDetailTools.setVisibility(View.GONE);
+			});
+			mDataBinding.circleCharacterSize.setClickListener((currentData1, cirCleImageType1) -> {
+				Log.e("TAG", "initTools:circlePalette -------------");
+				mDataBinding.circlePalette.setSelected(false);
+
+				mDataBinding.editColorPick.setVisibility(View.GONE);
+				mDataBinding.pssDetailTools.setVisibility(View.VISIBLE);
+			});
+			//			色板  粗细切换  监听。
+			mDataBinding.pssDetailTools.setSelectorListener((position, selectPaintSize) -> {
+				switch (position){
+					case 0:
+						mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_1_select, CirCleImageViewInfo.CirCleImageType.BITMAP);
+						break;
+					case 1:
+						mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_2_select, CirCleImageViewInfo.CirCleImageType.BITMAP);
+						break;
+					case 2:
+						mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_3_select, CirCleImageViewInfo.CirCleImageType.BITMAP);
+						break;
+					case 3:
+						mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_4_select, CirCleImageViewInfo.CirCleImageType.BITMAP);
+						break;
+					case 4:
+						mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_5_select, CirCleImageViewInfo.CirCleImageType.BITMAP);
+						break;
+					case 5:
+						mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_6_select, CirCleImageViewInfo.CirCleImageType.BITMAP);
+						break;
+				}
+				Log.e("TAG", "initTools: --------position---" + position +" selectPaintSize ----" + selectPaintSize);
+				//设置 画笔 或 文字的 值
+			});
+
+			mDataBinding.editColorPick.setOnColorPickerChangeListener(new ColorPickBar.OnColorPickerChangeListener() {
+				@Override
+				public void onColorChanged (ColorPickBar picker, int color) {
+					mDataBinding.circlePalette.setColor(color, CirCleImageViewInfo.CirCleImageType.COLOR);
+					//设置 画笔 或 文字的 值
+				}
+
+				@Override
+				public void onStartTrackingTouch (ColorPickBar picker) {
+
+				}
+
+				@Override
+				public void onStopTrackingTouch (ColorPickBar picker) {
+
+				}
+			});
+
+		} else {
+
+		}
+
+
 	}
 
 	private void initRecyclerView () {
@@ -349,7 +424,7 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 
 	@Override
 	public void onClick (View v) {
-		int id = v.getId();
+		//		int id = v.getId();
 		//        if (R.id.iv_back == id) {
 		//            doBack();
 		//        }
@@ -383,19 +458,6 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 		//        }
 	}
 
-	//	private void processOriginalMenu () {
-	//        if (Setting.selectedOriginal) {
-	//            tvOriginal.setTextColor(ContextCompat.getColor(this, R.color.easy_photos_fg_accent));
-	//        } else {
-	//            if (Setting.originalMenuUsable) {
-	//                tvOriginal.setTextColor(ContextCompat.getColor(this,
-	//                        R.color.easy_photos_fg_primary));
-	//            } else {
-	//                tvOriginal.setTextColor(ContextCompat.getColor(this,
-	//                        R.color.easy_photos_fg_primary_dark));
-	//            }
-	//        }
-	//	}
 
 	private void toggleSelector () {
 		if (photos.get(lastPosition).selected) {

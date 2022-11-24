@@ -17,7 +17,7 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++11"
-                abiFilters 'armeabi-v7a','arm64-v8a','x86_64','x86'
+                abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64', 'x86'
             }
         }
 //        consumerProguardFiles "consumer-rules.pro"
@@ -39,11 +39,16 @@ android {
             version '3.10.2'
         }
     }
+
+    buildFeatures{
+        dataBinding true
+    }
 }
 
 dependencies {
     //依赖于Common  作为Lib
     implementation project(path: ':common')
+    implementation project(path: ':BaseLib')
 //    implementation project(path: ':UvcConnect')
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
