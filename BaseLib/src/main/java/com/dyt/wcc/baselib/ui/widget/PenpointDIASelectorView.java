@@ -24,21 +24,21 @@ import com.dyt.wcc.baselib.R;
  * /n 顺序 多次onMeasure -> onSizeChanged -> layout -> onDraw</p>
  * <p>PackagePath: com.dyt.wcc.wechatpicedit.view     </p>
  */
-public class PaintSizeSelector extends View /*implements ScrollView */ {
+public class PenpointDIASelectorView extends View /*implements ScrollView */ {
 
-	public PaintSizeSelector (Context context) {
+	public PenpointDIASelectorView (Context context) {
 		this(context, null);
 	}
 
-	public PaintSizeSelector (Context context, @Nullable AttributeSet attrs) {
+	public PenpointDIASelectorView (Context context, @Nullable AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
 
-	public PaintSizeSelector (Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+	public PenpointDIASelectorView (Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
 		this(context, attrs, defStyleAttr, 0);
 	}
 
-	public PaintSizeSelector (Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+	public PenpointDIASelectorView (Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 		super(context, attrs, defStyleAttr, defStyleRes);
 		initAttrs(context, attrs);
 
@@ -110,10 +110,10 @@ public class PaintSizeSelector extends View /*implements ScrollView */ {
 	}
 
 	private void initAttrs (Context context, AttributeSet attrs) {
-		TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PaintSizeSelector);
+		TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PenpointDIASelectorView);
 		if (typedArray != null) {
-			itemCount = typedArray.getInt(R.styleable.PaintSizeSelector_itemCount, DEFAULT_ITEM_COUNT);
-			percentWidgetWidth = typedArray.getFloat(R.styleable.PaintSizeSelector_widthPercentWidget, 0.5f);
+			itemCount = typedArray.getInt(R.styleable.PenpointDIASelectorView_itemCount, DEFAULT_ITEM_COUNT);
+			percentWidgetWidth = typedArray.getFloat(R.styleable.PenpointDIASelectorView_widthPercentWidget, 0.5f);
 
 			typedArray.recycle();
 		}
@@ -148,21 +148,21 @@ public class PaintSizeSelector extends View /*implements ScrollView */ {
 	@Override
 	protected void onSizeChanged (int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
-		Log.e(TAG, "onSizeChanged: ");
+//		Log.e(TAG, "onSizeChanged: ");
 		itemWidthHeight = (int) (measureWidth * percentWidgetWidth);
 	}
 
 	@Override
 	public void layout (int l, int t, int r, int b) {
 		super.layout(l, t, r, b);
-		Log.e(TAG, "layout: ");
+//		Log.e(TAG, "layout: ");
 	}
 
 	//顺序 多次onMeasure -> onSizeChanged -> layout -> onDraw
 	@Override
 	protected void onDraw (Canvas canvas) {
 		super.onDraw(canvas);
-		Log.e(TAG, "onDraw: ");
+//		Log.e(TAG, "onDraw: ");
 //		canvas.drawRoundRect(0, 0, measureWidth, measureHeight, measureWidth / 2.0f, measureWidth / 2.0f, borderPaint);
 
 		//顶部margin 和 底部margin
@@ -219,6 +219,13 @@ public class PaintSizeSelector extends View /*implements ScrollView */ {
 		}
 	}
 
+	public int getPressIndex () {
+		return this.selectIndex;
+	}
+	public void setSelectIndex (int selectIndex) {
+		this.selectIndex = selectIndex;
+		invalidate();
+	}
 
 	private int pressIndex = -1;//按下操作的下标
 

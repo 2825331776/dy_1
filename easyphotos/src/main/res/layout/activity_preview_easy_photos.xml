@@ -89,7 +89,7 @@
 
         <com.huantansheng.easyphotos.ui.widget.PreviewRecyclerView
             android:id="@+id/rv_photos"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -110,7 +110,6 @@
                 android:id="@+id/ll_palette_character_size_container"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="match_parent"
-                android:layout_margin="5dp"
                 android:gravity="top"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -118,29 +117,29 @@
                 app:layout_constraintRight_toLeftOf="@id/ll1"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <com.dyt.wcc.baselib.ui.widget.CirCleImageViewInfo
+                <com.dyt.wcc.baselib.ui.widget.CircleDisplayView
                     android:id="@+id/circle_palette"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_gravity="center"
                     android:layout_margin="@dimen/dimen_5dp"
                     android:padding="@dimen/dimen_2dp"
-                    app:default_borderColor="@color/teal_200"
-                    app:border_StrokeWidth="2"
+                    app:selected_border_StrokeWidth="2"
                     app:contentType="color"
+                    app:default_borderColor="@color/teal_200"
                     app:isSelect="true" />
 
-                <com.dyt.wcc.baselib.ui.widget.CirCleImageViewInfo
+                <com.dyt.wcc.baselib.ui.widget.CircleDisplayView
                     android:id="@+id/circle_character_size"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_gravity="center"
-                    android:padding="@dimen/dimen_2dp"
                     android:layout_margin="@dimen/dimen_5dp"
-                    app:default_borderColor="@color/teal_200"
-                    app:border_StrokeWidth="2"
+                    android:padding="@dimen/dimen_2dp"
+                    app:selected_border_StrokeWidth="2"
                     app:contentType="bitmap"
-                    app:default_Bitmap="@mipmap/photo_detail_tools_size_2_select" />
+                    app:default_Bitmap="@mipmap/photo_detail_tools_size_2_select"
+                    app:default_borderColor="@color/teal_200" />
 
                 <View
                     android:layout_width="match_parent"
@@ -149,23 +148,22 @@
                     android:layout_marginEnd="@dimen/dimen_3dp"
                     android:background="@color/white" />
                 <!--            滑动条-->
-                <com.dyt.wcc.baselib.ui.widget.ColorPickBar
+                <com.dyt.wcc.baselib.ui.widget.ColorSliderView
                     android:id="@+id/edit_color_pick"
                     android:layout_width="@dimen/dimen_40dp"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/dimen_10dp"
-
-                    app:bar_orientation="vertical" />
+                    app:slider_orientation="vertical"
+                    app:indicator_percent="1" />
                 <!--            画笔 粗细 选择器-->
-                <com.dyt.wcc.baselib.ui.widget.PaintSizeSelector
+                <com.dyt.wcc.baselib.ui.widget.PenpointDIASelectorView
                     android:id="@+id/pss_detail_tools"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     app:fontSizeEnd="80"
                     app:fontSizeStart="10"
-                    app:marginTopBottom="10dp"
-                    android:visibility="gone"
                     app:itemCount="6"
+                    app:marginTopBottom="10dp"
                     app:scrollOrientation="vertical" />
 
 
@@ -196,37 +194,34 @@
                 app:layout_constraintTop_toTopOf="parent">
 
 
-                <CheckBox
+                <ImageView
                     android:id="@+id/cb_detail_tools_doodle"
-                    android:layout_width="@dimen/dimen_25dp"
-                    android:layout_height="@dimen/dimen_25dp"
+                    android:layout_width="@dimen/dimen_40dp"
+                    android:layout_height="@dimen/dimen_40dp"
                     android:layout_margin="5dp"
-                    android:background="@drawable/selector_tools_doodle"
-                    android:button="@null"
                     android:gravity="center"
-                    android:padding="@dimen/dimen_5dp" />
+                    android:padding="@dimen/dimen_10dp"
+                    android:src="@drawable/selector_tools_doodle" />
 
-                <CheckBox
+                <ImageView
                     android:id="@+id/cb_detail_tools_character"
-                    android:layout_width="@dimen/dimen_25dp"
-                    android:layout_height="@dimen/dimen_25dp"
+                    android:layout_width="@dimen/dimen_40dp"
+                    android:layout_height="@dimen/dimen_40dp"
                     android:layout_margin="5dp"
-                    android:background="@drawable/selector_tools_character"
-                    android:button="@null"
                     android:gravity="center"
-                    android:padding="@dimen/dimen_5dp" />
+                    android:padding="@dimen/dimen_10dp"
+                    android:src="@drawable/selector_tools_character" />
 
 
                 <!--        第二版替换成 图片分析-->
-                <CheckBox
+                <ImageView
                     android:id="@+id/cb_detail_tools_analyse"
-                    android:layout_width="@dimen/dimen_25dp"
-                    android:layout_height="@dimen/dimen_25dp"
+                    android:layout_width="@dimen/dimen_40dp"
+                    android:layout_height="@dimen/dimen_40dp"
                     android:layout_margin="5dp"
-                    android:background="@drawable/selector_tools_analyse_all"
-                    android:button="@null"
                     android:gravity="center"
-                    android:padding="@dimen/dimen_5dp" />
+                    android:padding="@dimen/dimen_10dp"
+                    android:src="@drawable/selector_tools_analyse_all" />
                 <!--        分割线 -->
             </LinearLayout>
 

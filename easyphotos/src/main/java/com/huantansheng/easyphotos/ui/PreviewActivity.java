@@ -22,8 +22,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.dyt.wcc.baselib.ui.widget.CirCleImageViewInfo;
-import com.dyt.wcc.baselib.ui.widget.ColorPickBar;
+import com.dyt.wcc.baselib.ui.widget.CircleDisplayView;
+import com.dyt.wcc.baselib.ui.widget.ColorSliderView;
 import com.huantansheng.easyphotos.R;
 import com.huantansheng.easyphotos.constant.Code;
 import com.huantansheng.easyphotos.constant.Key;
@@ -290,7 +290,14 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 	private boolean                          myDefinePhoto          = true;
 	private ActivityPreviewEasyPhotosBinding mDataBinding;
 	private int                              type_palette_character = 0;
-
+	//涂鸦
+	private int doodleColorData = 0;
+	private float doodlePercent   = 0.5f;
+	private int   doodleSizeIndex = 0;
+	//文字
+	private int characterColorData = 0;
+	private float characterPercent   = 0.5f;
+	private int   characterSizeIndex = 0;
 
 	//my tools listener
 	private void initTools () {
@@ -308,6 +315,14 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 				mDataBinding.cbDetailToolsCharacter.setSelected(false);
 				type_palette_character = 0;
 				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.VISIBLE);
+
+				//				mDataBinding.circlePalette.performClick();
+				mDataBinding.editColorPick.setSelectPercent(doodlePercent);
+				mDataBinding.pssDetailTools.setSelectIndex(doodleSizeIndex);
+
+				paintCircleCharacterSize(doodleSizeIndex);
+				mDataBinding.circlePalette.setColor(doodleColorData, CircleDisplayView.CirCleImageType.COLOR);
+
 			});
 			mDataBinding.cbDetailToolsCharacter.setOnClickListener(v -> {
 				//加载储存的 色板, 字号 inde 及其 字号大小
@@ -318,6 +333,12 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 				mDataBinding.cbDetailToolsCharacter.setSelected(true);
 				type_palette_character = 1;
 				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.VISIBLE);
+
+				mDataBinding.editColorPick.setSelectPercent(characterPercent);
+				mDataBinding.pssDetailTools.setSelectIndex(characterSizeIndex);
+
+				paintCircleCharacterSize(characterSizeIndex);
+				mDataBinding.circlePalette.setColor(characterColorData, CircleDisplayView.CirCleImageType.COLOR);
 			});
 			//			色板  粗细 选择。
 			mDataBinding.circlePalette.setClickListener((currentData, cirCleImageType) -> {
@@ -336,44 +357,39 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 			});
 			//			色板  粗细切换  监听。
 			mDataBinding.pssDetailTools.setSelectorListener((position, selectPaintSize) -> {
-				switch (position){
-					case 0:
-						mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_1_select, CirCleImageViewInfo.CirCleImageType.BITMAP);
-						break;
-					case 1:
-						mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_2_select, CirCleImageViewInfo.CirCleImageType.BITMAP);
-						break;
-					case 2:
-						mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_3_select, CirCleImageViewInfo.CirCleImageType.BITMAP);
-						break;
-					case 3:
-						mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_4_select, CirCleImageViewInfo.CirCleImageType.BITMAP);
-						break;
-					case 4:
-						mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_5_select, CirCleImageViewInfo.CirCleImageType.BITMAP);
-						break;
-					case 5:
-						mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_6_select, CirCleImageViewInfo.CirCleImageType.BITMAP);
-						break;
+				if (type_palette_character == 0) {
+					doodleSizeIndex = position;
+				} else {
+					characterSizeIndex = position;
 				}
-				Log.e("TAG", "initTools: --------position---" + position +" selectPaintSize ----" + selectPaintSize);
+				paintCircleCharacterSize( position);
+
+				Log.e("TAG", "initTools: --------position---" + position + " selectPaintSize ----" + selectPaintSize);
 				//设置 画笔 或 文字的 值
 			});
 
-			mDataBinding.editColorPick.setOnColorPickerChangeListener(new ColorPickBar.OnColorPickerChangeListener() {
+			mDataBinding.editColorPick.setOnColorPickerChangeListener(new ColorSliderView.OnColorPickerChangeListener() {
 				@Override
-				public void onColorChanged (ColorPickBar picker, int color) {
-					mDataBinding.circlePalette.setColor(color, CirCleImageViewInfo.CirCleImageType.COLOR);
+				public void onColorChanged (ColorSliderView picker, int color, float percent) {
+					mDataBinding.circlePalette.setColor(color, CircleDisplayView.CirCleImageType.COLOR);
 					//设置 画笔 或 文字的 值
+
+					if (type_palette_character == 0) {
+						doodlePercent = percent;
+						doodleColorData = color;
+					} else {
+						characterPercent = percent;
+						characterColorData = color;
+					}
 				}
 
 				@Override
-				public void onStartTrackingTouch (ColorPickBar picker) {
+				public void onStartTrackingTouch (ColorSliderView picker) {
 
 				}
 
 				@Override
-				public void onStopTrackingTouch (ColorPickBar picker) {
+				public void onStopTrackingTouch (ColorSliderView picker) {
 
 				}
 			});
@@ -381,7 +397,30 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 		} else {
 
 		}
+	}
 
+	private void paintCircleCharacterSize(int clickPosition){
+		switch (clickPosition) {
+			case 0:
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_1_select, CircleDisplayView.CirCleImageType.BITMAP);
+				break;
+			case 1:
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_2_select, CircleDisplayView.CirCleImageType.BITMAP);
+				break;
+			case 2:
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_3_select, CircleDisplayView.CirCleImageType.BITMAP);
+				break;
+			case 3:
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_4_select, CircleDisplayView.CirCleImageType.BITMAP);
+				break;
+			case 4:
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_5_select, CircleDisplayView.CirCleImageType.BITMAP);
+				break;
+			case 5:
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_6_select, CircleDisplayView.CirCleImageType.BITMAP);
+				break;
+		}
+		//设置 doodle view
 
 	}
 

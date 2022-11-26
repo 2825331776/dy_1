@@ -27,16 +27,16 @@ import com.dyt.wcc.baselib.R;
  * 中心实心圆，填充的是内容。
  * </p>
  */
-public class CirCleImageViewInfo extends androidx.appcompat.widget.AppCompatImageButton {
-	public CirCleImageViewInfo (Context context) {
+public class CircleDisplayView extends androidx.appcompat.widget.AppCompatImageButton {
+	public CircleDisplayView (Context context) {
 		this(context, null);
 	}
 
-	public CirCleImageViewInfo (Context context, @Nullable AttributeSet attrs) {
+	public CircleDisplayView (Context context, @Nullable AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
 
-	public CirCleImageViewInfo (Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+	public CircleDisplayView (Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 		initAttrs(context, attrs);
 
@@ -54,7 +54,7 @@ public class CirCleImageViewInfo extends androidx.appcompat.widget.AppCompatImag
 
 	private final int DEFAULT_BORDER_STROKE_WIDTH = 3;
 
-	private final static String TAG                  = "CircleImageViewInfo";
+	private final static String TAG = "CircleImageViewInfo";
 
 	private RectF rectFContent;
 
@@ -63,7 +63,7 @@ public class CirCleImageViewInfo extends androidx.appcompat.widget.AppCompatImag
 	 * 边框 颜色
 	 */
 	@ColorInt
-	private int borderColor = DEFAULT_BORDER_COLOR;//边框颜色
+	private int borderColor       = DEFAULT_BORDER_COLOR;//边框颜色
 	/**
 	 * 边框 选中颜色
 	 */
@@ -90,11 +90,11 @@ public class CirCleImageViewInfo extends androidx.appcompat.widget.AppCompatImag
 	/**
 	 * 中心填充物 类型。
 	 */
-	private CirCleImageType mContentType     = CirCleImageType.COLOR;//内容填充
+	private CirCleImageType mContentType = CirCleImageType.COLOR;//内容填充
 	/**
 	 * 是否 已选中
 	 */
-	private boolean selected = false;
+	private boolean         selected     = false;
 
 	/**
 	 * 是否需要重绘 bitmap
@@ -116,9 +116,11 @@ public class CirCleImageViewInfo extends androidx.appcompat.widget.AppCompatImag
 
 
 	private OnCircleImageClickListener clickListener;
+
 	public void setClickListener (OnCircleImageClickListener clickListener) {
 		this.clickListener = clickListener;
 	}
+
 	/**
 	 * 点击监听器
 	 */
@@ -127,22 +129,21 @@ public class CirCleImageViewInfo extends androidx.appcompat.widget.AppCompatImag
 	}
 
 	private void initAttrs (Context context, AttributeSet attrs) {
-		TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.CirCleImageViewInfo);
-		int type = typedArray.getInt(R.styleable.CirCleImageViewInfo_contentType, 0);
+		TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.CircleDisplayView);
+		int type = typedArray.getInt(R.styleable.CircleDisplayView_contentType, 0);
 
 		mContentType = (type == 0) ? CirCleImageType.COLOR : CirCleImageType.BITMAP;
 		//获取边框颜色 及 选中颜色
-		borderColorSelect = typedArray.getColor(R.styleable.CirCleImageViewInfo_default_borderColor,DEFAULT_BORDER_COLOR_SELECT);
-		borderColor = typedArray.getColor(R.styleable.CirCleImageViewInfo_default_borderColor, DEFAULT_BORDER_COLOR);
+		borderColorSelect = typedArray.getColor(R.styleable.CircleDisplayView_default_borderColor, DEFAULT_BORDER_COLOR_SELECT);
+		borderColor = typedArray.getColor(R.styleable.CircleDisplayView_default_borderColor, DEFAULT_BORDER_COLOR);
 		//获取画笔 边框的宽度
-		mBorderStrokeWidth = typedArray.getInt(R.styleable.CirCleImageViewInfo_border_StrokeWidth, DEFAULT_BORDER_STROKE_WIDTH);
+		mBorderStrokeWidth = typedArray.getInt(R.styleable.CircleDisplayView_selected_border_StrokeWidth, DEFAULT_BORDER_STROKE_WIDTH);
 
-		selected = typedArray.getBoolean(R.styleable.SelectorAttrs_sel_background_border_selected, false);
+		selected = typedArray.getBoolean(R.styleable.CircleDisplayView_isSelect, false);
 
 		if (mContentType != CirCleImageType.COLOR) {
 			needReDrawBitmap = true;
-			mContentData = typedArray.getResourceId(R.styleable.CirCleImageViewInfo_default_Bitmap, 0);
-//			Log.e(TAG, "initAttrs: ---------------mContentData--" + mContentData);
+			mContentData = typedArray.getResourceId(R.styleable.CircleDisplayView_default_Bitmap, 0);
 		} else {
 			mContentData = Color.BLACK;
 		}
@@ -164,10 +165,6 @@ public class CirCleImageViewInfo extends androidx.appcompat.widget.AppCompatImag
 	}
 
 
-
-
-
-	//	private OnSetCenterContentListener centerContentListener;
 
 	//------------------业务逻辑-------------------------
 	//绘制 边框， 绘制 内容， 点击 回调 监听接口。
@@ -193,16 +190,16 @@ public class CirCleImageViewInfo extends androidx.appcompat.widget.AppCompatImag
 		super.onLayout(changed, left, top, right, bottom);
 		//设置 边框颜色
 		paintContent.setColor(Color.BLACK);
-		if (selected){
+		if (selected) {
 			paintBorder.setColor(borderColorSelect);
-		}else {
+		} else {
 			paintBorder.setColor(borderColor);
 		}
 		mMeasureWidth = getMeasuredWidth();
 		mMeasureHeight = getMeasuredHeight();
 		rectFContent.set(0, 0, mMeasureWidth, mMeasureHeight);
 
-		borderRadius = mMeasureWidth / 2 - getPaddingLeft()-getPaddingRight();
+		borderRadius = mMeasureWidth / 2 - getPaddingLeft() - getPaddingRight();
 		contentRadius = borderRadius - 10;
 
 		if (mContentType == CirCleImageType.BITMAP) {
@@ -249,13 +246,11 @@ public class CirCleImageViewInfo extends androidx.appcompat.widget.AppCompatImag
 			paintContent.setStyle(Paint.Style.FILL);
 			canvas.drawCircle(mMeasureWidth / 2.0f, mMeasureHeight / 2.0f, contentRadius, paintContent);
 		} else {
-
 			paintContent.setStyle(Paint.Style.STROKE);
 			paintContent.setStrokeWidth(DEFAULT_BORDER_STROKE_WIDTH);
 			//中心线条多宽？
 			if (needReDrawBitmap) {
 				canvas.drawBitmap(bitmapContent, null, rectFContent, paintContent);
-				//				needReDrawBitmap = false;
 			}
 		}
 
@@ -271,7 +266,9 @@ public class CirCleImageViewInfo extends androidx.appcompat.widget.AppCompatImag
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			if (!selected) {
 				selected = true;
-				clickListener.onClicked(mContentData,mContentType);
+				if (clickListener != null) {
+					clickListener.onClicked(mContentData, mContentType);
+				}
 				invalidate();
 			}
 		}

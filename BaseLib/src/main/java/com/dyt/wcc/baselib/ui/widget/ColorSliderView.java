@@ -28,20 +28,20 @@ import com.dyt.wcc.baselib.R;
  * <p>PackagePath: com.dyt.wcc.baselib.ui.widget     </p>
  * <p>Description：       </p>
  */
-public class ColorPickBar extends View {
-	public ColorPickBar (Context context) {
+public class ColorSliderView extends View {
+	public ColorSliderView (Context context) {
 		this(context, null);
 	}
 
-	public ColorPickBar (Context context, @Nullable AttributeSet attrs) {
+	public ColorSliderView (Context context, @Nullable AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
 
-	public ColorPickBar (Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+	public ColorSliderView (Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
 		this(context, attrs, defStyleAttr, 0);
 	}
 
-	public ColorPickBar (Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+	public ColorSliderView (Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 		super(context, attrs, defStyleAttr, defStyleRes);
 		initAttrs(context, attrs);
 
@@ -49,13 +49,13 @@ public class ColorPickBar extends View {
 	}
 
 	private void initAttrs (Context context, AttributeSet attrs) {
-		final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.ColorPickBar);
-		mIndicatorColor = array.getColor(R.styleable.ColorPickBar_bar_indicatorColor, Color.WHITE);
+		final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.ColorSliderView);
+		mIndicatorColor = array.getColor(R.styleable.ColorSliderView_slider_indicator_color, Color.WHITE);
 
-		int or = array.getInteger(R.styleable.ColorPickBar_bar_orientation, 0);
+		selectPercent = array.getFloat(R.styleable.ColorSliderView_indicator_percent, -1);
+
+		int or = array.getInteger(R.styleable.ColorSliderView_slider_orientation, 0);
 		orientation = ((or == 0) ? Orientation.HORIZONTAL : Orientation.VERTICAL);
-
-		//				mIndicatorEnable = array.getBoolean(R.styleable.ColorPickerView_indicatorEnable, true);
 
 		array.recycle();
 	}
@@ -77,7 +77,7 @@ public class ColorPickBar extends View {
 	 */
 	private final Rect   rectIndicator = new Rect();
 	//选中的百分比 ,便于 设置预设值。
-	private float selectPercent = 0.50f;
+	private       float  selectPercent = -1;
 	//	/**
 	//	 * 指示器是否可用
 	//	 */
@@ -101,7 +101,7 @@ public class ColorPickBar extends View {
 	 */
 	private       LinearGradient linearGradient;
 	/**
-	 * view 除开 padding 后坐标
+	 * padding 坐标
 	 */
 	private       int            mTop, mLeft, mRight, mBottom;
 	/**
@@ -124,11 +124,11 @@ public class ColorPickBar extends View {
 	/**
 	 * 是否需要重绘 tab 颜色条
 	 */
-	private boolean needReDrawTab       = true;
+	private boolean needReDrawTab = true;
 	/**
 	 * 是否需要重绘 指示器
 	 */
-	private boolean needReDrawIndicator = true;
+	//	private boolean needReDrawIndicator = true;
 
 	/**
 	 * 手指 坐标
@@ -229,11 +229,7 @@ public class ColorPickBar extends View {
 		mRight = getMeasuredWidth() - getPaddingRight();
 
 
-		if (currentX == currentY || currentY == Integer.MAX_VALUE) {
-			currentX = getWidth() / 2;
-			currentY = getHeight() / 2;
-		}
-		//算出边界
+		//算出tab渐变色条 边界
 		calculateBounds();
 		if (colors == null) {
 			setColors(createDefaultColorTable());
@@ -241,19 +237,29 @@ public class ColorPickBar extends View {
 			setColors(colors);
 		}
 		createBitmap();
+		//优先 计算 tab渐变色条的边界，才能通过 边界及其 选中的百分比 计算出currentX 和Y
+		if ((currentX == currentY || currentY == Integer.MAX_VALUE) && selectPercent == -1) {
+			currentX = getWidth() / 2;
+			currentY = getHeight() / 2;
+		} else {
+			if (orientation == Orientation.VERTICAL) {
+				currentX = getWidth() / 2;
+				currentY = (int) (mTop + mRadius + rectTab.height() * (1 - selectPercent));
+			} else {
+				currentX = (int) (mLeft + mRadius + rectTab.width() * (1 - selectPercent));
+				currentY = getHeight() / 2;
+			}
+//			Log.e(TAG, "onLayout: current select indicator init coordinate");
+		}
 
-		//		if (mIndicatorEnable) {
-		//			needReDrawIndicator = true;
-		//		}
-
+	/*	Log.e(TAG, "此时函数中的 : top " + top + " left " + left + " right " + right + " bottom " + bottom);
 
 		Log.e(TAG, "onLayout: getWidth = " + getWidth() + " getHeight == " + getHeight());
 
-		Log.e(TAG, "onLayout: measureWidth ==" + getMeasuredWidth() + " measureHeight " + getMeasuredHeight());
-		Log.e(TAG, "onLayout : top " + top + " left " + mLeft + " right " + mRight + " bottom " + mBottom);
+		Log.e(TAG, "onLayout: measureWidth ==" + getMeasuredWidth() + " measureHeight==> " + getMeasuredHeight());
+		Log.e(TAG, "onLayout : top " + mTop + " left " + mLeft + " right " + mRight + " bottom " + mBottom);
 
-
-		Log.e(TAG, "padding: top " + getPaddingTop() + " left " + getPaddingLeft() + " right " + getPaddingRight() + " bottom " + getPaddingBottom());
+		Log.e(TAG, "padding: top " + getPaddingTop() + " left " + getPaddingLeft() + " right " + getPaddingRight() + " bottom " + getPaddingBottom());*/
 
 	}
 
@@ -270,16 +276,16 @@ public class ColorPickBar extends View {
 	private void calculateBounds () {//设置的是 tab 色条 rect 的边界
 		//分割分数
 		final int average = 9;
-		//每份长度（宽度/高度,根据放置方位决定）
+		//每份长度 （宽度/高度,根据放置方位决定）
 		int perLength = 0;
-		//计算控件 宽高。
+		//计算控件 宽高。 padding已经减去了
 		int h = mBottom - mTop;
 		int w = mRight - mLeft;
 
 		int size = Math.min(w, h);
-
+		//特殊情况，水平时：高度大于宽度。垂直时：宽度大于高度； size 取最小值的六分之一。
 		if (orientation == Orientation.HORIZONTAL) {
-			if (w <= h) {// 正常w >h ,
+			if (w <= h) {// 正常情况 w >h
 				size = w / 6;
 			}
 		} else if (orientation == Orientation.VERTICAL) {
@@ -287,28 +293,30 @@ public class ColorPickBar extends View {
 				size = h / 6;
 			}
 		}
-		//perLength 被分成了 6*9 = 54 份，
-		//水平时：宽度被分成54份，垂直时，高度被分成 54份。也就是按理最长的部分。
+		//特殊情况： 水平时：宽度被分成54份，垂直时，高度被分成 54份。
 		perLength = size / average;
-		mRadius = perLength * 7 / 2;//半径
+		//指示器，占 5/9宽度，色条占 3/9
+		mRadius = perLength * 5 / 2;//半径
 
 		int t, l, b, r;
-		final int s = perLength * 3 / 2;
+		//颜色条的 半个个宽度 perLength *3
+		// 矩形色条的宽度 为： perLength *3; 高度为 h - 2*mRadius
+		final int tabHalfWidth = perLength * 3 / 2;
 
 		if (orientation == Orientation.HORIZONTAL) {
 			l = mLeft + mRadius;
 			r = mRight - mRadius;
 
-			t = (getHeight() / 2) - s;
-			b = (getHeight() / 2) + s;
+			t = (getHeight() / 2) - tabHalfWidth;
+			b = (getHeight() / 2) + tabHalfWidth;
 		} else {
 			t = mTop + mRadius;
 			b = mBottom - mRadius;
 
-			l = getWidth() / 2 - s;
-			r = getWidth() / 2 + s;
+			l = getWidth() / 2 - tabHalfWidth;
+			r = getWidth() / 2 + tabHalfWidth;
 		}
-
+		//rectTab 设置边界：
 		rectTab.set(l, t, r, b);
 	}
 
@@ -424,18 +432,28 @@ public class ColorPickBar extends View {
 	@Override
 	protected void onDraw (Canvas canvas) {
 		super.onDraw(canvas);
+		Log.e(TAG, "-------颜色选择器的 onDraw:---------------------- ");
 		// ------绘制 色条底色---再绘制 渐变色条--------------
+		/*通过下面的 三个测试线，
+		确定 整个 控件的宽高 为：onMeasure:getMeasureWidth,getMeasureHeight。
+		onLayout:110 getWidth，700 getHeight
+		最左侧为坐标原点。
+		 */
+		/*canvas.drawLine(0, 225, 110, 225, paintTab);
+		canvas.drawLine(0, 700, 110, 700, paintTab);
+		canvas.drawLine(100, 0, 100, 700, paintTab);*/
+
 		if (needReDrawTab) {
 			createColorTableBitmap();//运行之后重置 needReDrawTab为false。
 		}
-		// 绘制 bitmapForTab 到总体 canvas 上。
+		// 绘制 bitmapForTab 到总 canvas 上。
 		canvas.drawBitmap(bitmapForTab, null, rectTab, paintTab);
 
 		//--------------绘制 指示器-----------
 
-//		if (needReDrawIndicator) {
-			createIndicatorBitmap();
-//		}
+		//		if (needReDrawIndicator) {
+		createIndicatorBitmap();
+		//		}
 		rectIndicator.set(currentX - mRadius, currentY - mRadius, currentX + mRadius, currentY + mRadius);
 		canvas.drawBitmap(bitmapForIndicator, null, rectIndicator, paintIndicator);
 
@@ -469,7 +487,7 @@ public class ColorPickBar extends View {
 
 	private void createIndicatorBitmap () {
 		Canvas canvas = new Canvas(bitmapForIndicator);
-		RectF rectF = new RectF(0, 0, bitmapForIndicator.getWidth(), bitmapForIndicator.getHeight());
+		//		RectF rectF = new RectF(0, 0, bitmapForIndicator.getWidth(), bitmapForIndicator.getHeight());
 
 		int radius = 3;
 		paintIndicator.setShadowLayer(radius, 0, 0, Color.GRAY);
@@ -479,7 +497,7 @@ public class ColorPickBar extends View {
 		//		canvas.drawRoundRect(rectF, mRadius / 2.0f, mRadius / 2.0f, paintIndicator);
 		canvas.drawCircle(mRadius, mRadius, mRadius - radius, paintIndicator);
 
-		needReDrawIndicator = false;
+		//		needReDrawIndicator = false;
 	}
 
 	@Override
@@ -494,33 +512,36 @@ public class ColorPickBar extends View {
 		if (orientation == Orientation.HORIZONTAL) {
 			currentX = ex;
 			currentY = getHeight() / 2;
+			selectPercent = (currentX - mRadius - getPaddingLeft()) * 1.0f / rectTab.width();
 		} else {
 			currentX = getWidth() / 2;
 			currentY = ey;
+			selectPercent = (currentY - mRadius - getPaddingTop()) * 1.0f / rectTab.height();
 		}
+
 
 		if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
 			if (colorPickerChangeListener != null) {
 				colorPickerChangeListener.onStartTrackingTouch(this);
 				calcuColor();
-				colorPickerChangeListener.onColorChanged(this, currentColor);
+				colorPickerChangeListener.onColorChanged(this, currentColor, selectPercent);
 			}
 
 		} else if (event.getActionMasked() == MotionEvent.ACTION_UP) { //手抬起
 			if (colorPickerChangeListener != null) {
 				colorPickerChangeListener.onStopTrackingTouch(this);
 				calcuColor();
-				colorPickerChangeListener.onColorChanged(this, currentColor);
+				colorPickerChangeListener.onColorChanged(this, currentColor, selectPercent);
 			}
 
 		} else { //按着+拖拽
 			if (colorPickerChangeListener != null) {
 				calcuColor();
-				colorPickerChangeListener.onColorChanged(this, currentColor);
+				colorPickerChangeListener.onColorChanged(this, currentColor, selectPercent);
 			}
 		}
+//		Log.e(TAG, "onTouchEvent: ---------selectPercent==>" + selectPercent);
 		invalidate();
-
 		return true;
 	}
 
@@ -531,6 +552,7 @@ public class ColorPickBar extends View {
 			return ey > mTop + mRadius && ey < mBottom - mRadius;
 		}
 	}
+
 
 	private int calcuColor () {
 		int x, y;
@@ -573,48 +595,84 @@ public class ColorPickBar extends View {
 		this.colorPickerChangeListener = l;
 	}
 
+	//设置 滑块的百分比。
+	public void setSelectPercent (float selectPercent) {
+		this.selectPercent = selectPercent;
+		calculateCurrentXY(selectPercent);
+		invalidate();
+	}
+
+	public float getSelectPercent () {
+		return selectPercent;
+	}
+
+	private void calculateCurrentXY (float percent) {
+		if (orientation == Orientation.HORIZONTAL) {
+			currentY = getHeight() / 2;
+			if (percent == 0) {
+				currentX = mLeft + mRadius;
+			} else if (percent == 1) {
+				currentX = mRight;
+			} else {
+				currentX = (int) (mLeft + mRadius + (rectTab.width() * percent));
+			}
+		} else {
+			currentX = getWidth() / 2;
+			if (percent == 0) {
+				currentY = rectTab.height() + mRadius + getPaddingTop();
+			} else if (percent == 1) {
+				currentY = getPaddingTop() + mRadius;
+			} else {
+				currentY = (int) (getPaddingTop() + mRadius + (rectTab.height() * percent));
+			}
+		}
+	}
+
 	public interface OnColorPickerChangeListener {
 
 		/**
 		 * 选取的颜色值改变时回调
 		 *
-		 * @param picker ColorPickerView
+		 * @param sliderView ColorPickerView
 		 * @param color  颜色
 		 */
-		void onColorChanged (ColorPickBar picker, int color);
+		void onColorChanged (ColorSliderView sliderView, int color, float percent);
 
 		/**
 		 * 开始颜色选取
 		 *
-		 * @param picker ColorPickerView
+		 * @param sliderView ColorPickerView
 		 */
-		void onStartTrackingTouch (ColorPickBar picker);
+		void onStartTrackingTouch (ColorSliderView sliderView);
 
 		/**
 		 * 停止颜色选取
 		 *
-		 * @param picker ColorPickerView
+		 * @param sliderView ColorPickerView
 		 */
-		void onStopTrackingTouch (ColorPickBar picker);
+		void onStopTrackingTouch (ColorSliderView sliderView);
 	}
 
 	private class SavedState extends BaseSavedState {
 		int selX, selY;
-		int[] colors;
-		Bitmap color;
-		Bitmap indicator = null;
+		int[]  colors;//色表  ,后续还有一个 positions 的 数组也可以储存，表示按照什么百分比分布
+		Bitmap color;//tab渐进色条 的bitmap
+		Bitmap indicator = null; // 指示器的bitmap
+		float  selectedPercent;
 
-		SavedState(Parcelable source) {
+
+		SavedState (Parcelable source) {
 			super(source);
 		}
 
 		@Override
-		public void writeToParcel(Parcel out, int flags) {
+		public void writeToParcel (Parcel out, int flags) {
 			super.writeToParcel(out, flags);
 			out.writeInt(selX);
 			out.writeInt(selY);
 			out.writeParcelable(color, flags);
 			out.writeIntArray(colors);
+			out.writeFloat(selectedPercent);
 			if (indicator != null) {
 				out.writeParcelable(indicator, flags);
 			}
@@ -622,20 +680,21 @@ public class ColorPickBar extends View {
 	}
 
 	@Override
-	protected Parcelable onSaveInstanceState() {
+	protected Parcelable onSaveInstanceState () {
 		Parcelable parcelable = super.onSaveInstanceState();
 		SavedState ss = new SavedState(parcelable);
 		ss.selX = currentX;
 		ss.selY = currentY;
 		ss.color = bitmapForTab;
-//		if (mIndicatorEnable) {
-			ss.indicator = bitmapForIndicator;
-//		}
+		//		if (mIndicatorEnable) {
+		ss.indicator = bitmapForIndicator;
+		ss.selectedPercent = selectPercent;
+		//		}
 		return ss;
 	}
 
 	@Override
-	protected void onRestoreInstanceState(Parcelable state) {
+	protected void onRestoreInstanceState (Parcelable state) {
 		if (!(state instanceof SavedState)) {
 			super.onRestoreInstanceState(state);
 			return;
@@ -648,14 +707,11 @@ public class ColorPickBar extends View {
 		colors = ss.colors;
 
 		bitmapForTab = ss.color;
-//		if (mIndicatorEnable) {
-			bitmapForIndicator = ss.indicator;
-			needReDrawIndicator = true;
-//		}
-//		needReDrawColorTable = true;
-
+		//		if (mIndicatorEnable) {
+		bitmapForIndicator = ss.indicator;
+		selectPercent = ss.selectedPercent;
+		//		needReDrawIndicator = true;
+		//		}
+		//		needReDrawColorTable = true;
 	}
-
-
-	//------------public set--------------------------
 }

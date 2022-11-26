@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<!--    颜色选择 tab-->
-    <declare-styleable name="ColorPickBar">
-        <attr name="bar_indicatorColor" format="color" />
-        <attr name="bar_orientation" format="integer">
+    <!--    颜色选择 tab-->
+    <declare-styleable name="ColorSliderView">
+        <attr name="slider_indicator_color" format="color" />
+        <attr name="indicator_percent" format="float"/>
+        <attr name="slider_orientation" format="integer">
             <enum name="horizontal" value="0" />
             <enum name="vertical" value="1" />
         </attr>
     </declare-styleable>
 <!--圆形 显示器 -->
-    <declare-styleable name="CirCleImageViewInfo">
+    <declare-styleable name="CircleDisplayView">
         <!--  borderColor 边框 颜色  -->
         <attr name="isSelect" format="boolean" />
         <attr name="selected_borderColor" format="color|reference"/>
-        <attr name="border_StrokeWidth" format="integer" />
+        <attr name="selected_border_StrokeWidth" format="integer" />
         <attr name="default_borderColor" format="color|reference" />
         <attr name="default_Bitmap" format="integer|reference"/>
         <attr name="contentType" format="integer">
@@ -24,7 +25,7 @@
     </declare-styleable>
 
 <!--  粗细 选择器   -->
-    <declare-styleable name="PaintSizeSelector">
+    <declare-styleable name="PenpointDIASelectorView">
         <attr name="itemCount" format="integer|reference" />
         <attr name="marginTopBottom" format="dimension"/>
         <attr name="bg_all" format="color|reference"/>
