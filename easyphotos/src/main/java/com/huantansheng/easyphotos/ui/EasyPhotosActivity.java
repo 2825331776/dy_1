@@ -663,6 +663,8 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 							photo.selectedOriginal = Setting.selectedOriginal;
 							resultList.add(photo);
 
+
+
 							data.putParcelableArrayListExtra(EasyPhotos.RESULT_PHOTOS, resultList);
 
 							data.putExtra(EasyPhotos.RESULT_SELECTED_ORIGINAL, Setting.selectedOriginal);

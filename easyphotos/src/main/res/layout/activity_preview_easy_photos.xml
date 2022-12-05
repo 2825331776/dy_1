@@ -21,7 +21,7 @@
         <!--        android:layout_height="@dimen/dimen_30dp"/>-->
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_photo_detail_actionbar"
+            android:id="@+id/cl_top_parent"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_46dp"
             android:background="@color/black"
@@ -30,12 +30,12 @@
 
             <!--            正常情况的 状态栏-->
             <LinearLayout
-                android:id="@+id/ll_normal"
+                android:id="@+id/ll_actionbar_normal"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:visibility="gone"
                 android:orientation="horizontal"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -56,10 +56,10 @@
 
             <!--            编辑时 状态栏 -->
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/cl_photo_edit"
+                android:id="@+id/cl_actionbar_gesture"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/iv_tools_exit"
@@ -125,15 +125,38 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        <com.huantansheng.easyphotos.ui.widget.PreviewRecyclerView
-            android:id="@+id/rv_photos"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/cl_photo_detail_right_tools"
-            app:layout_constraintTop_toBottomOf="@id/cl_photo_detail_actionbar" />
+            app:layout_constraintTop_toBottomOf="@id/cl_top_parent">
+
+            <com.github.chrisbanes.photoview.PhotoView
+                android:id="@+id/iv_video"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <com.dyt.wcc.baselib.ui.doodle.view.DoodleView
+                android:id="@+id/doodleView"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <!--显示RecyclerView 的 布局-->
+        <!--        <com.huantansheng.easyphotos.ui.widget.PreviewRecyclerView-->
+        <!--            android:id="@+id/rv_photos"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="0dp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--            app:layout_constraintRight_toLeftOf="@id/cl_photo_detail_right_tools"-->
+        <!--            app:layout_constraintTop_toBottomOf="@id/cl_photo_detail_actionbar" />-->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_photo_detail_right_tools"
@@ -142,7 +165,7 @@
             android:layout_marginTop="@dimen/dimen_10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cl_photo_detail_actionbar">
+            app:layout_constraintTop_toBottomOf="@id/cl_top_parent">
 
             <!--    右侧 图片涂鸦工具栏 布局-->
             <LinearLayout
@@ -153,7 +176,7 @@
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/ll1"
+                app:layout_constraintRight_toLeftOf="@id/ll_doodle_right_tools"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <com.dyt.wcc.baselib.ui.widget.CircleDisplayView
@@ -215,12 +238,12 @@
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 app:layout_constraintLeft_toRightOf="@id/ll_palette_character_size_container"
-                app:layout_constraintRight_toLeftOf="@id/ll1"
+                app:layout_constraintRight_toLeftOf="@id/ll_doodle_right_tools"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <!--    右侧 图片涂鸦工具栏 布局-->
             <LinearLayout
-                android:id="@+id/ll1"
+                android:id="@+id/ll_doodle_right_tools"
                 android:layout_width="@dimen/dimen_40dp"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"

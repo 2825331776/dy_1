@@ -432,7 +432,7 @@ public class ColorSliderView extends View {
 	@Override
 	protected void onDraw (Canvas canvas) {
 		super.onDraw(canvas);
-		Log.e(TAG, "-------颜色选择器的 onDraw:---------------------- ");
+//		Log.e(TAG, "-------颜色选择器的 onDraw:---------------------- ");
 		// ------绘制 色条底色---再绘制 渐变色条--------------
 		/*通过下面的 三个测试线，
 		确定 整个 控件的宽高 为：onMeasure:getMeasureWidth,getMeasureHeight。

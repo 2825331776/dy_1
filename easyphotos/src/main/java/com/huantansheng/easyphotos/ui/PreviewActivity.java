@@ -1,47 +1,34 @@
 package com.huantansheng.easyphotos.ui;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
-import androidx.recyclerview.widget.RecyclerView;
 
+import com.dyt.wcc.baselib.ui.doodle.IItem.IDoodle;
+import com.dyt.wcc.baselib.ui.doodle.IItem.IDoodleSelectableItem;
+import com.dyt.wcc.baselib.ui.doodle.IItem.IDoodleTouchDetector;
+import com.dyt.wcc.baselib.ui.doodle.impl.DoodleOnTouchGestureListener;
+import com.dyt.wcc.baselib.ui.doodle.impl.DoodleTouchDetector;
 import com.dyt.wcc.baselib.ui.doodle.params.DoodleColor;
 import com.dyt.wcc.baselib.ui.doodle.params.DoodlePen;
 import com.dyt.wcc.baselib.ui.doodle.params.DoodleShape;
-import com.dyt.wcc.baselib.ui.doodle.view.DoodleView;
 import com.dyt.wcc.baselib.ui.widget.CircleDisplayView;
-import com.dyt.wcc.baselib.ui.widget.ColorSliderView;
 import com.huantansheng.easyphotos.R;
 import com.huantansheng.easyphotos.constant.Code;
 import com.huantansheng.easyphotos.constant.Key;
 import com.huantansheng.easyphotos.databinding.ActivityPreviewEasyPhotosBinding;
 import com.huantansheng.easyphotos.models.album.AlbumModel;
 import com.huantansheng.easyphotos.models.album.entity.Photo;
-import com.huantansheng.easyphotos.picNative.PhotoHandler;
-import com.huantansheng.easyphotos.picNative.PhotoNativeHelper;
 import com.huantansheng.easyphotos.result.Result;
 import com.huantansheng.easyphotos.setting.Setting;
-import com.huantansheng.easyphotos.ui.adapter.PreviewPhotosAdapter;
-import com.huantansheng.easyphotos.utils.system.SystemUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,8 +36,15 @@ import java.util.List;
 /**
  * 预览页
  */
-public class PreviewActivity extends AppCompatActivity implements PreviewPhotosAdapter.OnClickListener, View.OnClickListener, PreviewFragment.OnPreviewFragmentClickListener {
+public class PreviewActivity extends AppCompatActivity /*implements PreviewPhotosAdapter
+.OnClickListener, View.OnClickListener, PreviewFragment.OnPreviewFragmentClickListener*/ {
 
+	/**
+	 * @param act            起始Activity
+	 * @param albumItemIndex 总共有多少个相册的索引 ，index
+	 * @param currIndex      当前相册的索引index
+	 * @param typeShowing    0 获取所有， 1 仅获取照片 2 仅视频
+	 */
 	public static void start (Activity act, int albumItemIndex, int currIndex, int typeShowing) {
 		Intent intent = new Intent(act, PreviewActivity.class);
 		intent.putExtra(Key.PREVIEW_ALBUM_ITEM_INDEX, albumItemIndex);
@@ -64,65 +58,26 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 	 * 一些旧设备在UI小部件更新之间需要一个小延迟
 	 * and a change of the status and navigation bar.
 	 */
-	private static final int      UI_ANIMATION_DELAY = 300;
-	private final        Handler  mHideHandler       = new Handler();
-	private final        Runnable mHidePart2Runnable = new Runnable() {
-		@Override
-		public void run () {
-			SystemUtils.getInstance().systemUiHide(PreviewActivity.this, decorView);
-		}
-	};
-	//    private RelativeLayout mBottomBar;
-	//    private FrameLayout mToolBar;
-	private final        Runnable mShowPart2Runnable = new Runnable() {
-		@Override
-		public void run () {
-			// 延迟显示UI元素
-			//            mBottomBar.setVisibility(View.VISIBLE);
-			//            mToolBar.setVisibility(View.VISIBLE);
-		}
-	};
-	private              boolean  mVisible;
-	View decorView;
-	//    private TextView tvNumber;//tvOriginal
-	//    private PressedTextView tvDone;
-	//    private ImageView ivSelector;
-	private RecyclerView         rvPhotos;
-	private PreviewPhotosAdapter adapter;
-	private PagerSnapHelper      snapHelper;
-	private LinearLayoutManager  lm;
-	private int                  index;
-	private ArrayList<Photo>     photos       = new ArrayList<>();
-	private int                  resultCode   = RESULT_CANCELED;
-	private int                  lastPosition = 0;//记录recyclerView最后一次角标位置，用于判断是否转换了item
-	private boolean              isSingle     = Setting.count == 1;
-	private boolean              unable       = Result.count() == Setting.count;
+	private static final int              UI_ANIMATION_DELAY = 300;
+	private              boolean          mVisible;
+	private              int              index;
+	private              ArrayList<Photo> photos             = new ArrayList<>();
+	private              int              resultCode         = RESULT_CANCELED;
+	// 最后一次角标位置，用于判断是否转换了item
+	private              boolean          isSingle           = Setting.count == 1;
+	private              boolean          unable             = Result.count() == Setting.count;
 
-	//    private FrameLayout flFragment;
-	//    private PreviewFragment previewFragment;
-	private int statusColor;
+	private Photo photoClick;
 
 	private ImageView ivBack;
 
-	private        PhotoHandler photoHandler;
-	private static String       currentPicPath = null;
+	private static String currentPicPath = null;
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		decorView = getWindow().getDecorView();
-		//        requestWindowFeature(Window.FEATURE_NO_TITLE);
-		SystemUtils.getInstance().systemUiInit(this, decorView);
 
 		mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_preview_easy_photos);
-		//		setContentView(R.layout.activity_preview_easy_photos);
-		photoHandler = new PhotoHandler(new PhotoNativeHelper());
-		//		currentPicPath = "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/aa
-		//		.jpg";
-
-
-		//		hideActionBar();
-		//		adaptationStatusBar();
 		if (null == AlbumModel.instance) {
 			finish();
 			return;
@@ -130,22 +85,6 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 		initData();
 		initView();
 	}
-
-	//	private void adaptationStatusBar () {
-	//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-	//			statusColor = ContextCompat.getColor(this, R.color.easy_photos_status_bar);
-	//			if (ColorUtils.isWhiteColor(statusColor)) {
-	//				getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-	//			}
-	//		}
-	//	}
-
-	//	private void hideActionBar () {
-	//		ActionBar actionBar = getSupportActionBar();
-	//		if (actionBar != null) {
-	//			actionBar.hide();
-	//		}
-	//	}
 
 
 	private void initData () {
@@ -180,66 +119,21 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 			Setting.showVideo = true;
 		}
 		index = intent.getIntExtra(Key.PREVIEW_PHOTO_INDEX, 0);
-		Log.e("TAG", "initData: ------------index " + index);
-		currentGestureIndex = index;
 
-		lastPosition = index;
+		//		Log.e("TAG", "initData: ------------index " + index +" photos 的大小为："+ photos.size
+		//		());
+		if (photos.size() > 10) {
+			for (int i = 0; i < 10; i++) {
+				Log.e("TAG", "initData: " + i + "------------" + photos.get(i).path);
+			}
+		}
+		photoClick = photos.get(index);
+
+		Log.e("TAG", "initData: -------------=====》" + photoClick.path);
+
 		mVisible = true;
 	}
 
-	private void toggle () {
-		if (mVisible) {
-			hide();
-		} else {
-			show();
-		}
-	}
-
-	private void hide () {
-		// Hide UI first
-		AlphaAnimation hideAnimation = new AlphaAnimation(1.0f, 0.0f);
-		hideAnimation.setAnimationListener(new Animation.AnimationListener() {
-			@Override
-			public void onAnimationStart (Animation animation) {
-
-			}
-
-			@Override
-			public void onAnimationEnd (Animation animation) {
-				//                mBottomBar.setVisibility(View.GONE);
-				//                mToolBar.setVisibility(View.GONE);
-			}
-
-			@Override
-			public void onAnimationRepeat (Animation animation) {
-
-			}
-		});
-		hideAnimation.setDuration(UI_ANIMATION_DELAY);
-		//        mBottomBar.startAnimation(hideAnimation);
-		//        mToolBar.startAnimation(hideAnimation);
-		mVisible = false;
-
-		// Schedule a runnable to remove the status and navigation bar after a delay
-		mHideHandler.removeCallbacks(mShowPart2Runnable);
-
-		mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
-
-	}
-
-
-	private void show () {
-		// Show the system bar
-		if (Build.VERSION.SDK_INT >= 16) {
-			SystemUtils.getInstance().systemUiShow(this, decorView);
-		}
-
-		mVisible = true;
-
-		// Schedule a runnable to display UI elements after a delay
-		mHideHandler.removeCallbacks(mHidePart2Runnable);
-		mHideHandler.post(mShowPart2Runnable);
-	}
 
 	/**
 	 * 刷新 右侧 和 顶部 的工具栏。
@@ -248,47 +142,16 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 		if (photoFormatIsRight) {//是否为图片，并 是可编辑的图片
 			mDataBinding.clPhotoDetailRightTools.setVisibility(View.VISIBLE);
 
-			mDataBinding.llNormal.setVisibility(View.VISIBLE);
-			mDataBinding.clPhotoEdit.setVisibility(View.GONE);
+			mDataBinding.llActionbarNormal.setVisibility(View.VISIBLE);
+			mDataBinding.clActionbarGesture.setVisibility(View.GONE);
 
 		} else {
 			mDataBinding.clPhotoDetailRightTools.setVisibility(View.INVISIBLE);
-			mDataBinding.llNormal.setVisibility(View.VISIBLE);
-			mDataBinding.clPhotoEdit.setVisibility(View.GONE);
+			mDataBinding.llActionbarNormal.setVisibility(View.VISIBLE);
+			mDataBinding.clActionbarGesture.setVisibility(View.GONE);
 		}
 	}
 
-	@Override
-	public void onPhotoClick () {
-		toggle();
-	}
-
-	@Override
-	public void onShowItemChanged (int lastPosition, boolean isPic) {
-		//		Log.e("TAG", "onShowItemChanged: lastPosition==="+ lastPosition + "===photoSize="+
-		//		photos.size());
-		if (isPic) {
-			mDataBinding.clPhotoDetailRightTools.setVisibility(View.VISIBLE);
-
-			if ((lastPosition == 0 || (lastPosition == photos.size() - 1))) {
-				currentPicPath = photos.get(lastPosition).path;
-				Log.e("TAG", "onShowItemChanged: ====111==currentPicPath=" + currentPicPath);
-			}
-			if (lastPosition > 0 && lastPosition < photos.size() - 2) {
-				currentPicPath = photos.get(lastPosition - 1).path;
-				Log.e("TAG", "onShowItemChanged: ====222==currentPicPath=" + currentPicPath);
-			}
-		} else {
-			mDataBinding.clPhotoDetailRightTools.setVisibility(View.INVISIBLE);
-		}
-	}
-
-
-	@Override
-	public void onPhotoScaleChanged () {
-		if (mVisible)
-			hide();
-	}
 
 	@Override
 	public void onBackPressed () {
@@ -303,25 +166,84 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 	}
 
 	private void initView () {
+
 		ivBack = findViewById(R.id.iv_preview_back);
-		ivBack.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick (View v) {
-				// Toast.makeText(PreviewActivity.this, "ivBack click", Toast.LENGTH_SHORT).show();
-				finish();
-			}
-		});
+		ivBack.setOnClickListener(v -> finish());
+		if (photoClick.path.endsWith("jpg")){
+			mDataBinding.ivVideo.setVisibility(View.GONE);
+			mDataBinding.doodleView.setVisibility(View.VISIBLE);
 
-		initRecyclerView();
+			initDoodle();
+		}else if (photoClick.path.endsWith("mp4")){
+			mDataBinding.ivVideo.setVisibility(View.VISIBLE);
+			mDataBinding.doodleView.setVisibility(View.GONE);
 
-		initTools();
+			initVideo();
+
+		}else {
+			mDataBinding.ivVideo.setVisibility(View.GONE);
+			mDataBinding.doodleView.setVisibility(View.GONE);
+			//显示错误布局
+
+		}
+
+		//		initRecyclerView();
+
+		//		initTools();
 
 		//获取系统保存的颜色，否则初始化 涂鸦颜色 字号，  文字颜色 及其字号
 		mColorDoodle = new DoodleColor(Color.RED);
 
 		mColorText = new DoodleColor(Color.BLUE);
+	}
+
+	private void initVideo(){
+		Setting.imageEngine.loadPhoto(this, photoClick.uri,
+				mDataBinding.ivVideo);
+
+		mDataBinding.clPhotoDetailRightTools.setVisibility(View.GONE);
+
+	}
+
+	private DoodleOnTouchGestureListener touchGestureListener;
+
+	private IDoodleTouchDetector doodleTouchDetector;
+
+	private void initDoodle(){
+
+		//设置右侧 工具栏可见，左侧 颜色 字体大小  不可见但占位
+		mDataBinding.clPhotoDetailRightTools.setVisibility(View.VISIBLE);
+		mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.INVISIBLE);
+
+		mDataBinding.doodleView.setBitmap(BitmapFactory.decodeFile(photoClick.path));
+
+		touchGestureListener = new DoodleOnTouchGestureListener(mDataBinding.doodleView);
+		touchGestureListener.setSelectionListener(new DoodleOnTouchGestureListener.ISelectionListener() {
+			@Override
+			public void onSelectedItem (IDoodle doodle, IDoodleSelectableItem selectableItem,
+			                            boolean selected) {
+
+			}
+
+			@Override
+			public void onCreateSelectableItem (IDoodle doodle, float x, float y) {
+
+			}
+		});
+
+		doodleTouchDetector = new DoodleTouchDetector(this, touchGestureListener);
 
 
+		mDataBinding.doodleView.setGestureRecognitionAble(true);
+
+		mColorDoodle = new DoodleColor(Color.RED);
+
+		mDataBinding.doodleView.setColor(mColorDoodle);
+		mDataBinding.doodleView.setShape(DoodleShape.HAND_WRITE);
+		mDataBinding.doodleView.setPen(DoodlePen.BRUSH);
+		mDataBinding.doodleView.setSize(10);
+
+		mDataBinding.doodleView.setDefaultTouchDetector(doodleTouchDetector);
 	}
 
 	//control field
@@ -342,21 +264,21 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 
 
 	private boolean    isDoodle = false;
-	private DoodleView mDoodleView;
 
 	//my tools listener
-	private void initTools () {
+/*	private void initTools () {
 
-		mDataBinding.rvPhotos.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch (View v, MotionEvent event) {
-				if (isDoodle){
-					mDataBinding.rvPhotos.getChildAt(currentGestureIndex).findViewById(R.id.doodle_item_view).dispatchTouchEvent(event);
-				}
-
-				return isDoodle;
-			}
-		});
+//		mDataBinding.rvPhotos.setOnTouchListener(new View.OnTouchListener() {
+//			@Override
+//			public boolean onTouch (View v, MotionEvent event) {
+//				if (isDoodle){
+//					mDataBinding.rvPhotos.getChildAt(currentGestureIndex).findViewById(R.id
+.doodle_item_view).dispatchTouchEvent(event);
+//				}
+//
+//				return isDoodle;
+//			}
+//		});
 
 
 		mDataBinding.circlePalette.setSelected(true);
@@ -368,7 +290,6 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 				//加载储存的 色板, 字号 inde 及其 字号大小
 				//todo ...
 				isDoodle = true;
-				mDoodleView =  mDataBinding.rvPhotos.getChildAt(currentGestureIndex).findViewById(R.id.doodle_item_view);
 				mDoodleView.setColor(mColorDoodle);
 				mDoodleView.setShape(DoodleShape.HAND_WRITE);
 				mDoodleView.setPen(DoodlePen.BRUSH);
@@ -393,11 +314,10 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 				//
 				photos.get(currentGestureIndex).gestureDetectorAble = true;
 				adapter.notifyDataSetChanged();
-				mDataBinding.rvPhotos.invalidate();
 
 				//隐藏 正常 actionbar，显示手势action bar
-				mDataBinding.llNormal.setVisibility(View.GONE);
-				mDataBinding.clPhotoEdit.setVisibility(View.VISIBLE);
+				mDataBinding.llActionbarNormal.setVisibility(View.GONE);
+				mDataBinding.llActionbarNormal.setVisibility(View.VISIBLE);
 
 			});
 			//文字 选择
@@ -405,7 +325,8 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 				//加载储存的 色板, 字号 inde 及其 字号大小
 				//todo ...
 				isDoodle = true;
-				mDoodleView =  mDataBinding.rvPhotos.getChildAt(currentGestureIndex).findViewById(R.id.doodle_item_view);
+				mDoodleView =  mDataBinding.rvPhotos.getChildAt(currentGestureIndex).findViewById
+				(R.id.doodle_item_view);
 				mDoodleView.setColor(mColorText);
 				mDoodleView.setPen(DoodlePen.TEXT);
 				mDoodleView.setSize(10);
@@ -437,7 +358,8 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 			//			色板  粗细 选择。
 			mDataBinding.circlePalette.setClickListener((currentData, cirCleImageType) -> {
 				Log.e("TAG", "initTools:circlePalette -------------");
-				if (type_palette_character == 0 && cirCleImageType == CircleDisplayView.CirCleImageType.COLOR) {
+				if (type_palette_character == 0 && cirCleImageType == CircleDisplayView
+				.CirCleImageType.COLOR) {
 					mColorDoodle.setColor(currentData);
 					//刷新 画笔
 					mDoodleView.setColor(mColorDoodle);
@@ -470,11 +392,13 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 				paintCircleCharacterSize(position);
 
 				Log.e("TAG",
-						"initTools: --------position---" + position + " selectPaintSize ----" + selectPaintSize);
+						"initTools: --------position---" + position + " selectPaintSize ----" +
+						selectPaintSize);
 				//设置 画笔 或 文字的 值
 			});
 			//设置监听器
-			mDataBinding.editColorPick.setOnColorPickerChangeListener(new ColorSliderView.OnColorPickerChangeListener() {
+			mDataBinding.editColorPick.setOnColorPickerChangeListener(new ColorSliderView
+			.OnColorPickerChangeListener() {
 				@Override
 				public void onColorChanged (ColorSliderView picker, int color, float percent) {
 					mDataBinding.circlePalette.setColor(color,
@@ -523,14 +447,9 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 				mDataBinding.llNormal.setVisibility(View.VISIBLE);
 				mDataBinding.clPhotoEdit.setVisibility(View.GONE);
 			});
-
-
-		} else {
-
 		}
-	}
+	}*/
 
-	private int currentGestureIndex = 0;
 
 	private void paintCircleCharacterSize (int clickPosition) {
 		switch (clickPosition) {
@@ -553,261 +472,6 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_6_select, CircleDisplayView.CirCleImageType.BITMAP);
 				break;
 		}
-		//设置 doodle view
 	}
 
-	private void initRecyclerView () {
-		rvPhotos = (RecyclerView) findViewById(R.id.rv_photos);
-		adapter = new PreviewPhotosAdapter(this, photos, this);
-		lm = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-		rvPhotos.setLayoutManager(lm);
-		rvPhotos.setAdapter(adapter);
-		//		rvPhotos.getChildAdapterPosition()
-		rvPhotos.scrollToPosition(index);
-		toggleSelector();
-		snapHelper = new PagerSnapHelper();
-		snapHelper.attachToRecyclerView(rvPhotos);
-		rvPhotos.addOnScrollListener(new RecyclerView.OnScrollListener() {
-			@Override
-			public void onScrollStateChanged (@NonNull RecyclerView recyclerView, int newState) {
-				super.onScrollStateChanged(recyclerView, newState);
-
-				View view = snapHelper.findSnapView(lm);
-				if (view == null) {
-					return;
-				}
-				int position = lm.getPosition(view);
-				Log.e("TAG", "onScrollStateChanged:  -------position==> " + position);
-				currentGestureIndex = position;
-				if (lastPosition == position) {
-					return;
-				}
-				lastPosition = position;
-				//                previewFragment.setSelectedPosition(-1);
-				//                tvNumber.setText(getString(R.string
-				//                .preview_current_number_easy_photos,
-				//                        lastPosition + 1, photos.size()));
-				toggleSelector();
-			}
-		});
-		//        tvNumber.setText(getString(R.string.preview_current_number_easy_photos, index
-		//        + 1,
-		//                photos.size()));
-	}
-
-	private boolean clickDone = false;
-
-	@Override
-	public void onClick (View v) {
-		//		int id = v.getId();
-		//        if (R.id.iv_back == id) {
-		//            doBack();
-		//        }
-		//        else if (R.id.tv_selector == id) {
-		//            updateSelector();
-		//        }
-		//        else if (R.id.iv_selector == id) {
-		//            updateSelector();
-		//        }
-		//        else
-		//        if (R.id.tv_original == id) {
-		//            if (!Setting.originalMenuUsable) {
-		//                Toast.makeText(getApplicationContext(), Setting
-		//                .originalMenuUnusableHint, Toast.LENGTH_SHORT).show();
-		//                return;
-		//            }
-		//            Setting.selectedOriginal = !Setting.selectedOriginal;
-		//            processOriginalMenu();
-		//        }
-		//        else if (R.id.tv_done == id) {
-		//            if (clickDone) return;
-		//            clickDone = true;
-		//            Intent intent = new Intent();
-		//            intent.putExtra(Key.PREVIEW_CLICK_DONE, true);
-		//            setResult(RESULT_OK, intent);
-		//            finish();
-		//        }
-		//        else if (R.id.m_bottom_bar == id) {
-		//
-		//        } else if (R.id.tv_edit == id) {
-		//
-		//        }
-	}
-
-
-	private void toggleSelector () {
-		if (photos.get(lastPosition).selected) {
-			//            ivSelector.setImageResource(R.drawable.ic_selector_true_easy_photos);
-			if (!Result.isEmpty()) {
-				int count = Result.count();
-				for (int i = 0; i < count; i++) {
-					if (photos.get(lastPosition).path.equals(Result.getPhotoPath(i))) {
-						//                        previewFragment.setSelectedPosition(i);
-						break;
-					}
-				}
-			}
-		} else {
-			//            ivSelector.setImageResource(R.drawable.ic_selector_easy_photos);
-		}
-		//        previewFragment.notifyDataSetChanged();
-		//        shouldShowMenuDone();
-	}
-
-	@SuppressLint("StringFormatInvalid")
-	private void updateSelector () {
-		resultCode = RESULT_OK;
-		Photo item = photos.get(lastPosition);
-		if (isSingle) {
-			singleSelector(item);
-			return;
-		}
-		if (unable) {
-			if (item.selected) {
-				Result.removePhoto(item);
-				if (unable) {
-					unable = false;
-				}
-				toggleSelector();
-				return;
-			}
-			if (Setting.isOnlyVideo()) {
-				Toast.makeText(getApplicationContext(),
-						getString(R.string.selector_reach_max_video_hint_easy_photos,
-								Setting.count), Toast.LENGTH_SHORT).show();
-
-			} else if (Setting.showVideo) {
-				Toast.makeText(getApplicationContext(),
-						getString(R.string.selector_reach_max_hint_easy_photos, Setting.count),
-						Toast.LENGTH_SHORT).show();
-			} else {
-				Toast.makeText(getApplicationContext(),
-						getString(R.string.selector_reach_max_image_hint_easy_photos,
-								Setting.count), Toast.LENGTH_SHORT).show();
-			}
-			return;
-		}
-		item.selected = !item.selected;
-		if (item.selected) {
-			int res = Result.addPhoto(item);
-			if (res != 0) {
-				item.selected = false;
-				switch (res) {
-					case Result.PICTURE_OUT:
-						Toast.makeText(getApplicationContext(),
-								getString(R.string.selector_reach_max_image_hint_easy_photos,
-										Setting.complexPictureCount), Toast.LENGTH_SHORT).show();
-						break;
-					case Result.VIDEO_OUT:
-						Toast.makeText(getApplicationContext(),
-								getString(R.string.selector_reach_max_video_hint_easy_photos,
-										Setting.complexVideoCount), Toast.LENGTH_SHORT).show();
-						break;
-					case Result.SINGLE_TYPE:
-						Toast.makeText(getApplicationContext(),
-								getString(R.string.selector_single_type_hint_easy_photos),
-								Toast.LENGTH_SHORT).show();
-						break;
-				}
-				return;
-			}
-			if (Result.count() == Setting.count) {
-				unable = true;
-			}
-		} else {
-			Result.removePhoto(item);
-			//            previewFragment.setSelectedPosition(-1);
-			if (unable) {
-				unable = false;
-			}
-		}
-		toggleSelector();
-	}
-
-	private void singleSelector (Photo photo) {
-		if (!Result.isEmpty()) {
-			if (Result.getPhotoPath(0).equals(photo.path)) {
-				Result.removePhoto(photo);
-			} else {
-				Result.removePhoto(0);
-				Result.addPhoto(photo);
-			}
-		} else {
-			Result.addPhoto(photo);
-		}
-		toggleSelector();
-	}
-
-	//    private void shouldShowMenuDone() {
-	//        if (Result.isEmpty()) {
-	//            if (View.VISIBLE == tvDone.getVisibility()) {
-	//                ScaleAnimation scaleHide = new ScaleAnimation(1f, 0f, 1f, 0f);
-	//                scaleHide.setDuration(200);
-	//                tvDone.startAnimation(scaleHide);
-	//            }
-	//            tvDone.setVisibility(View.GONE);
-	////            flFragment.setVisibility(View.GONE);
-	//        }
-	//        else {
-	//            if (View.GONE == tvDone.getVisibility()) {
-	//                ScaleAnimation scaleShow = new ScaleAnimation(0f, 1f, 0f, 1f);
-	//                scaleShow.setDuration(200);
-	//                tvDone.startAnimation(scaleShow);
-	//            }
-	////            flFragment.setVisibility(View.VISIBLE);
-	//            tvDone.setVisibility(View.VISIBLE);
-	//
-	//            if (Result.isEmpty()) {
-	//                return;
-	//            }
-	//
-	//            if (Setting.complexSelector) {
-	//                if (Setting.complexSingleType) {
-	//                    if (Result.getPhotoType(0).contains(Type.VIDEO)) {
-	//                        tvDone.setText(getString(R.string.selector_action_done_easy_photos,
-	//                        Result.count(),
-	//                                Setting.complexVideoCount));
-	//                        return;
-	//                    }
-	//                    tvDone.setText(getString(R.string.selector_action_done_easy_photos,
-	//                    Result.count(),
-	//                            Setting.complexPictureCount));
-	//                    return;
-	//                }
-	//            }
-	//            tvDone.setText(getString(R.string.selector_action_done_easy_photos, Result
-	//            .count(),
-	//                    Setting.count));
-	//        }
-	//    }
-
-	@Override
-	public void onPreviewPhotoClick (int position) {
-		String path = Result.getPhotoPath(position);
-		int size = photos.size();
-		for (int i = 0; i < size; i++) {
-			if (TextUtils.equals(path, photos.get(i).path)) {
-				rvPhotos.scrollToPosition(i);
-				lastPosition = i;
-				//                tvNumber.setText(getString(R.string
-				//                .preview_current_number_easy_photos,
-				//                        lastPosition + 1, photos.size()));
-				//                previewFragment.setSelectedPosition(position);
-				toggleSelector();
-				return;
-			}
-		}
-	}
-
-	private void setClick (@IdRes int... ids) {
-		for (int id : ids) {
-			findViewById(id).setOnClickListener(this);
-		}
-	}
-
-	private void setClick (View... views) {
-		for (View v : views) {
-			v.setOnClickListener(this);
-		}
-	}
 }
