@@ -238,7 +238,7 @@ public class AlbumModel {
 					continue;
 				}
 
-				Photo imageItem = new Photo(name, uri, path, dateTime, width, height, orientation, size, duration, type);
+				Photo imageItem = new Photo(name, uri, path, dateTime, width, height, orientation, size, duration, type,false);
 				if (!Setting.selectedPhotos.isEmpty()) {
 					int selectSize = Setting.selectedPhotos.size();
 					for (int i = 0; i < selectSize; i++) {

@@ -12,8 +12,14 @@
 
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/iv_photo_view"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    <com.dyt.wcc.baselib.ui.doodle.view.DoodleView
+        android:id="@+id/doodle_item_view"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <ImageView
         android:id="@+id/iv_play"

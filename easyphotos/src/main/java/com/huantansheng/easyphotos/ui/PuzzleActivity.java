@@ -463,7 +463,7 @@ public class PuzzleActivity extends AppCompatActivity implements View.OnClickLis
                         Photo photo = new Photo(file.getName(), UriUtils.getUri(PuzzleActivity.this,
                                 file), file.getAbsolutePath(), file.lastModified() / 1000,
                                 puzzleView.getWidth(), puzzleView.getHeight(), 0, file.length(),
-                                DurationUtils.getDuration(file.getAbsolutePath()), "image/png");
+                                DurationUtils.getDuration(file.getAbsolutePath()), "image/png",false);
                         intent.putExtra(EasyPhotos.RESULT_PHOTOS, photo);
                         setResult(RESULT_OK, intent);
                         PuzzleActivity.this.finish();

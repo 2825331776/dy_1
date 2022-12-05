@@ -39,4 +39,36 @@ class BaseJniUtil {
 //    external fun decrypt(data: String): String //解密
 //    }
 
+    //----------------------------native method ----------------------------------------
+
+    //----------------------------native method ----------------------------------------
+    /**
+     *  判断数据格式 通过加解密方式。
+     * @param path
+     * @return
+     */
+    external fun judgeJpgFormat(path: String?): Boolean
+
+    /**
+     * jpg的所有数据 等等数据。
+     * @param path
+     * @return
+     */
+    external fun getJpgSourceData(path: String?): ByteArray?
+
+    /**
+     * 设置色板：通过数据源，和色板编号 获取一个完成 rgba 图像数组。
+     * @param originalSource
+     * @param paletteId
+     * @param width
+     * @param height
+     * @return
+     */
+    external fun setPalette(
+        originalSource: ByteArray?,
+        paletteId: Int,
+        width: Int,
+        height: Int
+    ): ByteArray?
+
 }

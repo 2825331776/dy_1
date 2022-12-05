@@ -567,7 +567,7 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 				albumName = cursor.getString(albumNameCol);
 				folderPath = albumName;
 			}
-			p = new Photo(name, uri, path, dateTime, width, height, orientation, size, 0, type);
+			p = new Photo(name, uri, path, dateTime, width, height, orientation, size, 0, type,false);
 		}
 		cursor.close();
 
@@ -652,7 +652,7 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 					}
 				}
 
-				final Photo photo = new Photo(mTempImageFile.getName(), uri, mTempImageFile.getAbsolutePath(), mTempImageFile.lastModified() / 1000, width, height, orientation, mTempImageFile.length(), DurationUtils.getDuration(mTempImageFile.getAbsolutePath()), options.outMimeType);
+				final Photo photo = new Photo(mTempImageFile.getName(), uri, mTempImageFile.getAbsolutePath(), mTempImageFile.lastModified() / 1000, width, height, orientation, mTempImageFile.length(), DurationUtils.getDuration(mTempImageFile.getAbsolutePath()), options.outMimeType,false);
 
 				runOnUiThread(new Runnable() {
 					@Override

@@ -3,11 +3,13 @@ package com.huantansheng.easyphotos.ui;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -22,6 +24,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.dyt.wcc.baselib.ui.doodle.params.DoodleColor;
+import com.dyt.wcc.baselib.ui.doodle.params.DoodlePen;
+import com.dyt.wcc.baselib.ui.doodle.params.DoodleShape;
+import com.dyt.wcc.baselib.ui.doodle.view.DoodleView;
 import com.dyt.wcc.baselib.ui.widget.CircleDisplayView;
 import com.dyt.wcc.baselib.ui.widget.ColorSliderView;
 import com.huantansheng.easyphotos.R;
@@ -111,7 +117,8 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 		mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_preview_easy_photos);
 		//		setContentView(R.layout.activity_preview_easy_photos);
 		photoHandler = new PhotoHandler(new PhotoNativeHelper());
-		//		currentPicPath = "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/aa.jpg";
+		//		currentPicPath = "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/aa
+		//		.jpg";
 
 
 		//		hideActionBar();
@@ -173,6 +180,8 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 			Setting.showVideo = true;
 		}
 		index = intent.getIntExtra(Key.PREVIEW_PHOTO_INDEX, 0);
+		Log.e("TAG", "initData: ------------index " + index);
+		currentGestureIndex = index;
 
 		lastPosition = index;
 		mVisible = true;
@@ -232,6 +241,23 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 		mHideHandler.post(mShowPart2Runnable);
 	}
 
+	/**
+	 * 刷新 右侧 和 顶部 的工具栏。
+	 */
+	private void refreshLayout () {
+		if (photoFormatIsRight) {//是否为图片，并 是可编辑的图片
+			mDataBinding.clPhotoDetailRightTools.setVisibility(View.VISIBLE);
+
+			mDataBinding.llNormal.setVisibility(View.VISIBLE);
+			mDataBinding.clPhotoEdit.setVisibility(View.GONE);
+
+		} else {
+			mDataBinding.clPhotoDetailRightTools.setVisibility(View.INVISIBLE);
+			mDataBinding.llNormal.setVisibility(View.VISIBLE);
+			mDataBinding.clPhotoEdit.setVisibility(View.GONE);
+		}
+	}
+
 	@Override
 	public void onPhotoClick () {
 		toggle();
@@ -239,8 +265,11 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 
 	@Override
 	public void onShowItemChanged (int lastPosition, boolean isPic) {
-		//		Log.e("TAG", "onShowItemChanged: lastPosition==="+ lastPosition + "===photoSize="+ photos.size());
+		//		Log.e("TAG", "onShowItemChanged: lastPosition==="+ lastPosition + "===photoSize="+
+		//		photos.size());
 		if (isPic) {
+			mDataBinding.clPhotoDetailRightTools.setVisibility(View.VISIBLE);
+
 			if ((lastPosition == 0 || (lastPosition == photos.size() - 1))) {
 				currentPicPath = photos.get(lastPosition).path;
 				Log.e("TAG", "onShowItemChanged: ====111==currentPicPath=" + currentPicPath);
@@ -249,8 +278,11 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 				currentPicPath = photos.get(lastPosition - 1).path;
 				Log.e("TAG", "onShowItemChanged: ====222==currentPicPath=" + currentPicPath);
 			}
+		} else {
+			mDataBinding.clPhotoDetailRightTools.setVisibility(View.INVISIBLE);
 		}
 	}
+
 
 	@Override
 	public void onPhotoScaleChanged () {
@@ -283,32 +315,66 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 		initRecyclerView();
 
 		initTools();
+
+		//获取系统保存的颜色，否则初始化 涂鸦颜色 字号，  文字颜色 及其字号
+		mColorDoodle = new DoodleColor(Color.RED);
+
+		mColorText = new DoodleColor(Color.BLUE);
+
+
 	}
 
 	//control field
 	//是否是我们的图片，item 中 每个都有一份。 控制 按钮 状态
-	private boolean                          myDefinePhoto          = true;
+	private boolean                          photoFormatIsRight     = true;
 	private ActivityPreviewEasyPhotosBinding mDataBinding;
 	private int                              type_palette_character = 0;
-	//涂鸦
-	private int doodleColorData = 0;
-	private float doodlePercent   = 0.5f;
-	private int   doodleSizeIndex = 0;
-	//文字
-	private int characterColorData = 0;
-	private float characterPercent   = 0.5f;
-	private int   characterSizeIndex = 0;
+	//涂鸦 颜色值 ，百分比， 字体大小
+	private DoodleColor                      mColorDoodle;
+	private int                              doodleColorData        = 0;
+	private float                            doodlePercent          = 0.5f;
+	private int                              doodleSizeIndex        = 0;
+	//文字 颜色值 ，百分比， 字体大小
+	private DoodleColor                      mColorText;
+	private int                              characterColorData     = 0;
+	private float                            characterPercent       = 0.5f;
+	private int                              characterSizeIndex     = 0;
+
+
+	private boolean    isDoodle = false;
+	private DoodleView mDoodleView;
 
 	//my tools listener
 	private void initTools () {
+
+		mDataBinding.rvPhotos.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch (View v, MotionEvent event) {
+				if (isDoodle){
+					mDataBinding.rvPhotos.getChildAt(currentGestureIndex).findViewById(R.id.doodle_item_view).dispatchTouchEvent(event);
+				}
+
+				return isDoodle;
+			}
+		});
+
+
 		mDataBinding.circlePalette.setSelected(true);
 		mDataBinding.circleCharacterSize.setSelected(false);
-		mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.GONE);
-		if (myDefinePhoto) {
-			//			涂鸦 文字 选择。
+		mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.INVISIBLE);
+		if (photoFormatIsRight) {
+			//		涂鸦  。
 			mDataBinding.cbDetailToolsDoodle.setOnClickListener(v -> {
 				//加载储存的 色板, 字号 inde 及其 字号大小
 				//todo ...
+				isDoodle = true;
+				mDoodleView =  mDataBinding.rvPhotos.getChildAt(currentGestureIndex).findViewById(R.id.doodle_item_view);
+				mDoodleView.setColor(mColorDoodle);
+				mDoodleView.setShape(DoodleShape.HAND_WRITE);
+				mDoodleView.setPen(DoodlePen.BRUSH);
+				mDoodleView.setSize(10);
+
+				Toast.makeText(this, "当前ID：" + photos.get(index).name, Toast.LENGTH_LONG).show();
 
 				Log.e("TAG", "==========initTools: ========涂鸦=============");
 				mDataBinding.cbDetailToolsDoodle.setSelected(true);
@@ -321,12 +387,28 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 				mDataBinding.pssDetailTools.setSelectIndex(doodleSizeIndex);
 
 				paintCircleCharacterSize(doodleSizeIndex);
-				mDataBinding.circlePalette.setColor(doodleColorData, CircleDisplayView.CirCleImageType.COLOR);
+				mDataBinding.circlePalette.setColor(doodleColorData,
+						CircleDisplayView.CirCleImageType.COLOR);
+
+				//
+				photos.get(currentGestureIndex).gestureDetectorAble = true;
+				adapter.notifyDataSetChanged();
+				mDataBinding.rvPhotos.invalidate();
+
+				//隐藏 正常 actionbar，显示手势action bar
+				mDataBinding.llNormal.setVisibility(View.GONE);
+				mDataBinding.clPhotoEdit.setVisibility(View.VISIBLE);
 
 			});
+			//文字 选择
 			mDataBinding.cbDetailToolsCharacter.setOnClickListener(v -> {
 				//加载储存的 色板, 字号 inde 及其 字号大小
 				//todo ...
+				isDoodle = true;
+				mDoodleView =  mDataBinding.rvPhotos.getChildAt(currentGestureIndex).findViewById(R.id.doodle_item_view);
+				mDoodleView.setColor(mColorText);
+				mDoodleView.setPen(DoodlePen.TEXT);
+				mDoodleView.setSize(10);
 
 				Log.e("TAG", "==========initTools: ============文字=========");
 				mDataBinding.cbDetailToolsDoodle.setSelected(false);
@@ -338,11 +420,34 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 				mDataBinding.pssDetailTools.setSelectIndex(characterSizeIndex);
 
 				paintCircleCharacterSize(characterSizeIndex);
-				mDataBinding.circlePalette.setColor(characterColorData, CircleDisplayView.CirCleImageType.COLOR);
+				mDataBinding.circlePalette.setColor(characterColorData,
+						CircleDisplayView.CirCleImageType.COLOR);
+
+
+				//
+				photos.get(currentGestureIndex).gestureDetectorAble = true;
+				adapter.notifyDataSetChanged();
+				mDataBinding.rvPhotos.invalidate();
+
+				//隐藏 正常 actionbar，显示手势action bar
+				mDataBinding.llNormal.setVisibility(View.GONE);
+				mDataBinding.clPhotoEdit.setVisibility(View.VISIBLE);
+
 			});
 			//			色板  粗细 选择。
 			mDataBinding.circlePalette.setClickListener((currentData, cirCleImageType) -> {
 				Log.e("TAG", "initTools:circlePalette -------------");
+				if (type_palette_character == 0 && cirCleImageType == CircleDisplayView.CirCleImageType.COLOR) {
+					mColorDoodle.setColor(currentData);
+					//刷新 画笔
+					mDoodleView.setColor(mColorDoodle);
+				} else {
+					mColorText.setColor(currentData);
+					//刷新 画笔
+					mDoodleView.setColor(mColorText);
+				}
+
+
 				mDataBinding.circleCharacterSize.setSelected(false);
 
 				mDataBinding.editColorPick.setVisibility(View.VISIBLE);
@@ -362,16 +467,18 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 				} else {
 					characterSizeIndex = position;
 				}
-				paintCircleCharacterSize( position);
+				paintCircleCharacterSize(position);
 
-				Log.e("TAG", "initTools: --------position---" + position + " selectPaintSize ----" + selectPaintSize);
+				Log.e("TAG",
+						"initTools: --------position---" + position + " selectPaintSize ----" + selectPaintSize);
 				//设置 画笔 或 文字的 值
 			});
-
+			//设置监听器
 			mDataBinding.editColorPick.setOnColorPickerChangeListener(new ColorSliderView.OnColorPickerChangeListener() {
 				@Override
 				public void onColorChanged (ColorSliderView picker, int color, float percent) {
-					mDataBinding.circlePalette.setColor(color, CircleDisplayView.CirCleImageType.COLOR);
+					mDataBinding.circlePalette.setColor(color,
+							CircleDisplayView.CirCleImageType.COLOR);
 					//设置 画笔 或 文字的 值
 
 					if (type_palette_character == 0) {
@@ -393,13 +500,39 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 
 				}
 			});
+			//设置 手势识别 顶部 actionbar 监听器
+			mDataBinding.ivToolsExit.setOnClickListener(v -> {
+				isDoodle = false;
+				photos.get(currentGestureIndex).gestureDetectorAble = false;
+				adapter.notifyDataSetChanged();
+				mDataBinding.rvPhotos.invalidate();
+
+				//隐藏 正常 actionbar，显示手势action bar
+				mDataBinding.llNormal.setVisibility(View.VISIBLE);
+				mDataBinding.clPhotoEdit.setVisibility(View.GONE);
+			});
+
+			mDataBinding.ivSavePhoto.setOnClickListener(v -> {
+				isDoodle = false;
+				Toast.makeText(this, "save", Toast.LENGTH_SHORT).show();
+				photos.get(currentGestureIndex).gestureDetectorAble = false;
+				adapter.notifyDataSetChanged();
+				mDataBinding.rvPhotos.invalidate();
+
+				//隐藏 正常 actionbar，显示手势action bar
+				mDataBinding.llNormal.setVisibility(View.VISIBLE);
+				mDataBinding.clPhotoEdit.setVisibility(View.GONE);
+			});
+
 
 		} else {
 
 		}
 	}
 
-	private void paintCircleCharacterSize(int clickPosition){
+	private int currentGestureIndex = 0;
+
+	private void paintCircleCharacterSize (int clickPosition) {
 		switch (clickPosition) {
 			case 0:
 				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_1_select, CircleDisplayView.CirCleImageType.BITMAP);
@@ -421,7 +554,6 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 				break;
 		}
 		//设置 doodle view
-
 	}
 
 	private void initRecyclerView () {
@@ -445,17 +577,21 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 					return;
 				}
 				int position = lm.getPosition(view);
+				Log.e("TAG", "onScrollStateChanged:  -------position==> " + position);
+				currentGestureIndex = position;
 				if (lastPosition == position) {
 					return;
 				}
 				lastPosition = position;
 				//                previewFragment.setSelectedPosition(-1);
-				//                tvNumber.setText(getString(R.string.preview_current_number_easy_photos,
+				//                tvNumber.setText(getString(R.string
+				//                .preview_current_number_easy_photos,
 				//                        lastPosition + 1, photos.size()));
 				toggleSelector();
 			}
 		});
-		//        tvNumber.setText(getString(R.string.preview_current_number_easy_photos, index + 1,
+		//        tvNumber.setText(getString(R.string.preview_current_number_easy_photos, index
+		//        + 1,
 		//                photos.size()));
 	}
 
@@ -476,7 +612,8 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 		//        else
 		//        if (R.id.tv_original == id) {
 		//            if (!Setting.originalMenuUsable) {
-		//                Toast.makeText(getApplicationContext(), Setting.originalMenuUnusableHint, Toast.LENGTH_SHORT).show();
+		//                Toast.makeText(getApplicationContext(), Setting
+		//                .originalMenuUnusableHint, Toast.LENGTH_SHORT).show();
 		//                return;
 		//            }
 		//            Setting.selectedOriginal = !Setting.selectedOriginal;
@@ -535,12 +672,18 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 				return;
 			}
 			if (Setting.isOnlyVideo()) {
-				Toast.makeText(getApplicationContext(), getString(R.string.selector_reach_max_video_hint_easy_photos, Setting.count), Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(),
+						getString(R.string.selector_reach_max_video_hint_easy_photos,
+								Setting.count), Toast.LENGTH_SHORT).show();
 
 			} else if (Setting.showVideo) {
-				Toast.makeText(getApplicationContext(), getString(R.string.selector_reach_max_hint_easy_photos, Setting.count), Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(),
+						getString(R.string.selector_reach_max_hint_easy_photos, Setting.count),
+						Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(getApplicationContext(), getString(R.string.selector_reach_max_image_hint_easy_photos, Setting.count), Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(),
+						getString(R.string.selector_reach_max_image_hint_easy_photos,
+								Setting.count), Toast.LENGTH_SHORT).show();
 			}
 			return;
 		}
@@ -551,13 +694,19 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 				item.selected = false;
 				switch (res) {
 					case Result.PICTURE_OUT:
-						Toast.makeText(getApplicationContext(), getString(R.string.selector_reach_max_image_hint_easy_photos, Setting.complexPictureCount), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getApplicationContext(),
+								getString(R.string.selector_reach_max_image_hint_easy_photos,
+										Setting.complexPictureCount), Toast.LENGTH_SHORT).show();
 						break;
 					case Result.VIDEO_OUT:
-						Toast.makeText(getApplicationContext(), getString(R.string.selector_reach_max_video_hint_easy_photos, Setting.complexVideoCount), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getApplicationContext(),
+								getString(R.string.selector_reach_max_video_hint_easy_photos,
+										Setting.complexVideoCount), Toast.LENGTH_SHORT).show();
 						break;
 					case Result.SINGLE_TYPE:
-						Toast.makeText(getApplicationContext(), getString(R.string.selector_single_type_hint_easy_photos), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getApplicationContext(),
+								getString(R.string.selector_single_type_hint_easy_photos),
+								Toast.LENGTH_SHORT).show();
 						break;
 				}
 				return;
@@ -615,16 +764,19 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 	//            if (Setting.complexSelector) {
 	//                if (Setting.complexSingleType) {
 	//                    if (Result.getPhotoType(0).contains(Type.VIDEO)) {
-	//                        tvDone.setText(getString(R.string.selector_action_done_easy_photos, Result.count(),
+	//                        tvDone.setText(getString(R.string.selector_action_done_easy_photos,
+	//                        Result.count(),
 	//                                Setting.complexVideoCount));
 	//                        return;
 	//                    }
-	//                    tvDone.setText(getString(R.string.selector_action_done_easy_photos, Result.count(),
+	//                    tvDone.setText(getString(R.string.selector_action_done_easy_photos,
+	//                    Result.count(),
 	//                            Setting.complexPictureCount));
 	//                    return;
 	//                }
 	//            }
-	//            tvDone.setText(getString(R.string.selector_action_done_easy_photos, Result.count(),
+	//            tvDone.setText(getString(R.string.selector_action_done_easy_photos, Result
+	//            .count(),
 	//                    Setting.count));
 	//        }
 	//    }
@@ -637,7 +789,8 @@ public class PreviewActivity extends AppCompatActivity implements PreviewPhotosA
 			if (TextUtils.equals(path, photos.get(i).path)) {
 				rvPhotos.scrollToPosition(i);
 				lastPosition = i;
-				//                tvNumber.setText(getString(R.string.preview_current_number_easy_photos,
+				//                tvNumber.setText(getString(R.string
+				//                .preview_current_number_easy_photos,
 				//                        lastPosition + 1, photos.size()));
 				//                previewFragment.setSelectedPosition(position);
 				toggleSelector();

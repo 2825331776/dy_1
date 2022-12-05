@@ -24,65 +24,104 @@
             android:id="@+id/cl_photo_detail_actionbar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_46dp"
+            android:background="@color/black"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/iv_preview_back"
-                android:layout_width="@dimen/dimen_42dp"
-                android:layout_height="@dimen/dimen_42dp"
-                android:padding="@dimen/dimen_10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_arrow_back_easy_photos" />
-
-            <View
-                android:id="@+id/m_back_line"
-                android:layout_width="@dimen/dimen_1dp"
-                android:layout_height="@dimen/dimen_18dp"
-                android:background="@color/cardview_dark_background"
-                app:layout_constraintBottom_toBottomOf="@+id/iv_preview_back"
-                app:layout_constraintLeft_toRightOf="@+id/iv_preview_back"
-                app:layout_constraintTop_toTopOf="@id/iv_preview_back" />
-
-            <!--        右侧工具栏-->
+            <!--            正常情况的 状态栏-->
             <LinearLayout
-                android:id="@+id/ll_photo_detail_actionbar_right_tools"
+                android:id="@+id/ll_normal"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/dimen_10dp"
-                app:layout_constraintRight_toRightOf="parent"
+                android:gravity="center"
+                android:visibility="gone"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:layout_width="@dimen/dimen_40dp"
-                    android:layout_height="@dimen/dimen_40dp"
-                    android:layout_gravity="center"
-                    android:layout_margin="@dimen/dimen_5dp"
+                    android:id="@+id/iv_preview_back"
+                    android:layout_width="@dimen/dimen_42dp"
+                    android:layout_height="@dimen/dimen_42dp"
                     android:padding="@dimen/dimen_10dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/selector_tools_undo" />
+                    app:srcCompat="@drawable/ic_arrow_back_easy_photos" />
 
-                <ImageView
-                    android:layout_width="@dimen/dimen_40dp"
-                    android:layout_height="@dimen/dimen_40dp"
-                    android:layout_gravity="center"
-                    android:layout_margin="@dimen/dimen_5dp"
-                    android:padding="@dimen/dimen_10dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/selector_tools_do" />
-
-                <ImageView
-                    android:layout_width="@dimen/dimen_40dp"
-                    android:layout_height="@dimen/dimen_40dp"
-                    android:layout_gravity="center"
-                    android:layout_margin="@dimen/dimen_5dp"
-                    android:padding="@dimen/dimen_10dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/selector_tools_actionbar_confirm" />
-
+                <View
+                    android:id="@+id/m_back_line"
+                    android:layout_width="@dimen/dimen_1dp"
+                    android:layout_height="@dimen/dimen_18dp"
+                    android:background="@color/cardview_dark_background" />
             </LinearLayout>
+
+            <!--            编辑时 状态栏 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_photo_edit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/iv_tools_exit"
+                    android:layout_width="@dimen/dimen_42dp"
+                    android:layout_height="@dimen/dimen_42dp"
+                    android:padding="@dimen/dimen_10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_arrow_back_easy_photos" />
+
+                <View
+                    android:id="@+id/v_back_line_edit"
+                    android:layout_width="@dimen/dimen_1dp"
+                    android:layout_height="@dimen/dimen_18dp"
+                    android:background="@color/album_item_count_easy_photos"
+                    app:layout_constraintBottom_toBottomOf="@+id/iv_tools_exit"
+                    app:layout_constraintLeft_toRightOf="@+id/iv_tools_exit"
+                    app:layout_constraintTop_toTopOf="@id/iv_tools_exit" />
+
+                <!--        右侧工具栏-->
+                <LinearLayout
+                    android:id="@+id/ll_photo_detail_actionbar_right_tools"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/dimen_10dp"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/iv_undo"
+                        android:layout_width="@dimen/dimen_40dp"
+                        android:layout_height="@dimen/dimen_40dp"
+                        android:layout_gravity="center"
+                        android:layout_margin="@dimen/dimen_5dp"
+                        android:padding="@dimen/dimen_10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/selector_tools_undo" />
+
+                    <ImageView
+                        android:id="@+id/iv_do"
+                        android:layout_width="@dimen/dimen_40dp"
+                        android:layout_height="@dimen/dimen_40dp"
+                        android:layout_gravity="center"
+                        android:layout_margin="@dimen/dimen_5dp"
+                        android:padding="@dimen/dimen_10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/selector_tools_do" />
+
+                    <ImageView
+                        android:id="@+id/iv_save_photo"
+                        android:layout_width="@dimen/dimen_40dp"
+                        android:layout_height="@dimen/dimen_40dp"
+                        android:layout_gravity="center"
+                        android:layout_margin="@dimen/dimen_5dp"
+                        android:padding="@dimen/dimen_10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/selector_tools_actionbar_confirm" />
+
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -124,10 +163,10 @@
                     android:layout_gravity="center"
                     android:layout_margin="@dimen/dimen_5dp"
                     android:padding="@dimen/dimen_2dp"
-                    app:selected_border_StrokeWidth="2"
                     app:contentType="color"
-                    app:default_borderColor="@color/teal_200"
-                    app:isSelect="true" />
+                    app:default_borderColor="@color/white"
+                    app:isSelect="true"
+                    app:selected_border_StrokeWidth="2" />
 
                 <com.dyt.wcc.baselib.ui.widget.CircleDisplayView
                     android:id="@+id/circle_character_size"
@@ -136,10 +175,10 @@
                     android:layout_gravity="center"
                     android:layout_margin="@dimen/dimen_5dp"
                     android:padding="@dimen/dimen_2dp"
-                    app:selected_border_StrokeWidth="2"
                     app:contentType="bitmap"
                     app:default_Bitmap="@mipmap/photo_detail_tools_size_2_select"
-                    app:default_borderColor="@color/teal_200" />
+                    app:default_borderColor="@color/white"
+                    app:selected_border_StrokeWidth="2" />
 
                 <View
                     android:layout_width="match_parent"
@@ -152,8 +191,8 @@
                     android:id="@+id/edit_color_pick"
                     android:layout_width="@dimen/dimen_40dp"
                     android:layout_height="match_parent"
-                    app:slider_orientation="vertical"
-                    app:indicator_percent="1" />
+                    app:indicator_percent="1"
+                    app:slider_orientation="vertical" />
                 <!--            画笔 粗细 选择器-->
                 <com.dyt.wcc.baselib.ui.widget.PenpointDIASelectorView
                     android:id="@+id/pss_detail_tools"
