@@ -31,6 +31,7 @@ add_library( # Sets the name of the library.
         AES.cpp
         Base64.cpp
         jpegext.cpp
+        DYTJPGHelper.cpp
         #        提供一个jni调用的接口。
         BaseJni.cpp
         )

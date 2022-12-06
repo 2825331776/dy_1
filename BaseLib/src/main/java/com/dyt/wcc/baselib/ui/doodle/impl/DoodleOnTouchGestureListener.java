@@ -2,16 +2,20 @@ package com.dyt.wcc.baselib.ui.doodle.impl;
 
 import android.animation.ValueAnimator;
 import android.graphics.Path;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.Log;
 import android.view.MotionEvent;
 
 import com.dyt.wcc.baselib.ui.doodle.IItem.IDoodle;
+import com.dyt.wcc.baselib.ui.doodle.IItem.IDoodleItem;
 import com.dyt.wcc.baselib.ui.doodle.IItem.IDoodlePen;
 import com.dyt.wcc.baselib.ui.doodle.IItem.IDoodleSelectableItem;
 import com.dyt.wcc.baselib.ui.doodle.params.DoodlePen;
 import com.dyt.wcc.baselib.ui.doodle.params.DoodleShape;
 import com.dyt.wcc.baselib.ui.doodle.view.DoodleView;
+
+import java.util.List;
 
 import cn.forward.androids.ScaleGestureDetectorApi27;
 import cn.forward.androids.TouchGestureDetector;
@@ -52,6 +56,7 @@ public class DoodleOnTouchGestureListener extends TouchGestureDetector.OnTouchGe
 	private float         mTransAnimOldY, mTransAnimY;
 
 	private IDoodleSelectableItem mSelectedItem; // 当前选中的item
+	private ISelectionListener mSelectionListener;
 
 	private boolean    mSupportScaleItem = true;
 	private DoodlePath mCurrDoodlePath;
@@ -64,26 +69,54 @@ public class DoodleOnTouchGestureListener extends TouchGestureDetector.OnTouchGe
 		/**
 		 * called when the item(such as text, texture) is selected/unselected.
 		 * item（如文字，贴图）被选中或取消选中时回调
+		 *
 		 * @param selected 是否选中，false表示从选中变成不选中
 		 */
-		void onSelectedItem(IDoodle doodle, IDoodleSelectableItem selectableItem, boolean selected);
+		void onSelectedItem (IDoodle doodle, IDoodleSelectableItem selectableItem,
+		                     boolean selected);
 
 		/**
 		 * called when you click the view to create a item(such as text, texture).
 		 * 点击View中的某个点创建可选择的item（如文字，贴图）时回调
+		 *
 		 * @param x
 		 * @param y
 		 */
-		void onCreateSelectableItem(IDoodle doodle, float x, float y);
+		void onCreateSelectableItem (IDoodle doodle, float x, float y);
 	}
-	private ISelectionListener mSelectionListener;
+	// --------------------------设置 获取 选中的item --------------------------------------------
+	public void setSelectedItem(IDoodleSelectableItem selectedItem) {
+		IDoodleSelectableItem old = mSelectedItem;
+		mSelectedItem = selectedItem;
 
+		if (old != null) { // 取消选定
+			old.setSelect(false);
+			if (mSelectionListener != null) {
+				mSelectionListener.onSelectedItem(mDoodle, old, false);
+			}
+			mDoodle.notifyItemFinishedDrawing(old);
+		}
+		if (mSelectedItem != null) {
+			mSelectedItem.setSelect(true);
+			if (mSelectionListener != null) {
+				mSelectionListener.onSelectedItem(mDoodle, mSelectedItem, true);
+			}
+			mDoodle.markItemToOptimizeDrawing(mSelectedItem);
+		}
+	}
+	public IDoodleSelectableItem getSelectedItem() {
+		return mSelectedItem;
+	}
+
+	//----------------设置 获取 选中item的 监听器--------------------------------
 	public ISelectionListener getSelectionListener () {
 		return mSelectionListener;
 	}
+
 	public void setSelectionListener (ISelectionListener mSelectionListener) {
 		this.mSelectionListener = mSelectionListener;
 	}
+
 
 	// 判断当前画笔是否可编辑
 	private boolean isPenEditable (IDoodlePen pen) {
@@ -110,22 +143,40 @@ public class DoodleOnTouchGestureListener extends TouchGestureDetector.OnTouchGe
 
 		mLastTouchX = mTouchX = e.getX();
 		mLastTouchY = mTouchY = e.getY();
-
-		mCurrPath = new Path();
-		mCurrPath.moveTo(mDoodle.toX(mTouchX), mDoodle.toY(mTouchY));
-		Log.e(TAG, "onScrollBegin: mDoodle.shape===>" + mDoodle.getShape());
-
-		if (mDoodle.getShape() == DoodleShape.HAND_WRITE) { // 手写
-			mCurrDoodlePath = DoodlePath.toPath(mDoodle, mCurrPath);
+		if (mSelectedItem != null) {
+			PointF xy = mSelectedItem.getLocation();
+			mStartX = xy.x;
+			mStartY = xy.y;
+			/*if (mSelectedItem instanceof DoodleRotatableItemBase
+					&& (((DoodleRotatableItemBase) mSelectedItem).canRotate(mDoodle.toX(mTouchX), mDoodle.toY(mTouchY)))) {
+				((DoodleRotatableItemBase) mSelectedItem).setIsRotating(true);
+				mRotateDiff = mSelectedItem.getItemRotate() -
+						DrawUtil.computeAngle(mSelectedItem.getPivotX(), mSelectedItem.getPivotY(), mDoodle.toX(mTouchX), mDoodle.toY(mTouchY));
+			}*/
 		}
+		/*else {
+			if (mDoodle.isEditMode()) {
+				mStartX = mDoodle.getDoodleTranslationX();
+				mStartY = mDoodle.getDoodleTranslationY();
+			}
+		}*/
 
-		if (mDoodle.isOptimizeDrawing()) {
-			mDoodle.markItemToOptimizeDrawing(mCurrDoodlePath);
-		} else {
-			mDoodle.addItem(mCurrDoodlePath);
+		//手绘 涂鸦
+		if (mDoodle.getPen() == DoodlePen.BRUSH) {
+			mCurrPath = new Path();
+			mCurrPath.moveTo(mDoodle.toX(mTouchX), mDoodle.toY(mTouchY));
+			Log.e(TAG, "onScrollBegin: mDoodle.shape===>" + mDoodle.getShape());
+
+			if (mDoodle.getShape() == DoodleShape.HAND_WRITE) { // 手写
+				mCurrDoodlePath = DoodlePath.toPath(mDoodle, mCurrPath);
+			}
+
+			if (mDoodle.isOptimizeDrawing()) {
+				mDoodle.markItemToOptimizeDrawing(mCurrDoodlePath);
+			} else {
+				mDoodle.addItem(mCurrDoodlePath);
+			}
 		}
-
-		//		mCurrDoodlePath = DoodlePath.toPath(mDoodle, mCurrPath);
 	}
 
 	@Override
@@ -137,7 +188,28 @@ public class DoodleOnTouchGestureListener extends TouchGestureDetector.OnTouchGe
 		mTouchY = e2.getY();
 		//		mDoodle.setScrollingDoodle(false);
 
-		if (mDoodle.getShape() == DoodleShape.HAND_WRITE) { // 手写
+		if (mDoodle.isEditMode() || isPenEditable(mDoodle.getPen())) { //画笔是否是可选择的
+			if (mSelectedItem != null) {
+				/*if ((mSelectedItem instanceof DoodleRotatableItemBase) && (((DoodleRotatableItemBase) mSelectedItem).isRotating())) { // 旋转item
+					mSelectedItem.setItemRotate(mRotateDiff + DrawUtil.computeAngle(
+							mSelectedItem.getPivotX(), mSelectedItem.getPivotY(), mDoodle.toX(mTouchX), mDoodle.toY(mTouchY)
+					));
+				} else*/
+				{ // 移动item
+					mSelectedItem.setLocation(
+							mStartX + mDoodle.toX(mTouchX) - mDoodle.toX(mTouchDownX),
+							mStartY + mDoodle.toY(mTouchY) - mDoodle.toY(mTouchDownY));
+				}
+			} else {
+				if (mDoodle.isEditMode()) {
+					mDoodle.setDoodleTranslation(mStartX + mTouchX - mTouchDownX,
+							mStartY + mTouchY - mTouchDownY);
+				}
+			}
+		}
+
+
+		if (mDoodle.getShape() == DoodleShape.HAND_WRITE && mDoodle.getPen() == DoodlePen.BRUSH) { // 手写
 			mCurrPath.quadTo(mDoodle.toX(mLastTouchX), mDoodle.toY(mLastTouchY),
 					mDoodle.toX((mTouchX + mLastTouchX) / 2),
 					mDoodle.toY((mTouchY + mLastTouchY) / 2));
@@ -150,17 +222,19 @@ public class DoodleOnTouchGestureListener extends TouchGestureDetector.OnTouchGe
 
 	@Override
 	public void onScrollEnd (MotionEvent e) {
-		Log.e(TAG, "---------------onScrollEnd:---------是否优化绘制-- " + mDoodle.isOptimizeDrawing());
+//		Log.e(TAG, "---------------onScrollEnd:---------是否优化绘制-- " + mDoodle.isOptimizeDrawing());
 		mLastTouchX = mTouchX;
 		mLastTouchY = mTouchY;
 		mTouchX = e.getX();
 		mTouchY = e.getY();
 
-		if (mCurrDoodlePath != null) {
-			if (mDoodle.isOptimizeDrawing()) {
-				mDoodle.notifyItemFinishedDrawing(mCurrDoodlePath);
+		if (mDoodle.getShape() == DoodleShape.HAND_WRITE && mDoodle.getPen() == DoodlePen.BRUSH) { // 手写
+			if (mCurrDoodlePath != null) {
+				if (mDoodle.isOptimizeDrawing()) {
+					mDoodle.notifyItemFinishedDrawing(mCurrDoodlePath);
+				}
+				mCurrDoodlePath = null;
 			}
-			mCurrDoodlePath = null;
 		}
 
 		mDoodle.refresh();
@@ -191,14 +265,53 @@ public class DoodleOnTouchGestureListener extends TouchGestureDetector.OnTouchGe
 	@Override
 	public boolean onSingleTapUp (MotionEvent e) {
 		if (isPenEditable(mDoodle.getPen())) {
-			if (mSelectionListener != null) {
-				mSelectionListener.onCreateSelectableItem(mDoodle, mDoodle.toX(mTouchX), mDoodle.toY(mTouchY));
+			boolean found = false;
+			IDoodleSelectableItem item;
+			List<IDoodleItem> items = mDoodle.getAllItem();
+			for (int i = items.size() - 1; i >= 0; i--) {
+				IDoodleItem elem = items.get(i);
+				if (!elem.isDoodleEditable()) {
+					continue;//isDoodleEditable 为 false 跳至下一次循环
+				}
+				Log.e(TAG, "onSingleTapUp: ---------------是可以编辑的------");
+				if (!(elem instanceof IDoodleSelectableItem)) {
+					continue;
+				}
+				Log.e(TAG, "onSingleTapUp: ----------是 IDoodleSelectableItem 的子类 ，或实现类---");
+				item = (IDoodleSelectableItem) elem;
+
+				if (item.contains(mDoodle.toX(mTouchX), mDoodle.toY(mTouchY))) {
+					found = true;
+					setSelectedItem(item);
+					PointF xy = item.getLocation();
+					mStartX = xy.x;
+					mStartY = xy.y;
+					break;
+				}
+			}
+
+
+			if (!found) { // not found
+				if (mSelectedItem != null) { // 取消选定
+					setSelectedItem(null);
+
+					/*IDoodleSelectableItem old = mSelectedItem;
+//					setSelectedItem(null);
+					if (mSelectionListener != null) {
+						mSelectionListener.onSelectedItem(mDoodle, old, false);
+					}*/
+				}else {// 不是在已选中的item 框内，而且没有选中的 item
+					if (mSelectionListener != null) {
+						mSelectionListener.onCreateSelectableItem(mDoodle, mDoodle.toX(mTouchX),
+								mDoodle.toY(mTouchY));
+					}
+				}
 			}
 		}
 
 		mDoodle.refresh();
 		Log.e(TAG, "onSingleTapUp: ");
-//		return super.onSingleTapUp(e);
+		//		return super.onSingleTapUp(e);
 		return true;
 	}
 
@@ -247,13 +360,14 @@ public class DoodleOnTouchGestureListener extends TouchGestureDetector.OnTouchGe
 		}
 
 		if (Math.abs(1 - detector.getScaleFactor()) > 0.005f) {
-//			if (mSelectedItem == null || !mSupportScaleItem) {
-				// 缩放图片
-				float scale = mDoodle.getDoodleScale() * detector.getScaleFactor() * pendingScale;
-				mDoodle.setDoodleScale(scale, mDoodle.toX(mTouchCentreX), mDoodle.toY(mTouchCentreY));
-//			} else {
-//				mSelectedItem.setScale(mSelectedItem.getScale() * detector.getScaleFactor() * pendingScale);
-//			}
+			//			if (mSelectedItem == null || !mSupportScaleItem) {
+			// 缩放图片
+			float scale = mDoodle.getDoodleScale() * detector.getScaleFactor() * pendingScale;
+			mDoodle.setDoodleScale(scale, mDoodle.toX(mTouchCentreX), mDoodle.toY(mTouchCentreY));
+			//			} else {
+			//				mSelectedItem.setScale(mSelectedItem.getScale() * detector
+			//				.getScaleFactor() * pendingScale);
+			//			}
 			pendingScale = 1;
 		} else {
 			pendingScale *= detector.getScaleFactor();
@@ -280,27 +394,29 @@ public class DoodleOnTouchGestureListener extends TouchGestureDetector.OnTouchGe
 	@Override
 	public void onScaleEnd (ScaleGestureDetectorApi27 detector) {
 		Log.e(TAG, "onScaleEnd: ");
-//		if (mDoodle.isEditMode()) {
-//			limitBound(true);
-//			return;
-//		}
+		//		if (mDoodle.isEditMode()) {
+		//			limitBound(true);
+		//			return;
+		//		}
 
 		center();
-//		super.onScaleEnd(detector);
+		//		super.onScaleEnd(detector);
 	}
 
-	public void center() {
+	public void center () {
 		if (mDoodle.getDoodleScale() < 1) { //
 			if (mScaleAnimator == null) {
 				mScaleAnimator = new ValueAnimator();
 				mScaleAnimator.setDuration(100);
 				mScaleAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 					@Override
-					public void onAnimationUpdate(ValueAnimator animation) {
+					public void onAnimationUpdate (ValueAnimator animation) {
 						float value = (float) animation.getAnimatedValue();
 						float fraction = animation.getAnimatedFraction();
-						mDoodle.setDoodleScale(value, mDoodle.toX(mTouchCentreX), mDoodle.toY(mTouchCentreY));
-						mDoodle.setDoodleTranslation(mScaleAnimTransX * (1 - fraction), mScaleAnimTranY * (1 - fraction));
+						mDoodle.setDoodleScale(value, mDoodle.toX(mTouchCentreX),
+								mDoodle.toY(mTouchCentreY));
+						mDoodle.setDoodleTranslation(mScaleAnimTransX * (1 - fraction),
+								mScaleAnimTranY * (1 - fraction));
 					}
 				});
 			}
@@ -319,7 +435,7 @@ public class DoodleOnTouchGestureListener extends TouchGestureDetector.OnTouchGe
 	 *
 	 * @param anim 动画效果
 	 */
-	public void limitBound(boolean anim) {
+	public void limitBound (boolean anim) {
 		if (mDoodle.getDoodleRotation() % 90 != 0) { // 只处理0,90,180,270
 			return;
 		}
@@ -327,7 +443,8 @@ public class DoodleOnTouchGestureListener extends TouchGestureDetector.OnTouchGe
 		final float oldX = mDoodle.getDoodleTranslationX(), oldY = mDoodle.getDoodleTranslationY();
 		RectF bound = mDoodle.getDoodleBound();
 		float x = mDoodle.getDoodleTranslationX(), y = mDoodle.getDoodleTranslationY();
-		float width = mDoodle.getCenterWidth() * mDoodle.getRotateScale(), height = mDoodle.getCenterHeight() * mDoodle.getRotateScale();
+		float width = mDoodle.getCenterWidth() * mDoodle.getRotateScale(), height =
+				mDoodle.getCenterHeight() * mDoodle.getRotateScale();
 
 		// 上下都在屏幕内
 		if (bound.height() <= mDoodle.getHeight()) {
@@ -418,10 +535,11 @@ public class DoodleOnTouchGestureListener extends TouchGestureDetector.OnTouchGe
 				mTranslateAnimator.setDuration(100);
 				mTranslateAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 					@Override
-					public void onAnimationUpdate(ValueAnimator animation) {
+					public void onAnimationUpdate (ValueAnimator animation) {
 						float value = (float) animation.getAnimatedValue();
 						float fraction = animation.getAnimatedFraction();
-						mDoodle.setDoodleTranslation(value, mTransAnimOldY + (mTransAnimY - mTransAnimOldY) * fraction);
+						mDoodle.setDoodleTranslation(value,
+								mTransAnimOldY + (mTransAnimY - mTransAnimOldY) * fraction);
 					}
 				});
 			}

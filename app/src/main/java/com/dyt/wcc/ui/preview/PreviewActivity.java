@@ -2066,9 +2066,6 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						}
 					}, 500);
 				}
-				//				else {
-				//					Log.e(TAG, "=========正在保存图片==============");
-				//				}
 			} else {
 				showToast(getResources().getString(R.string.toast_need_connect_camera));
 			}

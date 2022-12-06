@@ -2137,7 +2137,7 @@ void UVCPreviewIR::savePicDefineData() {
     dShapeInfo.polygonSize = 0;
 
     len += sizeof(dShapeInfo);
-    LOGE("the len ==============   %d ", len);
+//    LOGE("the len ==============   %d ", len);
 
     fileHead.offset = len;//结构体的长度。即偏移量。  用于快速的到ad值位置的偏移量
 
@@ -2198,11 +2198,11 @@ void UVCPreviewIR::savePicDefineData() {
     for (int i = 0; i < dataLen; i++) {
         dataParBuf[i] = picOutBuffer[i];
     }
-    LOGI("====================dataLen===============%d", dataLen);
-    LOGE("====================len===============%d", len);
+//    LOGI("====================dataLen===============%d", dataLen);
+//    LOGE("====================len===============%d", len);
 
     int fileLen = len + dataLen;
-    LOGE("====================fileLen===============%d", fileLen);
+//    LOGE("====================fileLen===============%d", fileLen);
     int result = D_saveData(savePicPath, old_dataParBuf, fileLen);
     if (result) {
         //todo java 截屏成功方法

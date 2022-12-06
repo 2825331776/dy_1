@@ -46,6 +46,8 @@ JNIEXPORT jboolean JNICALL
 Java_com_dyt_wcc_basejnilib_BaseJniUtil_judgeJpgFormat(JNIEnv *env, jobject thiz, jstring path) {
     // TODO: implement judgeJpgFormat()
 
+
+
     return false;
 }
 extern "C"

@@ -57,6 +57,11 @@ public class DoodleText extends DoodleSelectableItemBase {
     }
 
     @Override
+    public boolean isDoodleEditable () {
+        return true;
+    }
+
+    @Override
     public void doDraw(Canvas canvas) {
         getColor().config(this, mPaint);
         mPaint.setTextSize(getSize());

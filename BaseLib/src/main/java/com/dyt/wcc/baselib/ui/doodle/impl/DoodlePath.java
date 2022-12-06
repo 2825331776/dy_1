@@ -26,8 +26,6 @@ import java.util.WeakHashMap;
  * <p>Description：       </p>
  */
 public class DoodlePath extends DoodleRotatableItemBase {
-
-
 	private final Path mPath       = new Path(); // 画笔的路径
 	private final Path mOriginPath = new Path();
 
@@ -88,6 +86,12 @@ public class DoodlePath extends DoodleRotatableItemBase {
 		super.setItemRotate(textRotate);
 		//		adjustMosaic();
 	}
+
+	@Override
+	public boolean isDoodleEditable () {
+		return false;
+	}
+
 
 	private static WeakHashMap<IDoodle, HashMap<Integer, Bitmap>> sMosaicBitmapMap =
 			new WeakHashMap<>();

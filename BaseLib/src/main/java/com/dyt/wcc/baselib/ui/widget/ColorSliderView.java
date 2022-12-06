@@ -41,7 +41,8 @@ public class ColorSliderView extends View {
 		this(context, attrs, defStyleAttr, 0);
 	}
 
-	public ColorSliderView (Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+	public ColorSliderView (Context context, @Nullable AttributeSet attrs, int defStyleAttr,
+	                        int defStyleRes) {
 		super(context, attrs, defStyleAttr, defStyleRes);
 		initAttrs(context, attrs);
 
@@ -49,8 +50,10 @@ public class ColorSliderView extends View {
 	}
 
 	private void initAttrs (Context context, AttributeSet attrs) {
-		final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.ColorSliderView);
-		mIndicatorColor = array.getColor(R.styleable.ColorSliderView_slider_indicator_color, Color.WHITE);
+		final TypedArray array = context.obtainStyledAttributes(attrs,
+				R.styleable.ColorSliderView);
+		mIndicatorColor = array.getColor(R.styleable.ColorSliderView_slider_indicator_color,
+				Color.WHITE);
 
 		selectPercent = array.getFloat(R.styleable.ColorSliderView_indicator_percent, -1);
 
@@ -77,7 +80,7 @@ public class ColorSliderView extends View {
 	 */
 	private final Rect   rectIndicator = new Rect();
 	//选中的百分比 ,便于 设置预设值。
-	private       float  selectPercent = -1;
+	private       float  selectPercent = 1;
 	//	/**
 	//	 * 指示器是否可用
 	//	 */
@@ -210,8 +213,10 @@ public class ColorSliderView extends View {
 			height = getSuggestedMinimumHeight() + getPaddingTop() + getPaddingBottom();
 		}
 
-		width = Math.max(width, (orientation == Orientation.HORIZONTAL) ? defaultSizeLong : defaultSizeShort);
-		height = Math.max(height, (orientation == Orientation.HORIZONTAL) ? defaultSizeShort : defaultSizeLong);
+		width = Math.max(width, (orientation == Orientation.HORIZONTAL) ? defaultSizeLong :
+				defaultSizeShort);
+		height = Math.max(height, (orientation == Orientation.HORIZONTAL) ? defaultSizeShort :
+				defaultSizeLong);
 
 		Log.e(TAG, "onMeasure: width ==>" + width + " height ==> " + height);
 
@@ -249,17 +254,21 @@ public class ColorSliderView extends View {
 				currentX = (int) (mLeft + mRadius + rectTab.width() * (1 - selectPercent));
 				currentY = getHeight() / 2;
 			}
-//			Log.e(TAG, "onLayout: current select indicator init coordinate");
+			//			Log.e(TAG, "onLayout: current select indicator init coordinate");
 		}
 
-	/*	Log.e(TAG, "此时函数中的 : top " + top + " left " + left + " right " + right + " bottom " + bottom);
+	/*	Log.e(TAG, "此时函数中的 : top " + top + " left " + left + " right " + right + " bottom " +
+	bottom);
 
 		Log.e(TAG, "onLayout: getWidth = " + getWidth() + " getHeight == " + getHeight());
 
-		Log.e(TAG, "onLayout: measureWidth ==" + getMeasuredWidth() + " measureHeight==> " + getMeasuredHeight());
-		Log.e(TAG, "onLayout : top " + mTop + " left " + mLeft + " right " + mRight + " bottom " + mBottom);
+		Log.e(TAG, "onLayout: measureWidth ==" + getMeasuredWidth() + " measureHeight==> " +
+		getMeasuredHeight());
+		Log.e(TAG, "onLayout : top " + mTop + " left " + mLeft + " right " + mRight + " bottom " +
+		 mBottom);
 
-		Log.e(TAG, "padding: top " + getPaddingTop() + " left " + getPaddingLeft() + " right " + getPaddingRight() + " bottom " + getPaddingBottom());*/
+		Log.e(TAG, "padding: top " + getPaddingTop() + " left " + getPaddingLeft() + " right " +
+		getPaddingRight() + " bottom " + getPaddingBottom());*/
 
 	}
 
@@ -377,7 +386,9 @@ public class ColorSliderView extends View {
 	}
 
 	private int[] createDefaultColorTable () {
-		return new int[]{Color.rgb(255, 0, 0), Color.rgb(255, 255, 0), Color.rgb(0, 255, 0), Color.rgb(0, 255, 255), Color.rgb(0, 0, 255), Color.rgb(255, 0, 255), Color.rgb(255, 0, 0)};
+		return new int[]{Color.rgb(255, 0, 0), Color.rgb(255, 255, 0), Color.rgb(0, 255, 0),
+				Color.rgb(0, 255, 255), Color.rgb(0, 0, 255), Color.rgb(255, 0, 255),
+				Color.rgb(255, 0, 0)};
 	}
 
 	/**
@@ -390,9 +401,11 @@ public class ColorSliderView extends View {
 		this.colors = colors;
 
 		if (orientation == Orientation.HORIZONTAL) {
-			linearGradient = new LinearGradient(rectTab.left, rectTab.top, rectTab.right, rectTab.top, colors, null, Shader.TileMode.CLAMP);
+			linearGradient = new LinearGradient(rectTab.left, rectTab.top, rectTab.right,
+					rectTab.top, colors, null, Shader.TileMode.CLAMP);
 		} else {
-			linearGradient = new LinearGradient(rectTab.left, rectTab.top, rectTab.left, rectTab.bottom, colors, null, Shader.TileMode.CLAMP);
+			linearGradient = new LinearGradient(rectTab.left, rectTab.top, rectTab.left,
+					rectTab.bottom, colors, null, Shader.TileMode.CLAMP);
 		}
 		//重画 tab
 		needReDrawTab = true;
@@ -432,7 +445,7 @@ public class ColorSliderView extends View {
 	@Override
 	protected void onDraw (Canvas canvas) {
 		super.onDraw(canvas);
-//		Log.e(TAG, "-------颜色选择器的 onDraw:---------------------- ");
+		//		Log.e(TAG, "-------颜色选择器的 onDraw:---------------------- ");
 		// ------绘制 色条底色---再绘制 渐变色条--------------
 		/*通过下面的 三个测试线，
 		确定 整个 控件的宽高 为：onMeasure:getMeasureWidth,getMeasureHeight。
@@ -454,7 +467,8 @@ public class ColorSliderView extends View {
 		//		if (needReDrawIndicator) {
 		createIndicatorBitmap();
 		//		}
-		rectIndicator.set(currentX - mRadius, currentY - mRadius, currentX + mRadius, currentY + mRadius);
+		rectIndicator.set(currentX - mRadius, currentY - mRadius, currentX + mRadius,
+				currentY + mRadius);
 		canvas.drawBitmap(bitmapForIndicator, null, rectIndicator, paintIndicator);
 
 		//测试 绘制
@@ -487,7 +501,8 @@ public class ColorSliderView extends View {
 
 	private void createIndicatorBitmap () {
 		Canvas canvas = new Canvas(bitmapForIndicator);
-		//		RectF rectF = new RectF(0, 0, bitmapForIndicator.getWidth(), bitmapForIndicator.getHeight());
+		//		RectF rectF = new RectF(0, 0, bitmapForIndicator.getWidth(), bitmapForIndicator
+		//		.getHeight());
 
 		int radius = 3;
 		paintIndicator.setShadowLayer(radius, 0, 0, Color.GRAY);
@@ -512,11 +527,11 @@ public class ColorSliderView extends View {
 		if (orientation == Orientation.HORIZONTAL) {
 			currentX = ex;
 			currentY = getHeight() / 2;
-			selectPercent = (currentX - mRadius - getPaddingLeft()) * 1.0f / rectTab.width();
-		} else {
+			selectPercent = 1 - (currentX - mRadius - getPaddingLeft()) * 1.0f / rectTab.width();
+		} else {//垂直的
 			currentX = getWidth() / 2;
 			currentY = ey;
-			selectPercent = (currentY - mRadius - getPaddingTop()) * 1.0f / rectTab.height();
+			selectPercent = 1 - (currentY - mRadius - getPaddingTop()) * 1.0f / rectTab.height();
 		}
 
 
@@ -540,7 +555,7 @@ public class ColorSliderView extends View {
 				colorPickerChangeListener.onColorChanged(this, currentColor, selectPercent);
 			}
 		}
-//		Log.e(TAG, "onTouchEvent: ---------selectPercent==>" + selectPercent);
+		//		Log.e(TAG, "onTouchEvent: ---------selectPercent==>" + selectPercent);
 		invalidate();
 		return true;
 	}
@@ -614,7 +629,7 @@ public class ColorSliderView extends View {
 			} else if (percent == 1) {
 				currentX = mRight;
 			} else {
-				currentX = (int) (mLeft + mRadius + (rectTab.width() * percent));
+				currentX = (int) (mLeft + mRadius + (rectTab.width() * (1-percent)));
 			}
 		} else {
 			currentX = getWidth() / 2;
@@ -623,7 +638,7 @@ public class ColorSliderView extends View {
 			} else if (percent == 1) {
 				currentY = getPaddingTop() + mRadius;
 			} else {
-				currentY = (int) (getPaddingTop() + mRadius + (rectTab.height() * percent));
+				currentY = (int) (getPaddingTop() + mRadius + (rectTab.height() * (1-percent)));
 			}
 		}
 	}
@@ -634,7 +649,7 @@ public class ColorSliderView extends View {
 		 * 选取的颜色值改变时回调
 		 *
 		 * @param sliderView ColorPickerView
-		 * @param color  颜色
+		 * @param color      颜色
 		 */
 		void onColorChanged (ColorSliderView sliderView, int color, float percent);
 

@@ -177,6 +177,15 @@ public abstract class DoodleSelectableItemBase extends DoodleItemBase implements
 	}
 
 	@Override
+	public boolean isDoodleEditable () {
+		return mIsEditAble;
+	}
+	public void setEditAble(boolean editAble){
+		this.mIsEditAble = editAble;
+	}
+	private boolean mIsEditAble = false;
+
+	@Override
 	public void setSelect (boolean isSelect) {
 		this.mIsSelected = isSelect;
 		//当选中时，设置 界外 不需要剪裁

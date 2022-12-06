@@ -15,6 +15,7 @@ import android.graphics.RectF;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -915,6 +916,14 @@ public class DoodleView extends FrameLayout implements IDoodle {
 		}.execute();
 	}
 
+	public IDoodleListener getDoodleListener () {
+		return mDoodleListener;
+	}
+
+	public void setDoodleListener (IDoodleListener mDoodleListener) {
+		this.mDoodleListener = mDoodleListener;
+	}
+
 	/**
 	 * 清屏
 	 */
@@ -1533,5 +1542,21 @@ public class DoodleView extends FrameLayout implements IDoodle {
 	}
 
 
+	@Nullable
+	@Override
+	protected Parcelable onSaveInstanceState () {
 
+
+
+		return super.onSaveInstanceState();
+
+
+
+	}
+
+
+	@Override
+	protected void onRestoreInstanceState (Parcelable state) {
+		super.onRestoreInstanceState(state);
+	}
 }

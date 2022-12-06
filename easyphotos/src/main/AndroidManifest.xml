@@ -25,7 +25,7 @@
         <activity
             android:name=".ui.PreviewActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:theme="@style/EasyPhotosTheme"/>
         <activity
             android:name=".ui.PuzzleActivity"

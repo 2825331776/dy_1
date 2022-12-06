@@ -20,7 +20,7 @@ import com.dyt.wcc.baselib.R;
  * <p>Copyright (C), 2018.08.08-?       </p>
  * <p>Author：stefan cheng        </p>
  * <p>Create Date：2022/11/21  11:31     </p>
- * <p>Description：字体大小选择
+ * <p>Description：笔尖 直径 选择
  * /n 顺序 多次onMeasure -> onSizeChanged -> layout -> onDraw</p>
  * <p>PackagePath: com.dyt.wcc.wechatpicedit.view     </p>
  */
@@ -53,7 +53,7 @@ public class PenpointDIASelectorView extends View /*implements ScrollView */ {
 	@ColorInt
 	private final int DEFAULT_ITEM_BORDER_COLOR_SELECT = Color.RED;//默认item 边框颜色
 	@ColorInt
-	private final int DEFAULT_ITEM_FILL_COLOR          = Color.BLACK;//默认item 填充颜色
+	private final int DEFAULT_ITEM_FILL_COLOR          = Color.WHITE;//默认item 填充颜色
 
 	private final int    DEFAULT_PAINT_FONT_SIZE = 16;//默认 item 字体大小
 	private final String TAG                     = "-PaintSelector-";
@@ -254,7 +254,7 @@ public class PenpointDIASelectorView extends View /*implements ScrollView */ {
 				if (down >= 0) {
 					selectIndex = down;
 					if (selectorListener != null) {
-						selectorListener.onItemSelect(down, (DEFAULT_PAINT_FONT_SIZE / 8) + 3 * down);
+						selectorListener.onItemSelect(down, (DEFAULT_PAINT_FONT_SIZE / 2) + 4 * down);
 					}
 					invalidate();
 				}
