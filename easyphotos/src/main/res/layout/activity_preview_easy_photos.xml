@@ -133,11 +133,29 @@
             app:layout_constraintRight_toLeftOf="@id/cl_photo_detail_right_tools"
             app:layout_constraintTop_toBottomOf="@id/cl_top_parent">
 
+
+
             <com.github.chrisbanes.photoview.PhotoView
                 android:id="@+id/iv_video"
                 android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
+
+            <ImageView
+                android:id="@+id/iv_play"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_width="@dimen/dimen_100dp"
+                android:layout_height="@dimen/dimen_100dp"
+                android:layout_centerInParent="true"
+                android:padding="@dimen/dimen_20dp"
+                android:visibility="gone"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_play_easy_photos_2" />
+
+
 
             <com.dyt.wcc.baselib.ui.doodle.view.DoodleView
                 android:id="@+id/doodleView"
@@ -218,7 +236,7 @@
                     app:slider_orientation="vertical" />
                 <!--            画笔 粗细 选择器-->
                 <com.dyt.wcc.baselib.ui.widget.PenpointDIASelectorView
-                    android:id="@+id/pss_detail_tools"
+                    android:id="@+id/paint_size_select"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:visibility="gone"
@@ -257,7 +275,7 @@
 
 
                 <ImageView
-                    android:id="@+id/cb_detail_tools_doodle"
+                    android:id="@+id/iv_detail_tools_doodle"
                     android:layout_width="@dimen/dimen_40dp"
                     android:layout_height="@dimen/dimen_40dp"
                     android:layout_margin="5dp"
@@ -266,7 +284,7 @@
                     android:src="@drawable/selector_tools_doodle" />
 
                 <ImageView
-                    android:id="@+id/cb_detail_tools_character"
+                    android:id="@+id/iv_detail_tools_character"
                     android:layout_width="@dimen/dimen_40dp"
                     android:layout_height="@dimen/dimen_40dp"
                     android:layout_margin="5dp"
@@ -277,7 +295,7 @@
 
                 <!--        第二版替换成 图片分析-->
                 <ImageView
-                    android:id="@+id/cb_detail_tools_analyse"
+                    android:id="@+id/iv_detail_tools_analyse"
                     android:layout_width="@dimen/dimen_40dp"
                     android:layout_height="@dimen/dimen_40dp"
                     android:layout_margin="5dp"

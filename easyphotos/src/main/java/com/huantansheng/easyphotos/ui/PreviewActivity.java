@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +23,7 @@ import com.dyt.wcc.baselib.ui.doodle.params.DoodleColor;
 import com.dyt.wcc.baselib.ui.doodle.params.DoodlePen;
 import com.dyt.wcc.baselib.ui.doodle.params.DoodleShape;
 import com.dyt.wcc.baselib.ui.widget.CircleDisplayView;
+import com.dyt.wcc.baselib.ui.widget.ColorSliderView;
 import com.huantansheng.easyphotos.R;
 import com.huantansheng.easyphotos.constant.Code;
 import com.huantansheng.easyphotos.constant.Key;
@@ -168,48 +171,68 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 	private void initView () {
 
 		ivBack = findViewById(R.id.iv_preview_back);
-		ivBack.setOnClickListener(v -> finish());
-		if (photoClick.path.endsWith("jpg")){
+		mDataBinding.ivPreviewBack.setOnClickListener(v -> finish());
+
+		if (photoClick.path.endsWith("jpg")) {//图片
+			//不显示视频控件，显示涂鸦 图片控件
 			mDataBinding.ivVideo.setVisibility(View.GONE);
 			mDataBinding.doodleView.setVisibility(View.VISIBLE);
+			mDataBinding.ivPlay.setVisibility(View.GONE);
 
 			initDoodle();
-		}else if (photoClick.path.endsWith("mp4")){
+		} else if (photoClick.path.endsWith("mp4")) {
+			//显示视频控件，不显示涂鸦 图片控件
 			mDataBinding.ivVideo.setVisibility(View.VISIBLE);
 			mDataBinding.doodleView.setVisibility(View.GONE);
+			mDataBinding.ivPlay.setVisibility(View.VISIBLE);
 
 			initVideo();
 
-		}else {
+		} else {
 			mDataBinding.ivVideo.setVisibility(View.GONE);
 			mDataBinding.doodleView.setVisibility(View.GONE);
+			mDataBinding.ivPlay.setVisibility(View.GONE);
 			//显示错误布局
 
 		}
-
-		//		initRecyclerView();
-
-		//		initTools();
 
 		//获取系统保存的颜色，否则初始化 涂鸦颜色 字号，  文字颜色 及其字号
 		mColorDoodle = new DoodleColor(Color.RED);
 
 		mColorText = new DoodleColor(Color.BLUE);
+
+		initTools();
 	}
 
-	private void initVideo(){
-		Setting.imageEngine.loadPhoto(this, photoClick.uri,
-				mDataBinding.ivVideo);
+	private void initVideo () {
+		Setting.imageEngine.loadPhoto(this, photoClick.uri, mDataBinding.ivVideo);
 
 		mDataBinding.clPhotoDetailRightTools.setVisibility(View.GONE);
 
+		mDataBinding.ivPlay.setOnClickListener(v -> {
+			toPlayVideo(photoClick.uri,photoClick.type);
+		});
+	}
+
+	private void toPlayVideo (Uri uri, String type) {
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+		}
+		intent.setDataAndType(uri, type);
+		this.startActivity(intent);
 	}
 
 	private DoodleOnTouchGestureListener touchGestureListener;
 
 	private IDoodleTouchDetector doodleTouchDetector;
 
-	private void initDoodle(){
+	private void initDoodle () {
+		mColorDoodle = new DoodleColor(Color.RED);
+		mColorText = new DoodleColor(Color.BLUE);
+
+
 
 		//设置右侧 工具栏可见，左侧 颜色 字体大小  不可见但占位
 		mDataBinding.clPhotoDetailRightTools.setVisibility(View.VISIBLE);
@@ -234,10 +257,6 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 		doodleTouchDetector = new DoodleTouchDetector(this, touchGestureListener);
 
 
-		mDataBinding.doodleView.setGestureRecognitionAble(true);
-
-		mColorDoodle = new DoodleColor(Color.RED);
-
 		mDataBinding.doodleView.setColor(mColorDoodle);
 		mDataBinding.doodleView.setShape(DoodleShape.HAND_WRITE);
 		mDataBinding.doodleView.setPen(DoodlePen.BRUSH);
@@ -250,7 +269,8 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 	//是否是我们的图片，item 中 每个都有一份。 控制 按钮 状态
 	private boolean                          photoFormatIsRight     = true;
 	private ActivityPreviewEasyPhotosBinding mDataBinding;
-	private int                              type_palette_character = 0;
+	//当前 选中 的是涂鸦，还是文字，还是 初始值
+	private int                              type_palette_character = -1;
 	//涂鸦 颜色值 ，百分比， 字体大小
 	private DoodleColor                      mColorDoodle;
 	private int                              doodleColorData        = 0;
@@ -263,154 +283,150 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 	private int                              characterSizeIndex     = 0;
 
 
-	private boolean    isDoodle = false;
+	private boolean isDoodle = false;
+
+	/**
+	 * 重置所有按钮，并恢复 actionbar 的状态
+	 */
+	private void UnSelectAllTools () {
+		//重置 颜色 ，线条粗细 文字大小。
+		mDataBinding.circlePalette.setSelected(false);
+		mDataBinding.circleCharacterSize.setSelected(false);
+
+		//重置 涂鸦，文字
+		mDataBinding.ivDetailToolsDoodle.setSelected(false);
+		mDataBinding.ivDetailToolsCharacter.setSelected(false);
+	}
 
 	//my tools listener
-/*	private void initTools () {
-
-//		mDataBinding.rvPhotos.setOnTouchListener(new View.OnTouchListener() {
-//			@Override
-//			public boolean onTouch (View v, MotionEvent event) {
-//				if (isDoodle){
-//					mDataBinding.rvPhotos.getChildAt(currentGestureIndex).findViewById(R.id
-.doodle_item_view).dispatchTouchEvent(event);
-//				}
-//
-//				return isDoodle;
-//			}
-//		});
-
-
-		mDataBinding.circlePalette.setSelected(true);
-		mDataBinding.circleCharacterSize.setSelected(false);
+	private void initTools () {
 		mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.INVISIBLE);
+
 		if (photoFormatIsRight) {
-			//		涂鸦  。
-			mDataBinding.cbDetailToolsDoodle.setOnClickListener(v -> {
-				//加载储存的 色板, 字号 inde 及其 字号大小
-				//todo ...
-				isDoodle = true;
-				mDoodleView.setColor(mColorDoodle);
-				mDoodleView.setShape(DoodleShape.HAND_WRITE);
-				mDoodleView.setPen(DoodlePen.BRUSH);
-				mDoodleView.setSize(10);
-
-				Toast.makeText(this, "当前ID：" + photos.get(index).name, Toast.LENGTH_LONG).show();
-
-				Log.e("TAG", "==========initTools: ========涂鸦=============");
-				mDataBinding.cbDetailToolsDoodle.setSelected(true);
-				mDataBinding.cbDetailToolsCharacter.setSelected(false);
+			//		涂鸦
+			mDataBinding.ivDetailToolsDoodle.setOnClickListener(v -> {
 				type_palette_character = 0;
-				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.VISIBLE);
-
-				//				mDataBinding.circlePalette.performClick();
+				mDataBinding.ivDetailToolsDoodle.setSelected(true);
+				mDataBinding.ivDetailToolsCharacter.setSelected(false);
+				//加载储存的 色板, 字号 index 及其 字号大小
+				isDoodle = true;
+				mDataBinding.doodleView.setGestureRecognitionAble(isDoodle);
+				mDataBinding.doodleView.setColor(mColorDoodle);
+				mDataBinding.doodleView.setShape(DoodleShape.HAND_WRITE);
+				mDataBinding.doodleView.setPen(DoodlePen.BRUSH);
+				mDataBinding.doodleView.setSize(doodleSizeIndex);
+				//使 颜色圆形为 选中状态， 滑动条为 涂鸦的颜色值。隐藏 文字大小选择圆形控件和 六类线条粗细选择器
+				mDataBinding.circlePalette.setSelected(true);
+				mDataBinding.circleCharacterSize.setSelected(false);
 				mDataBinding.editColorPick.setSelectPercent(doodlePercent);
-				mDataBinding.pssDetailTools.setSelectIndex(doodleSizeIndex);
-
-				paintCircleCharacterSize(doodleSizeIndex);
+				mDataBinding.editColorPick.setVisibility(View.VISIBLE);
+				mDataBinding.paintSizeSelect.setVisibility(View.GONE);
 				mDataBinding.circlePalette.setColor(doodleColorData,
 						CircleDisplayView.CirCleImageType.COLOR);
-
-				//
-				photos.get(currentGestureIndex).gestureDetectorAble = true;
-				adapter.notifyDataSetChanged();
-
-				//隐藏 正常 actionbar，显示手势action bar
+				paintCircleCharacterSize(doodleSizeIndex);
+				//顶部状态栏 变化
 				mDataBinding.llActionbarNormal.setVisibility(View.GONE);
-				mDataBinding.llActionbarNormal.setVisibility(View.VISIBLE);
+				mDataBinding.clActionbarGesture.setVisibility(View.VISIBLE);
+
+
+				//具体工具栏 显示
+				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.VISIBLE);
+
 
 			});
 			//文字 选择
-			mDataBinding.cbDetailToolsCharacter.setOnClickListener(v -> {
-				//加载储存的 色板, 字号 inde 及其 字号大小
-				//todo ...
-				isDoodle = true;
-				mDoodleView =  mDataBinding.rvPhotos.getChildAt(currentGestureIndex).findViewById
-				(R.id.doodle_item_view);
-				mDoodleView.setColor(mColorText);
-				mDoodleView.setPen(DoodlePen.TEXT);
-				mDoodleView.setSize(10);
-
-				Log.e("TAG", "==========initTools: ============文字=========");
-				mDataBinding.cbDetailToolsDoodle.setSelected(false);
-				mDataBinding.cbDetailToolsCharacter.setSelected(true);
+			mDataBinding.ivDetailToolsCharacter.setOnClickListener(v -> {
 				type_palette_character = 1;
-				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.VISIBLE);
-
+				mDataBinding.ivDetailToolsDoodle.setSelected(false);
+				mDataBinding.ivDetailToolsCharacter.setSelected(true);
+				//加载储存的 色板, 字号 index 及其 字号大小
+				isDoodle = true;
+				mDataBinding.doodleView.setGestureRecognitionAble(isDoodle);
+				mDataBinding.doodleView.setColor(mColorText);
+				mDataBinding.doodleView.setPen(DoodlePen.TEXT);
+				mDataBinding.doodleView.setSize(characterSizeIndex);
+				//使 颜色圆形为 选中状态， 滑动条为 涂鸦的颜色值。隐藏 文字大小选择圆形控件和 六类线条粗细选择器
+				mDataBinding.circlePalette.setSelected(true);
+				mDataBinding.circleCharacterSize.setSelected(false);
 				mDataBinding.editColorPick.setSelectPercent(characterPercent);
-				mDataBinding.pssDetailTools.setSelectIndex(characterSizeIndex);
-
-				paintCircleCharacterSize(characterSizeIndex);
+				mDataBinding.editColorPick.setVisibility(View.VISIBLE);
+				mDataBinding.paintSizeSelect.setVisibility(View.GONE);
 				mDataBinding.circlePalette.setColor(characterColorData,
 						CircleDisplayView.CirCleImageType.COLOR);
+				paintCircleCharacterSize(characterSizeIndex);
 
 
-				//
-				photos.get(currentGestureIndex).gestureDetectorAble = true;
-				adapter.notifyDataSetChanged();
-				mDataBinding.rvPhotos.invalidate();
-
-				//隐藏 正常 actionbar，显示手势action bar
-				mDataBinding.llNormal.setVisibility(View.GONE);
-				mDataBinding.clPhotoEdit.setVisibility(View.VISIBLE);
+				//顶部状态栏 变化
+				mDataBinding.llActionbarNormal.setVisibility(View.GONE);
+				mDataBinding.clActionbarGesture.setVisibility(View.VISIBLE);
+				//具体工具栏 显示
+				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.VISIBLE);
 
 			});
+
 			//			色板  粗细 选择。
 			mDataBinding.circlePalette.setClickListener((currentData, cirCleImageType) -> {
-				Log.e("TAG", "initTools:circlePalette -------------");
-				if (type_palette_character == 0 && cirCleImageType == CircleDisplayView
-				.CirCleImageType.COLOR) {
-					mColorDoodle.setColor(currentData);
-					//刷新 画笔
-					mDoodleView.setColor(mColorDoodle);
-				} else {
-					mColorText.setColor(currentData);
-					//刷新 画笔
-					mDoodleView.setColor(mColorText);
-				}
-
-
+				mDataBinding.circlePalette.setSelected(true);
 				mDataBinding.circleCharacterSize.setSelected(false);
-
 				mDataBinding.editColorPick.setVisibility(View.VISIBLE);
-				mDataBinding.pssDetailTools.setVisibility(View.GONE);
-			});
-			mDataBinding.circleCharacterSize.setClickListener((currentData1, cirCleImageType1) -> {
-				Log.e("TAG", "initTools:circlePalette -------------");
-				mDataBinding.circlePalette.setSelected(false);
+				mDataBinding.paintSizeSelect.setVisibility(View.GONE);
 
-				mDataBinding.editColorPick.setVisibility(View.GONE);
-				mDataBinding.pssDetailTools.setVisibility(View.VISIBLE);
+				//此处的 是给 下面具体控件的
+				if (type_palette_character == 0 && cirCleImageType == CircleDisplayView.CirCleImageType.COLOR) {
+					mColorDoodle.setColor(currentData);
+					mDataBinding.circlePalette.setColor(doodleColorData,
+							CircleDisplayView.CirCleImageType.COLOR);
+				} else if (type_palette_character == 1) {
+					mColorText.setColor(currentData);
+					mDataBinding.circlePalette.setColor(characterColorData,
+							CircleDisplayView.CirCleImageType.COLOR);
+				}
 			});
-			//			色板  粗细切换  监听。
-			mDataBinding.pssDetailTools.setSelectorListener((position, selectPaintSize) -> {
+			//文字大小
+			mDataBinding.circleCharacterSize.setClickListener((currentData1, cirCleImageType1) -> {
+
+				Log.e("TAG", "initTools: -------------character size " + currentData1);
+				mDataBinding.circlePalette.setSelected(false);
+				mDataBinding.circleCharacterSize.setSelected(true);
+				mDataBinding.editColorPick.setVisibility(View.GONE);
+				mDataBinding.paintSizeSelect.setVisibility(View.VISIBLE);
+
+				if (type_palette_character == 0) {
+					paintCircleCharacterSize(doodleSizeIndex);
+				} else if (type_palette_character == 1) {
+					paintCircleCharacterSize(characterSizeIndex);
+				}
+			});
+
+			//		粗细切换  监听。
+			mDataBinding.paintSizeSelect.setSelectorListener((position, selectPaintSize) -> {
 				if (type_palette_character == 0) {
 					doodleSizeIndex = position;
 				} else {
 					characterSizeIndex = position;
 				}
 				paintCircleCharacterSize(position);
-
-				Log.e("TAG",
-						"initTools: --------position---" + position + " selectPaintSize ----" +
-						selectPaintSize);
+				mDataBinding.doodleView.setSize(3 + (4 * position));
 				//设置 画笔 或 文字的 值
 			});
+
 			//设置监听器
-			mDataBinding.editColorPick.setOnColorPickerChangeListener(new ColorSliderView
-			.OnColorPickerChangeListener() {
+			mDataBinding.editColorPick.setOnColorPickerChangeListener(new ColorSliderView.OnColorPickerChangeListener() {
 				@Override
 				public void onColorChanged (ColorSliderView picker, int color, float percent) {
 					mDataBinding.circlePalette.setColor(color,
 							CircleDisplayView.CirCleImageType.COLOR);
 					//设置 画笔 或 文字的 值
-
 					if (type_palette_character == 0) {
 						doodlePercent = percent;
 						doodleColorData = color;
-					} else {
+						mColorDoodle.setColor(doodleColorData);
+						mDataBinding.doodleView.setColor(mColorDoodle);
+					} else if (type_palette_character == 1) {
 						characterPercent = percent;
 						characterColorData = color;
+						mColorText.setColor(characterColorData);
+						mDataBinding.doodleView.setColor(mColorText);
 					}
 				}
 
@@ -424,31 +440,50 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 
 				}
 			});
+			//------ 重做 和前进--------------------------
+			mDataBinding.ivDo.setOnClickListener(v -> {
+				mDataBinding.doodleView.redo(1);
+			});
+			mDataBinding.ivUndo.setOnClickListener(v -> {
+				mDataBinding.doodleView.undo(1);
+			});
+
 			//设置 手势识别 顶部 actionbar 监听器
 			mDataBinding.ivToolsExit.setOnClickListener(v -> {
-				isDoodle = false;
-				photos.get(currentGestureIndex).gestureDetectorAble = false;
-				adapter.notifyDataSetChanged();
-				mDataBinding.rvPhotos.invalidate();
+				mDataBinding.doodleView.clear();
 
-				//隐藏 正常 actionbar，显示手势action bar
-				mDataBinding.llNormal.setVisibility(View.VISIBLE);
-				mDataBinding.clPhotoEdit.setVisibility(View.GONE);
+				isDoodle = false;
+				mDataBinding.doodleView.setGestureRecognitionAble(isDoodle);
+				//顶部状态栏变化
+				mDataBinding.llActionbarNormal.setVisibility(View.VISIBLE);
+				mDataBinding.clActionbarGesture.setVisibility(View.GONE);
+				mDataBinding.circleCharacterSize.setSelected(false);
+				mDataBinding.circlePalette.setSelected(false);
+				mDataBinding.ivDetailToolsDoodle.setSelected(false);
+				mDataBinding.ivDetailToolsCharacter.setSelected(false);
+
+				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.INVISIBLE);
+
+
 			});
 
 			mDataBinding.ivSavePhoto.setOnClickListener(v -> {
 				isDoodle = false;
-				Toast.makeText(this, "save", Toast.LENGTH_SHORT).show();
-				photos.get(currentGestureIndex).gestureDetectorAble = false;
-				adapter.notifyDataSetChanged();
-				mDataBinding.rvPhotos.invalidate();
+				mDataBinding.doodleView.setGestureRecognitionAble(isDoodle);
+				//顶部状态栏变化
+				mDataBinding.llActionbarNormal.setVisibility(View.VISIBLE);
+				mDataBinding.clActionbarGesture.setVisibility(View.GONE);
+				mDataBinding.circleCharacterSize.setSelected(false);
+				mDataBinding.circlePalette.setSelected(false);
+				mDataBinding.ivDetailToolsDoodle.setSelected(false);
+				mDataBinding.ivDetailToolsCharacter.setSelected(false);
 
-				//隐藏 正常 actionbar，显示手势action bar
-				mDataBinding.llNormal.setVisibility(View.VISIBLE);
-				mDataBinding.clPhotoEdit.setVisibility(View.GONE);
+				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.INVISIBLE);
 			});
+
+
 		}
-	}*/
+	}
 
 
 	private void paintCircleCharacterSize (int clickPosition) {
