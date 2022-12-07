@@ -115,6 +115,8 @@ public class PenpointDIASelectorView extends View /*implements ScrollView */ {
 			itemCount = typedArray.getInt(R.styleable.PenpointDIASelectorView_itemCount, DEFAULT_ITEM_COUNT);
 			percentWidgetWidth = typedArray.getFloat(R.styleable.PenpointDIASelectorView_widthPercentWidget, 0.5f);
 
+
+
 			typedArray.recycle();
 		}
 	}
@@ -197,7 +199,7 @@ public class PenpointDIASelectorView extends View /*implements ScrollView */ {
 				//				canvas.save();
 				//				canvas.scale(1.1f, 1.1f);
 				//外圈
-				borderPaint.setColor(Color.BLUE);
+				borderPaint.setColor(getContext().getColor(R.color.select_mti448));
 				canvas.drawCircle(firstItemX, firstItemY, itemRadius, borderPaint);
 				//画圈
 				contentPaint.setStrokeWidth(breakLineSize);

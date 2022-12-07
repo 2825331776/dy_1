@@ -232,7 +232,6 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 		//初始化 返回按钮监听器
 		mDataBinding.ivPreviewBack.setOnClickListener(v -> {
 			finish();
-
 		});
 		//判别 内容是 图片还是 视频
 		//获取系统保存的颜色，否则初始化 涂鸦颜色 字号，  文字颜色 及其字号
@@ -424,8 +423,8 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 				paintCircleCharacterSize(doodleSizeIndex);
 				//顶部状态栏 变化
 				mDataBinding.llActionbarNormal.setVisibility(View.GONE);
-				mDataBinding.clActionbarGesture.setVisibility(View.VISIBLE);
-
+				mDataBinding.clActionbarGestureBack.setVisibility(View.VISIBLE);
+				mDataBinding.llDoodleRedoDoContainer.setVisibility(View.VISIBLE);
 
 				//具体工具栏 显示
 				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.VISIBLE);
@@ -456,7 +455,8 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 
 				//顶部状态栏 变化
 				mDataBinding.llActionbarNormal.setVisibility(View.GONE);
-				mDataBinding.clActionbarGesture.setVisibility(View.VISIBLE);
+				mDataBinding.clActionbarGestureBack.setVisibility(View.VISIBLE);
+				mDataBinding.llDoodleRedoDoContainer.setVisibility(View.VISIBLE);
 				//具体工具栏 显示
 				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.VISIBLE);
 
@@ -573,7 +573,8 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 				mDataBinding.doodleView.save();
 				//顶部状态栏变化
 				mDataBinding.llActionbarNormal.setVisibility(View.VISIBLE);
-				mDataBinding.clActionbarGesture.setVisibility(View.GONE);
+				mDataBinding.clActionbarGestureBack.setVisibility(View.GONE);
+				mDataBinding.llDoodleRedoDoContainer.setVisibility(View.GONE);
 				mDataBinding.circleCharacterSize.setSelected(false);
 				mDataBinding.circlePalette.setSelected(false);
 				mDataBinding.ivDetailToolsDoodle.setSelected(false);
@@ -582,21 +583,6 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.INVISIBLE);
 
 
-			});
-			//保存按钮
-			mDataBinding.ivSavePhoto.setOnClickListener(v -> {
-				mDataBinding.doodleView.setGestureRecognitionAble(false);
-
-				mDataBinding.doodleView.save();
-				//顶部状态栏变化
-				mDataBinding.llActionbarNormal.setVisibility(View.VISIBLE);
-				mDataBinding.clActionbarGesture.setVisibility(View.GONE);
-				mDataBinding.circleCharacterSize.setSelected(false);
-				mDataBinding.circlePalette.setSelected(false);
-				mDataBinding.ivDetailToolsDoodle.setSelected(false);
-				mDataBinding.ivDetailToolsCharacter.setSelected(false);
-
-				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.INVISIBLE);
 			});
 		}
 	}
@@ -645,22 +631,22 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 		mDataBinding.paintSizeSelect.setSelectIndex(clickPosition);
 		switch (clickPosition) {
 			case 0:
-				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_1_select, CircleDisplayView.CirCleImageType.BITMAP);
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_1_unselect, CircleDisplayView.CirCleImageType.BITMAP);
 				break;
 			case 1:
-				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_2_select, CircleDisplayView.CirCleImageType.BITMAP);
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_2_unselect, CircleDisplayView.CirCleImageType.BITMAP);
 				break;
 			case 2:
-				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_3_select, CircleDisplayView.CirCleImageType.BITMAP);
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_3_unselect, CircleDisplayView.CirCleImageType.BITMAP);
 				break;
 			case 3:
-				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_4_select, CircleDisplayView.CirCleImageType.BITMAP);
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_4_unselect, CircleDisplayView.CirCleImageType.BITMAP);
 				break;
 			case 4:
-				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_5_select, CircleDisplayView.CirCleImageType.BITMAP);
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_5_unselect, CircleDisplayView.CirCleImageType.BITMAP);
 				break;
 			case 5:
-				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_6_select, CircleDisplayView.CirCleImageType.BITMAP);
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_6_unselect, CircleDisplayView.CirCleImageType.BITMAP);
 				break;
 		}
 	}

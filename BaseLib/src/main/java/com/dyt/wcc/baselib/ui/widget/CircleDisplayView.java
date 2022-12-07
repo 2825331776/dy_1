@@ -51,7 +51,7 @@ public class CircleDisplayView extends androidx.appcompat.widget.AppCompatImageB
 	/**
 	 * 默认 边框 选中颜色
 	 */
-	private final int DEFAULT_BORDER_COLOR_SELECT = Color.BLUE;
+	private final int DEFAULT_BORDER_COLOR_SELECT = Color.GREEN;
 
 	private final int DEFAULT_BORDER_STROKE_WIDTH = 3;
 

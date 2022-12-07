@@ -10,132 +10,70 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/base_bg_app_mti448">
-        <!--    <ImageView-->
-        <!--        android:id="@+id/iv_preview_back"-->
-        <!--        app:layout_constraintTop_toTopOf="parent"-->
-        <!--        app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--        android:src="@color/teal_200"-->
-        <!--        android:layout_marginStart="@dimen/dimen_40dp"-->
-        <!--        android:layout_width="@dimen/dimen_30dp"-->
-        <!--        android:layout_height="@dimen/dimen_30dp"/>-->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_top_parent"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dimen_46dp"
+
+        <LinearLayout
+            android:id="@+id/ll_actionbar_normal"
+            android:layout_width="@dimen/dimen_45dp"
+            android:layout_height="@dimen/dimen_45dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="visible"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <!--            正常情况的 状态栏-->
-            <LinearLayout
-                android:id="@+id/ll_actionbar_normal"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:visibility="visible"
+            <ImageView
+                android:id="@+id/iv_preview_back"
+                android:layout_width="@dimen/dimen_42dp"
+                android:layout_height="@dimen/dimen_42dp"
+                android:padding="@dimen/dimen_10dp"
+                app:srcCompat="@drawable/ic_arrow_back_easy_photos" />
+
+            <View
+                android:id="@+id/m_back_line"
+                android:layout_width="@dimen/dimen_1dp"
+                android:layout_height="@dimen/dimen_18dp"
+                android:background="@color/cardview_dark_background" />
+        </LinearLayout>
+
+        <!--            编辑时 状态栏 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_actionbar_gesture_back"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_45dp"
+            android:visibility="visible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_tools_exit"
+                android:layout_width="@dimen/dimen_42dp"
+                android:layout_height="@dimen/dimen_42dp"
+                android:padding="@dimen/dimen_10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_arrow_back_easy_photos" />
 
-                <ImageView
-                    android:id="@+id/iv_preview_back"
-                    android:layout_width="@dimen/dimen_42dp"
-                    android:layout_height="@dimen/dimen_42dp"
-                    android:padding="@dimen/dimen_10dp"
-                    app:srcCompat="@drawable/ic_arrow_back_easy_photos" />
-
-                <View
-                    android:id="@+id/m_back_line"
-                    android:layout_width="@dimen/dimen_1dp"
-                    android:layout_height="@dimen/dimen_18dp"
-                    android:background="@color/cardview_dark_background" />
-            </LinearLayout>
-
-            <!--            编辑时 状态栏 -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/cl_actionbar_gesture"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone">
-
-                <ImageView
-                    android:id="@+id/iv_tools_exit"
-                    android:layout_width="@dimen/dimen_42dp"
-                    android:layout_height="@dimen/dimen_42dp"
-                    android:padding="@dimen/dimen_10dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_arrow_back_easy_photos" />
-
-                <View
-                    android:id="@+id/v_back_line_edit"
-                    android:layout_width="@dimen/dimen_1dp"
-                    android:layout_height="@dimen/dimen_18dp"
-                    android:background="@color/album_item_count_easy_photos"
-                    app:layout_constraintBottom_toBottomOf="@+id/iv_tools_exit"
-                    app:layout_constraintLeft_toRightOf="@+id/iv_tools_exit"
-                    app:layout_constraintTop_toTopOf="@id/iv_tools_exit" />
-
-                <!--        右侧工具栏-->
-                <LinearLayout
-                    android:id="@+id/ll_photo_detail_actionbar_right_tools"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="@dimen/dimen_10dp"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <ImageView
-                        android:id="@+id/iv_undo"
-                        android:layout_width="@dimen/dimen_40dp"
-                        android:layout_height="@dimen/dimen_40dp"
-                        android:layout_gravity="center"
-                        android:layout_margin="@dimen/dimen_5dp"
-                        android:padding="@dimen/dimen_10dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/selector_tools_undo" />
-
-                    <ImageView
-                        android:id="@+id/iv_do"
-                        android:layout_width="@dimen/dimen_40dp"
-                        android:layout_height="@dimen/dimen_40dp"
-                        android:layout_gravity="center"
-                        android:layout_margin="@dimen/dimen_5dp"
-                        android:padding="@dimen/dimen_10dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/selector_tools_do" />
-
-                    <ImageView
-                        android:id="@+id/iv_save_photo"
-                        android:layout_width="@dimen/dimen_40dp"
-                        android:layout_height="@dimen/dimen_40dp"
-                        android:layout_gravity="center"
-                        android:layout_margin="@dimen/dimen_5dp"
-                        android:padding="@dimen/dimen_10dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/selector_tools_actionbar_confirm"
-                        android:visibility="gone" />
-
-                </LinearLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
             <View
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/cl_top_parent"
-                android:background="@color/white"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen_1dp"/>
+                android:id="@+id/v_back_line_edit"
+                android:layout_width="@dimen/dimen_1dp"
+                android:layout_height="@dimen/dimen_18dp"
+                android:background="@color/album_item_count_easy_photos"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_tools_exit"
+                app:layout_constraintLeft_toRightOf="@+id/iv_tools_exit"
+                app:layout_constraintTop_toTopOf="@id/iv_tools_exit" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!--        中心内容布局 ，显示图、涂鸦、视频控件的 父布局-->
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_photo_doodle_content"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/dimen_50dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/cl_photo_detail_right_tools"
-            app:layout_constraintTop_toBottomOf="@id/cl_top_parent">
-
+            app:layout_constraintTop_toTopOf="parent">
 
             <com.github.chrisbanes.photoview.PhotoView
                 android:id="@+id/iv_video"
@@ -157,7 +95,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_play_easy_photos_2" />
 
-
             <com.dyt.wcc.baselib.ui.doodle.view.DoodleView
                 android:id="@+id/doodleView"
                 android:layout_width="match_parent"
@@ -167,38 +104,72 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <!--显示RecyclerView 的 布局-->
-        <!--        <com.huantansheng.easyphotos.ui.widget.PreviewRecyclerView-->
-        <!--            android:id="@+id/rv_photos"-->
-        <!--            android:layout_width="0dp"-->
-        <!--            android:layout_height="0dp"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--            app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--            app:layout_constraintRight_toLeftOf="@id/cl_photo_detail_right_tools"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/cl_photo_detail_actionbar" />-->
-
+        <!--        右侧工具 总布局-->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_photo_detail_right_tools"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             android:layout_marginTop="@dimen/dimen_5dp"
-            android:layout_marginBottom="@dimen/dimen_10dp"
+            android:layout_marginBottom="@dimen/dimen_20dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cl_top_parent">
+            app:layout_constraintRight_toRightOf="parent">
+
+            <!--       顶部  重做， 前进 工具栏-->
+            <LinearLayout
+                android:id="@+id/ll_doodle_redo_do_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/iv_undo"
+                    android:layout_width="@dimen/dimen_40dp"
+                    android:layout_height="@dimen/dimen_40dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/dimen_5dp"
+                    android:padding="@dimen/dimen_10dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/selector_tools_undo" />
+
+                <ImageView
+                    android:id="@+id/iv_do"
+                    android:layout_width="@dimen/dimen_40dp"
+                    android:layout_height="@dimen/dimen_40dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/dimen_5dp"
+                    android:padding="@dimen/dimen_10dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/selector_tools_do" />
+
+            </LinearLayout>
+<!--            redo do 下方 分割线-->
+            <View
+                android:id="@+id/cutline_redo_do"
+                android:layout_width="@dimen/dimen_80dp"
+                android:layout_height="2px"
+                android:layout_marginStart="@dimen/dimen_5dp"
+                android:layout_marginEnd="@dimen/dimen_5dp"
+                android:background="@color/white"
+                app:layout_constraintLeft_toLeftOf="@id/ll_doodle_redo_do_container"
+                app:layout_constraintRight_toRightOf="@id/ll_doodle_redo_do_container"
+                app:layout_constraintTop_toBottomOf="@id/ll_doodle_redo_do_container" />
+
 
             <!--    右侧 图片涂鸦工具栏 布局-->
             <LinearLayout
                 android:id="@+id/ll_palette_character_size_container"
                 android:layout_width="@dimen/dimen_40dp"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_marginBottom="@dimen/dimen_10dp"
                 android:gravity="top"
                 android:orientation="vertical"
+                android:paddingTop="@dimen/dimen_5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toLeftOf="@id/ll_doodle_right_tools"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@id/cutline_redo_do">
 
                 <com.dyt.wcc.baselib.ui.widget.CircleDisplayView
                     android:id="@+id/circle_palette"
@@ -210,6 +181,7 @@
                     app:contentType="color"
                     app:default_borderColor="@color/white"
                     app:isSelect="true"
+                    app:select_borderColor="@color/select_mti448"
                     app:select_border_StrokeWidth="2" />
 
                 <com.dyt.wcc.baselib.ui.widget.CircleDisplayView
@@ -220,8 +192,9 @@
                     android:layout_margin="@dimen/dimen_5dp"
                     android:padding="@dimen/dimen_2dp"
                     app:contentType="bitmap"
-                    app:default_Bitmap="@mipmap/photo_detail_tools_size_2_select"
+                    app:default_Bitmap="@mipmap/photo_detail_tools_size_2_unselect"
                     app:default_borderColor="@color/white"
+                    app:select_borderColor="@color/select_mti448"
                     app:select_border_StrokeWidth="2" />
 
                 <View
@@ -257,24 +230,22 @@
                 android:id="@+id/cut_line_seekbar_tools"
                 android:layout_width="1dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_10dp"
                 android:background="@color/white"
                 app:layout_constraintLeft_toRightOf="@id/ll_palette_character_size_container"
                 app:layout_constraintRight_toLeftOf="@id/ll_doodle_right_tools"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@id/ll_palette_character_size_container" />
 
             <!--    右侧 图片涂鸦工具栏 布局-->
             <LinearLayout
                 android:id="@+id/ll_doodle_right_tools"
                 android:layout_width="@dimen/dimen_40dp"
-                android:layout_height="match_parent"
-                android:layout_margin="5dp"
+                android:layout_height="0dp"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@id/ll_doodle_redo_do_container">
 
 
                 <ImageView
@@ -304,7 +275,8 @@
                     android:layout_margin="5dp"
                     android:gravity="center"
                     android:padding="@dimen/dimen_10dp"
-                    android:src="@drawable/selector_tools_analyse_all" />
+                    android:src="@drawable/selector_tools_analyse_all"
+                    android:visibility="invisible" />
                 <!--        分割线 -->
             </LinearLayout>
 
