@@ -7,10 +7,12 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_number_pick_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/bg_main_preview_overtemp_pop">
+        android:padding="@dimen/dimen_20dp"
+        android:background="@color/bg_preview_right">
 
         <com.dyt.wcc.common.widget.NumberPickerView
             android:id="@+id/numberPicker_hundreds_main_preview_overTemp_pop"

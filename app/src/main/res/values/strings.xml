@@ -50,6 +50,12 @@
     <string name="about_companyWebsite_content_henxtech">www.henxtech.com</string>
     <string name="about_contactEmail_content_henxtech">amanda@henxtech.com</string>
 
+    <!--    MTI448-->
+    <string name="about_companyName_mti448">Trafino Oy</string>
+    <string name="about_companyWebsite_content_mti448">www.trafino.fi</string>
+    <string name="about_contactEmail_content_mti448">trafino@trafino.fi</string>
+    <string name="about_tel_content_mti448">+358 9 348 34 150</string>
+
     <!--    页面名称-->
     <!--    <string name="app_name">Pir</string>-->
     <string name="about_devices_type">Type：</string>

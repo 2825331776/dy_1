@@ -272,7 +272,7 @@ android {
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.teslong.FileProvider"]
             dimension "demo1"
         }
-
+        //胜利 定制
         victor {
             applicationIdSuffix ".victor"
             versionCode rootProject.ext.envInfo.DYTConfig.VCode
@@ -371,7 +371,7 @@ android {
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_MTI448"'
             buildConfigField "int", "COMPANY_H", '165'
             manifestPlaceholders = [CHANNEL_VALUE         : "mti448"
-                                    , app_icon            : "@mipmap/ic_logo_mti448_round"
+                                    , app_icon            :  "@mipmap/ic_logo_mti448"
                                     , BUGLYAPPID          : "e58bdac13f"
                                     , BUGLYAPPVersion     : rootProject.ext.envInfo.MTI_448.VName
                                     , BUGLYAPPChannel     : "mti448"

@@ -68,6 +68,7 @@ import com.dyt.wcc.customize.jms.JMSCompanyView;
 import com.dyt.wcc.customize.jms.JMSLanguageFactory;
 import com.dyt.wcc.customize.mailseey.MileSeeYCompanyView;
 import com.dyt.wcc.customize.mailseey.MileSeeYLanguageFactory;
+import com.dyt.wcc.customize.mti448.MTI448CompanyView;
 import com.dyt.wcc.customize.neutral.NeutralCompanyView;
 import com.dyt.wcc.customize.neutral.NeutralLanguageFactory;
 import com.dyt.wcc.customize.qianli.QianLiLanguageFactory;
@@ -126,7 +127,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 	public static        long startTime         = 0;
 
 	private int tempUnitPosition = 0;
-	CompoundButton.OnCheckedChangeListener highLowCenterCheckListener = (buttonView, isChecked) -> {
+	CompoundButton.OnCheckedChangeListener highLowCenterCheckListener =
+			(buttonView, isChecked) -> {
 		switch (buttonView.getId()) {
 			case R.id.cb_main_preview_highlowcenter_trace_high:
 				if (isChecked) {
@@ -164,7 +166,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 				case R.id.iv_temp_mode_point:
 					PLRPopupWindows.dismiss();
 					mDataBinding.dragTempContainerPreviewActivity.setDrawTempMode(1);
-					//					mDataBinding.dragTempContainerPreviewActivity.getDrawTempMode();
+					//					mDataBinding.dragTempContainerPreviewActivity
+					//					.getDrawTempMode();
 					//					if (isDebug)showToast("point ");
 					break;
 				case R.id.iv_temp_mode_line:
@@ -219,7 +222,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 	private USBMonitor mUsbMonitor;
 	private int        mFontSize;
 	private String     palettePath;
-	private Bitmap     tiehong = null, caihong = null, baire = null, heire = null, hongre = null, lenglan = null;
+	private Bitmap     tiehong = null, caihong = null, baire = null, heire = null, hongre = null,
+			lenglan = null;
 	private SendCommand mSendCommand;
 	private int         screenWidth, screenHeight;
 	private Bitmap highTempBt, lowTempBt, centerTempBt, normalPointBt;
@@ -243,16 +247,19 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 	//传感器
 	private       AbstractUVCCameraHandler.CameraCallback cameraCallback;
 	private       LoadingDialog                           loadingDialog;
-	private final Handler                                 mHandler             = new Handler(new Handler.Callback() {
+	private final Handler                                 mHandler             =
+	new Handler(new Handler.Callback() {
 		@Override
 		public boolean handleMessage (@NonNull Message msg) {
 			switch (msg.what) {
 				case MSG_CHECK_UPDATE:
 					updateObjList = (List<UpdateObj>) msg.obj;
 
-					View view = LayoutInflater.from(mContext.get()).inflate(R.layout.dialog_custom, null);
+					View view = LayoutInflater.from(mContext.get()).inflate(R.layout.dialog_custom
+							, null);
 					TextView tvTitle = view.findViewById(R.id.tvTitle);
-					tvTitle.setText(String.format(getString(R.string.pop_version) + "V%s", updateObjList.get(maxIndex).getAppVersionName()));
+					tvTitle.setText(String.format(getString(R.string.pop_version) + "V%s",
+					 updateObjList.get(maxIndex).getAppVersionName()));
 					TextView tvContent = view.findViewById(R.id.tvContent);
 					tvContent.setVisibility(View.GONE);
 					//					tvContent.setText("1、新增某某功能、\n2、修改某某问题、\n3、优化某某BUG、");
@@ -261,9 +268,14 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 					View btnConfirm = view.findViewById(R.id.btnConfirm);
 					btnConfirm.setOnClickListener(v -> {
 						showToast(getString(R.string.toast_downloading_background));
-						mAppUpdater = new AppUpdater.Builder().setUrl(DYConstants.UPDATE_DOWNLOAD_API + updateObjList.get(maxIndex).getPackageName())
-								//                        .setApkMD5("3df5b1c1d2bbd01b4a7ddb3f2722ccca")//支持MD5校验，如果缓存APK的MD5与此MD5相同，则直接取本地缓存安装，推荐使用MD5校验的方式
-								.setVersionCode(updateObjList.get(maxIndex).getAppVersionCode())//支持versionCode校验，设置versionCode之后，新版本versionCode相同的apk只下载一次,优先取本地缓存,推荐使用MD5校验的方式
+						mAppUpdater =
+								new AppUpdater.Builder().setUrl(DYConstants.UPDATE_DOWNLOAD_API + updateObjList.get(maxIndex).getPackageName())
+								//                        .setApkMD5
+								//                        ("3df5b1c1d2bbd01b4a7ddb3f2722ccca")
+								// 支持MD5校验，如果缓存APK的MD5与此MD5相同，则直接取本地缓存安装，推荐使用MD5校验的方式
+								.setVersionCode(updateObjList.get(maxIndex).getAppVersionCode())
+								 //支持versionCode校验，设置versionCode之后，新版本versionCode相同的apk只下载一次,
+								// 优先取本地缓存,推荐使用MD5校验的方式
 								.setFilename(updateObjList.get(maxIndex).getPackageName() + ".apk").setVibrate(true).build(mContext.get());
 						mAppUpdater.setHttpManager(OkHttpManager.getInstance()).start();
 						AppDialog.INSTANCE.dismissDialog();
@@ -271,15 +283,24 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 					AppDialog.INSTANCE.showDialog(mContext.get(), view, 0.5f);
 					break;
 				case MSG_CAMERA_PARAMS:
-					View pop_View = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_setting, null);
+					View pop_View =
+					 LayoutInflater.from(mContext.get()).inflate(R.layout.pop_setting, null);
+
+
 
 					PopSettingBinding popSettingBinding = DataBindingUtil.bind(pop_View);
+					//MTI448 设置背景色
+					setViewBackgroundColor(popSettingBinding.clPreviewSetting);
+
 					assert popSettingBinding != null;
 					popSettingBinding.tvCheckVersionInfo.setText(String.format(getString(R.string.setting_check_version_info), BuildConfig.VERSION_NAME));
 					//设置单位
-					popSettingBinding.tvCameraSettingReviseUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
-					popSettingBinding.tvCameraSettingReflectUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
-					popSettingBinding.tvCameraSettingFreeAirTempUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
+					popSettingBinding.tvCameraSettingReviseUnit.setText(String.format("(%s)",
+					 DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
+					popSettingBinding.tvCameraSettingReflectUnit.setText(String.format("(%s)",
+					 DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
+					popSettingBinding.tvCameraSettingFreeAirTempUnit.setText(String.format("(%s)",
+					 DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
 
 					//初始化 每个输入框的过滤器 ,切换 温度单位，需要重新设置一遍过滤器（先移除，再添加）
 
@@ -294,19 +315,28 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						popSettingBinding.btCheckVersion.setOnClickListener(v1 -> {
 							OkHttpClient client = new OkHttpClient();
 							new Thread(() -> {
-								Request request = new Request.Builder().url(DYConstants.UPDATE_CHECK_INFO).get().build();
+								Request request =
+								 new Request.Builder().url(DYConstants.UPDATE_CHECK_INFO).get().build();
 								try {
 									Response response = client.newCall(request).execute();
 									byte[] responseByte = response.body().bytes();
-									String checkAPIData = new String(responseByte, StandardCharsets.UTF_8);
+									String checkAPIData = new String(responseByte,
+									 StandardCharsets.UTF_8);
 									if (isDebug)
-										Log.i(TAG, "run:responseByte ==========>  " + checkAPIData);
+										Log.i(TAG,
+"run:responseByte ==========>  " + checkAPIData);
 									getVersionCodeArray(checkAPIData);
 
-									//if (isDebug)Log.i(TAG, "run: 最大的 VersionCode 为： " + maxCode + " codeIndex = " + maxIndex + " 完成版本为： " + AppVersionNameList[maxIndex]);
-									//if (isDebug)Log.i(TAG, "run: ======AppVersionCodeList===" + Arrays.toString(AppVersionCodeList));
-									int thisVersionCode = Integer.parseInt(mContext.get().getPackageManager().getPackageInfo(mContext.get().getPackageName(), 0).versionName.split("-")[0].replace(".", ""));
-									//									if (isDebug)Log.i(TAG, "run: versionName === 》" + thisVersionCode);
+									//if (isDebug)Log.i(TAG, "run: 最大的 VersionCode 为： " + maxCode
+									// + " codeIndex = " + maxIndex + " 完成版本为： " +
+									// AppVersionNameList[maxIndex]);
+									//if (isDebug)Log.i(TAG, "run: ======AppVersionCodeList===" +
+									// Arrays.toString(AppVersionCodeList));
+									int thisVersionCode =
+											Integer.parseInt(mContext.get().getPackageManager().getPackageInfo(mContext.get().getPackageName(), 0).versionName.split("-")[0].replace(".", ""));
+									//									if (isDebug)Log.i(TAG,
+									//									"run: versionName === 》" +
+									//									thisVersionCode);
 									//判断是否需要更新
 									if (thisVersionCode < updateObjList.get(maxIndex).getAppVersionCode()) {
 										Message message = mHandler.obtainMessage();
@@ -371,7 +401,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 							toSettingDefault();
 							if (mPid == 1 && mVid == 5396) {
 								popSettingBinding.etCameraSettingHumidity.setText(String.format(Locale.CHINESE, "%s", (int) (100 * DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE)));
-								sp.edit().putFloat(DYConstants.setting_humidity, DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE).apply();
+								sp.edit().putFloat(DYConstants.setting_humidity,
+										DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE).apply();
 							}
 							if (true) {
 								popSettingBinding.etCameraSettingReflect.setText(String.format(Locale.CHINESE, "%d", (int) refreshValueByTempUnit(DYConstants.SETTING_REFLECT_DEFAULT_VALUE)));
@@ -379,10 +410,14 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 								popSettingBinding.etCameraSettingEmittance.setText(String.format(Locale.CHINESE, "%s", DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE));
 								popSettingBinding.etCameraSettingFreeAirTemp.setText(String.format(Locale.CHINESE, "%d", (int) refreshValueByTempUnit(DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE)));
 
-								sp.edit().putFloat(DYConstants.setting_environment, DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE).apply();
-								sp.edit().putFloat(DYConstants.setting_reflect, DYConstants.SETTING_REFLECT_DEFAULT_VALUE).apply();
-								sp.edit().putFloat(DYConstants.setting_emittance, DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE).apply();
-								sp.edit().putFloat(DYConstants.setting_correction, DYConstants.SETTING_CORRECTION_DEFAULT_VALUE).apply();
+								sp.edit().putFloat(DYConstants.setting_environment,
+								 DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE).apply();
+								sp.edit().putFloat(DYConstants.setting_reflect,
+										DYConstants.SETTING_REFLECT_DEFAULT_VALUE).apply();
+								sp.edit().putFloat(DYConstants.setting_emittance,
+										DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE).apply();
+								sp.edit().putFloat(DYConstants.setting_correction,
+										DYConstants.SETTING_CORRECTION_DEFAULT_VALUE).apply();
 
 								mDataBinding.textureViewPreviewActivity.setTinyCCorrection(DYConstants.SETTING_CORRECTION_DEFAULT_VALUE);
 							}
@@ -390,7 +425,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 
 						//发射率
 						popSettingBinding.etCameraSettingEmittance.addTextChangedListener(new DecimalInputTextWatcher(popSettingBinding.etCameraSettingEmittance, 5, 2));
-						popSettingBinding.etCameraSettingEmittance.setOnEditorActionListener((v14, actionId, event) -> {
+						popSettingBinding.etCameraSettingEmittance.setOnEditorActionListener((v14,
+						                                                                      actionId, event) -> {
 							if (actionId == EditorInfo.IME_ACTION_DONE) {
 								if (TextUtils.isEmpty(v14.getText().toString()))
 									return true;
@@ -404,7 +440,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 									if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
 										sendS0Order(value, DYConstants.SETTING_EMITTANCE_INT);
 									} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
-										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, value, 3);
+										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, value
+												, 3);
 									}
 									sp.edit().putFloat(DYConstants.setting_emittance, value).apply();
 									showToast(R.string.toast_complete_Emittance);
@@ -415,14 +452,19 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						});
 						//校正设置 -20 - 20
 						popSettingBinding.etCameraSettingRevise.addTextChangedListener(new DecimalInputTextWatcher(popSettingBinding.etCameraSettingRevise, 6, 2));
-						popSettingBinding.etCameraSettingRevise.setOnEditorActionListener((v16, actionId, event) -> {
-							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+						popSettingBinding.etCameraSettingRevise.setOnEditorActionListener((v16,
+						 actionId, event) -> {
+							//		Log.e(TAG, "Distance: " + popSettingBinding
+							//		.etCameraSettingDistance.getText().toString());
 							if (actionId == EditorInfo.IME_ACTION_DONE) {
 								if (TextUtils.isEmpty(v16.getText().toString()) || "-".equals(v16.getText().toString()) || "-.".equals(v16.getText().toString()))
 									return true;
-								float value = inputValue2Temp(Float.parseFloat(v16.getText().toString()));
+								float value =
+inputValue2Temp(Float.parseFloat(v16.getText().toString()));
 								if (value > DYConstants.REVISE_MAX || value < DYConstants.REVISE_MIN) {
-									showToast(getString(R.string.toast_range_float, getBorderValue(DYConstants.REVISE_MIN), getBorderValue(DYConstants.REVISE_MAX)));
+									showToast(getString(R.string.toast_range_float,
+									 getBorderValue(DYConstants.REVISE_MIN),
+											getBorderValue(DYConstants.REVISE_MAX)));
 									return true;
 								}
 								if (mUvcCameraHandler != null) {
@@ -439,25 +481,37 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 							return true;
 						});
 						//距离设置
-						//					popSettingBinding.etCameraSettingDistance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+						//					popSettingBinding.etCameraSettingDistance
+						//					.setOnEditorActionListener(new TextView
+						//					.OnEditorActionListener() {
 						//						@Override
-						//						public boolean onEditorAction (TextView v, int actionId, KeyEvent event) {
-						//							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+						//						public boolean onEditorAction (TextView v, int
+						//						actionId, KeyEvent event) {
+						//							//		Log.e(TAG, "Distance: " +
+						//							popSettingBinding.etCameraSettingDistance
+						//							.getText().toString());
 						//							if (actionId == EditorInfo.IME_ACTION_DONE){
-						//								if (TextUtils.isEmpty(v.getText().toString()))return true;
-						//								int value = Math.round(Float.parseFloat(v.getText().toString()));
+						//								if (TextUtils.isEmpty(v.getText().toString
+						//								()))return true;
+						//								int value = Math.round(Float.parseFloat(v
+						//								.getText().toString()));
 						//								if (value > 5 || value < 0){
-						//									showToast(getString(R.string.toast_range_int,0,5));
+						//									showToast(getString(R.string
+						//									.toast_range_int,0,5));
 						//									return true;
 						//								}
 						//								byte[] bIputDi = new byte[4];
 						//								ByteUtil.putInt(bIputDi,value,0);
 						//								if (mUvcCameraHandler!= null) {
 						//									if (mPid == 1 && mVid == 5396) {
-						//										mSendCommand.sendShortCommand(5 * 4, bIputDi[0], bIputDi[1], 20, 40, 60);
+						//										mSendCommand.sendShortCommand(5 *
+						//										4, bIputDi[0], bIputDi[1], 20, 40,
+						//										60);
 						//									}
-						//									sp.edit().putFloat(DYConstants.setting_distance,value).apply();
-						//									showToast(R.string.toast_complete_Distance);
+						//									sp.edit().putFloat(DYConstants
+						//									.setting_distance,value).apply();
+						//									showToast(R.string
+						//									.toast_complete_Distance);
 						//								}
 						//								hideInput(v.getWindowToken());
 						//							}
@@ -466,22 +520,32 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						//					});
 						//反射温度设置  -20 - 120 ℃
 						popSettingBinding.etCameraSettingReflect.addTextChangedListener(new DecimalInputTextWatcher(popSettingBinding.etCameraSettingReflect, 7, 2));
-						popSettingBinding.etCameraSettingReflect.setOnEditorActionListener((v15, actionId, event) -> {
-							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+						popSettingBinding.etCameraSettingReflect.setOnEditorActionListener((v15,
+						 actionId, event) -> {
+							//		Log.e(TAG, "Distance: " + popSettingBinding
+							//		.etCameraSettingDistance.getText().toString());
 							if (actionId == EditorInfo.IME_ACTION_DONE) {
 								if (TextUtils.isEmpty(v15.getText().toString()) || "-".equals(v15.getText().toString()) || "-.".equals(v15.getText().toString()))
 									return true;
-								float value = inputValue2Temp(Integer.parseInt(v15.getText().toString()));//拿到的都是摄氏度
+								float value =
+								 inputValue2Temp(Integer.parseInt(v15.getText().toString()));
+								//拿到的都是摄氏度
 								if (value > DYConstants.REFLECT_MAX || value < DYConstants.REFLECT_MIN) {//带上 温度单位
-									showToast(getString(R.string.toast_range_int, Math.round(getBorderValue(DYConstants.REFLECT_MIN)), Math.round(getBorderValue(DYConstants.REFLECT_MAX))));
+									showToast(getString(R.string.toast_range_int,
+									 Math.round(getBorderValue(DYConstants.REFLECT_MIN)),
+									  Math.round(getBorderValue(DYConstants.REFLECT_MAX))));
 									return true;
 								}
 								if (mUvcCameraHandler != null) {
 									if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
 										sendS0Order(value, DYConstants.SETTING_REFLECT_INT);
 									} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
-										//										Log.e(TAG, "onEditorAction: 反射温度 set value = " + value);
-										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, (int) value, 1);
+										//										Log.e(TAG,
+										//										"onEditorAction:
+										//										反射温度 set value = "
+										//										+ value);
+										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,
+										 (int) value, 1);
 									}
 									sp.edit().putFloat(DYConstants.setting_reflect, value).apply();
 									showToast(R.string.toast_complete_Reflect);
@@ -495,21 +559,29 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						//环境温度设置  -20 -50
 						popSettingBinding.etCameraSettingFreeAirTemp.addTextChangedListener(new DecimalInputTextWatcher(popSettingBinding.etCameraSettingFreeAirTemp, 7, 2));
 						popSettingBinding.etCameraSettingFreeAirTemp.setOnEditorActionListener((v17, actionId, event) -> {
-							//		Log.e(TAG, "Distance: " + popSettingBinding.etCameraSettingDistance.getText().toString());
+							//		Log.e(TAG, "Distance: " + popSettingBinding
+							//		.etCameraSettingDistance.getText().toString());
 							if (actionId == EditorInfo.IME_ACTION_DONE) {
 								if (TextUtils.isEmpty(v17.getText().toString()) || "-".equals(v17.getText().toString()) || "-.".equals(v17.getText().toString()))
 									return true;
-								float value = inputValue2Temp(Integer.parseInt(v17.getText().toString()));
+								float value =
+								 inputValue2Temp(Integer.parseInt(v17.getText().toString()));
 								if (value > DYConstants.ENVIRONMENT_MAX || value < DYConstants.ENVIRONMENT_MIN) {
-									showToast(getString(R.string.toast_range_int, Math.round(getBorderValue(DYConstants.ENVIRONMENT_MIN)), Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
+									showToast(getString(R.string.toast_range_int,
+									 Math.round(getBorderValue(DYConstants.ENVIRONMENT_MIN)),
+									  Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 									return true;
 								}
 								if (mUvcCameraHandler != null) {
 									if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
 										sendS0Order(value, DYConstants.SETTING_ENVIRONMENT_INT);
 									} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
-										//										Log.e(TAG, "onEditorAction: 环境温度 set value = " + value);
-										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, (int) value, 2);
+										//										Log.e(TAG,
+										//										"onEditorAction:
+										//										环境温度 set value = "
+										//										+ value);
+										mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,
+										 (int) value, 2);
 									}
 									sp.edit().putFloat(DYConstants.setting_environment, value).apply();
 									showToast(R.string.toast_complete_FreeAirTemp);
@@ -525,17 +597,24 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						mDataBinding.dragTempContainerPreviewActivity.setTempSuffix(position);
 						sp.edit().putInt(DYConstants.TEMP_UNIT_SETTING, position).apply();
 						//切换 温度单位 需要更改 输入框的 单位
-						popSettingBinding.tvCameraSettingReviseUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
-						popSettingBinding.tvCameraSettingReflectUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
-						popSettingBinding.tvCameraSettingFreeAirTempUnit.setText(String.format("(%s)", DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
+						popSettingBinding.tvCameraSettingReviseUnit.setText(String.format("(%s)",
+								DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
+						popSettingBinding.tvCameraSettingReflectUnit.setText(String.format("(%s)",
+								DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
+						popSettingBinding.tvCameraSettingFreeAirTempUnit.setText(String.format(
+								"(%s)",
+								 DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
 						//切换 温度单位 需要更改 里面已经输入的值。
 						popSettingBinding.etCameraSettingRevise.setText(String.valueOf(refreshValueByTempUnit(sp.getFloat(DYConstants.setting_correction, 0.0f))));
 						popSettingBinding.etCameraSettingFreeAirTemp.setText(String.valueOf((int) refreshValueByTempUnit(sp.getFloat(DYConstants.setting_environment, 0.0f))));
 						popSettingBinding.etCameraSettingReflect.setText(String.valueOf((int) refreshValueByTempUnit(sp.getFloat(DYConstants.setting_reflect, 0.0f))));
 					});
 					//显示设置的弹窗
-					settingPopWindows = new PopupWindow(pop_View, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-					settingPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+					settingPopWindows = new PopupWindow(pop_View,
+							LinearLayout.LayoutParams.WRAP_CONTENT,
+							LinearLayout.LayoutParams.WRAP_CONTENT);
+					settingPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,
+							View.MeasureSpec.UNSPECIFIED);
 					settingPopWindows.setHeight(mDataBinding.clPreviewActivity.getHeight() / 2 + DensityUtil.dp2px(mContext.get(), 10));
 					settingPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
 
@@ -545,13 +624,19 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 
 					//第四步：显示控件
 					//					if (oldRotation == 90 || oldRotation == 180) {
-					//						int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-					//						settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
+					//						int offsetX = -mDataBinding.clPreviewActivity.getWidth
+					//						() + DensityUtil.dp2px(mContext.get(), 10);//
+					//						settingPopWindows.showAsDropDown(mDataBinding
+					//						.clPreviewActivity, offsetX, -mDataBinding
+					//						.llContainerPreviewSeekbar.getHeight() +
+					//						settingPopWindows.getHeight() + DensityUtil.dp2px
+					//						(mContext.get(), 5), Gravity.CENTER);
 					//						settingPopWindows.getContentView().setRotation(180);
 					//					}
 					//					if (oldRotation == 0 || oldRotation == 270) {
 					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
+					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,
+							-mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
 					settingPopWindows.getContentView().setRotation(0);
 					//					}
 
@@ -572,9 +657,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 					});
 					//录制声音
 					popSettingBinding.switchChoiceRecordAudio.setSelectedTab(sp.getInt(DYConstants.RECORD_AUDIO_SETTING, 1), false);
-					popSettingBinding.switchChoiceRecordAudio.setOnSwitchListener((position, tabText) -> {
+					popSettingBinding.switchChoiceRecordAudio.setOnSwitchListener((position,
+					                                                               tabText) -> {
 						sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING, position).apply();
-						//						if (isDebug)Log.e(TAG, "onSwitch: " + "=============================");
+						//						if (isDebug)Log.e(TAG, "onSwitch: " +
+						//						"=============================");
 					});
 					//高低温增益切换
 					//tinyc set gain mode:Data_L = 0x0, low gain， Data_L = 0x1,  high gain
@@ -588,18 +675,23 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						Log.e(TAG, "handleMessage: 111111111============" + position);
 						if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
 							if (position == 0) {
-								mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8020), 200); //最高200度
+								mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS,
+								 0x8020), 200); //最高200度
 							} else {
-								mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8021), 200);//最高599度
+								mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS,
+										0x8021), 200);//最高599度
 							}
-							mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000), 1000);
+							mHandler.postDelayed(() -> setValue(UVCCamera.CTRL_ZOOM_ABS, 0x8000),
+							 1000);
 							mHandler.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), 1800);
 						} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
 							loadingDialog.show();
 
 							if (position == 0) {
 								new Thread(() -> {
-									final boolean isSuccess = mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
+									final boolean isSuccess =
+									 mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS,
+								1, 1);
 									runOnUiThread(new Runnable() {
 										@Override
 										public void run () {
@@ -618,7 +710,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 								new Thread(new Runnable() {
 									@Override
 									public void run () {
-										final boolean isSuccess = mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 0, 0);
+										final boolean isSuccess =
+										 mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 0, 0);
 										runOnUiThread(new Runnable() {
 											@Override
 											public void run () {
@@ -672,13 +765,16 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 							break;
 					}
 					popSettingBinding.btShowChoiceLanguage.setText(factory.getLanguageByIndex(sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0)));
-					//					popSettingBinding.btShowChoiceLanguage.setText(DYConstants.languageArray[sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0)]);
+					//					popSettingBinding.btShowChoiceLanguage.setText(DYConstants
+					//					.languageArray[sp.getInt(DYConstants
+					//					.LANGUAGE_SETTING_INDEX, 0)]);
 					popSettingBinding.btShowChoiceLanguage.setOnClickListener(v18 -> {
 						AlertDialog alertDialog;
 						factory.setListener((dialog, index) -> {
 							if (index != sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0)) {
 								sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, index).apply();
-								sp.edit().putString(DYConstants.LANGUAGE_SETTING, factory.getLanguageArray()[index]).apply();
+								sp.edit().putString(DYConstants.LANGUAGE_SETTING,
+								factory.getLanguageArray()[index]).apply();
 								if (settingPopWindows != null)
 									settingPopWindows.dismiss();
 								toSetLanguage(index);
@@ -687,11 +783,18 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						});
 						factory.createDialogListener();
 						alertDialog = factory.createAlertDialog();
-						//						AlertDialog.Builder builder = new AlertDialog.Builder(mContext.get());
-						//						builder.setSingleChoiceItems(DYConstants.languageArray, sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0), (dialog, which) -> {
-						//							if (which != sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0)) {
-						//								sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, which).apply();
-						//								sp.edit().putString(DYConstants.LANGUAGE_SETTING, DYConstants.languageArray[which]).apply();
+						//						AlertDialog.Builder builder = new AlertDialog
+						//						.Builder(mContext.get());
+						//						builder.setSingleChoiceItems(DYConstants
+						//						.languageArray, sp.getInt(DYConstants
+						//						.LANGUAGE_SETTING_INDEX, 0), (dialog, which) -> {
+						//							if (which != sp.getInt(DYConstants
+						//							.LANGUAGE_SETTING_INDEX, 0)) {
+						//								sp.edit().putInt(DYConstants
+						//								.LANGUAGE_SETTING_INDEX, which).apply();
+						//								sp.edit().putString(DYConstants
+						//								.LANGUAGE_SETTING, DYConstants
+						//								.languageArray[which]).apply();
 						//								if (settingPopWindows != null)
 						//									settingPopWindows.dismiss();
 						//								toSetLanguage(which);
@@ -711,7 +814,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		mDataBinding.clMainPreview.setBackgroundColor(getColor(R.color.base_bg_app_mti448));
 
 		//左侧 关于
-		ConstraintLayout.LayoutParams aboutParams = new ConstraintLayout.LayoutParams(DensityUtil.dp2px(this, 40), DensityUtil.dp2px(this, 40));
+		ConstraintLayout.LayoutParams aboutParams =
+				new ConstraintLayout.LayoutParams(DensityUtil.dp2px(this, 40), DensityUtil.dp2px(this,
+				 40));
 		aboutParams.topToTop = R.id.gl_left_percent1;
 		aboutParams.bottomToBottom = R.id.gl_left_percent1;
 		aboutParams.leftToLeft = R.id.iv_preview_left_Reset;
@@ -719,7 +824,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		mDataBinding.ivPreviewLeftCompanyInfo.setLayoutParams(aboutParams);
 		mDataBinding.ivPreviewLeftCompanyInfo.setBackgroundResource(R.drawable.selector_mti448_preview_aboutus);
 		//左侧 设置
-		ConstraintLayout.LayoutParams settingParams = new ConstraintLayout.LayoutParams(DensityUtil.dp2px(this, 40), DensityUtil.dp2px(this, 40));
+		ConstraintLayout.LayoutParams settingParams =
+ new ConstraintLayout.LayoutParams(DensityUtil.dp2px(this, 40), DensityUtil.dp2px(this,
+		  40));
 		settingParams.topToTop = R.id.gl_left_percent2;
 		settingParams.bottomToBottom = R.id.gl_left_percent2;
 		settingParams.leftToLeft = R.id.iv_preview_left_Reset;
@@ -739,11 +846,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		mDataBinding.clMainPreview.removeView(mDataBinding.tvCutLineSeekbarLeft);
 		mDataBinding.clMainPreview.removeView(mDataBinding.tvCutLineSeekbarRight);
 
-
 	}
 
 	private       Surface                            stt;
-	private final USBMonitor.OnDeviceConnectListener onDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
+	private final USBMonitor.OnDeviceConnectListener onDeviceConnectListener =
+ new USBMonitor.OnDeviceConnectListener() {
 		@Override
 		public void onAttach (UsbDevice device) {
 			//			if (isDebug)Log.e(TAG, "DD  onAttach: "+ device.toString());
@@ -757,20 +864,25 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		}
 
 		@Override
-		public void onConnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock, boolean createNew) {
-			//			if (isDebug)Log.e(TAG, "onConnect:  SN ========================= 》 " + device.getSerialNumber());
+		public void onConnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock,
+		 boolean createNew) {
+			//			if (isDebug)Log.e(TAG, "onConnect:  SN ========================= 》 " +
+			//			device.getSerialNumber());
 			mVid = device.getVendorId();
 			mPid = device.getProductId();
 
 			if (mUvcCameraHandler == null || mUvcCameraHandler.isReleased()) {
-				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null, mDataBinding.dragTempContainerPreviewActivity, 0);
+				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
+mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null,
+						mDataBinding.dragTempContainerPreviewActivity, 0);
 			}
 
 			mUvcCameraHandler.open(ctrlBlock);
 			startPreview();
 
 			mHandler.postDelayed(() -> {
-				setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004原始8005yuv,80ff保存
+				setValue(UVCCamera.CTRL_ZOOM_ABS, DYConstants.CAMERA_DATA_MODE_8004);//切换数据输出8004
+				// 原始8005yuv,80ff保存
 			}, 300);
 
 			//6.5s之后给 机芯强制设置为 低温模式（测试 发现不是所有设备都生效）
@@ -778,7 +890,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			//				mHandler.postDelayed(new Runnable() {
 			//					@Override
 			//					public void run () {
-			//						mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS, 1, 1);
+			//						mUvcCameraHandler.setMachineSetting(UVCCamera.CTRL_ZOOM_ABS,
+			//						1, 1);
 			//					}
 			//				}, 5000);
 			//				mHandler.postDelayed(new Runnable() {
@@ -790,7 +903,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			//				mHandler.postDelayed(new Runnable() {
 			//					@Override
 			//					public void run () {
-			//						if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing())
+			//						if (mUvcCameraHandler != null && mUvcCameraHandler
+			//						.snRightIsPreviewing())
 			//							mUvcCameraHandler.tinySaveCameraParams();
 			//					}
 			//				}, 6500);
@@ -879,7 +993,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//				PLRPopupWindows.dismiss();
 		//				if (oldRotation == 0 || oldRotation == 270) {
 		//					int offsetX = 0;
-		//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+		//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,
+		//					offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity
+		//					.CENTER);
 		//					PLRPopupWindows.getContentView().setRotation(0);
 		//				}
 		//			}
@@ -888,7 +1004,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//				settingPopWindows.dismiss();
 		//				if (oldRotation == 0 || oldRotation == 270) {
 		//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-		//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
+		//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity,
+		//					offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 -
+		//					DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
 		//					settingPopWindows.getContentView().setRotation(0);
 		//				}
 		//			}
@@ -897,7 +1015,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//				companyPopWindows.dismiss();
 		//				if (oldRotation == 0 || oldRotation == 270) {
 		//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-		//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+		//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity,
+		//					offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext
+		//					.get(), 10), Gravity.CENTER);
 		//					companyPopWindows.getContentView().setRotation(0);
 		//				}
 		//			}
@@ -919,7 +1039,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//				PLRPopupWindows.dismiss();
 		//				if (oldRotation == 0 || oldRotation == 270) {
 		//					int offsetX = 0;
-		//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+		//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,
+		//					offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity
+		//					.CENTER);
 		//					PLRPopupWindows.getContentView().setRotation(0);
 		//				}
 		//			}
@@ -927,7 +1049,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//				settingPopWindows.dismiss();
 		//				if (oldRotation == 0 || oldRotation == 270) {
 		//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-		//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
+		//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity,
+		//					offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 -
+		//					DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
 		//					settingPopWindows.getContentView().setRotation(0);
 		//				}
 		//			}
@@ -936,7 +1060,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//				companyPopWindows.dismiss();
 		//				if (oldRotation == 0 || oldRotation == 270) {
 		//					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-		//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+		//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity,
+		//					offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext
+		//					.get(), 10), Gravity.CENTER);
 		//					companyPopWindows.getContentView().setRotation(0);
 		//				}
 		//			}
@@ -961,7 +1087,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//				PLRPopupWindows.dismiss();
 		//				if (oldRotation == 90 || oldRotation == 180) {
 		//					int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
-		//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+		//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,
+		//					offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity
+		//					.CENTER);
 		//					PLRPopupWindows.getContentView().setRotation(180);
 		//				}
 		//			}
@@ -969,8 +1097,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//				settingPopWindows.dismiss();
 		//				//第四步：显示控件
 		//				if (oldRotation == 90 || oldRotation == 180) {
-		//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-		//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
+		//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil
+		//					.dp2px(mContext.get(), 10);//
+		//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity,
+		//					offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() +
+		//					settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5),
+		//					Gravity.CENTER);
 		//					settingPopWindows.getContentView().setRotation(180);
 		//				}
 		//			}
@@ -978,8 +1110,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//			if (companyPopWindows != null && companyPopWindows.isShowing()) {
 		//				companyPopWindows.dismiss();
 		//				if (oldRotation == 90 || oldRotation == 180) {
-		//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-		//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+		//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil
+		//					.dp2px(mContext.get(), 10);//
+		//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity,
+		//					offsetX, -mDataBinding.clPreviewActivity.getHeight() +
+		//					companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10),
+		//					Gravity.CENTER);
 		//					companyPopWindows.getContentView().setRotation(180);
 		//				}
 		//			}
@@ -1003,7 +1139,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//				PLRPopupWindows.dismiss();
 		//				if (oldRotation == 90 || oldRotation == 180) {
 		//					int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
-		//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+		//					PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,
+		//					offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity
+		//					.CENTER);
 		//					PLRPopupWindows.getContentView().setRotation(180);
 		//				}
 		//			}
@@ -1011,8 +1149,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//				settingPopWindows.dismiss();
 		//				//第四步：显示控件
 		//				if (oldRotation == 90 || oldRotation == 180) {
-		//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-		//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() + settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5), Gravity.CENTER);
+		//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil
+		//					.dp2px(mContext.get(), 10);//
+		//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity,
+		//					offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight() +
+		//					settingPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 5),
+		//					Gravity.CENTER);
 		//					settingPopWindows.getContentView().setRotation(180);
 		//				}
 		//			}
@@ -1020,8 +1162,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//			if (companyPopWindows != null && companyPopWindows.isShowing()) {
 		//				companyPopWindows.dismiss();
 		//				if (oldRotation == 90 || oldRotation == 180) {
-		//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-		//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+		//					int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil
+		//					.dp2px(mContext.get(), 10);//
+		//					companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity,
+		//					offsetX, -mDataBinding.clPreviewActivity.getHeight() +
+		//					companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10),
+		//					Gravity.CENTER);
 		//					companyPopWindows.getContentView().setRotation(180);
 		//				}
 		//			}
@@ -1070,10 +1216,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 	//	}
 	//
 	//	@Override
-	//	public void onRequestPermissionsResult (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+	//	public void onRequestPermissionsResult (int requestCode, @NonNull String[] permissions,
+			//	@NonNull int[] grantResults) {
 	//		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 	//		if (requestCode == PERMISSIONS_REQUEST_CODE) {
-	//			if (ActivityCompat.checkSelfPermission(this,Manifest.permission.MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+	//			if (ActivityCompat.checkSelfPermission(this,Manifest.permission
+	//			.MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
 	//
 	//			}
 	//		}
@@ -1182,7 +1330,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			Log.e(TAG, "startPreview: ============================");
 
 		mUvcCameraHandler.addCallback(cameraCallback);
-		//				if (isDebug)Log.e(TAG, "startPreview: flPreview  width == " + mDataBinding.flPreview.getMeasuredWidth()
+		//				if (isDebug)Log.e(TAG, "startPreview: flPreview  width == " + mDataBinding
+		//				.flPreview.getMeasuredWidth()
 		//						+ " height == " + mDataBinding.flPreview.getMeasuredHeight());
 		if (mDataBinding.textureViewPreviewActivity.getSurfaceTexture() == null) {
 			Log.e(TAG, "startPreview: 启动失败,getSurfaceTexture 为null.");
@@ -1192,27 +1341,35 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 
 		int mTextureViewWidth = mDataBinding.textureViewPreviewActivity.getWidth();
 		int mTextureViewHeight = mDataBinding.textureViewPreviewActivity.getHeight();
-		//		if (isDebug)Log.e(TAG,"height =="+ mTextureViewHeight + " width==" + mTextureViewWidth);
-		mDataBinding.textureViewPreviewActivity.setFrameBitmap(highTempBt, lowTempBt, centerTempBt, normalPointBt, DensityUtil.dp2px(mContext.get(), 30));
+		//		if (isDebug)Log.e(TAG,"height =="+ mTextureViewHeight + " width==" +
+		//		mTextureViewWidth);
+		mDataBinding.textureViewPreviewActivity.setFrameBitmap(highTempBt, lowTempBt, centerTempBt
+				, normalPointBt, DensityUtil.dp2px(mContext.get(), 30));
 
-		mDataBinding.textureViewPreviewActivity.iniTempBitmap(mTextureViewWidth, mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
+		mDataBinding.textureViewPreviewActivity.iniTempBitmap(mTextureViewWidth,
+		 mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
 		mDataBinding.textureViewPreviewActivity.setVidPid(mVid, mPid);//设置vid  pid
 		mDataBinding.textureViewPreviewActivity.initTempFontSize(mFontSize);
 		mDataBinding.textureViewPreviewActivity.setTinyCCorrection(sp.getFloat(DYConstants.setting_correction, 0.0f));//设置vid  pid
 		mDataBinding.textureViewPreviewActivity.setDragTempContainer(mDataBinding.dragTempContainerPreviewActivity);
 		mDataBinding.customSeekbarPreviewFragment.setmThumbListener(new MyCustomRangeSeekBar.ThumbListener() {
 			@Override
-			public void thumbChanged (float maxPercent, float minPercent, float maxValue, float minValue) {
+			public void thumbChanged (float maxPercent, float minPercent, float maxValue,
+			 float minValue) {
 				maxValue = maxValue - sp.getFloat(DYConstants.setting_correction, 0.0f);
 				minValue = minValue - sp.getFloat(DYConstants.setting_correction, 0.0f);
 				if (mUvcCameraHandler != null && !Float.isNaN(maxValue) && !Float.isNaN(minValue))
-					mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent, maxValue, minValue);
+					mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent, maxValue,
+					 minValue);
 			}
 
 			@Override
-			public void onUpMinThumb (float maxPercent, float minPercent, float maxValue, float minValue) {
-				//				if (isDebug)Log.e(TAG, "onUpMinThumb: 0-100 percent " + maxPercent + " min == > " +  minPercent);
-				//				if (isDebug)Log.e(TAG, "onUpMinThumb: value " + maxValue + " min == > " +  minValue);
+			public void onUpMinThumb (float maxPercent, float minPercent, float maxValue,
+			                          float minValue) {
+				//				if (isDebug)Log.e(TAG, "onUpMinThumb: 0-100 percent " + maxPercent
+				//				+ " min == > " +  minPercent);
+				//				if (isDebug)Log.e(TAG, "onUpMinThumb: value " + maxValue + " min
+				//				== > " +  minValue);
 				if (maxPercent >= 100 && minPercent <= 0) {
 					if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened())
 						mUvcCameraHandler.disWenKuan();
@@ -1220,9 +1377,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			}
 
 			@Override
-			public void onUpMaxThumb (float maxPercent, float minPercent, float maxValue, float minValue) {
-				//				if (isDebug)Log.e(TAG, "onUpMaxThumb: 0-100 percent " + maxPercent + " min == > " +  minPercent);
-				//				if (isDebug)Log.e(TAG, "onUpMaxThumb: value " + maxValue + " min == > " +  minValue);
+			public void onUpMaxThumb (float maxPercent, float minPercent, float maxValue,
+float minValue) {
+				//				if (isDebug)Log.e(TAG, "onUpMaxThumb: 0-100 percent " + maxPercent
+				//				+ " min == > " +  minPercent);
+				//				if (isDebug)Log.e(TAG, "onUpMaxThumb: value " + maxValue + " min
+				//				== > " +  minValue);
 				if (maxPercent >= 100 && minPercent <= 0) {
 					if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened())
 						mUvcCameraHandler.disWenKuan();
@@ -1230,27 +1390,33 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			}
 
 			@Override
-			public void onMinMove (float maxPercent, float minPercent, float maxValue, float minValue) {
+			public void onMinMove (float maxPercent, float minPercent, float maxValue,
+			 float minValue) {
 				if (isDebug)
-					Log.e(TAG, "onMinMove: 0-100 percent " + maxPercent + " min == > " + minPercent);
+					Log.e(TAG,
+							"onMinMove: 0-100 percent " + maxPercent + " min == > " + minPercent);
 				maxValue = maxValue - sp.getFloat(DYConstants.setting_correction, 0.0f);
 				minValue = minValue - sp.getFloat(DYConstants.setting_correction, 0.0f);
 				if (isDebug)
 					Log.e(TAG, "onMinMove: value == >" + maxValue + " min == > " + minValue);
 				if (mUvcCameraHandler != null && !Float.isNaN(maxValue) && !Float.isNaN(minValue))
-					mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent, maxValue, minValue);
+					mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent, maxValue,
+					 minValue);
 			}
 
 			@Override
-			public void onMaxMove (float maxPercent, float minPercent, float maxValue, float minValue) {
-				//				if (isDebug)Log.e(TAG, "onMaxMove: 0-100 percent" + maxPercent + " min == > " +  minPercent);
+			public void onMaxMove (float maxPercent, float minPercent, float maxValue,
+ float minValue) {
+				//				if (isDebug)Log.e(TAG, "onMaxMove: 0-100 percent" + maxPercent + "
+				//				min == > " +  minPercent);
 				maxValue = maxValue - sp.getFloat(DYConstants.setting_correction, 0.0f);
 				minValue = minValue - sp.getFloat(DYConstants.setting_correction, 0.0f);
 				if (isDebug)
 					Log.e(TAG, "onMaxMove: value == > " + maxValue + " min == > " + minValue);
 				// && maxValue != Float.NaN && minValue != Float.NaN
 				if (mUvcCameraHandler != null && !Float.isNaN(maxValue) && !Float.isNaN(minValue))
-					mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent, maxValue, minValue);
+					mUvcCameraHandler.seeKBarRangeSlided(maxPercent, minPercent, maxValue,
+					 minValue);
 			}
 		});
 
@@ -1261,7 +1427,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//是否进行温度的绘制
 		//	private int isWatermark;
 		int isTempShow = 0;
-		mUvcCameraHandler.tempShowOnOff(isTempShow);//是否显示绘制的温度 0不显示，1显示。最终调用的是UVCCameraTextureView的绘制线程。
+		mUvcCameraHandler.tempShowOnOff(isTempShow);//是否显示绘制的温度
+		// 0不显示，1显示。最终调用的是UVCCameraTextureView的绘制线程。
 
 		mUvcCameraHandler.startPreview(stt);
 		//tinyC 暂时关闭 温度回调功能
@@ -1294,32 +1461,53 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		Handler handler0 = new Handler();
 		defaultSettingReturn = -1;
 		if (DYTApplication.getRobotSingle() == DYTRobotSingle.S0_256_196) {
-			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_CORRECTION_DEFAULT_VALUE, DYConstants.SETTING_CORRECTION_INT), 0);
+			handler0.postDelayed(() -> defaultSettingReturn =
+ sendS0Order(DYConstants.SETTING_CORRECTION_DEFAULT_VALUE,
+DYConstants.SETTING_CORRECTION_INT), 0);
 
-			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE, DYConstants.SETTING_EMITTANCE_INT), 150);
-			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE, DYConstants.SETTING_HUMIDITY_INT), 300);
-			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE, DYConstants.SETTING_ENVIRONMENT_INT), 450);
-			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_REFLECT_DEFAULT_VALUE, DYConstants.SETTING_REFLECT_INT), 600);
+			handler0.postDelayed(() -> defaultSettingReturn =
+			 sendS0Order(DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE,
+					 DYConstants.SETTING_EMITTANCE_INT), 150);
+			handler0.postDelayed(() -> defaultSettingReturn =
+					sendS0Order(DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE,
+					 DYConstants.SETTING_HUMIDITY_INT), 300);
+			handler0.postDelayed(() -> defaultSettingReturn =
+ sendS0Order(DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE,
+					 DYConstants.SETTING_ENVIRONMENT_INT), 450);
+			handler0.postDelayed(() -> defaultSettingReturn =
+ sendS0Order(DYConstants.SETTING_REFLECT_DEFAULT_VALUE,
+			  DYConstants.SETTING_REFLECT_INT), 600);
 		} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
 			handler0.postDelayed(() -> {
-				//					result = sendS0Order(DYConstants.SETTING_CORRECTION_DEFAULT_VALUE,DYConstants.SETTING_CORRECTION_INT);
-				defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE, 3);
+				//					result = sendS0Order(DYConstants
+				//					.SETTING_CORRECTION_DEFAULT_VALUE,DYConstants
+				//					.SETTING_CORRECTION_INT);
+				defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,
+						DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE, 3);
 			}, 0);
 			//S0的湿度，对应大气透过率
 			//			handler0.postDelayed(new Runnable() {
 			//				@Override
 			//				public void run () {
-			//					//					result = sendS0Order(DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE,DYConstants.SETTING_HUMIDITY_INT);
-			//					defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE, 4);
+			//					//					result = sendS0Order(DYConstants
+			//					.SETTING_HUMIDITY_DEFAULT_VALUE,DYConstants.SETTING_HUMIDITY_INT);
+			//					defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera
+			//					.CTRL_ZOOM_ABS, DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE, 4);
 			//				}
 			//			}, 200);
 			handler0.postDelayed(() -> {
-				//					result = sendS0Order(DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE,DYConstants.SETTING_ENVIRONMENT_INT);
-				defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE, 2);
+				//					result = sendS0Order(DYConstants
+				//					.SETTING_ENVIRONMENT_DEFAULT_VALUE,DYConstants
+				//					.SETTING_ENVIRONMENT_INT);
+				defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,
+DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE, 2);
 			}, 400);
 			handler0.postDelayed(() -> {
-				//					result = sendS0Order(DYConstants.SETTING_REFLECT_DEFAULT_VALUE,DYConstants.SETTING_REFLECT_INT);
-				defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_REFLECT_DEFAULT_VALUE, 1);
+				//					result = sendS0Order(DYConstants
+				//					.SETTING_REFLECT_DEFAULT_VALUE,DYConstants
+				//					.SETTING_REFLECT_INT);
+				defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS,
+				 DYConstants.SETTING_REFLECT_DEFAULT_VALUE, 1);
 			}, 600);
 		}
 		return defaultSettingReturn;
@@ -1407,7 +1595,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			updateObj.setPackageName(appNameList[i]);
 			updateObjList.add(updateObj);
 		}
-		//									if (isDebug)Log.i(TAG, "run: =====AppVersionNameList====" + Arrays.toString(AppVersionNameList));
+		//									if (isDebug)Log.i(TAG, "run:
+		//									=====AppVersionNameList====" + Arrays.toString
+		//									(AppVersionNameList));
 		String[] appVersionCodeList = new String[appNameList.length];//保存app 版本号
 		//筛选最大 VersionCode 的index
 		int maxCode = 0;
@@ -1448,7 +1638,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 	@Override
 	protected void initView () {
 		Log.e(TAG, "----------FLAVOR------------ " + BuildConfig.FLAVOR);
-		if (BuildConfig.FLAVOR.equals(DYConstants.COMPANY_DYT)) {
+		if (BuildConfig.FLAVOR.equals(DYConstants.COMPANY_MTI448)) {
 			MTI448_relayout();
 		}
 
@@ -1512,9 +1702,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						Animation alpha = new AlphaAnimation(1, 0f);
 						alpha.setDuration(500);
 						alpha.setStartOffset(0);
-						//				Log.e(TAG, "onClick: ===============" + mDataBinding.ivPreviewLeftGallery.getX());
+						//				Log.e(TAG, "onClick: ===============" + mDataBinding
+						//				.ivPreviewLeftGallery.getX());
 						// 缩放动画
-						Animation scale1 = new ScaleAnimation(0.9f, 0f, 0.9f, 0f, Animation.ABSOLUTE, mDataBinding.ivPreviewLeftGallery.getX(), Animation.ABSOLUTE, (mDataBinding.ivPreviewLeftGallery.getY() + mDataBinding.ivPreviewLeftGallery.getHeight()));
+						Animation scale1 = new ScaleAnimation(0.9f, 0f, 0.9f, 0f,
+						 Animation.ABSOLUTE, mDataBinding.ivPreviewLeftGallery.getX(),
+						  Animation.ABSOLUTE,
+								(mDataBinding.ivPreviewLeftGallery.getY() + mDataBinding.ivPreviewLeftGallery.getHeight()));
 						scale1.setDuration(500);
 						scale1.setStartOffset(0);
 						//
@@ -1559,9 +1753,11 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING, 1).apply();
 
 			if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N) {
-				language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING, Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage());
+				language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING,
+						Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage());
 			} else {
-				language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING, Resources.getSystem().getConfiguration().locale.getLanguage());
+				language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING,
+						Resources.getSystem().getConfiguration().locale.getLanguage());
 			}
 			//语言的 索引下标
 			if (new Locale("zh").getLanguage().equals(language_local_str)) {
@@ -1582,8 +1778,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 				language_index = 7;
 			}
 		}
-		//		Log.e(TAG, "initView: ===============language_local_str==============" + language_local_str);
-		//		Log.e(TAG, "initView: ===============language_index==============" + language_index);
+		//		Log.e(TAG, "initView: ===============language_local_str==============" +
+		//		language_local_str);
+		//		Log.e(TAG, "initView: ===============language_index==============" +
+		//		language_index);
 		switch (language_index) {
 			case 0:
 				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 0).apply();
@@ -1640,10 +1838,14 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 				break;
 		}
 
-		highTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_high);
-		lowTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_low);
-		centerTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_center);
-		normalPointBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_main_preview_measuretemp_point);
+		highTempBt = BitmapFactory.decodeResource(getResources(),
+				R.mipmap.ic_higlowtemp_draw_widget_high);
+		lowTempBt = BitmapFactory.decodeResource(getResources(),
+R.mipmap.ic_higlowtemp_draw_widget_low);
+		centerTempBt = BitmapFactory.decodeResource(getResources(),
+		 R.mipmap.ic_higlowtemp_draw_widget_center);
+		normalPointBt = BitmapFactory.decodeResource(getResources(),
+		 R.mipmap.ic_main_preview_measuretemp_point);
 
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		screenWidth = dm.widthPixels;
@@ -1666,7 +1868,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 				if (all) {
 					mFontSize = FontUtils.adjustFontSize(screenWidth, screenHeight);
 
-					AssetCopyer.copyAllAssets(DYTApplication.getInstance(), mContext.get().getExternalFilesDir(null).getAbsolutePath());
+					AssetCopyer.copyAllAssets(DYTApplication.getInstance(),
+					 mContext.get().getExternalFilesDir(null).getAbsolutePath());
 					palettePath = mContext.get().getExternalFilesDir(null).getAbsolutePath();
 					CreateBitmap createBitmap = new CreateBitmap();
 					try {
@@ -1695,7 +1898,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 					mDataBinding.dragTempContainerPreviewActivity.setmSeekBar(mDataBinding.customSeekbarPreviewFragment);
 					mDataBinding.dragTempContainerPreviewActivity.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0));
 
-					mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null, mDataBinding.dragTempContainerPreviewActivity, 0);
+					mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(),
+							mDataBinding.textureViewPreviewActivity, 1, 384, 292, 1, null,
+					  mDataBinding.dragTempContainerPreviewActivity, 0);
 
 					mUsbMonitor = new USBMonitor(mContext.get(), onDeviceConnectListener);
 				} else {
@@ -1746,20 +1951,25 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			//			CrashReport.testJavaCrash();
 			//******************************testJNi***************************************
 			//			mUvcCameraHandler.testJNi(Build.MODEL);
-			//			Log.e(TAG, "initListener: " + mDataBinding.textureViewPreviewActivity.getTemperatureCallback());
+			//			Log.e(TAG, "initListener: " + mDataBinding.textureViewPreviewActivity
+			//			.getTemperatureCallback());
 			//******************************************如何打开PDF文档******************************
-			//			String MenuUrl = "/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/SLReadMeCN.pdf";
+			//			String MenuUrl = "/storage/emulated/0/Android/data/com.dyt.wcc
+			//			.dytpir/files/SLReadMeCN.pdf";
 			//			String googleUrl = "http://docs.google.com/gview?embedded=true&url=";
 			//			Log.d(TAG, googleUrl + MenuUrl);
-			//			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(googleUrl + MenuUrl));
+			//			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(googleUrl
+			//			+ MenuUrl));
 			//			startActivity(browserIntent);
 
 
-			//			File file = new File("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/SLReadMeCN.pdf");
+			//			File file = new File("/storage/emulated/0/Android/data/com.dyt.wcc
+			//			.dytpir/files/SLReadMeCN.pdf");
 			//
 			//			ParcelFileDescriptor pdfFile = null;
 			//			try {
-			//				pdfFile = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY); //以只读的方式打开文件
+			//				pdfFile = ParcelFileDescriptor.open(file, ParcelFileDescriptor
+			//				.MODE_READ_ONLY); //以只读的方式打开文件
 			//			} catch (FileNotFoundException e) {
 			//				e.printStackTrace();
 			//			}
@@ -1778,13 +1988,17 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			//			float width = wm.getDefaultDisplay().getWidth();
 			//			float height = wm.getDefaultDisplay().getHeight();
 			//
-			//			for (int i = 0; i < pageCount; i++) {//这里用循环把pdf所有的页面都写入bitmap数组，真正使用的时候最好不要这样，
+			//			for (int i = 0; i < pageCount; i++)
+			//			{//这里用循环把pdf所有的页面都写入bitmap数组，真正使用的时候最好不要这样，
 			//				//因为一本pdf的书会有很多页，一次性全部打开会非常消耗内存，我打开一本两百多页的书就消耗了1.8G的内存，而且打开速度很慢。
 			//				//真正使用的时候要采用动态加载，用户看到哪页才加载附近的几页。而且最好使用多线程在后台打开。
 			//
 			//				PdfRenderer.Page page = renderer.openPage(i);//根据i的变化打开每一页
-			//				bitmap_pdf = Bitmap.createBitmap((int) (width), (int) (page.getHeight() * width / page.getWidth()), Bitmap.Config.ARGB_8888);//根据屏幕的高宽缩放生成bmp对象
-			//				page.render(bitmap_pdf, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);//将pdf的内容写入bmp中
+			//				bitmap_pdf = Bitmap.createBitmap((int) (width), (int) (page.getHeight
+			//				() * width / page.getWidth()), Bitmap.Config.ARGB_8888);
+			// 根据屏幕的高宽缩放生成bmp对象
+			//				page.render(bitmap_pdf, null, null, PdfRenderer.Page
+			//				.RENDER_MODE_FOR_DISPLAY);//将pdf的内容写入bmp中
 			//
 			//				bitmaps[i] = bitmap_pdf;//将pdf的bmp图像存放进数组中。
 			//
@@ -1795,7 +2009,9 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			//			// close the renderer
 			//			renderer.close();
 			//			mDataBinding.ivPreviewPdf.setImageBitmap(bitmap_pdf);
-			//						startActivity(getPdfFileIntent("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/SLReadMeCN.pdf"));
+			//						startActivity(getPdfFileIntent
+			//						("/storage/emulated/0/Android/data/com.dyt.wcc
+			//						.dytpir/files/SLReadMeCN.pdf"));
 			//****************************动画开始*************************************
 			//读取一张图片到某个控件，然后把图片缩小 给相册这个按钮。透明度逐渐变低
 			//				Animator animator = new ObjectAnimator();
@@ -1804,7 +2020,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			//************************检测当前语言设置********************************
 			//				if (isDebug){
 			//					Log.e(TAG, "onClick: " + Locale.getDefault().getLanguage());
-			//					Log.e(TAG, "onClick: " + sp.getInt(DYConstants.LANGUAGE_SETTING,8));
+			//					Log.e(TAG, "onClick: " + sp.getInt(DYConstants.LANGUAGE_SETTING,
+			//					8));
 			//				}
 			//				boolean dd = false;
 			//				if (jni_status == 0) {
@@ -1832,16 +2049,21 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			tempUnitPosition = sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0);
 			mDataBinding.toggleHighTempAlarm.setSelected(!mDataBinding.toggleHighTempAlarm.isSelected());
 			if (mDataBinding.toggleHighTempAlarm.isSelected()) {
-				Log.e(TAG, "initListener: ========================tempUnitPosition================================" + tempUnitPosition);
+//				Log.e(TAG, "initListener: ========================tempUnitPosition" +
+//						"================================" + tempUnitPosition);
 				if (myNumberPicker == null) {
-					myNumberPicker = new MyNumberPicker(mContext.get(), sp.getFloat("overTemp", 0.0f), tempUnitPosition);
+					//设置背景色
+					myNumberPicker = new MyNumberPicker(mContext.get(), sp.getFloat("overTemp",
+0.0f), tempUnitPosition,getBackgroundColor());
 				} else {
 					myNumberPicker.setmType(tempUnitPosition);
 				}
+
 				myNumberPicker.setListener(new MyNumberPicker.SetCompleteListener() {
 					@Override
 					public void onSetComplete (float setValue) {
-						//							if (isDebug)Log.e(TAG, "onSetComplete: " + "confirm value = == > " + setValue  );
+						//							if (isDebug)Log.e(TAG, "onSetComplete: " +
+						//							"confirm value = == > " + setValue  );
 						mDataBinding.dragTempContainerPreviewActivity.openHighTempAlarm(setValue);
 						mDataBinding.textureViewPreviewActivity.startTempAlarm(setValue);
 						sp.edit().putFloat("overTemp", setValue).apply();
@@ -1866,7 +2088,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//切换色板
 		mDataBinding.ivPreviewLeftPalette.setOnClickListener(v -> {
 			//				if (PreviewActivity.this.isre()){
-			View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_palette_choice, null);
+			View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_palette_choice,
+					null);
 			PopPaletteChoiceBinding popPaletteChoice = DataBindingUtil.bind(view);
 			assert popPaletteChoice != null;
 			popPaletteChoice.paletteLayoutTiehong.setOnClickListener(paletteChoiceListener);
@@ -1875,8 +2098,15 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			popPaletteChoice.paletteLayoutHeire.setOnClickListener(paletteChoiceListener);
 			popPaletteChoice.paletteLayoutBaire.setOnClickListener(paletteChoiceListener);
 			popPaletteChoice.paletteLayoutLenglan.setOnClickListener(paletteChoiceListener);
-			PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-			PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+
+			//设置MTI448背景色
+			setViewBackgroundColor(popPaletteChoice.clPaletteContainer);
+
+			PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT,
+			 LinearLayout.LayoutParams.WRAP_CONTENT);
+
+			PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,
+			 View.MeasureSpec.UNSPECIFIED);
 			PLRPopupWindows.setHeight(mDataBinding.llContainerPreviewSeekbar.getHeight());
 			PLRPopupWindows.setWidth(mDataBinding.llContainerPreviewSeekbar.getWidth());
 
@@ -1884,15 +2114,20 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			PLRPopupWindows.setOutsideTouchable(true);
 			PLRPopupWindows.setTouchable(true);
 
-			//				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, 0, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			//				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,
+			//				0, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity
+			//				.CENTER);
 			//			if (oldRotation == 90 || oldRotation == 180) {
 			//				int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
-			//				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			//				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,
+			//				offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity
+			//				.CENTER);
 			//				PLRPopupWindows.getContentView().setRotation(180);
 			//			}
 			//			if (oldRotation == 0 || oldRotation == 270) {
 			int offsetX = 0;
-			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX,
+			 -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 			PLRPopupWindows.getContentView().setRotation(0);
 			//			}
 		});
@@ -1900,43 +2135,59 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//测温模式。绘制  温度模式 切换  弹窗
 		mDataBinding.ivPreviewRightTempMode.setOnClickListener(v -> {
 			//			if (isResumed()){
-			View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_temp_mode_choice, null);
+			View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_temp_mode_choice,
+			 null);
+
+			//设置MTI448背景色
+			setViewBackgroundColor(view.findViewById(R.id.cl_temp_mode_container));
+
 			PopTempModeChoiceBinding tempModeChoiceBinding = DataBindingUtil.bind(view);
 			assert tempModeChoiceBinding != null;
 			tempModeChoiceBinding.ivTempModeLine.setOnClickListener(tempModeCheckListener);
 			tempModeChoiceBinding.ivTempModePoint.setOnClickListener(tempModeCheckListener);
 			tempModeChoiceBinding.ivTempModeRectangle.setOnClickListener(tempModeCheckListener);
 
-			PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-			PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+			PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT,
+LinearLayout.LayoutParams.WRAP_CONTENT);
+			PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,
+					View.MeasureSpec.UNSPECIFIED);
 			PLRPopupWindows.setHeight(mDataBinding.llContainerPreviewSeekbar.getHeight());
 			PLRPopupWindows.setWidth(mDataBinding.llContainerPreviewSeekbar.getWidth());
 
 			PLRPopupWindows.setFocusable(false);
-			//				popupWindow.setBackgroundDrawable(getResources().getDrawable(R.mipmap.temp_mode_bg_tempback));
+			//				popupWindow.setBackgroundDrawable(getResources().getDrawable(R.mipmap
+			//				.temp_mode_bg_tempback));
 			PLRPopupWindows.setOutsideTouchable(true);
 			PLRPopupWindows.setTouchable(true);
 
 			//			if (oldRotation == 90 || oldRotation == 180) {
 			//				int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
-			//				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			//				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,
+			//				offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity
+			//				.CENTER);
 			//				PLRPopupWindows.getContentView().setRotation(180);
 			//			}
 			//			if (oldRotation == 0 || oldRotation == 270) {
 			int offsetX = 0;
-			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX,
+			 -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 			PLRPopupWindows.getContentView().setRotation(0);
 			//			}
-			//			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, 0, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			//			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, 0,
+			//			-mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 			//			}
 		});
 
 		//高低中心点温度追踪 弹窗
 		mDataBinding.toggleShowHighLowTemp.setOnCheckedChangeListener((buttonView, isChecked) -> {
 			//				if (isResumed()){
-			View view = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_highlowcenter_trace, null);
+			View view =
+LayoutInflater.from(mContext.get()).inflate(R.layout.pop_highlowcenter_trace, null);
 			PopHighlowcenterTraceBinding popHighlowcenterTraceBinding = DataBindingUtil.bind(view);
 			assert popHighlowcenterTraceBinding != null;
+			//设置背景色
+			setViewBackgroundColor(view);
+
 			popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceHigh.setOnCheckedChangeListener(highLowCenterCheckListener);
 			popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceLow.setOnCheckedChangeListener(highLowCenterCheckListener);
 			popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceCenter.setOnCheckedChangeListener(highLowCenterCheckListener);
@@ -1946,8 +2197,10 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceLow.setChecked((toggleState & 0x00f0) > 0);
 			popHighlowcenterTraceBinding.cbMainPreviewHighlowcenterTraceCenter.setChecked((toggleState & 0x000f) > 0);
 
-			PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-			PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+			PLRPopupWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT,
+					LinearLayout.LayoutParams.WRAP_CONTENT);
+			PLRPopupWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,
+					View.MeasureSpec.UNSPECIFIED);
 			PLRPopupWindows.setHeight(mDataBinding.llContainerPreviewSeekbar.getHeight());
 			PLRPopupWindows.setWidth(mDataBinding.llContainerPreviewSeekbar.getWidth());
 
@@ -1956,19 +2209,24 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			PLRPopupWindows.setTouchable(true);
 
 			//			if (oldRotation == 90 || oldRotation == 180) {
-			//				Log.e(TAG, "initListener: ===oldRotation == 90 || oldRotation == 180=====");
+			//				Log.e(TAG, "initListener: ===oldRotation == 90 || oldRotation ==
+			//				180=====");
 			//				int offsetX = -mDataBinding.llContainerPreviewSeekbar.getWidth();
-			//				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			//				PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar,
+			//				offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity
+			//				.CENTER);
 			//				PLRPopupWindows.getContentView().setRotation(180);
 			//			}
 			//			if (oldRotation == 0 || oldRotation == 270) {
 			Log.e(TAG, "initListener: oldRotation == 0 || oldRotation == 270===");
 			int offsetX = 0;
-			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX,
+			 -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 			PLRPopupWindows.getContentView().setRotation(0);
 			//			}
 
-			//			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, 0, -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+			//			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, 0,
+			//			-mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 
 			//				}
 		});
@@ -2055,7 +2313,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		//拍照按钮
 		mDataBinding.ivPreviewLeftTakePhoto.setOnClickListener(v -> {
 			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()) {
-				String picPath = Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
+				String picPath =
+				 Objects.requireNonNull(MediaMuxerWrapper.getCaptureFile(Environment.DIRECTORY_DCIM, ".jpg")).toString();
 				if (!isSavePhoto) {
 					isSavePhoto = true;
 					mUvcCameraHandler.captureStill(picPath);
@@ -2072,14 +2331,17 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		});
 		//录制 按钮
 		mDataBinding.btPreviewLeftRecord.setOnClickListener(v -> {
-			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()) {//mUvcCameraHandler.isOpened()
+			if (mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()) {
+				//mUvcCameraHandler.isOpened()
 				if (mDataBinding.btPreviewLeftRecord.isSelected() && mUvcCameraHandler.isRecording()) {//停止录制
 					stopTimer();
 					mUvcCameraHandler.stopRecording();
 				} else if (!mDataBinding.btPreviewLeftRecord.isSelected() && !mUvcCameraHandler.isRecording() && mUvcCameraHandler.snRightIsPreviewing()) {//开始录制
 					startTimer();
-					mUvcCameraHandler.startRecording(sp.getInt(DYConstants.RECORD_AUDIO_SETTING, 1));
-				}  //						if (isDebug)Log.e(TAG, "Record Error: error record state !");
+					mUvcCameraHandler.startRecording(sp.getInt(DYConstants.RECORD_AUDIO_SETTING,
+				1));
+				}  //						if (isDebug)Log.e(TAG, "Record Error: error record
+				// state !");
 
 				mDataBinding.btPreviewLeftRecord.setSelected(!mDataBinding.btPreviewLeftRecord.isSelected());
 			} else {
@@ -2098,7 +2360,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 				mUvcCameraHandler.close();
 				mUsbMonitor.unregister();
 				String fileProviderAuthority = BuildConfig.APPLICATION_ID + ".FileProvider";
-				EasyPhotos.createAlbum(PreviewActivity.this, false, false, GlideEngine.getInstance()).setFileProviderAuthority(fileProviderAuthority).setCount(1000).setVideo(true).setGif(false).start(101);
+				EasyPhotos.createAlbum(PreviewActivity.this, false, false,
+				 GlideEngine.getInstance()).setFileProviderAuthority(fileProviderAuthority).setCount(1000).setVideo(true).setGif(false).start(101);
 			}
 		});
 
@@ -2153,7 +2416,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 				case DYConstants.COMPANY_VICTOR://胜利
 					customizeCompany = new VictorCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
-					TextView victorTvDeviceType = view.findViewById(R.id.tv_about_devices_type_victor);
+					TextView victorTvDeviceType =
+					 view.findViewById(R.id.tv_about_devices_type_victor);
 
 					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
 						victorTvDeviceType.setText("VICTOR 328B");
@@ -2178,19 +2442,27 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 							companyPopWindows.dismiss();
 						}
 						if (!isRecording()) {
-							startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.qianli.PdfActivity.class));
+							startActivity(new Intent(PreviewActivity.this,
+									com.dyt.wcc.customize.qianli.PdfActivity.class));
 						}
 					});
 					break;
 				case DYConstants.COMPANY_TESLONG://泰视朗
 					customizeCompany = new TeslongCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
-					//					TextView teslongTvDeviceType = view.findViewById(R.id.tv_about_devices_type_votin);
+					//					TextView teslongTvDeviceType = view.findViewById(R.id
+					//					.tv_about_devices_type_votin);
 					//
-					//					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
+					//					if (mDataBinding.dragTempContainerPreviewActivity
+					//					.getFrameWidth() == 256 && mDataBinding
+					//					.dragTempContainerPreviewActivity.getFrameHeight() ==
+					//					192) {
 					//						teslongTvDeviceType.setText("TR256");
 					//					}
-					//					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 160 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 120) {
+					//					if (mDataBinding.dragTempContainerPreviewActivity
+					//					.getFrameWidth() == 160 && mDataBinding
+					//					.dragTempContainerPreviewActivity.getFrameHeight() ==
+					//					120) {
 					//						teslongTvDeviceType.setText("TR256");
 					//					}
 					break;
@@ -2202,7 +2474,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 					customizeCompany = new MileSeeYCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
 
-					TextView mileseeyTvDeviceType = view.findViewById(R.id.tv_about_devices_type_radifeel);
+					TextView mileseeyTvDeviceType =
+					 view.findViewById(R.id.tv_about_devices_type_radifeel);
 
 					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
 						mileseeyTvDeviceType.setText("TR256");
@@ -2223,7 +2496,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 							mUsbMonitor.unregister();
 						}
 						if (!isRecording()) {
-							startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.mailseey.PdfActivity.class));
+							startActivity(new Intent(PreviewActivity.this,
+							 com.dyt.wcc.customize.mailseey.PdfActivity.class));
 						}
 					});
 					break;
@@ -2246,14 +2520,16 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						if (checkRecording()) {
 							closeRecording();
 						}
-						startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.votin.PdfActivity.class));
+						startActivity(new Intent(PreviewActivity.this,
+								com.dyt.wcc.customize.votin.PdfActivity.class));
 					});
 					break;
 				case DYConstants.COMPANY_RADIFEEL://睿迪菲尔
 					customizeCompany = new RadiFeelCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
 
-					TextView radifelTvDeviceType = view.findViewById(R.id.tv_about_devices_type_radifeel);
+					TextView radifelTvDeviceType =
+					 view.findViewById(R.id.tv_about_devices_type_radifeel);
 
 					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
 						radifelTvDeviceType.setText("RF2");
@@ -2265,7 +2541,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 							companyPopWindows.dismiss();
 						}
 						//						if (checkRecording()){closeRecording();}
-						startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.radifeel.RadiFeelPdfActivity.class));
+						startActivity(new Intent(PreviewActivity.this,
+								com.dyt.wcc.customize.radifeel.RadiFeelPdfActivity.class));
 					});
 					break;
 				case DYConstants.COMPANY_HENXTECH://恒昕泰
@@ -2275,8 +2552,13 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						if (companyPopWindows != null && companyPopWindows.isShowing()) {
 							companyPopWindows.dismiss();
 						}
-						startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.henxtech.HenxtechUserManualActivity.class));
+						startActivity(new Intent(PreviewActivity.this,
+						 com.dyt.wcc.customize.henxtech.HenxtechUserManualActivity.class));
 					});
+					break;
+				case DYConstants.COMPANY_MTI448://MTI448
+					customizeCompany = new MTI448CompanyView();
+					view = customizeCompany.getCompanyView(mContext.get());
 					break;
 
 				default:
@@ -2314,14 +2596,22 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		mDataBinding.dragTempContainerPreviewActivity.setChildToolsClickListener(new MeasureTempContainerView.OnChildToolsClickListener() {
 			@Override
 			public void onChildToolsClick (MeasureEntity child, int position) {
-				//				if (isDebug)Log.e(TAG, "onChildToolsClick: ======preview tools position == > " + position);
+				//				if (isDebug)Log.e(TAG, "onChildToolsClick: ======preview tools
+				//				position == > " + position);
 				if (position == 0) {
 					mDataBinding.dragTempContainerPreviewActivity.deleteChildView(child);
 					//底层重新设置 矩形框的 数据
 					if (child.getType() == 3) {
-						//						mDataBinding.dragTempContainerPreviewActivity.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
-						int[] areaData = mDataBinding.dragTempContainerPreviewActivity.getAreaIntArray();
-						//						if (isDebug)Log.e(TAG, "onChildToolsClick: ======setArea data  == >" + Arrays.toString(areaData));
+						//						mDataBinding.dragTempContainerPreviewActivity
+						//						.openAreaCheck(mDataBinding
+						//						.textureViewPreviewFragment.getWidth(),
+						//						mDataBinding.textureViewPreviewFragment.getHeight
+						//						());
+						int[] areaData =
+								mDataBinding.dragTempContainerPreviewActivity.getAreaIntArray();
+						//						if (isDebug)Log.e(TAG, "onChildToolsClick:
+						//						======setArea data  == >" + Arrays.toString
+						//						(areaData));
 						if (areaData != null) {
 						} else {
 							areaData = new int[0];
@@ -2330,7 +2620,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 					}
 				} else {
 					//					if (isDebug)
-					//						if (isDebug)Log.e(TAG, "onChildToolsClick: " + position);
+					//						if (isDebug)Log.e(TAG, "onChildToolsClick: " +
+					//						position);
 					if (isDebug)
 						showToast("click position ");
 				}
@@ -2340,8 +2631,12 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			public void onRectChangedListener () {//移动框框之后刷新C层控件的设置
 				//				if (isDebug)Log.e(TAG, "onRectChangedListener:  ===== ");
 				if (mUvcCameraHandler != null && mUvcCameraHandler.isOpened()) {
-					//					mDataBinding.dragTempContainerPreviewActivity.openAreaCheck(mDataBinding.textureViewPreviewFragment.getWidth(),mDataBinding.textureViewPreviewFragment.getHeight());
-					int[] areaData = mDataBinding.dragTempContainerPreviewActivity.getAreaIntArray();
+					//					mDataBinding.dragTempContainerPreviewActivity
+					//					.openAreaCheck(mDataBinding.textureViewPreviewFragment
+					//					.getWidth(),mDataBinding.textureViewPreviewFragment
+					//					.getHeight());
+					int[] areaData =
+							mDataBinding.dragTempContainerPreviewActivity.getAreaIntArray();
 					if (areaData != null) {
 					} else {
 						areaData = new int[0];
@@ -2371,12 +2666,21 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		byte[] tempParams = mUvcCameraHandler.getTemperaturePara(128);
 		cameraParams = ByteUtilsCC.byte2Float(tempParams);
 		//		if (cameraParams != null){
-		sp.edit().putFloat(DYConstants.setting_correction, cameraParams.get(DYConstants.setting_correction) != null ? cameraParams.get(DYConstants.setting_correction) : 0.0f).apply();
-		sp.edit().putFloat(DYConstants.setting_emittance, cameraParams.get(DYConstants.setting_emittance)).apply();
-		sp.edit().putFloat(DYConstants.setting_distance, cameraParams.get(DYConstants.setting_distance)).apply();
-		sp.edit().putFloat(DYConstants.setting_reflect, cameraParams.get(DYConstants.setting_reflect) != null ? cameraParams.get(DYConstants.setting_reflect) : 0.0f).apply();
-		sp.edit().putFloat(DYConstants.setting_environment, cameraParams.get(DYConstants.setting_environment) != null ? cameraParams.get(DYConstants.setting_environment) : 0.0f).apply();
-		sp.edit().putFloat(DYConstants.setting_humidity, cameraParams.get(DYConstants.setting_humidity)).apply();
+		sp.edit().putFloat(DYConstants.setting_correction,
+				cameraParams.get(DYConstants.setting_correction) != null ?
+		  cameraParams.get(DYConstants.setting_correction) : 0.0f).apply();
+		sp.edit().putFloat(DYConstants.setting_emittance,
+				cameraParams.get(DYConstants.setting_emittance)).apply();
+		sp.edit().putFloat(DYConstants.setting_distance,
+		 cameraParams.get(DYConstants.setting_distance)).apply();
+		sp.edit().putFloat(DYConstants.setting_reflect,
+				cameraParams.get(DYConstants.setting_reflect) != null ?
+		  cameraParams.get(DYConstants.setting_reflect) : 0.0f).apply();
+		sp.edit().putFloat(DYConstants.setting_environment,
+		 cameraParams.get(DYConstants.setting_environment) != null ?
+				 cameraParams.get(DYConstants.setting_environment) : 0.0f).apply();
+		sp.edit().putFloat(DYConstants.setting_humidity,
+				cameraParams.get(DYConstants.setting_humidity)).apply();
 		//		}
 	}
 
@@ -2397,14 +2701,25 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			return;
 		}
 		//判断获取的参数是否是对的,否则再次请求。
-		cameraParams.put(DYConstants.setting_correction, sp.getFloat(DYConstants.setting_correction, 0.0f));
+		cameraParams.put(DYConstants.setting_correction,
+sp.getFloat(DYConstants.setting_correction, 0.0f));
 		if (cameraParams != null) {
-			sp.edit().putFloat(DYConstants.setting_correction, cameraParams.containsKey(DYConstants.setting_correction) ? cameraParams.get(DYConstants.setting_correction) : DYConstants.SETTING_CORRECTION_DEFAULT_VALUE).apply();
-			sp.edit().putFloat(DYConstants.setting_emittance, cameraParams.get(DYConstants.setting_emittance)).apply();
-			sp.edit().putFloat(DYConstants.setting_distance, cameraParams.get(DYConstants.setting_distance)).apply();
-			sp.edit().putFloat(DYConstants.setting_reflect, cameraParams.get(DYConstants.setting_reflect) != null ? cameraParams.get(DYConstants.setting_reflect) : 0.0f).apply();
-			sp.edit().putFloat(DYConstants.setting_environment, cameraParams.get(DYConstants.setting_environment) != null ? cameraParams.get(DYConstants.setting_environment) : 0.0f).apply();
-			sp.edit().putFloat(DYConstants.setting_humidity, cameraParams.get(DYConstants.setting_humidity)).apply();
+			sp.edit().putFloat(DYConstants.setting_correction,
+			 cameraParams.containsKey(DYConstants.setting_correction) ?
+					 cameraParams.get(DYConstants.setting_correction) :
+					 DYConstants.SETTING_CORRECTION_DEFAULT_VALUE).apply();
+			sp.edit().putFloat(DYConstants.setting_emittance,
+cameraParams.get(DYConstants.setting_emittance)).apply();
+			sp.edit().putFloat(DYConstants.setting_distance,
+			 cameraParams.get(DYConstants.setting_distance)).apply();
+			sp.edit().putFloat(DYConstants.setting_reflect,
+					cameraParams.get(DYConstants.setting_reflect) != null ?
+			  cameraParams.get(DYConstants.setting_reflect) : 0.0f).apply();
+			sp.edit().putFloat(DYConstants.setting_environment,
+					cameraParams.get(DYConstants.setting_environment) != null ?
+			  cameraParams.get(DYConstants.setting_environment) : 0.0f).apply();
+			sp.edit().putFloat(DYConstants.setting_humidity,
+			 cameraParams.get(DYConstants.setting_humidity)).apply();
 		}
 	}
 
@@ -2434,9 +2749,22 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		byte[] iputEm = new byte[4];
 		ByteUtil.putFloat(iputEm, value, 0);
 		if (mSendCommand != null && mUvcCameraHandler != null && mUvcCameraHandler.snRightIsPreviewing()) {
-			result = mSendCommand.sendFloatCommand(position, iputEm[0], iputEm[1], iputEm[2], iputEm[3], 20, 40, 60, 80, 120);
+			result = mSendCommand.sendFloatCommand(position, iputEm[0], iputEm[1], iputEm[2],
+					iputEm[3], 20, 40, 60, 80, 120);
 		}
 		return result;
+	}
+
+	private void setViewBackgroundColor (View view) {
+		view.setBackgroundColor(getBackgroundColor());
+	}
+
+	private int getBackgroundColor () {
+		if (BuildConfig.FLAVOR == DYConstants.COMPANY_MTI448) {
+			return getColor(R.color.base_bg_app_mti448);
+		} else {
+			return getColor(R.color.bg_preview_otg_unconnect);
+		}
 	}
 
 	/**
@@ -2445,8 +2773,18 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 	 * @param view
 	 */
 	private void showPopWindows (View view) {
-		companyPopWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-		companyPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+
+//		if (BuildConfig.FLAVOR == DYConstants.COMPANY_MTI448) {
+//			return R.color.base_bg_app_mti448;
+//		} else {
+//			return R.color.bg_preview_otg_unconnect;
+//		}
+		setViewBackgroundColor(view);
+
+		companyPopWindows = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT,
+		 LinearLayout.LayoutParams.WRAP_CONTENT);
+		companyPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED,
+				View.MeasureSpec.UNSPECIFIED);
 		companyPopWindows.setHeight(DensityUtil.dp2px(mContext.get(), BuildConfig.COMPANY_H));
 		//		companyPopWindows.setHeight(ConstraintLayout.LayoutParams);
 		companyPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
@@ -2456,15 +2794,20 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		companyPopWindows.setTouchable(true);
 
 		//		if (oldRotation == 90 || oldRotation == 180) {
-		//			//			if (isDebug)Log.e(TAG, "==================showPopWindows: 90 /180");
-		//			int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px(mContext.get(), 10);//
-		//			companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() + DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+		//			//			if (isDebug)Log.e(TAG, "==================showPopWindows: 90
+		//			/180");
+		//			int offsetX = -mDataBinding.clPreviewActivity.getWidth() + DensityUtil.dp2px
+		//			(mContext.get(), 10);//
+		//			companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,
+		//			-mDataBinding.clPreviewActivity.getHeight() + companyPopWindows.getHeight() +
+		//			DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
 		//			companyPopWindows.getContentView().setRotation(180);
 		//		}
 		//		if (oldRotation == 0 || oldRotation == 270) {
 		//			if (isDebug)Log.e(TAG, "============showPopWindows: 0 /270");
 		int offsetX = DensityUtil.dp2px(mContext.get(), 10);
-		companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX, -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+		companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,
+-companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
 		companyPopWindows.getContentView().setRotation(0);
 		//		}
 	}
@@ -2661,20 +3004,25 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		int psitionAndValue0 = 0, psitionAndValue1 = 0, psitionAndValue2 = 0, psitionAndValue3 = 0;
 		int result = -1;
 
-		public int sendFloatCommand (int position, byte value0, byte value1, byte value2, byte value3, int interval0, int interval1, int interval2, int interval3, int interval4) {
+		public int sendFloatCommand (int position, byte value0, byte value1, byte value2,
+ byte value3, int interval0, int interval1, int interval2, int interval3, int interval4) {
 			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
 			Handler handler0 = new Handler();
 
-			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0), interval0);
+			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS
+			, psitionAndValue0), interval0);
 
 			psitionAndValue1 = ((position + 1) << 8) | (0x000000ff & value1);
-			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue1), interval1);
+			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS
+ , psitionAndValue1), interval1);
 
 			psitionAndValue2 = ((position + 2) << 8) | (0x000000ff & value2);
-			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue2), interval2);
+			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS
+			, psitionAndValue2), interval2);
 
 			psitionAndValue3 = ((position + 3) << 8) | (0x000000ff & value3);
-			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue3), interval3);
+			handler0.postDelayed(() -> result = mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS
+					, psitionAndValue3), interval3);
 
 			handler0.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), interval4);
 
@@ -2687,13 +3035,16 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 			}
 		}
 
-		public void sendShortCommand (int position, byte value0, byte value1, int interval0, int interval1, int interval2) {
+		public void sendShortCommand (int position, byte value0, byte value1, int interval0,
+		 int interval1, int interval2) {
 			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
 			Handler handler0 = new Handler();
-			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0), interval0);
+			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS,
+			 psitionAndValue0), interval0);
 
 			psitionAndValue1 = ((position + 1) << 8) | (0x000000ff & value1);
-			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue1), interval1);
+			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS,
+			 psitionAndValue1), interval1);
 
 			handler0.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), interval2);
 		}
@@ -2701,7 +3052,8 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		public void sendByteCommand (int position, byte value0, int interval0) {
 			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
 			Handler handler0 = new Handler();
-			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS, psitionAndValue0), interval0);
+			handler0.postDelayed(() -> mUvcCameraHandler.setValue(UVCCamera.CTRL_ZOOM_ABS,
+					psitionAndValue0), interval0);
 			handler0.postDelayed(() -> mUvcCameraHandler.whenShutRefresh(), interval0 + 20);
 		}
 	}

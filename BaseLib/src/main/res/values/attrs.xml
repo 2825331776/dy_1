@@ -13,8 +13,8 @@
     <declare-styleable name="CircleDisplayView">
         <!--  borderColor 边框 颜色  -->
         <attr name="isSelect" format="boolean" />
-        <attr name="selected_borderColor" format="color|reference"/>
-        <attr name="selected_border_StrokeWidth" format="integer" />
+        <attr name="select_borderColor" format="color|reference"/>
+        <attr name="select_border_StrokeWidth" format="integer" />
         <attr name="default_borderColor" format="color|reference" />
         <attr name="default_Bitmap" format="integer|reference"/>
         <attr name="contentType" format="integer">

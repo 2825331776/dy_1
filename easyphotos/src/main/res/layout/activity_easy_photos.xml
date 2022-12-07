@@ -11,16 +11,16 @@
 <!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
 <!--    xmlns:tools="http://schemas.android.com/tools"-->
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_gallery_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FF071132"
+        android:background="#FF6E6F6D"
         tools:context="com.huantansheng.easyphotos.ui.EasyPhotosActivity">
 
         <View
             android:id="@+id/m_tool_bar"
             android:layout_width="0dp"
             android:layout_height="@dimen/dimen_40dp"
-            android:background="#FF071132"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -242,7 +242,7 @@
             android:id="@+id/m_tool_bar_bottom_line"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:background="@color/easy_photos_bar_primary_dark"
+            android:background="@color/white"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/m_tool_bar" />

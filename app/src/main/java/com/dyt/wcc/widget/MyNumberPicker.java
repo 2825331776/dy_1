@@ -11,14 +11,15 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.dyt.wcc.R;
 import com.dyt.wcc.common.utils.TempConvertUtils;
 import com.dyt.wcc.common.widget.NumberPickerView;
 import com.dyt.wcc.common.widget.dragView.MeasureTempContainerView;
-import com.dyt.wcc.R;
 
 import java.lang.reflect.Field;
 
@@ -42,10 +43,15 @@ public class MyNumberPicker extends DialogFragment implements NumberPickerView.O
 	private              int                 mType = 0; // 温度的类型 ： 0 摄氏度， 1 华氏度， 2 开氏度
 	private              SetCompleteListener mListener;
 	private              TextView            tv_unit;
+	//整体布局 用于设置背景色
+	private ConstraintLayout numberPickContainer;
 
 	private String[] ranges = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+	private int bgColor;
 
-	public MyNumberPicker (@NonNull Context context, float oldValue, int type) {
+	public MyNumberPicker (@NonNull Context context, float oldValue, int type, int color) {
+		bgColor = color;
+		Log.e(TAG, "MyNumberPicker: constructor -----------------");
 		if (type < MeasureTempContainerView.tempSuffixList.length) {
 			this.mType = type;
 		} else {
@@ -133,17 +139,23 @@ public class MyNumberPicker extends DialogFragment implements NumberPickerView.O
 	@Override
 	public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.pop_overtemp_alarm, container, false);
+
+		Log.e(TAG, "MyNumberPicker: onCreateView -----------------");
 		//		if (rotation) {
 		//			view.setRotation(180);
 		//		} else {
 		//			view.setRotation(0);
 		//		}
 		initView(view);
+		numberPickContainer.setBackgroundColor(bgColor);
 		initData();
 		return view;
 	}
 
+
 	private void initView (@NonNull View view) {
+		Log.e(TAG, "MyNumberPicker: initView -----------------");
+		numberPickContainer = view.findViewById(R.id.cl_number_pick_container);
 		numberPickerView_hundreds = view.findViewById(R.id.numberPicker_hundreds_main_preview_overTemp_pop);
 		numberPickerView_decade = view.findViewById(R.id.numberPicker_decade_main_preview_overTemp_pop);
 		numberPickerView_unit = view.findViewById(R.id.numberPicker_unit_main_preview_overTemp_pop);

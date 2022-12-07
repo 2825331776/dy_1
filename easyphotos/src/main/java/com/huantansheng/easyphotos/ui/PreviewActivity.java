@@ -43,8 +43,11 @@ import com.huantansheng.easyphotos.setting.Setting;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import cn.forward.androids.utils.ImageUtils;
 import cn.forward.androids.utils.Util;
@@ -194,8 +197,7 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 			public void onSaved (IDoodle doodle, Bitmap doodleBitmap, Runnable callback) {
 				File doodleFile = null;
 				File file = null;
-				String savePath = photoClick.path.replace(".jpg",
-						"_doodle_" + ((int) (Math.random() * 1000)) + ".jpg");
+				String savePath = getDoodlePath(photoClick.path,".jpg");
 				if (!TextUtils.isEmpty(savePath)) {
 					file = new File(savePath);
 					doodleFile = file.getParentFile();
@@ -229,7 +231,7 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 
 		//初始化 返回按钮监听器
 		mDataBinding.ivPreviewBack.setOnClickListener(v -> {
-		finish();
+			finish();
 
 		});
 		//判别 内容是 图片还是 视频
@@ -266,6 +268,32 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 	private void onError (int i, String msg) {
 		setResult(RESULT_ERROR);
 		finish();
+	}
+
+	/**
+	 * 获取 涂鸦的新生成文件的 全路径名及其 文件名,不包含文件结尾后缀
+	 */
+	public static String getDoodlePath(String oldPath, String suffix) {
+		String doodlePath = null;
+
+		if (oldPath != null) {
+			String oldName = null;//不包含 结尾反斜杠,也不包含后缀
+			String oldDirPath = null;//不包含 结尾反斜杠
+			int lastIndex = oldPath.lastIndexOf('/');
+			oldDirPath = oldPath.substring(0, lastIndex);
+			oldName = oldPath.substring(lastIndex + 1);
+
+			oldName = oldName.replace(".jpg", "");
+
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss",
+					Locale.getDefault());
+			String imageName = "%s_doodle_Old%s.jpg";
+			String newName = String.format(imageName, dateFormat.format(new Date()), oldName);
+
+			doodlePath = oldDirPath + "/" + newName + suffix;
+
+		}
+		return doodlePath;
 	}
 
 	/**

@@ -51,7 +51,7 @@ public class PenpointDIASelectorView extends View /*implements ScrollView */ {
 	@ColorInt
 	private final int DEFAULT_ITEM_BORDER_COLOR        = Color.WHITE;//默认item 边框颜色
 	@ColorInt
-	private final int DEFAULT_ITEM_BORDER_COLOR_SELECT = Color.RED;//默认item 边框颜色
+	private final int DEFAULT_ITEM_BORDER_COLOR_SELECT = Color.BLUE;//默认item 边框颜色
 	@ColorInt
 	private final int DEFAULT_ITEM_FILL_COLOR          = Color.WHITE;//默认item 填充颜色
 
@@ -197,7 +197,7 @@ public class PenpointDIASelectorView extends View /*implements ScrollView */ {
 				//				canvas.save();
 				//				canvas.scale(1.1f, 1.1f);
 				//外圈
-				borderPaint.setColor(Color.RED);
+				borderPaint.setColor(Color.BLUE);
 				canvas.drawCircle(firstItemX, firstItemY, itemRadius, borderPaint);
 				//画圈
 				contentPaint.setStrokeWidth(breakLineSize);

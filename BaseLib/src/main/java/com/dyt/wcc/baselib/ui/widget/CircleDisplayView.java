@@ -11,6 +11,7 @@ import android.graphics.RectF;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.annotation.ColorInt;
@@ -46,11 +47,11 @@ public class CircleDisplayView extends androidx.appcompat.widget.AppCompatImageB
 	/**
 	 * 默认 边框颜色
 	 */
-	private final int DEFAULT_BORDER_COLOR        = Color.BLACK;
+	private final int DEFAULT_BORDER_COLOR        = Color.WHITE;
 	/**
 	 * 默认 边框 选中颜色
 	 */
-	private final int DEFAULT_BORDER_COLOR_SELECT = Color.RED;
+	private final int DEFAULT_BORDER_COLOR_SELECT = Color.BLUE;
 
 	private final int DEFAULT_BORDER_STROKE_WIDTH = 3;
 
@@ -129,21 +130,27 @@ public class CircleDisplayView extends androidx.appcompat.widget.AppCompatImageB
 	}
 
 	private void initAttrs (Context context, AttributeSet attrs) {
-		TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.CircleDisplayView);
+		TypedArray typedArray = context.obtainStyledAttributes(attrs,
+				R.styleable.CircleDisplayView);
 		int type = typedArray.getInt(R.styleable.CircleDisplayView_contentType, 0);
 
 		mContentType = (type == 0) ? CirCleImageType.COLOR : CirCleImageType.BITMAP;
 		//获取边框颜色 及 选中颜色
-		borderColorSelect = typedArray.getColor(R.styleable.CircleDisplayView_default_borderColor, DEFAULT_BORDER_COLOR_SELECT);
-		borderColor = typedArray.getColor(R.styleable.CircleDisplayView_default_borderColor, DEFAULT_BORDER_COLOR);
+		borderColorSelect = typedArray.getColor(R.styleable.CircleDisplayView_select_borderColor,
+				DEFAULT_BORDER_COLOR_SELECT);
+		borderColor = typedArray.getColor(R.styleable.CircleDisplayView_default_borderColor,
+				DEFAULT_BORDER_COLOR);
 		//获取画笔 边框的宽度
-		mBorderStrokeWidth = typedArray.getInt(R.styleable.CircleDisplayView_selected_border_StrokeWidth, DEFAULT_BORDER_STROKE_WIDTH);
+		mBorderStrokeWidth =
+				typedArray.getInt(R.styleable.CircleDisplayView_select_border_StrokeWidth,
+						DEFAULT_BORDER_STROKE_WIDTH);
 
 		selected = typedArray.getBoolean(R.styleable.CircleDisplayView_isSelect, false);
 
 		if (mContentType != CirCleImageType.COLOR) {
 			needReDrawBitmap = true;
-			mContentData = typedArray.getResourceId(R.styleable.CircleDisplayView_default_Bitmap, 0);
+			mContentData = typedArray.getResourceId(R.styleable.CircleDisplayView_default_Bitmap,
+					0);
 		} else {
 			mContentData = Color.BLACK;
 		}
@@ -163,7 +170,6 @@ public class CircleDisplayView extends androidx.appcompat.widget.AppCompatImageB
 		bitmapContent = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
 		rectFContent = new RectF();
 	}
-
 
 
 	//------------------业务逻辑-------------------------
@@ -195,6 +201,7 @@ public class CircleDisplayView extends androidx.appcompat.widget.AppCompatImageB
 		} else {
 			paintBorder.setColor(borderColor);
 		}
+
 		mMeasureWidth = getMeasuredWidth();
 		mMeasureHeight = getMeasuredHeight();
 		rectFContent.set(0, 0, mMeasureWidth, mMeasureHeight);
@@ -215,7 +222,8 @@ public class CircleDisplayView extends androidx.appcompat.widget.AppCompatImageB
 				bitmapContent = null;
 			}
 		}
-		bitmapContent = Bitmap.createBitmap(mMeasureWidth, mMeasureHeight, Bitmap.Config.ARGB_8888);
+		bitmapContent = Bitmap.createBitmap(mMeasureWidth, mMeasureHeight,
+				Bitmap.Config.ARGB_8888);
 
 		Canvas canvas = new Canvas(bitmapContent);
 
@@ -237,14 +245,20 @@ public class CircleDisplayView extends androidx.appcompat.widget.AppCompatImageB
 
 		//draw border
 		if (selected) {
-			canvas.drawCircle(mMeasureWidth / 2.0f, mMeasureHeight / 2.0f, borderRadius, paintBorder);
+			paintBorder.setColor(borderColorSelect);
+		} else {
+			paintBorder.setColor(borderColor);
 		}
+		Log.e(TAG, "onDraw: ----------------paintBorder--------selected------" + selected);
+		Log.e(TAG, "onDraw: ---------------------paintBorder--------------" + borderRadius+" 对象： " +this);
+		canvas.drawCircle(mMeasureWidth / 2.0f, mMeasureHeight / 2.0f, borderRadius, paintBorder);
 
 		//draw content
 		if (mContentType == CirCleImageType.COLOR) {
 			paintContent.setColor(mContentData);
 			paintContent.setStyle(Paint.Style.FILL);
-			canvas.drawCircle(mMeasureWidth / 2.0f, mMeasureHeight / 2.0f, contentRadius, paintContent);
+			canvas.drawCircle(mMeasureWidth / 2.0f, mMeasureHeight / 2.0f, contentRadius,
+					paintContent);
 		} else {
 			paintContent.setStyle(Paint.Style.STROKE);
 			paintContent.setStrokeWidth(DEFAULT_BORDER_STROKE_WIDTH);
