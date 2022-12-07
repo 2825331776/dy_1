@@ -11,7 +11,6 @@ import android.graphics.RectF;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.annotation.ColorInt;
@@ -249,8 +248,8 @@ public class CircleDisplayView extends androidx.appcompat.widget.AppCompatImageB
 		} else {
 			paintBorder.setColor(borderColor);
 		}
-		Log.e(TAG, "onDraw: ----------------paintBorder--------selected------" + selected);
-		Log.e(TAG, "onDraw: ---------------------paintBorder--------------" + borderRadius+" 对象： " +this);
+//		Log.e(TAG, "onDraw: ----------------paintBorder--------selected------" + selected);
+//		Log.e(TAG, "onDraw: ---------------------paintBorder--------------" + borderRadius+" 对象： " +this);
 		canvas.drawCircle(mMeasureWidth / 2.0f, mMeasureHeight / 2.0f, borderRadius, paintBorder);
 
 		//draw content

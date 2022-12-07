@@ -195,9 +195,11 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 		mDataBinding.doodleView.setDoodleListener(new IDoodleListener() {
 			@Override
 			public void onSaved (IDoodle doodle, Bitmap doodleBitmap, Runnable callback) {
+				Log.e("TAG", "onSaved: ---previewActivity--------");
 				File doodleFile = null;
 				File file = null;
-				String savePath = getDoodlePath(photoClick.path,".jpg");
+				String savePath = photoClick.path.replace(".jpg",
+						((int) (Math.random() * 1000)) + ".jpg");
 				if (!TextUtils.isEmpty(savePath)) {
 					file = new File(savePath);
 					doodleFile = file.getParentFile();
@@ -210,6 +212,7 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 					outputStream = new FileOutputStream(file);
 					doodleBitmap.compress(Bitmap.CompressFormat.JPEG, 95, outputStream);
 					ImageUtils.addImage(getContentResolver(), file.getAbsolutePath());
+					Log.e("TAG", "onSaved: -----------PreviewActivity" + "--------------111---");
 					Intent intent = new Intent();
 					intent.putExtra(KEY_IMAGE_PATH, file.getAbsolutePath());
 					setResult(Activity.RESULT_OK, intent);
@@ -272,24 +275,24 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 	/**
 	 * 获取 涂鸦的新生成文件的 全路径名及其 文件名,不包含文件结尾后缀
 	 */
-	public static String getDoodlePath(String oldPath, String suffix) {
+	public static String getDoodlePath (String oldPath) {
 		String doodlePath = null;
 
 		if (oldPath != null) {
-			String oldName = null;//不包含 结尾反斜杠,也不包含后缀
+			//			String oldName = null;//不包含 结尾反斜杠,也不包含后缀
 			String oldDirPath = null;//不包含 结尾反斜杠
 			int lastIndex = oldPath.lastIndexOf('/');
 			oldDirPath = oldPath.substring(0, lastIndex);
-			oldName = oldPath.substring(lastIndex + 1);
+			//			oldName = oldPath.substring(lastIndex + 1);
 
-			oldName = oldName.replace(".jpg", "");
+			//			oldName = oldName.replace(".jpg", "");
 
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss",
 					Locale.getDefault());
-			String imageName = "%s_doodle_Old%s.jpg";
-			String newName = String.format(imageName, dateFormat.format(new Date()), oldName);
+			String imageName = "%s_doodle.jpg";
+			String newName = String.format(imageName, dateFormat.format(new Date()));
 
-			doodlePath = oldDirPath + "/" + newName + suffix;
+			doodlePath = oldDirPath + "/" + newName;
 
 		}
 		return doodlePath;
@@ -528,7 +531,8 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 				public void onColorChanged (ColorSliderView picker, int color, float percent) {
 					mDataBinding.circlePalette.setColor(color,
 							CircleDisplayView.CirCleImageType.COLOR);
-					Log.e("TAG", "onColorChanged: ======色板选择器 百分比============" + percent);
+					//					Log.e("TAG", "onColorChanged: ======色板选择器 百分比============"
+					//					+ percent);
 					//设置 画笔 或 文字的 值
 					if (type_palette_character == 0) {
 						doodlePercent = percent;
@@ -568,20 +572,37 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 			//左上角  顶部 退出按钮
 			mDataBinding.ivToolsExit.setOnClickListener(v -> {
 
+//				mDataBinding.doodleView.setGestureRecognitionAble(false);
+//
+//				//顶部状态栏变化
+//				mDataBinding.llActionbarNormal.setVisibility(View.VISIBLE);
+//				mDataBinding.clActionbarGestureBack.setVisibility(View.GONE);
+//				mDataBinding.llDoodleRedoDoContainer.setVisibility(View.GONE);
+//				mDataBinding.circleCharacterSize.setSelected(false);
+//				mDataBinding.circlePalette.setSelected(false);
+//				mDataBinding.ivDetailToolsDoodle.setSelected(false);
+//				mDataBinding.ivDetailToolsCharacter.setSelected(false);
+//
+//				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.INVISIBLE);
+//
+//
+//				mDataBinding.doodleView.save();
+
 				mDataBinding.doodleView.setGestureRecognitionAble(false);
 
 				mDataBinding.doodleView.save();
+
 				//顶部状态栏变化
 				mDataBinding.llActionbarNormal.setVisibility(View.VISIBLE);
 				mDataBinding.clActionbarGestureBack.setVisibility(View.GONE);
 				mDataBinding.llDoodleRedoDoContainer.setVisibility(View.GONE);
+
 				mDataBinding.circleCharacterSize.setSelected(false);
 				mDataBinding.circlePalette.setSelected(false);
 				mDataBinding.ivDetailToolsDoodle.setSelected(false);
 				mDataBinding.ivDetailToolsCharacter.setSelected(false);
 
 				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.INVISIBLE);
-
 
 			});
 		}
@@ -621,9 +642,6 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 		}, v -> {
 			//todo cancel operate
 		});
-		//		if (doodleText == null) {
-		//			mSettingsPanel.removeCallbacks(mHideDelayRunnable);
-		//		}
 	}
 
 

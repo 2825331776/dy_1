@@ -193,13 +193,13 @@ public class ColorSliderView extends View {
 
 		int width, height;
 
-		if (widthMode == MeasureSpec.AT_MOST) { //AT_MOST->wrap_content
-			Log.e(TAG, "onMeasure: AT_MOST");
-		} else if (widthMode == MeasureSpec.EXACTLY) {// 60dp->2次，0dp->四次,match_parent->2次
-			Log.e(TAG, "onMeasure: EXACTLY");
-		} else if (widthMode == MeasureSpec.UNSPECIFIED) {
-			Log.e(TAG, "onMeasure: UNSPECIFIED");
-		}
+//		if (widthMode == MeasureSpec.AT_MOST) { //AT_MOST->wrap_content
+//			Log.e(TAG, "onMeasure: AT_MOST");
+//		} else if (widthMode == MeasureSpec.EXACTLY) {// 60dp->2次，0dp->四次,match_parent->2次
+//			Log.e(TAG, "onMeasure: EXACTLY");
+//		} else if (widthMode == MeasureSpec.UNSPECIFIED) {
+//			Log.e(TAG, "onMeasure: UNSPECIFIED");
+//		}
 
 		if (widthMode == MeasureSpec.EXACTLY) { //AT_MOST->wrap_content
 			width = widthSize;
@@ -218,7 +218,7 @@ public class ColorSliderView extends View {
 		height = Math.max(height, (orientation == Orientation.HORIZONTAL) ? defaultSizeShort :
 				defaultSizeLong);
 
-		Log.e(TAG, "onMeasure: width ==>" + width + " height ==> " + height);
+//		Log.e(TAG, "onMeasure: width ==>" + width + " height ==> " + height);
 
 		setMeasuredDimension(width, height);
 		//		super.onMeasure(widthMeasureSpec, heightMeasureSpec);

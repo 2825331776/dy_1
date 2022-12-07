@@ -116,7 +116,7 @@ public class DoodleColor implements IDoodleColor {
 		if (mColorType == ColorType.COLOR) {
 			paint.setColor(mColor);
 			paint.setShader(null);
-			Log.e("TAG", "---------------------------config: ------------color-----------");
+//			Log.e("TAG", "---------------------------config: ------------color-----------");
 		} else if (mColorType == ColorType.BITMAP) {
 			BitmapShader shader = new BitmapShader(mBitmap, mTileX, mTileY);
 			shader.setLocalMatrix(mMatrix);

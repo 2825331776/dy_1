@@ -423,6 +423,7 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 		//        super.onActivityResult(requestCode, resultCode, data);
 
 		if (requestCode == Code.REQUEST_SETTING_APP_DETAILS) {
+			Log.e(TAG, "onActivityResult: ---------Code.REQUEST_SETTING_APP_DETAILS-----");
 			if (PermissionUtil.checkAndRequestPermissionsInActivity(this, getNeedPermissions())) {
 				hasPermissions();
 			} else {
@@ -430,7 +431,9 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 			}
 			return;
 		}
+		Log.e(TAG, "onActivityResult: -----------resultCode------"+resultCode);
 		switch (resultCode) {
+
 			case RESULT_OK:
 				if (Code.REQUEST_CAMERA == requestCode) {
 					Log.e(TAG, "onActivityResult: --------request code ====request_camera");
@@ -469,8 +472,6 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 				if (Code.REQUEST_PUZZLE_SELECTOR == requestCode) {
 					Log.e(TAG,
 							"onActivityResult: -----request code--111----" + Code.REQUEST_PREVIEW_ACTIVITY);
-
-
 						Photo puzzlePhoto = data.getParcelableExtra(EasyPhotos.RESULT_PHOTOS);
 					addNewPhoto(puzzlePhoto);
 					return;

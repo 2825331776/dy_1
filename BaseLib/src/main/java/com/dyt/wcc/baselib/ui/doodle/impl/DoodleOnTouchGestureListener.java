@@ -181,7 +181,7 @@ public class DoodleOnTouchGestureListener extends TouchGestureDetector.OnTouchGe
 
 	@Override
 	public boolean onScroll (MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		Log.e(TAG, "---------------onScroll:----------- ");
+//		Log.e(TAG, "---------------onScroll:----------- ");
 		mLastTouchX = mTouchX;
 		mLastTouchY = mTouchY;
 		mTouchX = e2.getX();

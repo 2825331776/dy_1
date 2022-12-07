@@ -2,6 +2,7 @@ package com.dyt.wcc.baselib.ui.doodle.util;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
@@ -9,12 +10,15 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.dyt.wcc.baselib.R;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.forward.androids.utils.StatusBarUtil;
 
@@ -107,6 +111,9 @@ public class DialogController {
         dialog.show();
 
         ViewGroup container = (ViewGroup) View.inflate(activity, R.layout.doodle_create_text, null);
+
+
+
         container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,6 +153,19 @@ public class DialogController {
             }
         });
         textView.setText(text == null ? "" : text);
+        //设置默认弹出 输入法
+        textView.setFocusable(true);
+        textView.requestFocus();
+
+        Timer timer = new Timer(); //设置定时器
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() { //弹出软键盘的代码
+                InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(textView, InputMethodManager.RESULT_SHOWN);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+            }
+        }, 300);
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
