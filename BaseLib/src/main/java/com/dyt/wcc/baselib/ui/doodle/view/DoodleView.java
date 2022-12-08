@@ -177,7 +177,7 @@ public class DoodleView extends FrameLayout implements IDoodle {
 		initDefaultView(context);
 
 	}
-	public final static int    DEFAULT_BITMAP            = R.drawable.background_bitmap;
+	public final static int    DEFAULT_BITMAP            = R.drawable.doodle_imageselector_image_selected;
 	/**
 	 * 默认初始化的 变量
 	 *

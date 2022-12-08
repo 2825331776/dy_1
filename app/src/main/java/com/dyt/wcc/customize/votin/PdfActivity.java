@@ -48,7 +48,7 @@ public class PdfActivity extends BaseActivity<ActivityPdfBinding> {
 		((PDFPagerAdapter) mDataBinding.pdfViewPager.getAdapter()).close();
 	}
 
-	final String[] sampleAssets = {"VOTINReadmeCN.pdf", "VOTINReadmeEN.pdf"};
+	final String[] sampleAssets = {"VOTINReadmeCNV2.pdf", "VOTINReadmeENV2.pdf"};
 	File pdfFolder;
 
 	private int pdfCurrentIndex = 0;
@@ -111,10 +111,10 @@ public class PdfActivity extends BaseActivity<ActivityPdfBinding> {
 	}
 
 	protected String getPdfPathOnSDCard () {
-		fileName = "VOTINReadmeCN.pdf";
+		fileName = "VOTINReadmeCNV2.pdf";
 		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
 		if (sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0) == 1) {
-			fileName = "VOTINReadmeEN.pdf";
+			fileName = "VOTINReadmeENV2.pdf";
 		}
 //		mDataBinding.tvTitlePdf.setText(R.string.pdf_title);
 		File f = new File(pdfFolder, fileName);
