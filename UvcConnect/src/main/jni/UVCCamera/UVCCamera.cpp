@@ -82,7 +82,10 @@ UVCCamera::UVCCamera()
  */
 UVCCamera::~UVCCamera() {
     ENTER();
-    release();
+    if (mPreview && mDeviceHandle){
+        release();
+    }
+
     if (mContext) {
         uvc_exit(mContext);
         mContext = NULL;
@@ -244,15 +247,15 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
 int UVCCamera::release() {
     ENTER();
 //    stopPreview();//拔出 相机、切换语言 出现闪退问题。
+    SAFE_DELETE(mPreview);
+    LOGE("UVCCamera::release() 0");
     // 相机关闭过程
     if (LIKELY(mDeviceHandle)) {
         MARK("如果相机是打开的，请打开它。");
         // 丢弃状态回调对象
         //丢弃预览对象
-        LOGE("UVCCamera::release() 0");
-//		SAFE_DELETE(mFrameImage);
-
         LOGE("UVCCamera::release() 1");
+
         // 相机close
        uvc_close(mDeviceHandle);
         LOGE("UVCCamera::release() 2");
@@ -276,7 +279,7 @@ int UVCCamera::release() {
 
         mUsbFs = NULL;
     }
-    SAFE_DELETE(mPreview);
+
     LOGE("UVCCamera::release() 7");
     // 清除相机功能标志
     LOGE("UVCCamera::release() 8");

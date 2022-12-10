@@ -174,6 +174,11 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 		characterPercent = sp.getFloat(DRAW_TEXT_PALETTE_PERCENT, 1f);
 		characterSizeIndex = sp.getInt(DRAW_TEXT_PAINT_SIZE_INDEX, 0);
 		characterPaintSize = sp.getInt(DRAW_TEXT_PAINT_SIZE, 40);
+
+		//初始化 返回按钮监听器
+		mDataBinding.ivPreviewBack.setOnClickListener(v -> {
+			finish();
+		});
 	}
 
 	@Override
@@ -195,11 +200,10 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 		mDataBinding.doodleView.setDoodleListener(new IDoodleListener() {
 			@Override
 			public void onSaved (IDoodle doodle, Bitmap doodleBitmap, Runnable callback) {
-				Log.e("TAG", "onSaved: ---previewActivity--------");
+//				Log.e("TAG", "onSaved: ---previewActivity--------");
 				File doodleFile = null;
 				File file = null;
-				String savePath = photoClick.path.replace(".jpg",
-						((int) (Math.random() * 1000)) + ".jpg");
+				String savePath = getDoodlePath(photoClick.path);
 				if (!TextUtils.isEmpty(savePath)) {
 					file = new File(savePath);
 					doodleFile = file.getParentFile();
@@ -210,9 +214,11 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 				FileOutputStream outputStream = null;
 				try {
 					outputStream = new FileOutputStream(file);
-					doodleBitmap.compress(Bitmap.CompressFormat.JPEG, 95, outputStream);
+					if (doodleBitmap !=null){
+						doodleBitmap.compress(Bitmap.CompressFormat.JPEG, 95, outputStream);
+					}
 					ImageUtils.addImage(getContentResolver(), file.getAbsolutePath());
-					Log.e("TAG", "onSaved: -----------PreviewActivity" + "--------------111---");
+//					Log.e("TAG", "onSaved: -----------PreviewActivity" + "--------------111---");
 					Intent intent = new Intent();
 					intent.putExtra(KEY_IMAGE_PATH, file.getAbsolutePath());
 					setResult(Activity.RESULT_OK, intent);
@@ -232,10 +238,7 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 			}
 		});
 
-		//初始化 返回按钮监听器
-		mDataBinding.ivPreviewBack.setOnClickListener(v -> {
-			finish();
-		});
+
 		//判别 内容是 图片还是 视频
 		//获取系统保存的颜色，否则初始化 涂鸦颜色 字号，  文字颜色 及其字号
 		mColorDoodle = new DoodleColor(doodleColorData);
@@ -274,27 +277,23 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 
 	/**
 	 * 获取 涂鸦的新生成文件的 全路径名及其 文件名,不包含文件结尾后缀
+	 * 如果 图片名含有doodle ，则代表是已涂鸦 图片。 直接返回原名称
+	 * 如不包含doodle 字符串，则代表是一张新图。
 	 */
 	public static String getDoodlePath (String oldPath) {
 		String doodlePath = null;
-
 		if (oldPath != null) {
-			//			String oldName = null;//不包含 结尾反斜杠,也不包含后缀
-			String oldDirPath = null;//不包含 结尾反斜杠
-			int lastIndex = oldPath.lastIndexOf('/');
-			oldDirPath = oldPath.substring(0, lastIndex);
-			//			oldName = oldPath.substring(lastIndex + 1);
+				String oldDirPath = null;//不包含 结尾反斜杠
+				int lastIndex = oldPath.lastIndexOf('/');
+				oldDirPath = oldPath.substring(0, lastIndex);
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss",
+						Locale.getDefault());
+				String imageName = "%s_doodle.jpg";
+				String newName = String.format(imageName, dateFormat.format(new Date()));
 
-			//			oldName = oldName.replace(".jpg", "");
-
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss",
-					Locale.getDefault());
-			String imageName = "%s_doodle.jpg";
-			String newName = String.format(imageName, dateFormat.format(new Date()));
-
-			doodlePath = oldDirPath + "/" + newName;
-
+				doodlePath = oldDirPath + "/" + newName;
 		}
+		Log.e("TAG", "getDoodlePath: ----------return path" +doodlePath);
 		return doodlePath;
 	}
 

@@ -372,7 +372,7 @@ android {
             buildConfigField "int", "COMPANY_H", '165'
             manifestPlaceholders = [CHANNEL_VALUE         : "mti448"
                                     , app_icon            :  "@mipmap/ic_logo_mti448"
-                                    , BUGLYAPPID          : "e58bdac13f"
+                                    , BUGLYAPPID          : "2adfbade37"
                                     , BUGLYAPPVersion     : rootProject.ext.envInfo.MTI_448.VName
                                     , BUGLYAPPChannel     : "mti448"
                                     , BUGLYENABLEDEBUG    : "false"

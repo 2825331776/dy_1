@@ -76,10 +76,10 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh, FrameImage *frameImage) {
     //uvc状态回调 互斥变量初始化。
 //    pthread_mutex_init(&uvc_status_mutex,NULL);
 
-    pthread_mutex_init(&data_callback_mutex, NULL);
+//    pthread_mutex_init(&data_callback_mutex, NULL);
 
 //    pthread_cond_init(&tinyC_send_order_sync, NULL);
-    pthread_mutex_init(&tinyC_send_order_mutex, NULL);
+//    pthread_mutex_init(&tinyC_send_order_mutex, NULL);
 
     EXIT();
 
@@ -87,6 +87,14 @@ UVCPreviewIR::UVCPreviewIR(uvc_device_handle_t *devh, FrameImage *frameImage) {
 
 UVCPreviewIR::~UVCPreviewIR() {
     ENTER();
+    isReleased = true;
+//    if (isRunning()){
+//        stopTemp();
+//        stopPreview();
+//    }
+
+    SAFE_DELETE(mFrameImage);
+
     if (mDeviceHandle) {
         uvc_stop_streaming(mDeviceHandle);
 //        SAFE_DELETE(mDeviceHandle)
@@ -94,11 +102,11 @@ UVCPreviewIR::~UVCPreviewIR() {
     is_first_run = true;
     LOGE("====1=====");
     mDeviceHandle = NULL;
-    if (mPreviewWindow)
+    if (mPreviewWindow){
         ANativeWindow_release(mPreviewWindow);
-    mPreviewWindow = NULL;
+        mPreviewWindow = NULL;
+    }
     LOGE("====2=====");
-    SAFE_DELETE(mFrameImage);
     LOGE("====3=====");
 //    mFrameImage = NULL;
     pthread_mutex_destroy(&preview_mutex);
@@ -108,12 +116,12 @@ UVCPreviewIR::~UVCPreviewIR() {
     pthread_mutex_destroy(&temperature_mutex);//析构函数内释放内存
     pthread_cond_destroy(&temperature_sync);
     //uvc状态回调 互斥变量初始化。
-    pthread_mutex_destroy(&uvc_status_mutex);
+//    pthread_mutex_destroy(&uvc_status_mutex);
 
-    pthread_mutex_destroy(&data_callback_mutex);
+//    pthread_mutex_destroy(&data_callback_mutex);
 
 //    pthread_cond_destroy(&tinyC_send_order_sync);
-    pthread_mutex_destroy(&tinyC_send_order_mutex);
+//    pthread_mutex_destroy(&tinyC_send_order_mutex);
     LOGE("====4=====");
     EXIT();
 }
@@ -168,8 +176,8 @@ int UVCPreviewIR::setPreviewSize(int width, int height, int min_fps, int max_fps
 
 int UVCPreviewIR::setPreviewDisplay(ANativeWindow *preview_window) {
     ENTER();
-    //LOGE("setPreviewDisplay");
-    LOGE("setPreviewDisplay步骤7");
+//    LOGE("setPreviewDisplay步骤7");
+//    LOGE("------------setPreviewDisplay---------调用mutex_lock------");
     pthread_mutex_lock(&preview_mutex);
     {
         if (mPreviewWindow != preview_window) {
@@ -206,17 +214,14 @@ int UVCPreviewIR::setPreviewDisplay(ANativeWindow *preview_window) {
 }
 
 int UVCPreviewIR::startPreview() {
+    isReleased = false;
     ENTER();
 //LOGE("startPreview");
     int result = EXIT_FAILURE;
     if (!isRunning()) {
         mIsRunning = true;
-        //pthread_mutex_lock(&preview_mutex);
         result = pthread_create(&preview_thread, NULL, preview_thread_func, (void *) this);
-//        pthread_create(&tinyC_send_order_thread, NULL, tinyC_sendOrder_thread_func, (void *) this);
         ////LOGE("STARTPREVIEW RESULT1:%d",result);
-        //}
-        //	pthread_mutex_unlock(&preview_mutex);
         if (UNLIKELY(result != EXIT_SUCCESS)) {
             LOGE("UVCCamera::window does not exist/already running/could not create thread etc.");
             mIsRunning = false;
@@ -227,7 +232,6 @@ int UVCPreviewIR::startPreview() {
             pthread_mutex_unlock(&preview_mutex);
         }
     }
-    ////LOGE("STARTPREVIEW RESULT2:%d",result);
     RETURN(result, int);
 }
 
@@ -244,18 +248,6 @@ int UVCPreviewIR::setIsVerifySn() {
     RETURN(result, int);
 }
 
-//int UVCPreviewIR::tinyCControl() {
-//    int result = UVC_ERROR_IO;
-//    for (; LIKELY(isRunning());) {
-//        pthread_mutex_lock(&tinyC_send_order_mutex);
-//        pthread_cond_wait(&tinyC_send_order_sync, &tinyC_send_order_mutex);
-//
-//        result = doTinyCOrder();
-//
-//        pthread_mutex_unlock(&tinyC_send_order_mutex);
-//    }
-//    RETURN(result, int);
-//}
 
 int UVCPreviewIR::doTinyCOrder() {
 //    uvc_diy_communicate(mDeviceHandle,0x41,0x45,0x0078,0x1d00,tinyC_data, sizeof(tinyC_data),1000);
@@ -335,26 +327,29 @@ int UVCPreviewIR::sendTinyCAllOrder(void *params, diy func_tinyc, int mark) {
     int ret = UVC_ERROR_IO;
 //    LOGE("=======sendTinyCAllOrder === lock==Thread id = %d===== mark = %d==" , gettid() , tinyC_mark);
 //    LOGE("=======mark === >%d=========" , mark);
-    if (mark == 10) {//获去tinyc机芯参数列表
-        pthread_mutex_lock(&tinyC_send_order_mutex);
-        ret = getTinyCParams(params, func_tinyc);
-        pthread_mutex_unlock(&tinyC_send_order_mutex);
-    } else if (mark == 100) {//纯指令， 打挡  返回AD流
-        LOGE("=========mark == 100======= === %d=======", *((int *) params));
-        pthread_mutex_lock(&tinyC_send_order_mutex);
-        ret = sendTinyCOrder((uint32_t *) params, func_tinyc);
-        pthread_mutex_unlock(&tinyC_send_order_mutex);
-    } else if (mark > 0 && mark < 10) {//设置机芯参数
-        pthread_mutex_lock(&tinyC_send_order_mutex);
-        ret = sendTinyCParamsModification((float *) (params), func_tinyc, mark);
-        pthread_mutex_unlock(&tinyC_send_order_mutex);
-    } else if (mark == 20 || mark == 21) {
-        pthread_mutex_lock(&tinyC_send_order_mutex);
-        LOGE("=========mark == 20 || mark == 21=======");
-        ret = getTinyCUserData(params, func_tinyc, mark);
-        pthread_mutex_unlock(&tinyC_send_order_mutex);
+//    LOGE("------------sendTinyCAllOrder---------调用mutex_lock------");
+    if (LIKELY(mDeviceHandle) && (!isReleased)) {
+        if (mark == 10) {//获去tinyc机芯参数列表
+//            pthread_mutex_lock(&tinyC_send_order_mutex);
+            ret = getTinyCParams(params, func_tinyc);
+//            pthread_mutex_unlock(&tinyC_send_order_mutex);
+        } else if (mark == 100) {//纯指令， 打挡  返回AD流
+//            LOGE("=========mark == 100======= === %d=======", *((int *) params));
+//            pthread_mutex_lock(&tinyC_send_order_mutex);
+            ret = sendTinyCOrder((uint32_t *) params, func_tinyc);
+//            pthread_mutex_unlock(&tinyC_send_order_mutex);
+        } else if (mark > 0 && mark < 10) {//设置机芯参数
+//            pthread_mutex_lock(&tinyC_send_order_mutex);
+            ret = sendTinyCParamsModification((float *) (params), func_tinyc, mark);
+//            pthread_mutex_unlock(&tinyC_send_order_mutex);
+        } else if (mark == 20 || mark == 21) {
+//            pthread_mutex_lock(&tinyC_send_order_mutex);
+//            LOGE("=========mark == 20 || mark == 21=======");
+            ret = getTinyCUserData(params, func_tinyc, mark);
+//            pthread_mutex_unlock(&tinyC_send_order_mutex);
+        }
     }
-    LOGE("=======sendTinyCAllOrder === ret =====**** = %d====", ret);
+//    LOGE("=======sendTinyCAllOrder === ret =====**** = %d====", ret);
 //    LOGE("=======sendTinyCAllOrder === unlock=Thread id ===%d=== mark = %d====" , gettid(), mark);
     RETURN(ret, int);
 }
@@ -777,9 +772,7 @@ int UVCPreviewIR::stopPreview() {
         mIsCapturing = false;
         mIsRunning = false;
 //        clearDisplay();
-//        pthread_cond_signal(&capture_sync);
 
-//        pthread_cond_signal(&tinyC_send_order_sync);
 ////        int *result_preview_join = NULL;
 //        if (pthread_join(tinyC_send_order_thread, NULL) != EXIT_SUCCESS) {
 //            LOGE("UVCPreviewIR::stopPreview tinyC_send_order_thread: EXIT_failed");
@@ -788,7 +781,6 @@ int UVCPreviewIR::stopPreview() {
 //            LOGE("UVCPreviewIR::stopPreview tinyC_send_order_thread: EXIT_SUCCESS");
 //        }
         pthread_cond_signal(&preview_sync);
-//        int *result_preview_join = NULL;
         if (pthread_join(preview_thread, NULL) != EXIT_SUCCESS) {
 //            LOGE("UVCPreviewIR::stopPreview preview thread: EXIT_failed  result =  %d" ,*result_preview_join);
             LOGE("UVCPreviewIR::stopPreview preview thread: EXIT_failed");
@@ -804,9 +796,8 @@ int UVCPreviewIR::stopPreview() {
                 LOGE("UVCPreviewIR::stopPreview temperature_thread: pthread_join success");
             }
         }
-//        result_preview_join = NULL;
     }
-
+//    LOGE("------------stopPreview---------调用mutex_lock------");
     pthread_mutex_lock(&preview_mutex);
     if (mPreviewWindow) {
         ANativeWindow_release(mPreviewWindow);
@@ -914,8 +905,6 @@ int UVCPreviewIR::prepare_preview(uvc_stream_ctrl_t *ctrl) {
             frameHeight = frame_desc->wHeight;
             LOGE("==========frameSize=(%d,%d)@%s========", frameWidth, frameHeight,
                  (!requestMode ? "YUYV" : "MJPEG"));//frameSize=(256,196)@YUYV
-//            pthread_mutex_lock(&preview_mutex);
-//            if (LIKELY(mPreviewWindow)) {
             if (mPid == 1 && mVid == 5396) {
                 ANativeWindow_setBuffersGeometry(mPreviewWindow,
                                                  frameWidth, frameHeight - 4,
@@ -929,8 +918,6 @@ int UVCPreviewIR::prepare_preview(uvc_stream_ctrl_t *ctrl) {
             }
 //                LOGE("=======UVCPreviewIR::prepare_preview======getWidth===%d,======getHeight===%d====",ANativeWindow_getWidth(mPreviewWindow),ANativeWindow_getHeight(mPreviewWindow));
 //                //LOGE("ANativeWindow_setBuffersGeometry:(%d,%d)", frameWidth, frameHeight);
-//            }
-//            pthread_mutex_unlock(&preview_mutex);
         } else {
             frameWidth = requestWidth;
             frameHeight = requestHeight;
@@ -1098,6 +1085,7 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
         // yuvyv mode
         for (; LIKELY(isRunning());) {
 //            LOGE("do_preview0");
+//            LOGE("------------do_preview---------调用mutex_lock------");
             pthread_mutex_lock(&preview_mutex);
             {
                 //等待数据 初始化到位,之后运行下面的代码。
@@ -1115,7 +1103,6 @@ void UVCPreviewIR::do_preview(uvc_stream_ctrl_t *ctrl) {
                 }
 
                 if (isCopyPicturing()) {//判断截屏
-//                    LOGE("======mutex===========");
                     memset(picOutBuffer, 0, frameWidth * frameHeight * 2);
                     memcpy(picOutBuffer, HoldBuffer, frameWidth * frameHeight * 2);
                     mIsCopyPicture = false;
@@ -1495,9 +1482,7 @@ UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_args, si
         LOGE("uvc_preview_frame_callback hold_bytes ===> %d < preview->frameBytes  ==== > %d",
              hold_bytes, preview->frameBytes);
 
-        //version 1.4.06
         if (LIKELY(preview->isRunning() && preview->isComputed())) {
-//        pthread_mutex_lock(&preview->data_callback_mutex);
 //            unsigned  char * thedata = preview->OutBuffer;
             //void *memcpy(void *destin, void *source, unsigned n);从源source中拷贝n个字节到目标destin中
             memcpy(preview->OutBuffer, frameData,
@@ -1512,13 +1497,11 @@ UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_args, si
             preview->HoldBuffer = tmp_buf;
             tmp_buf = NULL;
             preview->signal_receive_frame_data();
-//        pthread_mutex_unlock(&preview->data_callback_mutex);
         }
         return;
     }
     //preview->isComputed()是否绘制完
     if (LIKELY(preview->isRunning() && preview->isComputed())) {
-//        pthread_mutex_lock(&preview->data_callback_mutex);
 //            unsigned  char * thedata = preview->OutBuffer;
         //void *memcpy(void *destin, void *source, unsigned n);从源source中拷贝n个字节到目标destin中
         memcpy(preview->OutBuffer, frameData,
@@ -1534,7 +1517,6 @@ UVCPreviewIR::uvc_preview_frame_callback(uint8_t *frameData, void *vptr_args, si
         preview->HoldBuffer = tmp_buf;
         tmp_buf = NULL;
         preview->signal_receive_frame_data();
-//        pthread_mutex_unlock(&preview->data_callback_mutex);
     }
 }
 
@@ -1793,21 +1775,22 @@ void *UVCPreviewIR::screenShot_thread_func(void *vptr_args) {
 
 void UVCPreviewIR::do_savePicture(JNIEnv *env) {
     if (isRunning()) {
+//        LOGE("------------do_savePicture---------调用mutex_lock------");
         pthread_mutex_lock(&screenShot_mutex);
         {
-            LOGE("=======do_savePicture======pthread_cond_wait====");
+//            LOGE("=======do_savePicture======pthread_cond_wait====");
             pthread_cond_wait(&screenShot_sync, &screenShot_mutex);
 //            LOGE("=============print====run ====savePicPath============= %s", savePicPath);
             //此时拿到关键的帧数据后，线程被唤醒，执行，包装插入数据：自定义结构体数据、  插入ad值数据。
 //            LOGE("=======do_savePicture======pthread_cond_wait================ ");
             savePicDefineData();
             if (LIKELY(mUpdateMediaObj)) {
-                LOGE("==============mUpdateMediaObj===============likely===============");
+//                LOGE("==============mUpdateMediaObj===============likely===============");
                 jstring path = env->NewStringUTF(savePicPath);
                 env->CallVoidMethod(mUpdateMediaObj,
                                     iUpdateMedia.onUpdateMedia, path);
             } else {
-                LOGE("==============mUpdateMediaObj============un===likely===============");
+//                LOGE("==============mUpdateMediaObj============un===likely===============");
             }
         }
         pthread_mutex_unlock(&screenShot_mutex);
@@ -1815,11 +1798,9 @@ void UVCPreviewIR::do_savePicture(JNIEnv *env) {
 }
 
 void UVCPreviewIR::fixedTempStripChange(bool state) {
-//    pthread_mutex_lock(&fixed_mutex);
     {
         mFrameImage->fixedTempStripChange(state);
     }
-//    pthread_mutex_unlock(&fixed_mutex);
 }
 
 /**
@@ -1827,7 +1808,6 @@ void UVCPreviewIR::fixedTempStripChange(bool state) {
  */
 void UVCPreviewIR::setTinySaveCameraParams() {
 //		保存设置
-//    pthread_mutex_lock(&tinyC_send_order_mutex);
     int ret = UVC_ERROR_IO;
     unsigned char data[8] = {0x14, 0x85, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00};
     data[0] = 0x01;
@@ -1840,7 +1820,6 @@ void UVCPreviewIR::setTinySaveCameraParams() {
     data[7] = 0x00;
     ret = uvc_diy_communicate(mDeviceHandle, 0x41, 0x45, 0x0078, 0x1d00, data, sizeof(data), 1000);
     LOGE("======== 保存设置 ============ ret === %d ==================", ret);
-//    pthread_mutex_unlock(&tinyC_send_order_mutex);
 }
 
 int UVCPreviewIR::DYT_DeleteAPP2(const char *fileName) {
@@ -2219,6 +2198,7 @@ void UVCPreviewIR::savePicDefineData() {
 
 //add by 吴长城 获取UVC连接状态回调
 int UVCPreviewIR::setUVCStatusCallBack(JNIEnv *env, jobject uvc_connect_status_callback) {
+//    LOGE("------------setUVCStatusCallBack---------调用mutex_lock------");
     pthread_mutex_lock(&temperature_mutex);
     {
         if (!env->IsSameObject(mUvcStatusCallbackObj, uvc_connect_status_callback)) {
@@ -2253,6 +2233,7 @@ int UVCPreviewIR::setUVCStatusCallBack(JNIEnv *env, jobject uvc_connect_status_c
 
 //add by 吴长城 媒体回调。
 int UVCPreviewIR::setUpdateMediaCallBack(JNIEnv *env, jobject update_media_callback_obj) {
+//    LOGE("------------setUpdateMediaCallBack---------调用mutex_lock------");
     pthread_mutex_lock(&screenShot_mutex);
     {
         if (!env->IsSameObject(mUpdateMediaObj, update_media_callback_obj)) {
@@ -2308,6 +2289,7 @@ int UVCPreviewIR::setTemperatureCallback(JNIEnv *env, jobject temperature_callba
 
 int UVCPreviewIR::startTemp() {
     ENTER();
+//    LOGE("------------startTemp---------调用mutex_lock------");
     pthread_mutex_lock(&temperature_mutex);
     {
         if (isRunning() && (!mIsTemperaturing)) {
@@ -2328,6 +2310,7 @@ int UVCPreviewIR::startTemp() {
 
 int UVCPreviewIR::stopTemp() {
     ENTER();
+//    LOGE("------------stopTemp---------调用mutex_lock------");
     pthread_mutex_lock(&temperature_mutex);
     {
         if (isRunning() && mIsTemperaturing) {
@@ -2382,6 +2365,7 @@ void UVCPreviewIR::do_temperature(JNIEnv *env) {
 //    }
     for (; isRunning() && mIsTemperaturing;) {
 //        LOGE("=====do_temperature=====for==both=== true============");
+//        LOGE("------------do_temperature---------调用mutex_lock------");
         pthread_mutex_lock(&temperature_mutex);
         {
 //            LOGE("do_temperature========wait=======callback==========");
@@ -2422,6 +2406,7 @@ void UVCPreviewIR::clearDisplay() {//
     ENTER();
 //LOGE("clearDisplay");
     ANativeWindow_Buffer buffer;
+//    LOGE("------------clearDisplay---------调用mutex_lock------");
     pthread_mutex_lock(&preview_mutex);
     {
         if (LIKELY(mPreviewWindow)) {
@@ -2450,11 +2435,9 @@ int UVCPreviewIR::getByteArrayTemperaturePara(uint8_t *para) {
 }
 
 void UVCPreviewIR::shutRefresh() {
-//    pthread_mutex_lock(&temperature_mutex);
     if (mFrameImage) {
         mFrameImage->shutRefresh();
     }
-//    pthread_mutex_unlock(&temperature_mutex);
 }
 
 void UVCPreviewIR::testJNI(const char *phoneStr) {

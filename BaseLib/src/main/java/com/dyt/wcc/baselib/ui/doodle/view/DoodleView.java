@@ -133,29 +133,29 @@ public class DoodleView extends FrameLayout implements IDoodle {
 	 * 是否优化绘制，建议开启，可优化绘制速度和性能.
 	 * 注意：开启后item被选中编辑时时会绘制在最上面一层，直到结束编辑后才绘制在相应层级
 	 **/
-	private  boolean           mOptimizeDrawing; // 涂鸦及时绘制在图片上，优化性能
-	private       List<IDoodleItem> mItemStackOnViewCanvas    = new ArrayList<>(); // 这些item
+	private boolean           mOptimizeDrawing; // 涂鸦及时绘制在图片上，优化性能
+	private List<IDoodleItem> mItemStackOnViewCanvas    = new ArrayList<>(); // 这些item
 	// 绘制在View的画布上，而不是在图片Bitmap.比如正在创建或选中的item
-	private       List<IDoodleItem> mPendingItemsDrawToBitmap = new ArrayList<>();
-	private       Bitmap            mDoodleBitmap;
-	private       int               mFlags                    = 0;
-	private       Canvas            mDoodleBitmapCanvas;
-	private       BackgroundView    mBackgroundView;
+	private List<IDoodleItem> mPendingItemsDrawToBitmap = new ArrayList<>();
+	private Bitmap            mDoodleBitmap;
+	private int               mFlags                    = 0;
+	private Canvas            mDoodleBitmapCanvas;
+	private BackgroundView    mBackgroundView;
 
 
-//	public DoodleView (Context context, Bitmap bitmap, IDoodleListener listener) {
-//		this(context, bitmap, false, listener, null);
-//	}
-//
-//	public DoodleView (Context context, Bitmap bitmap, IDoodleListener listener,
-//	                   IDoodleTouchDetector defaultDetector) {
-//		this(context, bitmap, false, listener, defaultDetector);
-//	}
-//
-//	public DoodleView (Context context, Bitmap bitmap, boolean optimizeDrawing,
-//	                   IDoodleListener listener) {
-//		this(context, bitmap, optimizeDrawing, listener, null);
-//	}
+	//	public DoodleView (Context context, Bitmap bitmap, IDoodleListener listener) {
+	//		this(context, bitmap, false, listener, null);
+	//	}
+	//
+	//	public DoodleView (Context context, Bitmap bitmap, IDoodleListener listener,
+	//	                   IDoodleTouchDetector defaultDetector) {
+	//		this(context, bitmap, false, listener, defaultDetector);
+	//	}
+	//
+	//	public DoodleView (Context context, Bitmap bitmap, boolean optimizeDrawing,
+	//	                   IDoodleListener listener) {
+	//		this(context, bitmap, optimizeDrawing, listener, null);
+	//	}
 
 
 	public DoodleView (@NonNull Context context) {
@@ -171,13 +171,15 @@ public class DoodleView extends FrameLayout implements IDoodle {
 	}
 
 	public DoodleView (@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr,
-	                      int defStyleRes) {
+	                   int defStyleRes) {
 		super(context, attrs, defStyleAttr, defStyleRes);
 
 		initDefaultView(context);
 
 	}
-	public final static int    DEFAULT_BITMAP            = R.drawable.doodle_imageselector_image_selected;
+
+	public final static int DEFAULT_BITMAP = R.drawable.doodle_imageselector_image_selected;
+
 	/**
 	 * 默认初始化的 变量
 	 *
@@ -214,14 +216,11 @@ public class DoodleView extends FrameLayout implements IDoodle {
 		addView(mForegroundView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
 				ViewGroup.LayoutParams.MATCH_PARENT));
 
-//		mPaint = new Paint();
-//		mPaint.setStyle(Paint.Style.STROKE);
-//		mPaint.setColor(Color.RED);
-//		mPaint.setStrokeWidth(10);
+		//		mPaint = new Paint();
+		//		mPaint.setStyle(Paint.Style.STROKE);
+		//		mPaint.setColor(Color.RED);
+		//		mPaint.setStrokeWidth(10);
 	}
-
-
-
 
 
 	/**
@@ -246,8 +245,8 @@ public class DoodleView extends FrameLayout implements IDoodle {
 		mBitmap = bitmap;
 		if (mBitmap.getConfig() != Bitmap.Config.RGB_565) {
 			// 如果位图包含透明度，则可能会导致橡皮擦无法对透明部分进行擦除
-			LogUtil.w(TAG, "the bitmap may contain alpha, which will cause eraser don't work well" +
-					".");
+			LogUtil.w(TAG,
+					"the bitmap may contain alpha, which will cause eraser don't work well" + ".");
 		}
 		mDoodleListener = listener;
 		if (mDoodleListener == null) {
@@ -265,28 +264,30 @@ public class DoodleView extends FrameLayout implements IDoodle {
 		mPen = DoodlePen.BRUSH;
 		mShape = DoodleShape.HAND_WRITE;
 
-//		mZooomerPaint = new Paint();
-//		mZooomerPaint.setColor(0xaaffffff);
-//		mZooomerPaint.setStyle(Paint.Style.STROKE);
-//		mZooomerPaint.setAntiAlias(true);
-//		mZooomerPaint.setStrokeJoin(Paint.Join.ROUND);
-//		mZooomerPaint.setStrokeCap(Paint.Cap.ROUND);// 圆滑
-//		mZooomerPaint.setStrokeWidth(Util.dp2px(getContext(), 10));
-//
-//		mZoomerTouchPaint = new Paint();
-//		mZoomerTouchPaint.setStyle(Paint.Style.STROKE);
-//		mZoomerTouchPaint.setAntiAlias(true);
-//		mZoomerTouchPaint.setStrokeJoin(Paint.Join.ROUND);
-//		mZoomerTouchPaint.setStrokeCap(Paint.Cap.ROUND);// 圆滑
+		//		mZooomerPaint = new Paint();
+		//		mZooomerPaint.setColor(0xaaffffff);
+		//		mZooomerPaint.setStyle(Paint.Style.STROKE);
+		//		mZooomerPaint.setAntiAlias(true);
+		//		mZooomerPaint.setStrokeJoin(Paint.Join.ROUND);
+		//		mZooomerPaint.setStrokeCap(Paint.Cap.ROUND);// 圆滑
+		//		mZooomerPaint.setStrokeWidth(Util.dp2px(getContext(), 10));
+		//
+		//		mZoomerTouchPaint = new Paint();
+		//		mZoomerTouchPaint.setStyle(Paint.Style.STROKE);
+		//		mZoomerTouchPaint.setAntiAlias(true);
+		//		mZoomerTouchPaint.setStrokeJoin(Paint.Join.ROUND);
+		//		mZoomerTouchPaint.setStrokeCap(Paint.Cap.ROUND);// 圆滑
 
 		mDefaultTouchDetector = defaultDetector;
 
-//		mForegroundView = new ForegroundView(context);
-//		mBackgroundView = new BackgroundView(context);
-//		addView(mBackgroundView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-//				ViewGroup.LayoutParams.MATCH_PARENT));
-//		addView(mForegroundView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-//				ViewGroup.LayoutParams.MATCH_PARENT));
+		//		mForegroundView = new ForegroundView(context);
+		//		mBackgroundView = new BackgroundView(context);
+		//		addView(mBackgroundView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams
+		//		.MATCH_PARENT,
+		//				ViewGroup.LayoutParams.MATCH_PARENT));
+		//		addView(mForegroundView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams
+		//		.MATCH_PARENT,
+		//				ViewGroup.LayoutParams.MATCH_PARENT));
 	}
 
 	@Override
@@ -294,7 +295,7 @@ public class DoodleView extends FrameLayout implements IDoodle {
 		super.onSizeChanged(w, h, oldw, oldh);
 		init();
 		if (!mReady) {
-//			mDoodleListener.onReady(this);
+			//			mDoodleListener.onReady(this);
 			mReady = true;
 		}
 	}
@@ -304,9 +305,11 @@ public class DoodleView extends FrameLayout implements IDoodle {
 
 	//是否 判别手势
 	private boolean isGestureRecognitionAble = false;
+
 	public boolean isGestureRecognitionAble () {
 		return isGestureRecognitionAble;
 	}
+
 	public void setGestureRecognitionAble (boolean gestureRecognitionAble) {
 		isGestureRecognitionAble = gestureRecognitionAble;
 	}
@@ -349,8 +352,9 @@ public class DoodleView extends FrameLayout implements IDoodle {
 		int w = mBitmap.getWidth();
 		int h = mBitmap.getHeight();
 
-//		Log.e(TAG, "init:  初始化时 mBitmap 的宽高：" + mBitmap.getWidth() + " h =====> " + mBitmap.getHeight());
-//		Log.e(TAG, "init:  初始化时 View 的宽高：" + getWidth() + " h =====> " + getHeight());
+		//		Log.e(TAG, "init:  初始化时 mBitmap 的宽高：" + mBitmap.getWidth() + " h =====> " +
+		//		mBitmap.getHeight());
+		//		Log.e(TAG, "init:  初始化时 View 的宽高：" + getWidth() + " h =====> " + getHeight());
 
 		float nw = w * 1f / getWidth();
 		float nh = h * 1f / getHeight();
@@ -696,8 +700,10 @@ public class DoodleView extends FrameLayout implements IDoodle {
 	 */
 	public void setDefaultTouchDetector (IDoodleTouchDetector touchGestureDetector) {
 
-		Log.e(TAG, "Activity 设置时 此View属性: x轴偏移："+ mCenterTranX +" y轴偏移："+ mCenterTranX +" 缩放比为" + mCenterScale);
-		Log.e(TAG, "Activity 设置时 此View属性: mCenterWidth："+ mCenterWidth +" mCenterHeight："+ mCenterHeight );
+		Log.e(TAG, "Activity 设置时 此View属性: x轴偏移：" + mCenterTranX + " y轴偏移：" + mCenterTranX + " " +
+				"缩放比为" + mCenterScale);
+		Log.e(TAG,
+				"Activity 设置时 此View属性: mCenterWidth：" + mCenterWidth + " mCenterHeight：" + mCenterHeight);
 
 		mDefaultTouchDetector = touchGestureDetector;
 	}
@@ -862,7 +868,6 @@ public class DoodleView extends FrameLayout implements IDoodle {
 				addItem(item);
 			}
 		}
-
 		refresh();
 	}
 
@@ -880,13 +885,16 @@ public class DoodleView extends FrameLayout implements IDoodle {
 
 		new AsyncTask<Void, Void, Bitmap>() {
 
-			@SuppressLint("WrongThread")
+			//			@SuppressLint("WrongThread")
 			@Override
 			protected Bitmap doInBackground (Void... voids) {
 				Bitmap savedBitmap = null;
 
 				if (mOptimizeDrawing) {
 					refreshDoodleBitmap(true);
+					if (mDoodleBitmap.isRecycled()){
+						Log.e(TAG, "doInBackground: ------mdoodleBitmap is recycle------");
+					}
 					savedBitmap = mDoodleBitmap;
 				} else {
 					savedBitmap = mBitmap.copy(mBitmap.getConfig(), true);
@@ -895,8 +903,9 @@ public class DoodleView extends FrameLayout implements IDoodle {
 						item.draw(canvas);
 					}
 				}
-
-				savedBitmap = ImageUtils.rotate(savedBitmap, mDoodleRotateDegree, true);
+//				if (!mDoodleBitmap.isRecycled() && mDoodleBitmap != null) {
+					savedBitmap = ImageUtils.rotate(savedBitmap, mDoodleRotateDegree, false);
+//				}
 				return savedBitmap;
 			}
 
@@ -1335,10 +1344,12 @@ public class DoodleView extends FrameLayout implements IDoodle {
 		mBitmap = bitmap;
 		init();
 	}
-	public void setBitmap(Uri uri){
+
+	public void setBitmap (Uri uri) {
 
 	}
-	public void setBitmap(String path){
+
+	public void setBitmap (String path) {
 		setBitmap(BitmapFactory.decodeFile(path));
 
 	}
@@ -1409,10 +1420,11 @@ public class DoodleView extends FrameLayout implements IDoodle {
 		@Override
 		protected void onDraw (Canvas canvas) {
 
-//			Log.e(TAG, "onDraw: ----------------BackgroundView------------------------");
-//			if (LogUtil.sIsLog) {
-//				LogUtil.d(TAG, "BackgroundView>>onDraw");
-//			}
+			//			Log.e(TAG, "onDraw:
+			//			----------------BackgroundView------------------------");
+			//			if (LogUtil.sIsLog) {
+			//				LogUtil.d(TAG, "BackgroundView>>onDraw");
+			//			}
 			int count = canvas.save();
 			canvas.rotate(mDoodleRotateDegree, getWidth() / 2, getHeight() / 2);
 			doDraw(canvas);
@@ -1464,7 +1476,8 @@ public class DoodleView extends FrameLayout implements IDoodle {
 		}
 
 		protected void onDraw (Canvas canvas) {
-//			Log.e(TAG, "onDraw: ----------------ForegroundView------------------------");
+			//			Log.e(TAG, "onDraw:
+			//			----------------ForegroundView------------------------");
 
 			int count = canvas.save();
 			canvas.rotate(mDoodleRotateDegree, getWidth() / 2, getHeight() / 2);
@@ -1547,9 +1560,7 @@ public class DoodleView extends FrameLayout implements IDoodle {
 	protected Parcelable onSaveInstanceState () {
 
 
-
 		return super.onSaveInstanceState();
-
 
 
 	}

@@ -143,16 +143,13 @@ void FrameImage::showTempRange(float maxPercent, float minPercent, float maxValu
     isshowtemprange = true;
     maxpercent = (unsigned short) maxPercent;
     minpercent = (unsigned short) minPercent;
-//    pthread_mutex_lock(&fixed_mutex);{
     maxThumbValue = maxValue;
     minThumbValue = minValue;
     isNeedFreshAD = true;
-//    }
-//    pthread_mutex_unlock(&fixed_mutex);
-    LOGE(" isFixedTempStrip   === > %d", isFixedTempStrip);
+//    LOGE(" isFixedTempStrip   === > %d", isFixedTempStrip);
 ////        //todo 查询最大值滑块的温度 对应的ad值 ；最小值滑块对应的 ad值
-    LOGE(" maxThumbAD =   %d  minThumbAD = %d  roThumb =   %d", maxThumbAD, minThumbAD, roThumb);
-    LOGE("temp maxThumbValue = %f , min == %f", maxThumbValue, minThumbValue);
+//    LOGE(" maxThumbAD =   %d  minThumbAD = %d  roThumb =   %d", maxThumbAD, minThumbAD, roThumb);
+//    LOGE("temp maxThumbValue = %f , min == %f", maxThumbValue, minThumbValue);
 }
 
 void FrameImage::disTempRange() {//在下一帧图像绘制的时候就不会绘制,是否是拉温宽

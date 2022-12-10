@@ -59,6 +59,7 @@ class UVCPreviewIR {
 private:
     FrameImage *mFrameImage;
     uvc_device_handle_t *mDeviceHandle;
+    volatile bool isReleased = false;
 
     inline const bool isRunning() const;
 
@@ -134,7 +135,7 @@ private:
 //	Tinyc使用锁 相关变量
 //    pthread_t tinyC_send_order_thread; //tinyc发送指令的线程
 //    pthread_cond_t tinyC_send_order_sync;//tinyc线程 条件变量
-    pthread_mutex_t tinyC_send_order_mutex;//tinyc线程 互斥量
+//    pthread_mutex_t tinyC_send_order_mutex;//tinyc线程 互斥量
     int getTinyCDevicesStatus();//获取TinyC机芯的状态
     int getTinyCParams(void *returnData, diy func_diy);//获取tinyc 机芯参数。仅获取
     int
@@ -168,7 +169,7 @@ private:
 
     int mPixelFormat;
     /*****************************录制 拍照相关,不负责具体实现 ********************************/
-    pthread_mutex_t data_callback_mutex;//初始化数据 互斥锁 互斥量
+//    pthread_mutex_t data_callback_mutex;//初始化数据 互斥锁 互斥量
 
     bool isRecording;
     ANativeWindow *mCaptureWindow;
@@ -228,7 +229,7 @@ private:
     pthread_cond_t temperature_sync;
     pthread_mutex_t temperature_mutex;
     //uvc状态回调 互斥变量。
-    pthread_mutex_t uvc_status_mutex;
+//    pthread_mutex_t uvc_status_mutex;
 
 //	pthread_mutex_t fixed_mutex;
 

@@ -132,6 +132,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 	//	private static final int MSG_SWITCH_GAIN = 57;
 	//    private static final int MSG_ISRECORDAUDIO = 37;//本来在这里新增一个 是否录制音频的开关。后面直接加到了 打开录制开关的参数里面
 	private volatile boolean mReleased;
+	private volatile boolean mClosed;
 
 	protected AbstractUVCCameraHandler (final CameraThread thread) {
 		Log.e(TAG, "============ 创建线程");
@@ -358,6 +359,10 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		return mReleased || (thread == null);
 	}
 
+	public boolean isClosed () {
+		return mClosed;
+	}
+
 	protected void checkReleased () {
 		if (isReleased()) {
 			throw new IllegalStateException("already released");
@@ -380,13 +385,14 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 	}
 
 	public void close () {
-		if (DEBUG)
-			Log.v(TAG, "close:");
-		if (isOpened()) {
-			sendEmptyMessage(MSG_CLOSE);
+		if (mClosed != true){
+			mClosed = true;
+			if (DEBUG)
+				Log.v(TAG, "AbsUVCCameraHandler：close:");
+			if (isOpened()) {
+				sendEmptyMessage(MSG_CLOSE);
+			}
 		}
-		if (DEBUG)
-			Log.v(TAG, "close:finished");
 	}
 
 	public void resize (final int width, final int height) {
@@ -416,6 +422,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 	}
 
 	protected void startPreview (final Object surface) {
+		mClosed = false;
 		checkReleased();
 		//	if (!((surface instanceof SurfaceHolder) || (surface instanceof Surface) || (surface instanceof SurfaceTexture))) {
 		//		throw new IllegalArgumentException("surface should be one of SurfaceHolder, Surface or SurfaceTexture");
@@ -608,6 +615,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 	public void release () {
 		mReleased = true;
 		close();
+		mClosed = true;
 		sendEmptyMessage(MSG_RELEASE);
 	}
 
@@ -1418,7 +1426,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		public void handleClose () {
 			if (cameraType == 1) {
 				//if (DEBUG)
-				Log.e(TAG_THREAD, "handleClose:");
+				Log.e(TAG_THREAD, "camerathread - handleClose:");
 				//handleStopTemperaturing();
 				//handleStopRecording();
 				//                if (mIsCapturing) {           //2021-8-11 16:22:54  吴长城注释
@@ -1431,10 +1439,10 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 					handleStopRecording();
 				}
 
-//				if (mIsTemperaturing) {
-//					mIsTemperaturing = false;
-//					handleStopTemperaturing();
-//				}
+				if (mIsTemperaturing) {
+					mIsTemperaturing = false;
+					handleStopTemperaturing();
+				}
 				//mIsTemperaturing disable by wupei
 
 				//                if(mIsTemperaturing){
@@ -2105,7 +2113,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
 		public void handleRelease () {
 			if (DEBUG)
 				Log.v(TAG_THREAD, "handleRelease:mIsRecording=" + mIsRecording);
-			handleClose();
+//			handleClose();
 			mCallbacks.clear();
 			if (!mIsRecording) {
 				mHandler.mReleased = true;

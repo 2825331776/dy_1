@@ -40,7 +40,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
-import com.huantansheng.easyphotos.BuildConfig;
+import com.dyt.wcc.baselib.BuildConfig;
 import com.huantansheng.easyphotos.EasyPhotos;
 import com.huantansheng.easyphotos.R;
 import com.huantansheng.easyphotos.constant.Code;
@@ -714,7 +714,6 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 	}
 
 	private void initView () {
-
 		if (albumModel.getAlbumItems().isEmpty()) {
 			if (Setting.isOnlyVideo()) {
 				Toast.makeText(getApplicationContext(), R.string.no_videos_easy_photos,
