@@ -29,10 +29,10 @@ public class MTI448LanguageFactory extends LanguageFactory {
 	 */
 	@Override
 	public CharSequence getLanguageByIndex (@NonNull int index) {
-		if (index < language_jms_array.length) {
-			return language_jms_array[index];
+		if (index < language_mti448_array.length) {
+			return language_mti448_array[index];
 		} else {
-			return language_jms_array[0];
+			return language_mti448_array[0];
 		}
 	}
 
@@ -44,7 +44,7 @@ public class MTI448LanguageFactory extends LanguageFactory {
 	@Override
 	public AlertDialog createAlertDialog () {
 		AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-		return builder.setSingleChoiceItems(LanguageFactory.language_jms_array,
+		return builder.setSingleChoiceItems(LanguageFactory.language_mti448_array,
 				mContext.getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE).getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0),
 				createDialogListener()).create();
 	}
@@ -70,6 +70,6 @@ public class MTI448LanguageFactory extends LanguageFactory {
 	 */
 	@Override
 	public String[] getLanguageArray () {
-		return language_jms_array;
+		return language_mti448_array;
 	}
 }
