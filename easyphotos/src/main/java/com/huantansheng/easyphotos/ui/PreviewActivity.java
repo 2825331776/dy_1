@@ -9,11 +9,14 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.PersistableBundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
@@ -57,6 +60,38 @@ import cn.forward.androids.utils.Util;
  */
 public class PreviewActivity extends AppCompatActivity /*implements PreviewPhotosAdapter
 .OnClickListener, View.OnClickListener, PreviewFragment.OnPreviewFragmentClickListener*/ {
+
+	private final int     REFRESH_UI = 100;
+	private       Handler mHandler   = new Handler(new Handler.Callback() {
+		@Override
+		public boolean handleMessage (@NonNull Message msg) {
+			switch (msg.what) {
+				case REFRESH_UI:
+//					Log.e("TAG", "-------------handleMessage: ------------------"+ msg.obj.toString());
+					mDataBinding.doodleView.setGestureRecognitionAble(false);
+
+					//顶部状态栏变化
+					mDataBinding.llActionbarNormal.setVisibility(View.VISIBLE);
+					mDataBinding.clActionbarGestureBack.setVisibility(View.GONE);
+					mDataBinding.llDoodleRedoDoContainer.setVisibility(View.GONE);
+
+					mDataBinding.circleCharacterSize.setSelected(false);
+					mDataBinding.circlePalette.setSelected(false);
+					mDataBinding.ivDetailToolsDoodle.setSelected(false);
+					mDataBinding.ivDetailToolsCharacter.setSelected(false);
+
+					String path = (String) msg.obj;
+					mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.INVISIBLE);
+					//					Log.e("TAG", "onSaved: -----------PreviewActivity" + "--------------111---");
+					Intent intent = new Intent();
+					intent.putExtra(KEY_IMAGE_PATH, path);
+					setResult(Activity.RESULT_OK, intent);
+					finish();
+					break;
+			}
+			return false;
+		}
+	});
 
 	/**
 	 * @param act            起始Activity
@@ -199,37 +234,41 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 		 */
 		mDataBinding.doodleView.setDoodleListener(new IDoodleListener() {
 			@Override
-			public void onSaved (IDoodle doodle, Bitmap doodleBitmap, Runnable callback) {
-//				Log.e("TAG", "onSaved: ---previewActivity--------");
-				File doodleFile = null;
-				File file = null;
-				String savePath = getDoodlePath(photoClick.path);
-				if (!TextUtils.isEmpty(savePath)) {
-					file = new File(savePath);
-					doodleFile = file.getParentFile();
-					doodleFile.mkdirs();
-				} else {
-					return;
-				}
-				FileOutputStream outputStream = null;
-				try {
-					outputStream = new FileOutputStream(file);
-					if (doodleBitmap !=null){
-						doodleBitmap.compress(Bitmap.CompressFormat.JPEG, 95, outputStream);
+			public void onSaved (IDoodle doodle, Bitmap sourceBitmap, int DoodleRotateDegree, boolean optimizeDrawing) {
+				new Thread(() -> {
+					Bitmap savedBitmap = sourceBitmap;
+					Log.e("TAG", "onSaved: ---previewActivity--------");
+					File doodleFile = null;
+					File file = null;
+					String savePath = getDoodlePath(photoClick.path);
+					if (!TextUtils.isEmpty(savePath)) {
+						file = new File(savePath);
+						doodleFile = file.getParentFile();
+						doodleFile.mkdirs();
+					} else {
+						return;
 					}
-					ImageUtils.addImage(getContentResolver(), file.getAbsolutePath());
-//					Log.e("TAG", "onSaved: -----------PreviewActivity" + "--------------111---");
-					Intent intent = new Intent();
-					intent.putExtra(KEY_IMAGE_PATH, file.getAbsolutePath());
-					setResult(Activity.RESULT_OK, intent);
-					finish();
-				} catch (Exception e) {
-					e.printStackTrace();
-					onError(DoodleView.ERROR_SAVE, e.getMessage());
-				} finally {
-					Util.closeQuietly(outputStream);
-					callback.run();
-				}
+					FileOutputStream outputStream = null;
+					try {
+						outputStream = new FileOutputStream(file);
+						if (savedBitmap != null) {
+							savedBitmap.compress(Bitmap.CompressFormat.JPEG, 95, outputStream);
+						}
+						ImageUtils.addImage(getContentResolver(), savePath);
+						Message message = mHandler.obtainMessage();
+						message.obj = file.getAbsolutePath();
+						message.what = REFRESH_UI;
+						mHandler.sendMessage(message);
+					} catch (Exception e) {
+						e.printStackTrace();
+						onError(DoodleView.ERROR_SAVE, e.getMessage());
+					} finally {
+						Util.closeQuietly(outputStream);
+						//						callback.run();
+					}
+				}).start();
+
+
 			}
 
 			@Override
@@ -283,17 +322,16 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 	public static String getDoodlePath (String oldPath) {
 		String doodlePath = null;
 		if (oldPath != null) {
-				String oldDirPath = null;//不包含 结尾反斜杠
-				int lastIndex = oldPath.lastIndexOf('/');
-				oldDirPath = oldPath.substring(0, lastIndex);
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss",
-						Locale.getDefault());
-				String imageName = "%s_doodle.jpg";
-				String newName = String.format(imageName, dateFormat.format(new Date()));
+			String oldDirPath = null;//不包含 结尾反斜杠
+			int lastIndex = oldPath.lastIndexOf('/');
+			oldDirPath = oldPath.substring(0, lastIndex);
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault());
+			String imageName = "%s_doodle.jpg";
+			String newName = String.format(imageName, dateFormat.format(new Date()));
 
-				doodlePath = oldDirPath + "/" + newName;
+			doodlePath = oldDirPath + "/" + newName;
 		}
-		Log.e("TAG", "getDoodlePath: ----------return path" +doodlePath);
+		Log.e("TAG", "getDoodlePath: ----------return path" + doodlePath);
 		return doodlePath;
 	}
 
@@ -345,8 +383,7 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 		touchGestureListener = new DoodleOnTouchGestureListener(mDataBinding.doodleView);
 		touchGestureListener.setSelectionListener(new DoodleOnTouchGestureListener.ISelectionListener() {
 			@Override
-			public void onSelectedItem (IDoodle doodle, IDoodleSelectableItem selectableItem,
-			                            boolean selected) {
+			public void onSelectedItem (IDoodle doodle, IDoodleSelectableItem selectableItem, boolean selected) {
 
 			}
 
@@ -420,8 +457,7 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 				mDataBinding.editColorPick.setSelectPercent(doodlePercent);
 				mDataBinding.editColorPick.setVisibility(View.VISIBLE);
 				mDataBinding.paintSizeSelect.setVisibility(View.GONE);
-				mDataBinding.circlePalette.setColor(doodleColorData,
-						CircleDisplayView.CirCleImageType.COLOR);
+				mDataBinding.circlePalette.setColor(doodleColorData, CircleDisplayView.CirCleImageType.COLOR);
 				paintCircleCharacterSize(doodleSizeIndex);
 				//顶部状态栏 变化
 				mDataBinding.llActionbarNormal.setVisibility(View.GONE);
@@ -450,8 +486,7 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 				mDataBinding.editColorPick.setSelectPercent(characterPercent);
 				mDataBinding.editColorPick.setVisibility(View.VISIBLE);
 				mDataBinding.paintSizeSelect.setVisibility(View.GONE);
-				mDataBinding.circlePalette.setColor(characterColorData,
-						CircleDisplayView.CirCleImageType.COLOR);
+				mDataBinding.circlePalette.setColor(characterColorData, CircleDisplayView.CirCleImageType.COLOR);
 				paintCircleCharacterSize(characterSizeIndex);
 
 
@@ -474,12 +509,10 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 				//此处的 是给 下面具体控件的
 				if (type_palette_character == 0 && cirCleImageType == CircleDisplayView.CirCleImageType.COLOR) {
 					mColorDoodle.setColor(currentData);
-					mDataBinding.circlePalette.setColor(doodleColorData,
-							CircleDisplayView.CirCleImageType.COLOR);
+					mDataBinding.circlePalette.setColor(doodleColorData, CircleDisplayView.CirCleImageType.COLOR);
 				} else if (type_palette_character == 1) {
 					mColorText.setColor(currentData);
-					mDataBinding.circlePalette.setColor(characterColorData,
-							CircleDisplayView.CirCleImageType.COLOR);
+					mDataBinding.circlePalette.setColor(characterColorData, CircleDisplayView.CirCleImageType.COLOR);
 				}
 
 			});
@@ -504,8 +537,7 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 
 			//	画笔 直径 选择器
 			mDataBinding.paintSizeSelect.setSelectorListener((position, selectPaintSize) -> {
-				Log.e("TAGZ",
-						"initTools: --------------p-" + position + " paint Size" + selectPaintSize);
+				Log.e("TAGZ", "initTools: --------------p-" + position + " paint Size" + selectPaintSize);
 				if (type_palette_character == 0) {
 					doodlePaintSize = selectPaintSize / 2;
 					doodleSizeIndex = position;
@@ -528,8 +560,7 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 			mDataBinding.editColorPick.setOnColorPickerChangeListener(new ColorSliderView.OnColorPickerChangeListener() {
 				@Override
 				public void onColorChanged (ColorSliderView picker, int color, float percent) {
-					mDataBinding.circlePalette.setColor(color,
-							CircleDisplayView.CirCleImageType.COLOR);
+					mDataBinding.circlePalette.setColor(color, CircleDisplayView.CirCleImageType.COLOR);
 					//					Log.e("TAG", "onColorChanged: ======色板选择器 百分比============"
 					//					+ percent);
 					//设置 画笔 或 文字的 值
@@ -571,37 +602,25 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 			//左上角  顶部 退出按钮
 			mDataBinding.ivToolsExit.setOnClickListener(v -> {
 
-//				mDataBinding.doodleView.setGestureRecognitionAble(false);
-//
-//				//顶部状态栏变化
-//				mDataBinding.llActionbarNormal.setVisibility(View.VISIBLE);
-//				mDataBinding.clActionbarGestureBack.setVisibility(View.GONE);
-//				mDataBinding.llDoodleRedoDoContainer.setVisibility(View.GONE);
-//				mDataBinding.circleCharacterSize.setSelected(false);
-//				mDataBinding.circlePalette.setSelected(false);
-//				mDataBinding.ivDetailToolsDoodle.setSelected(false);
-//				mDataBinding.ivDetailToolsCharacter.setSelected(false);
-//
-//				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.INVISIBLE);
-//
-//
-//				mDataBinding.doodleView.save();
+				//				mDataBinding.doodleView.setGestureRecognitionAble(false);
+				//
+				//				//顶部状态栏变化
+				//				mDataBinding.llActionbarNormal.setVisibility(View.VISIBLE);
+				//				mDataBinding.clActionbarGestureBack.setVisibility(View.GONE);
+				//				mDataBinding.llDoodleRedoDoContainer.setVisibility(View.GONE);
+				//				mDataBinding.circleCharacterSize.setSelected(false);
+				//				mDataBinding.circlePalette.setSelected(false);
+				//				mDataBinding.ivDetailToolsDoodle.setSelected(false);
+				//				mDataBinding.ivDetailToolsCharacter.setSelected(false);
+				//
+				//				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.INVISIBLE);
+				//
+				//
+				//				mDataBinding.doodleView.save();
 
-				mDataBinding.doodleView.setGestureRecognitionAble(false);
 
 				mDataBinding.doodleView.save();
 
-				//顶部状态栏变化
-				mDataBinding.llActionbarNormal.setVisibility(View.VISIBLE);
-				mDataBinding.clActionbarGestureBack.setVisibility(View.GONE);
-				mDataBinding.llDoodleRedoDoContainer.setVisibility(View.GONE);
-
-				mDataBinding.circleCharacterSize.setSelected(false);
-				mDataBinding.circlePalette.setSelected(false);
-				mDataBinding.ivDetailToolsDoodle.setSelected(false);
-				mDataBinding.ivDetailToolsCharacter.setSelected(false);
-
-				mDataBinding.llPaletteCharacterSizeContainer.setVisibility(View.INVISIBLE);
 
 			});
 		}
@@ -613,8 +632,7 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 			return;
 		}
 
-		DialogController.showInputTextDialog(this, doodleText == null ? null :
-				doodleText.getText(), new View.OnClickListener() {
+		DialogController.showInputTextDialog(this, doodleText == null ? null : doodleText.getText(), new View.OnClickListener() {
 			@Override
 			public void onClick (View v) {
 				//todo confirm operate
@@ -626,10 +644,8 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 					return;
 				}
 				if (doodleText == null) {
-					Log.e("TAG",
-							"onClick: -------------mDataBinding.doodleView.getSize()-" + mDataBinding.doodleView.getSize());
-					IDoodleSelectableItem item = new DoodleText(mDataBinding.doodleView, text,
-							mDataBinding.doodleView.getSize(),
+					Log.e("TAG", "onClick: -------------mDataBinding.doodleView.getSize()-" + mDataBinding.doodleView.getSize());
+					IDoodleSelectableItem item = new DoodleText(mDataBinding.doodleView, text, mDataBinding.doodleView.getSize(),
 							mDataBinding.doodleView.getColor().copy(), x, y);
 					mDataBinding.doodleView.addItem(item);
 					touchGestureListener.setSelectedItem(item);
@@ -648,22 +664,28 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 		mDataBinding.paintSizeSelect.setSelectIndex(clickPosition);
 		switch (clickPosition) {
 			case 0:
-				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_1_unselect, CircleDisplayView.CirCleImageType.BITMAP);
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_1_unselect,
+						CircleDisplayView.CirCleImageType.BITMAP);
 				break;
 			case 1:
-				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_2_unselect, CircleDisplayView.CirCleImageType.BITMAP);
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_2_unselect,
+						CircleDisplayView.CirCleImageType.BITMAP);
 				break;
 			case 2:
-				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_3_unselect, CircleDisplayView.CirCleImageType.BITMAP);
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_3_unselect,
+						CircleDisplayView.CirCleImageType.BITMAP);
 				break;
 			case 3:
-				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_4_unselect, CircleDisplayView.CirCleImageType.BITMAP);
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_4_unselect,
+						CircleDisplayView.CirCleImageType.BITMAP);
 				break;
 			case 4:
-				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_5_unselect, CircleDisplayView.CirCleImageType.BITMAP);
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_5_unselect,
+						CircleDisplayView.CirCleImageType.BITMAP);
 				break;
 			case 5:
-				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_6_unselect, CircleDisplayView.CirCleImageType.BITMAP);
+				mDataBinding.circleCharacterSize.setColor(R.mipmap.photo_detail_tools_size_6_unselect,
+						CircleDisplayView.CirCleImageType.BITMAP);
 				break;
 		}
 	}
@@ -675,8 +697,7 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 	}
 
 	@Override
-	public void onRestoreInstanceState (Bundle savedInstanceState,
-	                                    PersistableBundle persistentState) {
+	public void onRestoreInstanceState (Bundle savedInstanceState, PersistableBundle persistentState) {
 		super.onRestoreInstanceState(savedInstanceState, persistentState);
 		mDoodleParams = savedInstanceState.getParcelable(KEY_PARAMS);
 	}

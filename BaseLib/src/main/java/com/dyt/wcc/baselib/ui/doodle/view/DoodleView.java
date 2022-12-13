@@ -13,7 +13,6 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Looper;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -43,7 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.forward.androids.utils.ImageUtils;
 import cn.forward.androids.utils.LogUtil;
 import cn.forward.androids.utils.Util;
 
@@ -727,7 +725,7 @@ public class DoodleView extends FrameLayout implements IDoodle {
 		}
 	}
 
-	private void refreshDoodleBitmap (boolean drawAll) {
+	public void refreshDoodleBitmap (boolean drawAll) {
 		if (!mOptimizeDrawing) {
 			return;
 		}
@@ -877,52 +875,86 @@ public class DoodleView extends FrameLayout implements IDoodle {
 	@SuppressLint("StaticFieldLeak")
 	@Override
 	public void save () {
-		if (mIsSaving) {
-			return;
+//		if (mIsSaving) {
+//			return;
+//		}
+//
+//		mIsSaving = true;
+		if (mDoodleListener!=null){
+			mDoodleListener.onSaved(DoodleView.this,mDoodleBitmap,mDoodleRotateDegree,mOptimizeDrawing);
 		}
 
-		mIsSaving = true;
-
-		new AsyncTask<Void, Void, Bitmap>() {
-
-			//			@SuppressLint("WrongThread")
-			@Override
-			protected Bitmap doInBackground (Void... voids) {
-				Bitmap savedBitmap = null;
-
-				if (mOptimizeDrawing) {
-					refreshDoodleBitmap(true);
-					if (mDoodleBitmap.isRecycled()){
-						Log.e(TAG, "doInBackground: ------mdoodleBitmap is recycle------");
-					}
-					savedBitmap = mDoodleBitmap;
-				} else {
-					savedBitmap = mBitmap.copy(mBitmap.getConfig(), true);
-					Canvas canvas = new Canvas(savedBitmap);
-					for (IDoodleItem item : mItemStack) {
-						item.draw(canvas);
-					}
-				}
-//				if (!mDoodleBitmap.isRecycled() && mDoodleBitmap != null) {
-					savedBitmap = ImageUtils.rotate(savedBitmap, mDoodleRotateDegree, false);
+//		new Thread(new Runnable() {
+//			@Override
+//			public void run () {
+//				Bitmap savedBitmap = null;
+//
+//				if (mOptimizeDrawing) {
+//					refreshDoodleBitmap(true);
+//					if (mDoodleBitmap.isRecycled()){
+//						Log.e(TAG, "doInBackground: ------mdoodleBitmap is recycle------");
+//					}
+//					savedBitmap = mDoodleBitmap;
+//				} else {
+//					savedBitmap = mBitmap.copy(mBitmap.getConfig(), true);
+//					Canvas canvas = new Canvas(savedBitmap);
+//					for (IDoodleItem item : mItemStack) {
+//						item.draw(canvas);
+//					}
 //				}
-				return savedBitmap;
-			}
+//				savedBitmap = ImageUtils.rotate(savedBitmap, mDoodleRotateDegree, false);
+//
+//				mDoodleListener.onSaved(DoodleView.this, savedBitmap, () -> {
+//					mIsSaving = false;
+//					if (mOptimizeDrawing) {
+//						refreshDoodleBitmap(false);
+//					}
+//					refresh();
+//				});
+//
+//			}
+//		}).start();
 
-			@Override
-			protected void onPostExecute (Bitmap bitmap) {
-				mDoodleListener.onSaved(DoodleView.this, bitmap, new Runnable() {
-					@Override
-					public void run () {
-						mIsSaving = false;
-						if (mOptimizeDrawing) {
-							refreshDoodleBitmap(false);
-						}
-						refresh();
-					}
-				});
-			}
-		}.execute();
+//		new AsyncTask<Void, Void, Bitmap>() {
+//
+//			//			@SuppressLint("WrongThread")
+//			@Override
+//			protected Bitmap doInBackground (Void... voids) {
+//				Bitmap savedBitmap = null;
+//
+//				if (mOptimizeDrawing) {
+//					refreshDoodleBitmap(true);
+//					if (mDoodleBitmap.isRecycled()){
+//						Log.e(TAG, "doInBackground: ------mdoodleBitmap is recycle------");
+//					}
+//					savedBitmap = mDoodleBitmap;
+//				} else {
+//					savedBitmap = mBitmap.copy(mBitmap.getConfig(), true);
+//					Canvas canvas = new Canvas(savedBitmap);
+//					for (IDoodleItem item : mItemStack) {
+//						item.draw(canvas);
+//					}
+//				}
+////				if (!mDoodleBitmap.isRecycled() && mDoodleBitmap != null) {
+//					savedBitmap = ImageUtils.rotate(savedBitmap, mDoodleRotateDegree, false);
+////				}
+//				return savedBitmap;
+//			}
+//
+//			@Override
+//			protected void onPostExecute (Bitmap bitmap) {
+//				mDoodleListener.onSaved(DoodleView.this, bitmap, new Runnable() {
+//					@Override
+//					public void run () {
+//						mIsSaving = false;
+//						if (mOptimizeDrawing) {
+//							refreshDoodleBitmap(false);
+//						}
+//						refresh();
+//					}
+//				});
+//			}
+//		}.execute();
 	}
 
 	public IDoodleListener getDoodleListener () {
