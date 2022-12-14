@@ -17,6 +17,7 @@
             android:layout_gravity="bottom"
             android:background="#88000000"
             android:padding="10dp"
+            android:imeOptions="actionDone"
             android:textColor="#ffffff"
             android:textSize="26dp" />
 
@@ -46,6 +47,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="bottom|right"
                 android:gravity="center"
+                android:visibility="invisible"
                 android:padding="10dp"
                 android:text="@string/doodle_enter"
                 android:textColor="#232323"
