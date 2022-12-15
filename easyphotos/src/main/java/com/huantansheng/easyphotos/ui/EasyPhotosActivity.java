@@ -160,8 +160,13 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
 		configuration = getApplicationContext().getResources().getConfiguration();
 		metrics = getResources().getDisplayMetrics();
 		locale_language = Locale.getDefault().getLanguage();
-		//		Log.e(TAG, "onCreate: =app==" + configuration.locale.getDisplayLanguage());
-		//		Log.e(TAG, "onCreate: ===" + Locale.getDefault().getDisplayLanguage());
+
+		String packageNameStr = getApplicationContext().getPackageName();
+		if (packageNameStr != null &&packageNameStr.contains("mti448")){
+			findViewById(R.id.cl_gallery_main).setBackgroundColor(getColor(R.color.base_bg_app_mti448));
+		}else {
+			findViewById(R.id.cl_gallery_main).setBackgroundColor(getColor(R.color.bg_preview_right));
+		}
 
 		hideActionBar();
 		adaptationStatusBar();

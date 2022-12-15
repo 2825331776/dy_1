@@ -155,6 +155,14 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 			return;
 		}
 		sp = getSharedPreferences(doodle_sp, MODE_PRIVATE);
+
+		String packageNameStr = getApplicationContext().getPackageName();
+		if (packageNameStr != null &&packageNameStr.contains("mti448")){
+			findViewById(R.id.m_root_view).setBackgroundColor(getColor(R.color.base_bg_app_mti448));
+		}else {
+			findViewById(R.id.m_root_view).setBackgroundColor(getColor(R.color.bg_preview_right));
+		}
+
 		initData();
 		initView();
 	}

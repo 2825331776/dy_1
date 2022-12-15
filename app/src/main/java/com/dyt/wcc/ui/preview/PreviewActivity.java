@@ -596,7 +596,10 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 					 LinearLayout.LayoutParams.WRAP_CONTENT);
 					settingPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 					settingPopWindows.setHeight(mDataBinding.clPreviewActivity.getHeight() / 2 + DensityUtil.dp2px(mContext.get(), 10));
-					settingPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
+					// 更改之前
+//					settingPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
+					//改短 之后
+					settingPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 60));
 
 					settingPopWindows.setFocusable(true);
 					settingPopWindows.setOutsideTouchable(true);
@@ -614,11 +617,14 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 					//						settingPopWindows.getContentView().setRotation(180);
 					//					}
 					//					if (oldRotation == 0 || oldRotation == 270) {
-					int offsetX = DensityUtil.dp2px(mContext.get(), 10);
+					int offsetX = DensityUtil.dp2px(mContext.get(), 30);
+					//改短之前
+//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,
+//					 -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
+//					settingPopWindows.getContentView().setRotation(0);
+					//改短之后
 					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,
-					 -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
-					settingPopWindows.getContentView().setRotation(0);
-					//					}
+							-settingPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
 
 					//弹窗消失，机芯执行保存指令。
 					settingPopWindows.setOnDismissListener(() -> {
@@ -845,6 +851,7 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 			isConnect = true;
 			mVid = device.getVendorId();
 			mPid = device.getProductId();
+//			loadingDialog.show();
 
 			if (mUvcCameraHandler == null || mUvcCameraHandler.isReleased()) {
 				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1,
@@ -862,6 +869,7 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 
 		@Override
 		public void onDettach (UsbDevice device) {
+//			loadingDialog.dismiss();
 			//				mUvcCameraHandler.close();
 			isConnect = false;
 			if (isDebug)
@@ -878,6 +886,7 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 
 		@Override
 		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
+//			loadingDialog.dismiss();
 			isConnect = false;
 			if (isDebug)
 				Log.e(TAG, " DD == onDisconnect: ");
@@ -2648,8 +2657,9 @@ mDataBinding.textureViewPreviewActivity.getHeight());
 		}
 	}
 
+
 	/**
-	 * 显示pop弹窗
+	 * 关于界面 pop弹窗
 	 *
 	 * @param view
 	 */
@@ -2666,6 +2676,7 @@ mDataBinding.textureViewPreviewActivity.getHeight());
 		companyPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 		companyPopWindows.setHeight(DensityUtil.dp2px(mContext.get(), BuildConfig.COMPANY_H));
 		//		companyPopWindows.setHeight(ConstraintLayout.LayoutParams);
+//		companyPopWindows.setWidth(mDataBinding.clPreviewActivity.getMeasuredWidth() - DensityUtil.dp2px(mContext.get(), 60));
 		companyPopWindows.setWidth(mDataBinding.clPreviewActivity.getMeasuredWidth() - DensityUtil.dp2px(mContext.get(), 60));
 
 		companyPopWindows.setFocusable(false);
