@@ -41,8 +41,8 @@ public abstract class LanguageFactory {
 	//MTI 448
 	protected static final String[] language_mti448_array     = new String[]{"中文", "English","Русский", "Deutsch",
 			"Italiano", "한국인", "日本",
-			//法语fr-rFR、西班牙语es-rES、芬兰语fi-rFI、波兰语pl-rPL、葡萄牙语pt-rPT
-			"Français","Español","Suomalainen","Polski","Português"};
+			//法语fr-rFR、西班牙语es-rES、芬兰语fi-rFI、波兰语pl-rPL、葡萄牙语pt-rPT, 瑞典语 sv-rSE
+			"Français","Español","Suomalainen","Polski","Português","Svenska"};
 
 	protected              Context  mContext;
 

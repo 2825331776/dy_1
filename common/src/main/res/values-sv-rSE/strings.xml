@@ -1,0 +1,6 @@
+<resources>
+<!--    瑞典语 sv-rSE-->
+    <string name="turn_on">öppna</string>
+    <string name="turn_off">stänga</string>
+    <string name="preview_hint_not_connect">Anslut din enhet och slå på OTG-funktionen</string>
+</resources>

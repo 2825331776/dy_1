@@ -1497,7 +1497,6 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 				break;
 			case 8://西班牙语
 				locale = new Locale("es", "ES");
-				;
 				break;
 			case 9://芬兰语
 				locale = new Locale("fi", "FI");
@@ -1507,6 +1506,9 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 				break;
 			case 11://葡萄牙语
 				locale = new Locale("pt", "PT");
+				break;
+			case 12://瑞典语 sv-rSE
+				locale = new Locale("sv","SE");
 				break;
 			default:
 				locale = Locale.SIMPLIFIED_CHINESE;
@@ -1774,6 +1776,10 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 				break;
 			case 11://葡萄牙语
 				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 11).apply();
+				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
+				break;
+			case 12:
+				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 12).apply();
 				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
 				break;
 

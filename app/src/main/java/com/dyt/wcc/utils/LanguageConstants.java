@@ -34,5 +34,7 @@ public class LanguageConstants {
 	public static final String POLISH = "pl";
 	//葡萄牙语
 	public static final String PORTUGUESE = "pt";
+	//瑞典语
+	public static final String SVENSKA = "sv";
 }
 

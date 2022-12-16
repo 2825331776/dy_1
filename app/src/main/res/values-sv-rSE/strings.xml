@@ -1,0 +1,60 @@
+<resources>
+    <!--关于页面-->
+    <string name="preview_about_company_website">Site Internet：</string>
+    <string name="preview_about_contact_us">Contact us：</string>
+    <string name="about_tel_info">Téléphone：</string>
+
+
+
+    <!--    超温警告弹窗文字-->
+    <string name="AlarmTempInput">Input</string>
+    <string name="cancel">Annullera</string>
+    <string name="confirm">OKEJ</string>
+
+    <string name="check_updates">Sök efter uppdateringar</string>
+    <string name="VersionName">Versionsnumret: </string>
+
+    <!--    设置页-->
+    <string name="SettingGeneral">Allmänt</string>
+    <string name="SettingLanguage">Språk</string>
+    <string name="SettingTemperatureUnit">Temperaturenheter</string>
+    <string name="SettingIsRecordAudio">Spela in ljud</string>
+    <string name="SettingCameraParams">parameter</string>
+    <string name="SettingCameraParams_Emittance">Emissivitet</string>
+    <string name="SettingCameraParams_Distance">avstånd</string>
+    <string name="SettingCameraParams_ReflectTemp">Reflekterad temperatur</string>
+    <string name="SettingCameraParams_Revise">rättelse</string>
+    <string name="SettingCameraParams_FreeAirTemp">Omgivningstemperatur</string>
+    <string name="SettingCameraParams_Humidity">fuktighet (%)</string>
+    <string name="SettingCameraParams_Reset">standard</string>
+    <string name="setting_update">uppdatera</string>
+    <string name="setting_check_version_info">Programvaruversion:%s</string>
+    <string name="setting_high_low_temp_gain_toggle_info">CVäxling vid hög och låg temperatur</string>
+    <string name="setting_high_gain">Haute température</string>
+    <string name="setting_low_gain">Basse température</string>
+
+    <!--  设置======更新操作-->
+    <string name="toast_downloading_background">Ladda ner…</string>
+    <string name="pop_version">Den senaste versionen:</string>
+    <string name="toast_already_latest_version">Redan den senaste versionen</string>
+    <string name="pop_update_now">Uppdatera nu</string>
+    <string name="pop_ignore">bortse från</string>
+
+    <string name="toast_is_recording">Inspelning pågår…</string>
+    <string name="toast_need_connect_camera">Anslut kameran</string>
+    <string name="toast_dont_have_permission">Motsvarande behörigheter beviljas inte</string>
+    <string name="toast_base_permission_explain">Utan läs- / skrivlagringsbehörigheter kommer du inte att kunna förhandsgranska sidor, ta foton, spela in och andra funktioner. Beviljas behörigheter?</string>
+    <string name="toast_base_permission_tosetting">Utan tillstånd kommer du inte att kunna förhandsgranska sidan, ta bilder, spela in och andra funktioner. Vill du gå till Inställningar för att slå på?</string>
+
+    <!--    取值范围设置 -->
+    <string name="toast_range_int">"Värdeintervallet är(%1$d ~ %2$d)"</string>
+    <string name="toast_range_float">"Värdeintervallet är(%1$.2f ~ %2$.2f)"</string>
+    <string name="toast_complete_Emittance">Installationen är klar</string>
+    <string name="toast_complete_Distance">Installationen är klar</string>
+    <string name="toast_complete_Reflect">Installationen är klar</string>
+    <string name="toast_complete_Revise">Installationen är klar</string>
+    <string name="toast_complete_FreeAirTemp">Installationen är klar</string>
+    <string name="toast_complete_Humidity">Installationen är klar</string>
+
+
+</resources>

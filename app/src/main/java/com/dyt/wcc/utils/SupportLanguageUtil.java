@@ -34,6 +34,8 @@ public class SupportLanguageUtil {
 		put(LanguageConstants.FINNISH, new Locale("fi","FI"));
 		put(LanguageConstants.POLISH, new Locale("pl","PL"));
 		put(LanguageConstants.PORTUGUESE, new Locale("pt","PT"));
+		//放置 瑞典语
+		put(LanguageConstants.SVENSKA,new Locale("sv","SE"));
 	}};
 
 	/**
