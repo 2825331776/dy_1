@@ -218,10 +218,7 @@ public class ColorSliderView extends View {
 		height = Math.max(height, (orientation == Orientation.HORIZONTAL) ? defaultSizeShort :
 				defaultSizeLong);
 
-//		Log.e(TAG, "onMeasure: width ==>" + width + " height ==> " + height);
-
 		setMeasuredDimension(width, height);
-		//		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 	}
 
 
@@ -386,9 +383,17 @@ public class ColorSliderView extends View {
 	}
 
 	private int[] createDefaultColorTable () {
-		return new int[]{Color.rgb(255, 0, 0), Color.rgb(255, 255, 0), Color.rgb(0, 255, 0),
-				Color.rgb(0, 255, 255), Color.rgb(0, 0, 255), Color.rgb(255, 0, 255),
-				Color.rgb(255, 0, 0)};
+		return new int[]{
+				Color.rgb(255,255,255),
+				Color.rgb(0,0,0),
+				Color.rgb(255, 0, 0),
+				Color.rgb(255, 255, 0),
+				Color.rgb(0, 255, 0),
+				Color.rgb(0, 255, 255),
+				Color.rgb(0, 0, 255),
+				Color.rgb(255, 0, 255),
+				Color.rgb(255, 0, 0)
+				};
 	}
 
 	/**

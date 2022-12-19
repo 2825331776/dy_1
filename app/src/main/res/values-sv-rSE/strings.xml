@@ -30,8 +30,8 @@
     <string name="setting_update">uppdatera</string>
     <string name="setting_check_version_info">Programvaruversion:%s</string>
     <string name="setting_high_low_temp_gain_toggle_info">CVäxling vid hög och låg temperatur</string>
-    <string name="setting_high_gain">Haute température</string>
-    <string name="setting_low_gain">Basse température</string>
+    <string name="setting_high_gain">Hög</string>
+    <string name="setting_low_gain">Låg</string>
 
     <!--  设置======更新操作-->
     <string name="toast_downloading_background">Ladda ner…</string>

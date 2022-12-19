@@ -52,7 +52,7 @@ public class CircleDisplayView extends androidx.appcompat.widget.AppCompatImageB
 	 */
 	private final int DEFAULT_BORDER_COLOR_SELECT = Color.GREEN;
 
-	private final int DEFAULT_BORDER_STROKE_WIDTH = 3;
+	private final int DEFAULT_BORDER_STROKE_WIDTH = 6;
 
 	private final static String TAG = "CircleImageViewInfo";
 
@@ -159,11 +159,15 @@ public class CircleDisplayView extends androidx.appcompat.widget.AppCompatImageB
 
 	private void initPaint () {
 		paintBorder = new Paint();
+		paintBorder.setAntiAlias(true);
+
 		paintBorder.setStyle(Paint.Style.STROKE);
 		paintBorder.setStrokeWidth(mBorderStrokeWidth);
 
 
 		paintContent = new Paint();
+		paintContent.setAntiAlias(true);
+
 		paintContent.setStyle(Paint.Style.FILL_AND_STROKE);
 
 		bitmapContent = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
@@ -248,8 +252,6 @@ public class CircleDisplayView extends androidx.appcompat.widget.AppCompatImageB
 		} else {
 			paintBorder.setColor(borderColor);
 		}
-//		Log.e(TAG, "onDraw: ----------------paintBorder--------selected------" + selected);
-//		Log.e(TAG, "onDraw: ---------------------paintBorder--------------" + borderRadius+" 对象： " +this);
 		canvas.drawCircle(mMeasureWidth / 2.0f, mMeasureHeight / 2.0f, borderRadius, paintBorder);
 
 		//draw content

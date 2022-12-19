@@ -124,10 +124,12 @@ public class PenpointDIASelectorView extends View /*implements ScrollView */ {
 	private void initPaint (Context context) {
 
 		contentPaint = new Paint();
+		contentPaint.setAntiAlias(true);
 		contentPaint.setColor(DEFAULT_ITEM_FILL_COLOR);
 		contentPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
 		borderPaint = new Paint();
+		borderPaint.setAntiAlias(true);
 		borderPaint.setColor(DEFAULT_ITEM_BORDER_COLOR);
 		borderPaint.setStyle(Paint.Style.STROKE);
 

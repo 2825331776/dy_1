@@ -39,8 +39,8 @@
     <string name="setting_update">Päivitä</string>
     <string name="setting_check_version_info">Sovelluksen versio:%s</string>
     <string name="setting_high_low_temp_gain_toggle_info">Korkean ja matalan lämpötilan kytkin</string>
-    <string name="setting_high_gain">Korkea lämpötila</string>
-    <string name="setting_low_gain">Matala lämpötila</string>
+    <string name="setting_high_gain">Korkea</string>
+    <string name="setting_low_gain">Matala</string>
 
     <!--  设置======更新操作-->
     <string name="toast_downloading_background">Ladataan…</string>

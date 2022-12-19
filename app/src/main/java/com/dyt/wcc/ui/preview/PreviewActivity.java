@@ -1585,7 +1585,7 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 
 	@Override
 	protected void initView () {
-		Log.e(TAG, "----------FLAVOR------------ " + BuildConfig.FLAVOR);
+//		Log.e(TAG, "----------FLAVOR------------ " + BuildConfig.FLAVOR);
 		if (BuildConfig.FLAVOR.equals(DYConstants.COMPANY_MTI448)) {
 			MTI448_relayout();
 		}
