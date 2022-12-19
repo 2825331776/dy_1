@@ -32,12 +32,13 @@ public class DYConstants {
 	public static final String COMPANY_JMS     = "jms";//精明鼠
 	public static final String COMPANY_QIANLI  = "qianli";//潜力
 	public static final String COMPANY_TESLONG = "teslong";//泰视朗
-	public static final String COMPANY_MAILSEEY = "mileseey";//迈测
+	public static final String COMPANY_MILESEEY = "mileseey";//迈测
 	public static final String COMPANY_VOTIN = "votin";//光智
 	public static final String COMPANY_RADIFEEL = "radifeel";//睿迪菲尔
 	public static final String COMPANY_HENXTECH = "henxtech";//恒昕泰
 
-	public static final String COMPANY_MTI448 = "MTI448";//恒昕泰
+	public static final String COMPANY_MTI448 = "MTI448";//精明鼠 MTI448
+	public static final String COMPANY_ACEGMET_TI256 = "ms_ti256";
 
 	public static final String PIC_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + File.separator + "DYTCamera";
 

@@ -1,4 +1,4 @@
-package com.dyt.wcc.customize.mailseey;
+package com.dyt.wcc.customize.mileseey;
 
 import android.content.Context;
 import android.content.SharedPreferences;

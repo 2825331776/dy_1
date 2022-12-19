@@ -27,9 +27,9 @@ ext {
                     // 应用 id
                     appId         : "com.dyt.wcc",
                     // 构建版本号
-                    VCode         : 257,
+                    VCode         : 258,
                     // 版本名称
-                    VName         : "1.5.07",
+                    VName         : "1.5.08",
                     appPackageName: "DytSpectrumOwl",
             ],
             NeutralConfig : [
@@ -124,6 +124,13 @@ ext {
                     VCode         : 101,
                     VName         : "1.1.1",
                     appPackageName: "MTI448"
+            ],
+            //迈测 默认英文(仅有中英文)
+            MS_TI256      : [
+                    appId         : "com.dyt.wcc",
+                    VCode         : 101,
+                    VName         : "1.1.1",
+                    appPackageName: "ms_ti256"
             ],
     ]
 

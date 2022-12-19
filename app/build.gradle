@@ -150,6 +150,14 @@ android {
             res.srcDirs = ['src/mti448/res-mti448']
             manifest.srcFile 'src/mti448/AndroidManifest.xml'
         }
+
+        //迈测 acegmet_ti256
+        MS_TI256{
+            java.srcDirs = ['src/ms_ti256/java']
+            assets.srcDirs = ['src/ms_ti256/assets']
+            res.srcDirs = ['src/ms_ti256/res-ti256']
+            manifest.srcFile 'src/ms_ti256/AndroidManifest.xml'
+        }
     }
 
     productFlavors {
@@ -308,6 +316,26 @@ android {
                                     , PROVIDER_AUTHORITIES: "com.dyt.wcc.mileseey.FileProvider"]
             flavorDimensions "demo1"
         }
+
+        //迈测 ACEGMET TI256 版本 。默认英文(仅有中英文)
+        MS_TI256{
+            applicationIdSuffix ".ms_ti256"
+            versionCode rootProject.ext.envInfo.DYTConfig.VCode
+            versionName rootProject.ext.envInfo.DYTConfig.VName
+            buildConfigField "String", "CONFIGS_NAME", '"configs_ms_ti256"'
+            buildConfigField "String", "SP_NAME", '"DYT_IR_SP_ACEGTI256"'
+            buildConfigField "int", "COMPANY_H", '165'
+            manifestPlaceholders = [CHANNEL_VALUE         : "ms_ti256"
+                                    , app_icon            :  "@mipmap/ic_logo_ms_ti256_round"
+                                    , BUGLYAPPID          : "86672f42dd"
+                                    , BUGLYAPPVersion     : rootProject.ext.envInfo.MS_TI256.VName
+                                    , BUGLYAPPChannel     : "ms_ti256"
+                                    , BUGLYENABLEDEBUG    : "false"
+                                    , APP_Channel         : rootProject.ext.envInfo.MS_TI256.appPackageName
+                                    , PROVIDER_AUTHORITIES: "com.dyt.wcc.ms_ti256.FileProvider"]
+            flavorDimensions "demo1"
+        }
+
         //光智 定制
         votin {
             applicationIdSuffix ".votin"

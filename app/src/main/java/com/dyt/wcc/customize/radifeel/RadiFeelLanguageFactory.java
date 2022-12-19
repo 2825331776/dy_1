@@ -2,12 +2,15 @@ package com.dyt.wcc.customize.radifeel;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
+import com.dyt.wcc.BuildConfig;
 import com.dyt.wcc.constans.DYConstants;
 import com.dyt.wcc.customize.LanguageFactory;
+
+import java.util.HashMap;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -21,20 +24,6 @@ public class RadiFeelLanguageFactory extends LanguageFactory {
 		super(mContext);
 	}
 
-	/**
-	 * 获取语言String 通过传入下标
-	 *
-	 * @param index 下标（如果超过当前 数据长度，则返回一个默认值：英文）
-	 * @return 返回 显示的语言string
-	 */
-	@Override
-	public CharSequence getLanguageByIndex (@NonNull int index) {
-		if (index < language_radifeel_array.length) {
-			return language_radifeel_array[index];
-		} else {
-			return language_radifeel_array[0];
-		}
-	}
 
 	/**
 	 * 生成 AlertDialog
@@ -44,9 +33,23 @@ public class RadiFeelLanguageFactory extends LanguageFactory {
 	@Override
 	public AlertDialog createAlertDialog () {
 		AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-		return builder.setSingleChoiceItems(LanguageFactory.language_radifeel_array,
-				mContext.getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE).getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0),
-				createDialogListener()).create();
+		return builder.setSingleChoiceItems(languageMap.values().toArray(new String[]{}),
+				mContext.getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE).getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0)
+				, createDialogListener()).create();
+	}
+	@Override
+	public HashMap<String, String> createLanguageHashMap (String configFlavor) {
+		if (BuildConfig.FLAVOR == DYConstants.COMPANY_RADIFEEL && languageMap.isEmpty()) {
+			languageMap.put("zh-rCN", "中文");
+			languageMap.put("en-rUS", "English");//英语
+		}
+		if (listKeys.isEmpty() && listValues.isEmpty()) {
+			listKeys.addAll(languageMap.keySet());
+			listValues.addAll(languageMap.values());
+		}
+		Log.e("-COMPANY_RADIFEEL-",
+				"createLanguageHashMap: -------------keys---" + listKeys.toString() + " values-->" + listValues.toString());
+		return languageMap;
 	}
 
 	/**
@@ -63,13 +66,4 @@ public class RadiFeelLanguageFactory extends LanguageFactory {
 		};
 	}
 
-	/**
-	 * 无参获取 语言数组
-	 *
-	 * @return
-	 */
-	@Override
-	public String[] getLanguageArray () {
-		return language_radifeel_array;
-	}
 }

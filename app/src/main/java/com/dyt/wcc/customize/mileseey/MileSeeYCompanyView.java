@@ -1,4 +1,4 @@
-package com.dyt.wcc.customize.mailseey;
+package com.dyt.wcc.customize.mileseey;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,7 +6,6 @@ import android.content.res.Configuration;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -66,8 +67,8 @@ import com.dyt.wcc.customize.henxtech.HenxtechCompanyView;
 import com.dyt.wcc.customize.henxtech.HenxtechLanguageFactory;
 import com.dyt.wcc.customize.jms.JMSCompanyView;
 import com.dyt.wcc.customize.jms.JMSLanguageFactory;
-import com.dyt.wcc.customize.mailseey.MileSeeYCompanyView;
-import com.dyt.wcc.customize.mailseey.MileSeeYLanguageFactory;
+import com.dyt.wcc.customize.mileseey.MileSeeYCompanyView;
+import com.dyt.wcc.customize.mileseey.MileSeeYLanguageFactory;
 import com.dyt.wcc.customize.mti448.MTI448CompanyView;
 import com.dyt.wcc.customize.mti448.MTI448LanguageFactory;
 import com.dyt.wcc.customize.neutral.NeutralCompanyView;
@@ -155,6 +156,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		}
 	};
 
+	private LanguageFactory mLanguageFactory;
 
 	private UVCCameraHandler mUvcCameraHandler;
 	//点线矩形测温弹窗
@@ -297,7 +299,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 					popSettingBinding.tvCameraSettingReflectUnit.setText(String.format("(%s)",
 					 DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
 					popSettingBinding.tvCameraSettingFreeAirTempUnit.setText(String.format("(%s)",
-					 DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
+							DYConstants.tempUnit[sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0)]));
 
 					//初始化 每个输入框的过滤器 ,切换 温度单位，需要重新设置一遍过滤器（先移除，再添加）
 
@@ -327,7 +329,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 									//if (isDebug)Log.i(TAG, "run: ======AppVersionCodeList===" +
 									// Arrays.toString(AppVersionCodeList));
 									int thisVersionCode =
- Integer.parseInt(mContext.get().getPackageManager().getPackageInfo(mContext.get().getPackageName(),
+									 Integer.parseInt(mContext.get().getPackageManager().getPackageInfo(mContext.get().getPackageName(),
 0).versionName.split("-")[0].replace(".", ""));
 									//									if (isDebug)Log.i(TAG,
 									//									"run: versionName === 》" +
@@ -401,7 +403,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 							}
 							if (true) {
 								popSettingBinding.etCameraSettingReflect.setText(String.format(Locale.CHINESE, "%d",
-								 (int) refreshValueByTempUnit(DYConstants.SETTING_REFLECT_DEFAULT_VALUE)));
+										(int) refreshValueByTempUnit(DYConstants.SETTING_REFLECT_DEFAULT_VALUE)));
 								popSettingBinding.etCameraSettingRevise.setText(String.format(Locale.CHINESE, "%s",
 								 refreshValueByTempUnit(DYConstants.SETTING_CORRECTION_DEFAULT_VALUE)));
 								popSettingBinding.etCameraSettingEmittance.setText(String.format(Locale.CHINESE, "%s",
@@ -454,7 +456,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 								float value = inputValue2Temp(Float.parseFloat(v16.getText().toString()));
 								if (value > DYConstants.REVISE_MAX || value < DYConstants.REVISE_MIN) {
 									showToast(getString(R.string.toast_range_float, getBorderValue(DYConstants.REVISE_MIN),
-getBorderValue(DYConstants.REVISE_MAX)));
+											getBorderValue(DYConstants.REVISE_MAX)));
 									return true;
 								}
 								if (mUvcCameraHandler != null) {
@@ -520,7 +522,7 @@ getBorderValue(DYConstants.REVISE_MAX)));
 								//拿到的都是摄氏度
 								if (value > DYConstants.REFLECT_MAX || value < DYConstants.REFLECT_MIN) {//带上 温度单位
 									showToast(getString(R.string.toast_range_int, Math.round(getBorderValue(DYConstants.REFLECT_MIN)),
-Math.round(getBorderValue(DYConstants.REFLECT_MAX))));
+											Math.round(getBorderValue(DYConstants.REFLECT_MAX))));
 									return true;
 								}
 								if (mUvcCameraHandler != null) {
@@ -597,7 +599,8 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 					settingPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 					settingPopWindows.setHeight(mDataBinding.clPreviewActivity.getHeight() / 2 + DensityUtil.dp2px(mContext.get(), 10));
 					// 更改之前
-//					settingPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 20));
+					//					settingPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext
+					//					.get(), 20));
 					//改短 之后
 					settingPopWindows.setWidth(mDataBinding.clPreviewActivity.getWidth() - DensityUtil.dp2px(mContext.get(), 60));
 
@@ -619,9 +622,10 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 					//					if (oldRotation == 0 || oldRotation == 270) {
 					int offsetX = DensityUtil.dp2px(mContext.get(), 30);
 					//改短之前
-//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,
-//					 -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15), Gravity.CENTER);
-//					settingPopWindows.getContentView().setRotation(0);
+					//					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,
+					//					 -mDataBinding.llContainerPreviewSeekbar.getHeight() / 2 - DensityUtil.dp2px(mContext.get(), 15),
+					//					 Gravity.CENTER);
+					//					settingPopWindows.getContentView().setRotation(0);
 					//改短之后
 					settingPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,
 							-settingPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
@@ -714,79 +718,26 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 					});
 					//					sp.getString(DYConstants.LANGUAGE_SETTING, "ch");
 					// 切换语言 spinner
-					final LanguageFactory factory;
-					switch (BuildConfig.FLAVOR) {
-						case DYConstants.COMPANY_JMS:
-							factory = new JMSLanguageFactory(mContext.get());
-							break;
-						case DYConstants.COMPANY_VICTOR:
-							factory = new VictorLanguageFactory(mContext.get());
-							break;
-						case DYConstants.COMPANY_QIANLI:
-							factory = new QianLiLanguageFactory(mContext.get());
-							break;
-						case DYConstants.COMPANY_TESLONG:
-							factory = new TeslongLanguageFactory(mContext.get());
-							break;
-						case DYConstants.COMPANY_NEUTRAL:
-							factory = new NeutralLanguageFactory(mContext.get());
-							break;
-						case DYConstants.COMPANY_MAILSEEY:
-							factory = new MileSeeYLanguageFactory(mContext.get());
-							break;
-						case DYConstants.COMPANY_VOTIN:
-							factory = new VotinLanguageFactory(mContext.get());
-							break;
-						case DYConstants.COMPANY_RADIFEEL:
-							factory = new RadiFeelLanguageFactory(mContext.get());
-							break;
-						case DYConstants.COMPANY_HENXTECH:
-							factory = new HenxtechLanguageFactory(mContext.get());
-							break;
-						case DYConstants.COMPANY_MTI448:
-							factory = new MTI448LanguageFactory(mContext.get());
-							break;
-						default:
-							factory = new DytLanguageFactory(mContext.get());
-							break;
-					}
-					popSettingBinding.btShowChoiceLanguage.setText(factory.getLanguageByIndex(sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX
-					, 0)));
+
+					popSettingBinding.btShowChoiceLanguage.setText(mLanguageFactory.getListValues().get(sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0)));
 					//					popSettingBinding.btShowChoiceLanguage.setText(DYConstants
 					//					.languageArray[sp.getInt(DYConstants
 					//					.LANGUAGE_SETTING_INDEX, 0)]);
 					popSettingBinding.btShowChoiceLanguage.setOnClickListener(v18 -> {
 						AlertDialog alertDialog;
-						factory.setListener((dialog, index) -> {
+						mLanguageFactory.setListener((dialog, index) -> {
 							if (index != sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0)) {
 								sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, index).apply();
-								sp.edit().putString(DYConstants.LANGUAGE_SETTING, factory.getLanguageArray()[index]).apply();
+								sp.edit().putString(DYConstants.LANGUAGE_SETTING, mLanguageFactory.getListKeys().get(index)).apply();
 								if (settingPopWindows != null)
 									settingPopWindows.dismiss();
-								toSetLanguage(index);
+								toSetLanguage(mLanguageFactory.getListKeys().get(index));
 							}
 							dialog.dismiss();
 						});
-						factory.createDialogListener();
-						alertDialog = factory.createAlertDialog();
-						//						AlertDialog.Builder builder = new AlertDialog
-						//						.Builder(mContext.get());
-						//						builder.setSingleChoiceItems(DYConstants
-						//						.languageArray, sp.getInt(DYConstants
-						//						.LANGUAGE_SETTING_INDEX, 0), (dialog, which) -> {
-						//							if (which != sp.getInt(DYConstants
-						//							.LANGUAGE_SETTING_INDEX, 0)) {
-						//								sp.edit().putInt(DYConstants
-						//								.LANGUAGE_SETTING_INDEX, which).apply();
-						//								sp.edit().putString(DYConstants
-						//								.LANGUAGE_SETTING, DYConstants
-						//								.languageArray[which]).apply();
-						//								if (settingPopWindows != null)
-						//									settingPopWindows.dismiss();
-						//								toSetLanguage(which);
-						//							}
-						//							dialog.dismiss();
-						//						}).create();
+						mLanguageFactory.createDialogListener();
+						mLanguageFactory.createLanguageHashMap(BuildConfig.FLAVOR);
+						alertDialog = mLanguageFactory.createAlertDialog();
 						alertDialog.show();
 					});
 					break;
@@ -851,11 +802,11 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 			isConnect = true;
 			mVid = device.getVendorId();
 			mPid = device.getProductId();
-//			loadingDialog.show();
+			//			loadingDialog.show();
 
 			if (mUvcCameraHandler == null || mUvcCameraHandler.isReleased()) {
 				mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity, 1,
- 384, 292, 1, null, mDataBinding.dragTempContainerPreviewActivity, 0);
+384, 292, 1, null, mDataBinding.dragTempContainerPreviewActivity, 0);
 			}
 			mUvcCameraHandler.open(ctrlBlock);
 			startPreview();
@@ -869,7 +820,7 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 
 		@Override
 		public void onDettach (UsbDevice device) {
-//			loadingDialog.dismiss();
+			//			loadingDialog.dismiss();
 			//				mUvcCameraHandler.close();
 			isConnect = false;
 			if (isDebug)
@@ -886,7 +837,7 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 
 		@Override
 		public void onDisconnect (UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
-//			loadingDialog.dismiss();
+			//			loadingDialog.dismiss();
 			isConnect = false;
 			if (isDebug)
 				Log.e(TAG, " DD == onDisconnect: ");
@@ -1306,7 +1257,7 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 		//		if (isDebug)Log.e(TAG,"height =="+ mTextureViewHeight + " width==" +
 		//		mTextureViewWidth);
 		mDataBinding.textureViewPreviewActivity.setFrameBitmap(highTempBt, lowTempBt, centerTempBt, normalPointBt,
-				DensityUtil.dp2px(mContext.get(), 30));
+DensityUtil.dp2px(mContext.get(), 30));
 
 		mDataBinding.textureViewPreviewActivity.iniTempBitmap(mTextureViewWidth, mTextureViewHeight);//初始化画板的值，是控件的像素的宽高
 		mDataBinding.textureViewPreviewActivity.setVidPid(mVid, mPid);//设置vid  pid
@@ -1417,11 +1368,11 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 					DYConstants.SETTING_CORRECTION_INT), 0);
 
 			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE,
-					DYConstants.SETTING_EMITTANCE_INT), 150);
+DYConstants.SETTING_EMITTANCE_INT), 150);
 			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_HUMIDITY_DEFAULT_VALUE,
 					DYConstants.SETTING_HUMIDITY_INT), 300);
 			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE,
-					DYConstants.SETTING_ENVIRONMENT_INT), 450);
+			 DYConstants.SETTING_ENVIRONMENT_INT), 450);
 			handler0.postDelayed(() -> defaultSettingReturn = sendS0Order(DYConstants.SETTING_REFLECT_DEFAULT_VALUE,
 			 DYConstants.SETTING_REFLECT_INT), 600);
 		} else if (DYTApplication.getRobotSingle() == DYTRobotSingle.TinYC_256_192) {
@@ -1430,7 +1381,7 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 				//					.SETTING_CORRECTION_DEFAULT_VALUE,DYConstants
 				//					.SETTING_CORRECTION_INT);
 				defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_EMITTANCE_DEFAULT_VALUE,
-				 3);
+			3);
 			}, 0);
 			//S0的湿度，对应大气透过率
 			//			handler0.postDelayed(new Runnable() {
@@ -1447,7 +1398,7 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 				//					.SETTING_ENVIRONMENT_DEFAULT_VALUE,DYConstants
 				//					.SETTING_ENVIRONMENT_INT);
 				defaultSettingReturn = mUvcCameraHandler.sendOrder(UVCCamera.CTRL_ZOOM_ABS, DYConstants.SETTING_ENVIRONMENT_DEFAULT_VALUE,
-				 2);
+						2);
 			}, 400);
 			handler0.postDelayed(() -> {
 				//					result = sendS0Order(DYConstants
@@ -1466,49 +1417,49 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 	 *
 	 * @param type 语言下标
 	 */
-	private void toSetLanguage (int type) {//切换语言
+	private void toSetLanguage (String type) {//切换语言
 		Locale locale;
 		Context context = DYTApplication.getInstance();
 		Log.e(TAG, "toSetLanguage: type===========" + type);
 		switch (type) {
-			case 0://中文
+			case "zh-rCN"://中文
 				locale = Locale.SIMPLIFIED_CHINESE;
 				break;
-			case 1://英语
+			case "en-rUS"://英语
 				locale = Locale.US;
 				break;
-			case 2://俄文 ru-rRU
+			case "ru-rRU"://俄文 ru-rRU
 				locale = new Locale("ru", "RU");
 				break;
-			case 3://德语 ge-rGE
+			case "de-rDE"://德语 ge-rGE
 				locale = Locale.GERMAN;
 				break;
-			case 4://意大利语   it-rIT
+			case "it-rIT"://意大利语   it-rIT
 				locale = Locale.ITALY;
 				break;
-			case 5://韩语
+			case "ko-rKR"://韩语"ko-rKR"
 				locale = Locale.KOREA;
 				break;
-			case 6://日语
+			case "ja-rJP"://日语"ja-rJP"
 				locale = Locale.JAPAN;
 				break;
-			case 7://法语
+			case "fr-rFR"://法语"fr-rFR"
 				locale = Locale.FRANCE;
 				break;
-			case 8://西班牙语
+			case "es-rES"://西班牙语"es-rES"
 				locale = new Locale("es", "ES");
 				break;
-			case 9://芬兰语
+			case "fi-rFI"://芬兰语"fi-rFI"
 				locale = new Locale("fi", "FI");
 				break;
-			case 10://波兰语
+			case "pl-rPL"://波兰语"pl-rPL"
 				locale = new Locale("pl", "PL");
 				break;
-			case 11://葡萄牙语
+			case "pt-rPT"://葡萄牙语"pt-rPT"
 				locale = new Locale("pt", "PT");
 				break;
-			case 12://瑞典语 sv-rSE
-				locale = new Locale("sv","SE");
+			case "sv-rSE"://瑞典语 sv-rSE
+				locale = new Locale("sv", "SE");
 				break;
 			default:
 				locale = Locale.SIMPLIFIED_CHINESE;
@@ -1583,9 +1534,10 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 		}
 	}
 
+
 	@Override
 	protected void initView () {
-//		Log.e(TAG, "----------FLAVOR------------ " + BuildConfig.FLAVOR);
+		//		Log.e(TAG, "----------FLAVOR------------ " + BuildConfig.FLAVOR);
 		if (BuildConfig.FLAVOR.equals(DYConstants.COMPANY_MTI448)) {
 			MTI448_relayout();
 		}
@@ -1690,103 +1642,68 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 			isFirstRun = true;
 			sp.edit().putInt(DYConstants.FIRST_RUN, 1).apply();
 		}
+		switch (BuildConfig.FLAVOR) {
+			case DYConstants.COMPANY_JMS:
+				mLanguageFactory = new JMSLanguageFactory(mContext.get());
+				break;
+			case DYConstants.COMPANY_VICTOR:
+				mLanguageFactory = new VictorLanguageFactory(mContext.get());
+				break;
+			case DYConstants.COMPANY_QIANLI:
+				mLanguageFactory = new QianLiLanguageFactory(mContext.get());
+				break;
+			case DYConstants.COMPANY_TESLONG:
+				mLanguageFactory = new TeslongLanguageFactory(mContext.get());
+				break;
+			case DYConstants.COMPANY_NEUTRAL:
+				mLanguageFactory = new NeutralLanguageFactory(mContext.get());
+				break;
+			case DYConstants.COMPANY_MILESEEY:
+				mLanguageFactory = new MileSeeYLanguageFactory(mContext.get());
+				break;
+			case DYConstants.COMPANY_VOTIN:
+				mLanguageFactory = new VotinLanguageFactory(mContext.get());
+				break;
+			case DYConstants.COMPANY_RADIFEEL:
+				mLanguageFactory = new RadiFeelLanguageFactory(mContext.get());
+				break;
+			case DYConstants.COMPANY_HENXTECH:
+				mLanguageFactory = new HenxtechLanguageFactory(mContext.get());
+				break;
+			case DYConstants.COMPANY_MTI448:
+				mLanguageFactory = new MTI448LanguageFactory(mContext.get());
+				break;
+			default:
+				mLanguageFactory = new DytLanguageFactory(mContext.get());
+				break;
+		}
 
-		String language_local_str = "";
-		int language_index = 0;
-		language_index = sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, -1);
-		language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING, "en");
+		String language_country_str = "";
+		int language_list_index = 0;
 		if (isFirstRun) {//第一次打开应用
 			//默认不打开音频录制
 			sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING, 1).apply();
 
-			if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N) {
-				language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING,
-				 Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage());
-			} else {
-				language_local_str = sp.getString(DYConstants.LANGUAGE_SETTING,
-						Resources.getSystem().getConfiguration().locale.getLanguage());
+			String  sysLanguage = getLanguageCountryStr();
+			Log.e(TAG, "initView: sys-----------------------language-------" + sysLanguage);
+			if (mLanguageFactory.getListKeys().contains(sysLanguage)){
+				Log.e(TAG, "initView: ----------contains-------------------------");
+				language_country_str = sysLanguage;
+				language_list_index =  mLanguageFactory.getListKeys().indexOf(language_country_str);
+			}else {
+				//判断 sp 有没有设置过，再判断 语言工厂是否有设置默认语言，再获取 语言工厂 的 语言支持列表的第一位。
+				language_country_str = sp.getString(DYConstants.LANGUAGE_SETTING, mLanguageFactory.getDefaultLanguageStr() != null ?
+						mLanguageFactory.getDefaultLanguageStr() : mLanguageFactory.getListKeys().get(0));
+				//获取 默认 语言下标
+				language_list_index = sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, mLanguageFactory.getListKeys().indexOf(language_country_str));
 			}
-			//语言的 索引下标
-			if (new Locale("zh").getLanguage().equals(language_local_str)) {
-				language_index = 0;
-			} else if (new Locale("en").getLanguage().equals(language_local_str)) {
-				language_index = 1;
-			} else if (new Locale("ru", "RU").getLanguage().equals(language_local_str)) {
-				language_index = 2;
-			} else if (new Locale("de").getLanguage().equals(language_local_str)) {
-				language_index = 3;
-			} else if (new Locale("it").getLanguage().equals(language_local_str)) {
-				language_index = 4;
-			} else if (new Locale("ko").getLanguage().equals(language_local_str)) {
-				language_index = 5;
-			} else if (new Locale("ja").getLanguage().equals(language_local_str)) {
-				language_index = 6;
-			} else {
-				language_index = 7;
-			}
-		}
-		//		Log.e(TAG, "initView: ===============language_local_str==============" +
-		//		language_local_str);
-		//		Log.e(TAG, "initView: ===============language_index==============" +
-		//		language_index);
-		switch (language_index) {
-			case 0:
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 0).apply();
-				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-				break;
-			case 1:
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 1).apply();
-				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-				break;
-			case 2:
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 2).apply();
-				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-				break;
-			case 3:
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 3).apply();
-				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-				break;
-			case 4:
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 4).apply();
-				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-				break;
-			case 5:
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 5).apply();
-				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-				break;
-			case 6:
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 6).apply();
-				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-				break;
-			case 7://法语
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 7).apply();
-				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-				break;
-			case 8://西班牙语
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 8).apply();
-				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-				break;
-			case 9://芬兰语
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 9).apply();
-				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-				break;
-			case 10://波兰语
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 10).apply();
-				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-				break;
-			case 11://葡萄牙语
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 11).apply();
-				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-				break;
-			case 12:
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 12).apply();
-				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-				break;
 
-			default:
-				sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, 0).apply();
-				sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_local_str).apply();
-				break;
+			Log.e(TAG, "initView: -------language_country_str-------" + language_country_str + " isfirst run------" + isFirstRun);
+
+			//保存
+			sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, language_list_index).apply();
+			sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_country_str).apply();
+
 		}
 
 		highTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_high);
@@ -1794,7 +1711,12 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 		centerTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_center);
 		normalPointBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_main_preview_measuretemp_point);
 
+		Locale locale = new Locale(sp.getString(DYConstants.LANGUAGE_SETTING,mLanguageFactory.getDefaultLanguageStr()).split("-r")[0]);
+		Configuration configuration = getResources().getConfiguration();
 		DisplayMetrics dm = getResources().getDisplayMetrics();
+		configuration.setLocale(locale);
+		getResources().updateConfiguration(configuration,dm);
+
 		screenWidth = dm.widthPixels;
 		screenHeight = dm.heightPixels;
 		mSendCommand = new SendCommand();
@@ -1845,7 +1767,7 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 					mDataBinding.dragTempContainerPreviewActivity.setTempSuffix(sp.getInt(DYConstants.TEMP_UNIT_SETTING, 0));
 
 					mUvcCameraHandler = UVCCameraHandler.createHandler((Activity) mContext.get(), mDataBinding.textureViewPreviewActivity,
-					 1, 384, 292, 1, null, mDataBinding.dragTempContainerPreviewActivity, 0);
+ 1, 384, 292, 1, null, mDataBinding.dragTempContainerPreviewActivity, 0);
 
 					mUsbMonitor = new USBMonitor(mContext.get(), onDeviceConnectListener);
 				} else {
@@ -1885,6 +1807,18 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 	}
 
 	private boolean isSavePhoto = false;
+
+	/**
+	 * 获取当前 语言代码 及其 城市代码
+	 * @return string 格式：xx-rXX
+	 */
+	private String getLanguageCountryStr () {
+		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N) {
+			return Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage() + "-r" + Resources.getSystem().getConfiguration().getLocales().get(0).getCountry();
+		} else {
+			return Resources.getSystem().getConfiguration().locale.getLanguage() + "-r" + Resources.getSystem().getConfiguration().locale.getCountry();
+		}
+	}
 
 	/**
 	 * 初始化界面的监听器
@@ -1996,7 +1930,7 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 				if (myNumberPicker == null) {
 					//设置背景色
 					myNumberPicker = new MyNumberPicker(mContext.get(), sp.getFloat("overTemp", 0.0f), tempUnitPosition,
-					 getBackgroundColor());
+getBackgroundColor());
 				} else {
 					myNumberPicker.setmType(tempUnitPosition);
 				}
@@ -2154,7 +2088,7 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 			Log.e(TAG, "initListener: oldRotation == 0 || oldRotation == 270===");
 			int offsetX = 0;
 			PLRPopupWindows.showAsDropDown(mDataBinding.llContainerPreviewSeekbar, offsetX,
-			 -mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
+					-mDataBinding.llContainerPreviewSeekbar.getHeight(), Gravity.CENTER);
 			PLRPopupWindows.getContentView().setRotation(0);
 			//			}
 
@@ -2176,7 +2110,7 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 				return;
 			if (!mDataBinding.toggleAreaCheck.isSelected()) {
 				mDataBinding.dragTempContainerPreviewActivity.openAreaCheck(mDataBinding.textureViewPreviewActivity.getWidth(),
-mDataBinding.textureViewPreviewActivity.getHeight());
+				 mDataBinding.textureViewPreviewActivity.getHeight());
 				int[] areaData = mDataBinding.dragTempContainerPreviewActivity.getAreaIntArray();
 				mUvcCameraHandler.setArea(areaData);
 				mUvcCameraHandler.setAreaCheck(1);
@@ -2389,7 +2323,7 @@ mDataBinding.textureViewPreviewActivity.getHeight());
 					customizeCompany = new NeutralCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
 					break;
-				case DYConstants.COMPANY_MAILSEEY://迈测
+				case DYConstants.COMPANY_MILESEEY://迈测
 					customizeCompany = new MileSeeYCompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
 
@@ -2414,7 +2348,7 @@ mDataBinding.textureViewPreviewActivity.getHeight());
 							mUsbMonitor.unregister();
 						}
 						if (!isRecording()) {
-							startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.mailseey.PdfActivity.class));
+							startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.mileseey.PdfActivity.class));
 						}
 					});
 					break;
@@ -2578,13 +2512,13 @@ mDataBinding.textureViewPreviewActivity.getHeight());
 		cameraParams = ByteUtilsCC.byte2Float(tempParams);
 		//		if (cameraParams != null){
 		sp.edit().putFloat(DYConstants.setting_correction, cameraParams.get(DYConstants.setting_correction) != null ?
-				cameraParams.get(DYConstants.setting_correction) : 0.0f).apply();
+		 cameraParams.get(DYConstants.setting_correction) : 0.0f).apply();
 		sp.edit().putFloat(DYConstants.setting_emittance, cameraParams.get(DYConstants.setting_emittance)).apply();
 		sp.edit().putFloat(DYConstants.setting_distance, cameraParams.get(DYConstants.setting_distance)).apply();
 		sp.edit().putFloat(DYConstants.setting_reflect, cameraParams.get(DYConstants.setting_reflect) != null ?
-				cameraParams.get(DYConstants.setting_reflect) : 0.0f).apply();
+		 cameraParams.get(DYConstants.setting_reflect) : 0.0f).apply();
 		sp.edit().putFloat(DYConstants.setting_environment, cameraParams.get(DYConstants.setting_environment) != null ?
- cameraParams.get(DYConstants.setting_environment) : 0.0f).apply();
+		 cameraParams.get(DYConstants.setting_environment) : 0.0f).apply();
 		sp.edit().putFloat(DYConstants.setting_humidity, cameraParams.get(DYConstants.setting_humidity)).apply();
 		//		}
 	}
@@ -2609,13 +2543,13 @@ mDataBinding.textureViewPreviewActivity.getHeight());
 		cameraParams.put(DYConstants.setting_correction, sp.getFloat(DYConstants.setting_correction, 0.0f));
 		if (cameraParams != null) {
 			sp.edit().putFloat(DYConstants.setting_correction, cameraParams.containsKey(DYConstants.setting_correction) ?
-					cameraParams.get(DYConstants.setting_correction) : DYConstants.SETTING_CORRECTION_DEFAULT_VALUE).apply();
+			 cameraParams.get(DYConstants.setting_correction) : DYConstants.SETTING_CORRECTION_DEFAULT_VALUE).apply();
 			sp.edit().putFloat(DYConstants.setting_emittance, cameraParams.get(DYConstants.setting_emittance)).apply();
 			sp.edit().putFloat(DYConstants.setting_distance, cameraParams.get(DYConstants.setting_distance)).apply();
 			sp.edit().putFloat(DYConstants.setting_reflect, cameraParams.get(DYConstants.setting_reflect) != null ?
- cameraParams.get(DYConstants.setting_reflect) : 0.0f).apply();
+			 cameraParams.get(DYConstants.setting_reflect) : 0.0f).apply();
 			sp.edit().putFloat(DYConstants.setting_environment, cameraParams.get(DYConstants.setting_environment) != null ?
-					cameraParams.get(DYConstants.setting_environment) : 0.0f).apply();
+cameraParams.get(DYConstants.setting_environment) : 0.0f).apply();
 			sp.edit().putFloat(DYConstants.setting_humidity, cameraParams.get(DYConstants.setting_humidity)).apply();
 		}
 	}
@@ -2682,7 +2616,7 @@ mDataBinding.textureViewPreviewActivity.getHeight());
 		companyPopWindows.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 		companyPopWindows.setHeight(DensityUtil.dp2px(mContext.get(), BuildConfig.COMPANY_H));
 		//		companyPopWindows.setHeight(ConstraintLayout.LayoutParams);
-//		companyPopWindows.setWidth(mDataBinding.clPreviewActivity.getMeasuredWidth() - DensityUtil.dp2px(mContext.get(), 60));
+		//		companyPopWindows.setWidth(mDataBinding.clPreviewActivity.getMeasuredWidth() - DensityUtil.dp2px(mContext.get(), 60));
 		companyPopWindows.setWidth(mDataBinding.clPreviewActivity.getMeasuredWidth() - DensityUtil.dp2px(mContext.get(), 60));
 
 		companyPopWindows.setFocusable(false);
@@ -2703,7 +2637,7 @@ mDataBinding.textureViewPreviewActivity.getHeight());
 		//			if (isDebug)Log.e(TAG, "============showPopWindows: 0 /270");
 		int offsetX = DensityUtil.dp2px(mContext.get(), 30);
 		companyPopWindows.showAsDropDown(mDataBinding.clPreviewActivity, offsetX,
-				-companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
+		 -companyPopWindows.getHeight() - DensityUtil.dp2px(mContext.get(), 10), Gravity.CENTER);
 		//		companyPopWindows.getContentView().setRotation(0);
 		//		}
 	}
@@ -2901,7 +2835,7 @@ mDataBinding.textureViewPreviewActivity.getHeight());
 		int result = -1;
 
 		public int sendFloatCommand (int position, byte value0, byte value1, byte value2, byte value3, int interval0, int interval1,
-int interval2, int interval3, int interval4) {
+		 int interval2, int interval3, int interval4) {
 			psitionAndValue0 = (position << 8) | (0x000000ff & value0);
 			Handler handler0 = new Handler();
 

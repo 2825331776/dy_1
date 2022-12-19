@@ -2,12 +2,15 @@ package com.dyt.wcc.customize.neutral;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
+import com.dyt.wcc.BuildConfig;
 import com.dyt.wcc.constans.DYConstants;
 import com.dyt.wcc.customize.LanguageFactory;
+
+import java.util.HashMap;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -21,20 +24,6 @@ public class NeutralLanguageFactory extends LanguageFactory {
 		super(mContext);
 	}
 
-	/**
-	 * 获取语言String 通过传入下标
-	 *
-	 * @param index 下标（如果超过当前 数据长度，则返回一个默认值：英文）
-	 * @return 返回 显示的语言string
-	 */
-	@Override
-	public CharSequence getLanguageByIndex (@NonNull int index) {
-		if (index < language_neutral_array.length) {
-			return language_neutral_array[index];
-		} else {
-			return language_neutral_array[0];
-		}
-	}
 
 	/**
 	 * 生成 AlertDialog
@@ -44,9 +33,35 @@ public class NeutralLanguageFactory extends LanguageFactory {
 	@Override
 	public AlertDialog createAlertDialog () {
 		AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-		return builder.setSingleChoiceItems(LanguageFactory.language_neutral_array,
+		return builder.setSingleChoiceItems(languageMap.values().toArray(new String[]{}),
 				mContext.getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE).getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0),
 				createDialogListener()).create();
+	}
+
+	@Override
+	public HashMap<String, String> createLanguageHashMap (String configFlavor) {
+		if (BuildConfig.FLAVOR == DYConstants.COMPANY_NEUTRAL && languageMap.isEmpty()) {
+			languageMap.put("zh-rCN", "中文");
+			languageMap.put("en-rUS", "English");//英语
+			languageMap.put("ru-rRU", "Русский");//俄文
+			languageMap.put("de-rDE", "Deutsch");//德文
+			languageMap.put("it-rIT", "Italiano");//意大利文
+			languageMap.put("ko-rKR", "한국인");//韩语
+			languageMap.put("ja-rJP", "日本");//日语
+			languageMap.put("fr-rFR", "Français");//法语
+			languageMap.put("es-rES", "Español");//西班牙语
+			languageMap.put("fi-rFI", "Suomalainen");//芬兰语
+			languageMap.put("pl-rPL", "Polski");//波兰语
+			languageMap.put("pt-rPT", "Português");//葡萄牙语
+			languageMap.put("sv-rSE", "Svenska");//瑞典语
+		}
+		if (listKeys.isEmpty() && listValues.isEmpty()) {
+			listKeys.addAll(languageMap.keySet());
+			listValues.addAll(languageMap.values());
+		}
+		Log.e("--COMPANY_NEUTRAL-",
+				"createLanguageHashMap: -------------keys---" + listKeys.toString() + " values-->" + listValues.toString());
+		return languageMap;
 	}
 
 	/**
@@ -63,13 +78,4 @@ public class NeutralLanguageFactory extends LanguageFactory {
 		};
 	}
 
-	/**
-	 * 无参获取 语言数组
-	 *
-	 * @return
-	 */
-	@Override
-	public String[] getLanguageArray () {
-		return language_neutral_array;
-	}
 }

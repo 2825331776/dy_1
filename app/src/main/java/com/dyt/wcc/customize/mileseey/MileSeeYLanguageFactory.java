@@ -1,4 +1,4 @@
-package com.dyt.wcc.customize.votin;
+package com.dyt.wcc.customize.mileseey;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,14 +15,15 @@ import java.util.HashMap;
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
  * <p>Author：stefan cheng        </p>
- * <p>Create Date：2022/7/18  14:39     </p>
+ * <p>Create Date：2022/7/18  15:59     </p>
  * <p>Description：@todo         </p>
- * <p>PackagePath: com.dyt.wcc.customize.victor     </p>
+ * <p>PackagePath: com.dyt.wcc.customize.dyt     </p>
  */
-public class VotinLanguageFactory extends LanguageFactory {
-	public VotinLanguageFactory (Context mContext) {
+public class MileSeeYLanguageFactory extends LanguageFactory {
+	public MileSeeYLanguageFactory (Context mContext) {
 		super(mContext);
 	}
+
 
 	/**
 	 * 生成 AlertDialog
@@ -39,27 +40,19 @@ public class VotinLanguageFactory extends LanguageFactory {
 
 	@Override
 	public HashMap<String, String> createLanguageHashMap (String configFlavor) {
-		if (BuildConfig.FLAVOR == DYConstants.COMPANY_VOTIN && languageMap.isEmpty()) {
+		if (BuildConfig.FLAVOR == DYConstants.COMPANY_MILESEEY && languageMap.isEmpty()) {
 			languageMap.put("zh-rCN", "中文");
 			languageMap.put("en-rUS", "English");//英语
-			languageMap.put("ru-rRU", "Русский");//俄文
 			languageMap.put("de-rDE", "Deutsch");//德文
 			languageMap.put("it-rIT", "Italiano");//意大利文
-			languageMap.put("ko-rKR", "한국인");//韩语
-			languageMap.put("ja-rJP", "日本");//日语
 			languageMap.put("fr-rFR", "Français");//法语
 			languageMap.put("es-rES", "Español");//西班牙语
-			languageMap.put("fi-rFI", "Suomalainen");//芬兰语
-			languageMap.put("pl-rPL", "Polski");//波兰语
-			languageMap.put("pt-rPT", "Português");//葡萄牙语
-			languageMap.put("sv-rSE", "Svenska");//瑞典语
 		}
 		if (listKeys.isEmpty() && listValues.isEmpty()) {
 			listKeys.addAll(languageMap.keySet());
 			listValues.addAll(languageMap.values());
 		}
-		Log.e("--COMPANY_VOTIN-",
-				"createLanguageHashMap: -------------keys---" + listKeys.toString() + " values-->" + listValues.toString());
+		Log.e("--COMPANY_MILESEEY-", "createLanguageHashMap: -------------keys---" + listKeys.toString() + " values-->" + listValues.toString());
 		return languageMap;
 	}
 

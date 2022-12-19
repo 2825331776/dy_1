@@ -3,8 +3,13 @@ package com.dyt.wcc.customize;
 import android.content.Context;
 import android.content.DialogInterface;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+
+import com.dyt.wcc.BuildConfig;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * <p>Copyright (C), 2018.08.08-?       </p>
@@ -14,35 +19,34 @@ import androidx.appcompat.app.AlertDialog;
  * <p>PackagePath: com.dyt.wcc.customize     </p>
  */
 public abstract class LanguageFactory {
-	//点扬
+	/*//点扬
+	languageMap.put("zh-rCN", "中文");
+			languageMap.put("en-rUS", "English");//英语
+			languageMap.put("ru-rRU", "Русский");//俄文
+			languageMap.put("de-rDE", "Deutsch");//德文
+			languageMap.put("it-rIT", "Italiano");//意大利文
+			languageMap.put("ko-rKR", "한국인");//韩语
+			languageMap.put("ja-rJP", "日本");//日语
+			languageMap.put("fr-rFR", "Français");//法语
+			languageMap.put("es-rES", "Español");//西班牙语
+			languageMap.put("fi-rFI", "Suomalainen");//芬兰语
+			languageMap.put("pl-rPL", "Polski");//波兰语
+			languageMap.put("pt-rPT", "Português");//葡萄牙语
+			languageMap.put("sv-rSE", "Svenska");//瑞典语
 	protected static final String[] language_dyt_array     = new String[]{"中文", "English"};
-	//中性版
-	protected static final String[] language_neutral_array = new String[]{"中文", "English"};
-	//胜利
-	protected static final String[] language_victor_array  = new String[]{"中文", "English"};
-	//潜力
-	protected static final String[] language_qianli_array  = new String[]{"中文", "English"};
-	//泰视朗
-	protected static final String[] language_teslong_array = new String[]{"中文", "English"};
 	//精明鼠
 	protected static final String[] language_jms_array     = new String[]{"中文", "English","Русский", "Deutsch",
 			"Italiano", "한국인", "日本",
 			//法语fr-rFR、西班牙语es-rES、芬兰语fi-rFI、波兰语pl-rPL、葡萄牙语pt-rPT
 			"Français","Español","Suomalainen","Polski","Português"};
 	//迈测
-	protected static final String[] language_mileseey_array     = new String[]{"中文", "English"};
-	//光智
-	protected static final String[] language_votin_array     = new String[]{"中文", "English"};
-	//睿迪菲尔
-	protected static final String[] language_radifeel_array     = new String[]{"中文", "English"};
-	//恒昕泰
-	protected static final String[] language_henxtech_array     = new String[]{"中文", "English"};
+	protected static final String[] language_mileseey_array     = new String[]{"中文", "English","Deutsch","Français","Italiano","Español"};
 
 	//MTI 448
 	protected static final String[] language_mti448_array     = new String[]{"中文", "English","Русский", "Deutsch",
 			"Italiano", "한국인", "日本",
 			//法语fr-rFR、西班牙语es-rES、芬兰语fi-rFI、波兰语pl-rPL、葡萄牙语pt-rPT, 瑞典语 sv-rSE
-			"Français","Español","Suomalainen","Polski","Português","Svenska"};
+			"Français","Español","Suomalainen","Polski","Português","Svenska"};*/
 
 	protected              Context  mContext;
 
@@ -53,11 +57,24 @@ public abstract class LanguageFactory {
 	}
 
 	/**
+	 * 默认语言，为null 的话，则设置为系统语言。
+	 * eg: "CN" , "US"
+	 */
+	private String defaultLanguageStr = null;
+
+	public String getDefaultLanguageStr () {
+		return defaultLanguageStr;
+	}
+	public void setDefaultLanguageStr (String defaultLanguageStr) {
+		this.defaultLanguageStr = defaultLanguageStr;
+	}
+
+	/**
 	 * 切换的回调监听器函数
 	 */
 	public interface switchListener {
 		/**
-		 * 点击 嘎嘎
+		 * 点击 item
 		 *
 		 * @param index
 		 */
@@ -66,15 +83,16 @@ public abstract class LanguageFactory {
 
 	public LanguageFactory (Context mContext) {
 		this.mContext = mContext;
+		createLanguageHashMap(BuildConfig.FLAVOR);
 	}
 
-	/**
+	 /**
 	 * 获取语言String 通过传入下标
 	 *
 	 * @param index 下标（如果超过当前 数据长度，则返回一个默认值：英文）
 	 * @return 返回 显示的语言string
-	 */
-	public abstract CharSequence getLanguageByIndex (@NonNull int index);
+	 *//*
+	public abstract CharSequence getLanguageByIndex (@NonNull int index);*/
 
 	/**
 	 * 生成 AlertDialog
@@ -82,6 +100,29 @@ public abstract class LanguageFactory {
 	 * @return
 	 */
 	public abstract AlertDialog createAlertDialog ();
+
+	protected HashMap<String,String> languageMap = new HashMap<>();
+	protected List<String> listKeys = new ArrayList<>();
+	protected List<String> listValues = new ArrayList<>();
+
+	public List<String> getListKeys () {
+		return listKeys;
+	}
+
+	public List<String> getListValues () {
+		return listValues;
+	}
+
+	public HashMap<String, String> getLanguageMap () {
+		return languageMap;
+	}
+	/**
+	 *
+	 * @param configFlavor
+	 * @return
+	 */
+	public abstract HashMap<String,String> createLanguageHashMap(String configFlavor);
+
 
 	/**
 	 * 生成各自不同的监听器
@@ -95,5 +136,5 @@ public abstract class LanguageFactory {
 	 *
 	 * @return
 	 */
-	public abstract String[] getLanguageArray ();
+	/*public abstract String[] getLanguageArray ();*/
 }

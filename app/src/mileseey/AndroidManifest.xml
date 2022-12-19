@@ -37,7 +37,7 @@
         android:theme="@style/MyTheme">
 
         <activity
-            android:name=".customize.mailseey.PdfActivity"
+            android:name=".customize.mileseey.PdfActivity"
             android:configChanges="locale|orientation|screenSize|keyboardHidden|layoutDirection"
             android:exported="false"
             android:launchMode="singleTop"

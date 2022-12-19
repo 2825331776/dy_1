@@ -208,12 +208,12 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 		mVisible = true;
 		//		Log.e("TAG", "initData: -------------=====》" + photoClick.path);
 		//初始化 涂鸦  文字 的设置参数。
-		doodleColorData = sp.getInt(DOODLE_PALETTE_COLOR_VALUE, Color.RED);
+		doodleColorData = sp.getInt(DOODLE_PALETTE_COLOR_VALUE, Color.WHITE);
 		doodlePercent = sp.getFloat(DOODLE_PALETTE_COLOR_PERCENT, 1f);
 		doodleSizeIndex = sp.getInt(DOODLE_PAINT_SIZE_INDEX, 0);
 		doodlePaintSize = sp.getInt(DOODLE_PAINT_SIZE, 10);
 
-		characterColorData = sp.getInt(DRAW_TEXT_PALETTE_VALUE, Color.RED);
+		characterColorData = sp.getInt(DRAW_TEXT_PALETTE_VALUE, Color.WHITE);
 		characterPercent = sp.getFloat(DRAW_TEXT_PALETTE_PERCENT, 1f);
 		characterSizeIndex = sp.getInt(DRAW_TEXT_PAINT_SIZE_INDEX, 0);
 		characterPaintSize = sp.getInt(DRAW_TEXT_PAINT_SIZE, 40);
