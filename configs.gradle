@@ -7,8 +7,10 @@ ext {
             minSdkV       : 23,
             targetSdkV    : 31,
             //版本号和名字
-            VCode         : 105,
-            VName         : "1.1.5",
+            // 构建版本号
+            VCode         : 259,
+            // 版本名称
+            VName         : "1.5.09",
 
             supportV      : "27.0.0",
             appId         : "com.dyt.wcc",
@@ -27,9 +29,9 @@ ext {
                     // 应用 id
                     appId         : "com.dyt.wcc",
                     // 构建版本号
-                    VCode         : 258,
+                    VCode         : 259,
                     // 版本名称
-                    VName         : "1.5.08",
+                    VName         : "1.5.09",
                     appPackageName: "DytSpectrumOwl",
             ],
             NeutralConfig : [

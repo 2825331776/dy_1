@@ -69,6 +69,8 @@ import com.dyt.wcc.customize.jms.JMSCompanyView;
 import com.dyt.wcc.customize.jms.JMSLanguageFactory;
 import com.dyt.wcc.customize.mileseey.MileSeeYCompanyView;
 import com.dyt.wcc.customize.mileseey.MileSeeYLanguageFactory;
+import com.dyt.wcc.customize.ms_ti256.MSTI256CompanyView;
+import com.dyt.wcc.customize.ms_ti256.MSTI256LanguageFactory;
 import com.dyt.wcc.customize.mti448.MTI448CompanyView;
 import com.dyt.wcc.customize.mti448.MTI448LanguageFactory;
 import com.dyt.wcc.customize.neutral.NeutralCompanyView;
@@ -1673,6 +1675,9 @@ DYConstants.SETTING_EMITTANCE_INT), 150);
 			case DYConstants.COMPANY_MTI448:
 				mLanguageFactory = new MTI448LanguageFactory(mContext.get());
 				break;
+			case DYConstants.COMPANY_ACEGMET_TI256:
+				mLanguageFactory = new MSTI256LanguageFactory(mContext.get());
+				break;
 			default:
 				mLanguageFactory = new DytLanguageFactory(mContext.get());
 				break;
@@ -2349,6 +2354,34 @@ getBackgroundColor());
 						}
 						if (!isRecording()) {
 							startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.mileseey.PdfActivity.class));
+						}
+					});
+					break;
+				case DYConstants.COMPANY_ACEGMET_TI256://迈测
+					customizeCompany = new MSTI256CompanyView();
+					view = customizeCompany.getCompanyView(mContext.get());
+
+					TextView msti256_type = view.findViewById(R.id.tv_about_devices_type_radifeel);
+
+					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
+						msti256_type.setText("TI256");
+					}
+					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 160 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 120) {
+						msti256_type.setText("TI160");
+					}
+
+					view.findViewById(R.id.tv_about_main_user_manual_info_mileseey).setOnClickListener(v3 -> {
+						if (companyPopWindows != null && companyPopWindows.isShowing()) {
+							companyPopWindows.dismiss();
+						}
+						if (mUvcCameraHandler != null && !mUvcCameraHandler.snRightIsPreviewing()) {
+							mUvcCameraHandler.close();
+						}
+						if (mUsbMonitor != null && mUsbMonitor.isRegistered()) {
+							mUsbMonitor.unregister();
+						}
+						if (!isRecording()) {
+							startActivity(new Intent(PreviewActivity.this, com.dyt.wcc.customize.ms_ti256.PdfActivity.class));
 						}
 					});
 					break;

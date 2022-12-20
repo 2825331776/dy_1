@@ -152,7 +152,7 @@ android {
         }
 
         //迈测 acegmet_ti256
-        MS_TI256{
+        ms_ti256{
             java.srcDirs = ['src/ms_ti256/java']
             assets.srcDirs = ['src/ms_ti256/assets']
             res.srcDirs = ['src/ms_ti256/res-ti256']
@@ -317,8 +317,8 @@ android {
             flavorDimensions "demo1"
         }
 
-        //迈测 ACEGMET TI256 版本 。默认英文(仅有中英文)
-        MS_TI256{
+        //迈测 ACEGMET TI256 版本 。默认英文(仅有中英文) flavor name
+        ms_ti256{//flavor
             applicationIdSuffix ".ms_ti256"
             versionCode rootProject.ext.envInfo.DYTConfig.VCode
             versionName rootProject.ext.envInfo.DYTConfig.VName

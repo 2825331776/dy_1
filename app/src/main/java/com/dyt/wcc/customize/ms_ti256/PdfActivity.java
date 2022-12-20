@@ -1,4 +1,4 @@
-package com.dyt.wcc.customize.mileseey;
+package com.dyt.wcc.customize.ms_ti256;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -115,12 +115,6 @@ public class PdfActivity extends BaseActivity<ActivityPdfBinding> {
 		switch ( sp.getString(DYConstants.LANGUAGE_SETTING,"D:en-rUS")){
 			case "zh-rCN":
 				fileName = "TRReadmeCN.pdf";
-				break;
-			case "en-rUS":
-				fileName = "TRReadmeEN.pdf";
-				break;
-			case "de-rDE":
-				fileName = "TRReadmeDE.pdf";
 				break;
 			default:
 				fileName = "TRReadmeEN.pdf";
