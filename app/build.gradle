@@ -251,7 +251,7 @@ android {
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_QIANLI"'
             buildConfigField "int", "COMPANY_H", '145'
             manifestPlaceholders = [CHANNEL_VALUE         : "QianLiPir"
-                                    , app_icon            : "@mipmap/ic_launcher_qianli_round"
+                                    , app_icon            : "@mipmap/ic_launcher_qianli"
                                     , BUGLYAPPID          : "9086b0a6ab"
                                     , BUGLYAPPVersion     : rootProject.ext.envInfo.DYTConfig.VName
                                     , BUGLYAPPChannel     : "qianli"

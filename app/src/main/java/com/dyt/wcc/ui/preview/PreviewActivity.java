@@ -738,7 +738,7 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 							dialog.dismiss();
 						});
 						mLanguageFactory.createDialogListener();
-						mLanguageFactory.createLanguageHashMap(BuildConfig.FLAVOR);
+//						mLanguageFactory.createLanguageHashMap(BuildConfig.FLAVOR);
 						alertDialog = mLanguageFactory.createAlertDialog();
 						alertDialog.show();
 					});
@@ -1690,9 +1690,9 @@ DYConstants.SETTING_EMITTANCE_INT), 150);
 			sp.edit().putInt(DYConstants.RECORD_AUDIO_SETTING, 1).apply();
 
 			String  sysLanguage = getLanguageCountryStr();
-			Log.e(TAG, "initView: sys-----------------------language-------" + sysLanguage);
+//			Log.e(TAG, "initView: sys-----------------------language-------" + sysLanguage);
 			if (mLanguageFactory.getListKeys().contains(sysLanguage)){
-				Log.e(TAG, "initView: ----------contains-------------------------");
+//				Log.e(TAG, "initView: ----------contains-------------------------");
 				language_country_str = sysLanguage;
 				language_list_index =  mLanguageFactory.getListKeys().indexOf(language_country_str);
 			}else {
@@ -1703,7 +1703,7 @@ DYConstants.SETTING_EMITTANCE_INT), 150);
 				language_list_index = sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, mLanguageFactory.getListKeys().indexOf(language_country_str));
 			}
 
-			Log.e(TAG, "initView: -------language_country_str-------" + language_country_str + " isfirst run------" + isFirstRun);
+//			Log.e(TAG, "initView: -------language_country_str-------" + language_country_str + " isfirst run------" + isFirstRun);
 
 			//保存
 			sp.edit().putInt(DYConstants.LANGUAGE_SETTING_INDEX, language_list_index).apply();

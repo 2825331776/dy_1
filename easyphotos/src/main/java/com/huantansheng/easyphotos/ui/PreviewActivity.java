@@ -211,7 +211,7 @@ public class PreviewActivity extends AppCompatActivity /*implements PreviewPhoto
 		doodleColorData = sp.getInt(DOODLE_PALETTE_COLOR_VALUE, Color.WHITE);
 		doodlePercent = sp.getFloat(DOODLE_PALETTE_COLOR_PERCENT, 1f);
 		doodleSizeIndex = sp.getInt(DOODLE_PAINT_SIZE_INDEX, 0);
-		doodlePaintSize = sp.getInt(DOODLE_PAINT_SIZE, 10);
+		doodlePaintSize = sp.getInt(DOODLE_PAINT_SIZE, mDataBinding.paintSizeSelect.getPaintFontSize()/2);
 
 		characterColorData = sp.getInt(DRAW_TEXT_PALETTE_VALUE, Color.WHITE);
 		characterPercent = sp.getFloat(DRAW_TEXT_PALETTE_PERCENT, 1f);

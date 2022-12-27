@@ -69,7 +69,7 @@ public class PenpointDIASelectorView extends View /*implements ScrollView */ {
 	@ColorInt
 	private int itemBorderSelectColor = DEFAULT_ITEM_BORDER_COLOR_SELECT;//选中边框颜色
 	private int itemFillColor         = DEFAULT_ITEM_FILL_COLOR;
-	private int paintFontSize         = DEFAULT_PAINT_FONT_SIZE;//画笔粗细
+	private int paintFontSize         = DEFAULT_PAINT_FONT_SIZE/2;//画笔粗细
 	private int borderFontSize        = DEFAULT_PAINT_FONT_SIZE / 2;//边框粗细
 
 	private Paint contentPaint;//内容专用
@@ -250,6 +250,10 @@ public class PenpointDIASelectorView extends View /*implements ScrollView */ {
 		return -1;
 	}
 
+	public int getPaintFontSize () {
+		return paintFontSize;
+	}
+
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
 		switch (event.getAction()) {
@@ -257,8 +261,9 @@ public class PenpointDIASelectorView extends View /*implements ScrollView */ {
 				int down = judgeIsItemClick(event.getX(), event.getY());
 				if (down >= 0) {
 					selectIndex = down;
+					paintFontSize = (DEFAULT_PAINT_FONT_SIZE / 2) + 4 * down;
 					if (selectorListener != null) {
-						selectorListener.onItemSelect(down, (DEFAULT_PAINT_FONT_SIZE / 2) + 4 * down);
+						selectorListener.onItemSelect(down, paintFontSize);
 					}
 					invalidate();
 				}

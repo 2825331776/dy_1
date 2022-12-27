@@ -2,42 +2,54 @@ package com.dyt.wcc.customize.mileseey;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 import androidx.viewpager.widget.ViewPager;
 
 import com.dyt.wcc.R;
-import com.dyt.wcc.common.base.BaseActivity;
 import com.dyt.wcc.constans.DYConstants;
 import com.dyt.wcc.databinding.ActivityPdfBinding;
 
 import java.io.File;
-import java.util.Locale;
 
 import es.voghdev.pdfviewpager.library.adapter.PDFPagerAdapter;
 import es.voghdev.pdfviewpager.library.asset.CopyAsset;
 import es.voghdev.pdfviewpager.library.asset.CopyAssetThreadImpl;
 
 
-public class PdfActivity extends BaseActivity<ActivityPdfBinding> {
+public class PdfActivity extends/* BaseActivity<ActivityPdfBinding>*/ AppCompatActivity {
 
 	private SharedPreferences sp;
 
-	@Override
+/*	@Override
 	protected String getLanguageStr () {
 		if (sp != null) {
-			return sp.getString(DYConstants.LANGUAGE_SETTING, Locale.getDefault().getLanguage());
+			return sp.getString(DYConstants.LANGUAGE_SETTING, "en-rUS").split("-r")[0];
 		} else {
-			return Locale.getDefault().getLanguage();
+			return "en";
 		}
-	}
+	}*/
+
+	/*	@Override
+		protected int bindingLayout () {
+			return R.layout.activity_pdf;
+		}*/
+	private ActivityPdfBinding mDataBinding;
 
 	@Override
-	protected int bindingLayout () {
-		return R.layout.activity_pdf;
+	protected void onCreate (@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_pdf);
+
+
+		initView();
 	}
 
 	private String fileName = "";
@@ -48,7 +60,7 @@ public class PdfActivity extends BaseActivity<ActivityPdfBinding> {
 		((PDFPagerAdapter) mDataBinding.pdfViewPager.getAdapter()).close();
 	}
 
-	final String[] sampleAssets = {"TRReadmeCN.pdf", "TRReadmeEN.pdf"};
+	final String[] sampleAssets = {"TRReadmeCN.pdf", "TRReadmeEN.pdf", "TRReadmeDE.pdf"};
 	File pdfFolder;
 
 	private int pdfCurrentIndex = 0;
@@ -101,7 +113,7 @@ public class PdfActivity extends BaseActivity<ActivityPdfBinding> {
 			@Override
 			public void failure (Exception e) {
 				e.printStackTrace();
-				Toast.makeText(mContext.get(), e.getMessage(), Toast.LENGTH_LONG).show();
+				Toast.makeText(PdfActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
 			}
 		});
 
@@ -111,28 +123,24 @@ public class PdfActivity extends BaseActivity<ActivityPdfBinding> {
 	}
 
 	protected String getPdfPathOnSDCard () {
-		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
-		switch ( sp.getString(DYConstants.LANGUAGE_SETTING,"D:en-rUS")){
-			case "zh-rCN":
-				fileName = "TRReadmeCN.pdf";
-				break;
-			case "en-rUS":
-				fileName = "TRReadmeEN.pdf";
-				break;
-			case "de-rDE":
-				fileName = "TRReadmeDE.pdf";
-				break;
-			default:
-				fileName = "TRReadmeEN.pdf";
-				break;
+		String langStr = sp.getString(DYConstants.LANGUAGE_SETTING, "");
+		if (langStr.contains("zh")) {
+			fileName = "TRReadmeCN.pdf";
+		} else if (langStr.contains("en")) {
+			fileName = "TRReadmeEN.pdf";
+		} else if (langStr.contains("de")) {
+			fileName = "TRReadmeDE.pdf";
+		} else {
+			fileName = "TRReadmeEN.pdf";
 		}
 		mDataBinding.tvTitlePdf.setText(fileName);
 		File f = new File(pdfFolder, fileName);
 		return f.getAbsolutePath();
 	}
 
-	@Override
 	protected void initView () {
+		sp = this.getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
+
 		pdfFolder = Environment.getExternalStorageDirectory();
 		copyAssetsOnSDCard();
 

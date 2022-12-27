@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.LocaleList;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -45,6 +46,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 
 	@Override
 	protected void onCreate (@Nullable Bundle savedInstanceState) {
+		Log.e(TAG, "onCreate: ");
 		super.onCreate(savedInstanceState);
 		mDataBinding = DataBindingUtil.setContentView(this, bindingLayout());//绑定布局
 		//		onCreateLanguageStr = getResources().getConfiguration().locale.getLanguage();
@@ -160,6 +162,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 	//	}
 	@Override
 	protected void attachBaseContext (Context newBase) {
+		Log.e(TAG, "attachBaseContext: ");
 		//		mContext = newBase;
 		super.attachBaseContext(wrap(newBase));
 	}
