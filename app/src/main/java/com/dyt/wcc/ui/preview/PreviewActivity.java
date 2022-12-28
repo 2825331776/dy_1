@@ -1727,12 +1727,12 @@ DYConstants.SETTING_EMITTANCE_INT), 150);
 		mSendCommand = new SendCommand();
 
 		List<String> permissions = new ArrayList<>();
-		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-			permissions.add(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
-		} else {
+//		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+//			permissions.add(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+//		} else {
 			permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
 			permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-		}
+//		}
 		permissions.add(Manifest.permission.CAMERA);
 		permissions.add(Manifest.permission.RECORD_AUDIO);
 

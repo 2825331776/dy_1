@@ -6,5 +6,8 @@
     <usb-device
         product-id="22592"
         vendor-id="3034" />
+    <usb-device
+        product-id="1345"
+        vendor-id="911" />
 </resources>
     

@@ -156,7 +156,7 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
     if (!mDeviceHandle && fd) {
         if (mUsbFs)
             free(mUsbFs);
-        LOGE("UVCCamera connect usbfs: %s", usbfs);
+//        LOGE("UVCCamera connect usbfs: %s", usbfs);
         mUsbFs = strdup(usbfs);
         if (UNLIKELY(!mContext)) {
             result = uvc_init2(&mContext, NULL, mUsbFs);
@@ -190,22 +190,22 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
                 mPid = pid;
 //                mStatusCallback = new UVCStatusCallback(mDeviceHandle);
 //                mButtonCallback = new UVCButtonCallback(mDeviceHandle);
-                LOGE("vid=============%d  , pid=================%d", vid, pid);
+//                LOGE("vid=============%d  , pid=================%d", vid, pid);
                 mFrameImage = new FrameImage(mDeviceHandle);
                 mPreview = new UVCPreviewIR(mDeviceHandle, mFrameImage);
                 mPreview->setVidPid(mVid, mPid);
                 mFrameImage->setVidPid(mVid, mPid);
 
-                time_t t;
-                struct tm *tmp;
-
-                char buf2[64];
-                /* 获取时间 */
-                time(&t);
-                tmp = localtime(&t);
-                /* 转化时间 */
-                strftime(buf2, 64, "=========当前时间: %Y-%m-%d %H:%M:%S", tmp);
-                LOGE("=========%s\n", buf2);
+//                time_t t;
+//                struct tm *tmp;
+//
+//                char buf2[64];
+//                /* 获取时间 */
+//                time(&t);
+//                tmp = localtime(&t);
+//                /* 转化时间 */
+//                strftime(buf2, 64, "=========当前时间: %Y-%m-%d %H:%M:%S", tmp);
+//                LOGE("=========%s\n", buf2);
 
 
 //                FILE* outFile = NULL;
@@ -224,13 +224,6 @@ int UVCCamera::connect(int vid, int pid, int fd, int busnum, int devaddr, const 
                 mDeviceHandle = NULL;
                 close(fd);
 
-//                FILE* outFile = NULL;
-//                outFile =fopen("/storage/emulated/0/Android/data/com.dyt.wcc.dytpir/files/DYTLog.txt", "a+");
-//                if(outFile != NULL)
-//                {
-//                    fprintf(outFile, "             UVCCamera::connect. could not open camera:err=%d\n",result);
-//                    fclose(outFile);
-//                }
             }
         } else {
             LOGE("could not find camera:err=%d", result);

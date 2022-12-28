@@ -5,9 +5,9 @@
 
 
     <!-- <uses-permission android:name="android.permission.MANAGE_DOCUMENTS"/> -->
-    <uses-permission android:name="MANAGE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
+<!--    <uses-permission android:name="MANAGE_EXTERNAL_STORAGE"/>-->
+   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" /> <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- 安装包更新 -->
@@ -38,6 +38,8 @@
         android:supportsRtl="true"
         android:requestLegacyExternalStorage="true"
         android:theme="@style/MyTheme">
+        <meta-data android:name="ScopedStorage" android:value="true" />
+
         <activity
             android:name="com.dyt.wcc.ui.preview.PreviewActivity"
             android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
