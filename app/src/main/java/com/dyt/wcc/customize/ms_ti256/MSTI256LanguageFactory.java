@@ -43,7 +43,7 @@ public class MSTI256LanguageFactory extends LanguageFactory {
 	@Override
 	public HashMap<String, String> createLanguageHashMap (String configFlavor) {
 		if (BuildConfig.FLAVOR == DYConstants.COMPANY_ACEGMET_TI256 && languageMap.isEmpty()) {
-			languageMap.put("zh-rCN", "中文");
+//			languageMap.put("zh-rCN", "中文");
 			languageMap.put("en-rUS", "English");//英语
 		}
 		if (listKeys.isEmpty() && listValues.isEmpty()) {

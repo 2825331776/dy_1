@@ -1,11 +1,7 @@
 package com.dyt.wcc.customize.ms_ti256;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
-import android.os.Handler;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.viewpager.widget.ViewPager;
 
@@ -18,8 +14,6 @@ import java.io.File;
 import java.util.Locale;
 
 import es.voghdev.pdfviewpager.library.adapter.PDFPagerAdapter;
-import es.voghdev.pdfviewpager.library.asset.CopyAsset;
-import es.voghdev.pdfviewpager.library.asset.CopyAssetThreadImpl;
 
 
 public class PdfActivity extends BaseActivity<ActivityPdfBinding> {
@@ -48,15 +42,15 @@ public class PdfActivity extends BaseActivity<ActivityPdfBinding> {
 		((PDFPagerAdapter) mDataBinding.pdfViewPager.getAdapter()).close();
 	}
 
-	final String[] sampleAssets = {"TRReadmeCN.pdf", "TRReadmeEN.pdf"};
+//	final String[] sampleAssets = {"TRReadmeCN.pdf", "TRReadmeEN.pdf"};
 	File pdfFolder;
 
 	private int pdfCurrentIndex = 0;
 
 	protected void copyAssetsOnSDCard () {
-		CopyAsset copyAsset = new CopyAssetThreadImpl(getApplicationContext(), new Handler(), new CopyAsset.Listener() {
-			@Override
-			public void success (String assetName, String destinationPath) {
+//		CopyAsset copyAsset = new CopyAssetThreadImpl(getApplicationContext(), new Handler(), new CopyAsset.Listener() {
+//			@Override
+//			public void success (String assetName, String destinationPath) {
 				mDataBinding.pdfViewPager.setPdfPath(getPdfPathOnSDCard());
 
 				mDataBinding.ivLeft.setVisibility(View.GONE);
@@ -96,38 +90,40 @@ public class PdfActivity extends BaseActivity<ActivityPdfBinding> {
 						mDataBinding.pdfViewPager.setCurrentItem(pdfCurrentIndex + 1);
 					}
 				});
-			}
+//			}
 
-			@Override
-			public void failure (Exception e) {
-				e.printStackTrace();
-				Toast.makeText(mContext.get(), e.getMessage(), Toast.LENGTH_LONG).show();
-			}
-		});
+//			@Override
+//			public void failure (Exception e) {
+//				e.printStackTrace();
+//				Toast.makeText(mContext.get(), e.getMessage(), Toast.LENGTH_LONG).show();
+//			}
+//		});
 
-		for (String asset : sampleAssets) {
-			copyAsset.copy(asset, new File(pdfFolder, asset).getAbsolutePath());
-		}
+//		for (String asset : sampleAssets) {
+//			copyAsset.copy(asset, new File(pdfFolder, asset).getAbsolutePath());
+//		}
 	}
 
 	protected String getPdfPathOnSDCard () {
-		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
-		switch ( sp.getString(DYConstants.LANGUAGE_SETTING,"D:en-rUS")){
-			case "zh-rCN":
-				fileName = "TRReadmeCN.pdf";
-				break;
-			default:
+//		sp = mContext.get().getSharedPreferences(DYConstants.SP_NAME, Context.MODE_PRIVATE);
+//		switch ( sp.getString(DYConstants.LANGUAGE_SETTING,"D:en-rUS")){
+//			case "zh-rCN":
+//				fileName = "TRReadmeCN.pdf";
+//				break;
+//			default:
 				fileName = "TRReadmeEN.pdf";
-				break;
-		}
-		mDataBinding.tvTitlePdf.setText(fileName);
+//				break;
+//		}
+//		mDataBinding.tvTitlePdf.setText(fileName);
 		File f = new File(pdfFolder, fileName);
+//		Log.e(TAG, "getPdfPathOnSDCard: ----完整的PDF 路径---" + f);
 		return f.getAbsolutePath();
 	}
 
 	@Override
 	protected void initView () {
-		pdfFolder = Environment.getExternalStorageDirectory();
+		pdfFolder = this.getExternalFilesDir(null);
+//		Log.e(TAG, "getPdfPathOnSDCard: ----完整的pdfFolder---" + pdfFolder);
 		copyAssetsOnSDCard();
 
 		mDataBinding.ivPreviewBackPdf.setOnClickListener(v -> {

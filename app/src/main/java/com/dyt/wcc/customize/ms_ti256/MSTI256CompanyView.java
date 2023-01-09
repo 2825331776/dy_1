@@ -13,7 +13,7 @@ import androidx.databinding.DataBindingUtil;
 
 import com.dyt.wcc.R;
 import com.dyt.wcc.customize.CustomizeCompany;
-import com.dyt.wcc.databinding.PopCompanyMileseeyBinding;
+import com.dyt.wcc.databinding.PopCompanyMsTi256Binding;
 
 import java.util.Locale;
 
@@ -29,15 +29,15 @@ public class MSTI256CompanyView extends CustomizeCompany {
 	@Override
 	public View getCompanyView (Context context) {
 		this.mContext = context;
-		return LayoutInflater.from(context).inflate(R.layout.pop_company_mileseey, null);
+		return LayoutInflater.from(context).inflate(R.layout.pop_company_ms_ti256, null);
 	}
 
 	@Override
 	public void initListener (View view) {
-		PopCompanyMileseeyBinding mileseeyBinding = DataBindingUtil.bind(view);
+		PopCompanyMsTi256Binding mileseeyBinding = DataBindingUtil.bind(view);
 		//根据是中文还是因为 区分是主营/邮箱反馈
-		mileseeyBinding.tvAboutContactUsEmailMailseey.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
-		mileseeyBinding.tvAboutContactUsEmailMailseey.setOnClickListener(v19 -> {
+		mileseeyBinding.tvAboutContactUsEmailMsTi256.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+		mileseeyBinding.tvAboutContactUsEmailMsTi256.setOnClickListener(v19 -> {
 
 			Configuration configuration = mContext.getResources().getConfiguration();
 			Locale currentLocal;
@@ -49,20 +49,20 @@ public class MSTI256CompanyView extends CustomizeCompany {
 				currentLocal = configuration.locale;
 			}
 
-			if (currentLocal.getLanguage().toLowerCase().equals("zh")) {
-				//				Log.i("TAG", "initListener: =====equals  ==zh ==");
-				Intent intent = new Intent(Intent.ACTION_DIAL);
-				intent.setData(Uri.parse("tel:0755–86329055"));
-				mContext.startActivity(intent);
-			} else {
+//			if (currentLocal.getLanguage().toLowerCase().equals("zh")) {
+//				//				Log.i("TAG", "initListener: =====equals  ==zh ==");
+//				Intent intent = new Intent(Intent.ACTION_DIAL);
+//				intent.setData(Uri.parse("tel:0755–86329055"));
+//				mContext.startActivity(intent);
+//			} else {
 				//				Log.i("TAG", "initListener: =====equals  ==other ==");
 				Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-				emailIntent.setData(Uri.parse(mContext.getResources().getString(R.string.contactus_email_head) + mContext.getResources().getString(R.string.about_contactEmail_content_mileseey)));
+				emailIntent.setData(Uri.parse(mContext.getResources().getString(R.string.contactus_email_head) + mContext.getResources().getString(R.string.about_companyWebsite_content_msti256)));
 				emailIntent.putExtra(Intent.EXTRA_SUBJECT, "反馈标题");
 				emailIntent.putExtra(Intent.EXTRA_TEXT, "反馈内容");
 				//							没有默认的发送邮件应用
 				mContext.startActivity(Intent.createChooser(emailIntent, mContext.getResources().getString(R.string.contactus_choice_email)));
-			}
+//			}
 		});
 
 	}

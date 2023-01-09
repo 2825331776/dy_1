@@ -1,16 +1,12 @@
 package com.dyt.wcc.constans;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.dyt.wcc.common.base.BaseApplication;
-import com.dyt.wcc.utils.LanguageUtils;
-import com.tencent.bugly.crashreport.CrashReport;
 
 /**
  * <p>Copyright (C), 2021.04.01-? , DY Technology    </p>
@@ -45,7 +41,7 @@ public class DYTApplication extends BaseApplication {
 		super.onCreate();
 		instance = this;
 		//		CrashReport.initCrashReport(getApplicationContext(), "253f40d84b", false);
-		CrashReport.initCrashReport(getApplicationContext());
+//		CrashReport.initCrashReport(getApplicationContext());
 		//监听activity生命周期
 		registerActivityLifecycleCallbacks();
 	}

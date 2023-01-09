@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -102,23 +101,15 @@ import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.XXPermissions;
 import com.huantansheng.easyphotos.EasyPhotos;
 import com.huantansheng.easyphotos.ui.dialog.LoadingDialog;
-import com.king.app.dialog.AppDialog;
-import com.king.app.updater.AppUpdater;
-import com.king.app.updater.http.OkHttpManager;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 //@RuntimePermissions
 public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implements SensorEventListener {
@@ -245,7 +236,7 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 	// 重置参数 返回值
 	private       int                                     defaultSettingReturn = -1;
 	//更新工具类对象
-	private       AppUpdater                              mAppUpdater;
+//	private       AppUpdater                              mAppUpdater;
 	private       int                                     maxIndex             = 0;
 	private       List<UpdateObj>                         updateObjList;
 	//传感器
@@ -256,33 +247,33 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 		public boolean handleMessage (@NonNull Message msg) {
 			switch (msg.what) {
 				case MSG_CHECK_UPDATE:
-					updateObjList = (List<UpdateObj>) msg.obj;
-
-					View view = LayoutInflater.from(mContext.get()).inflate(R.layout.dialog_custom, null);
-					TextView tvTitle = view.findViewById(R.id.tvTitle);
-					tvTitle.setText(String.format(getString(R.string.pop_version) + "V%s",
-							updateObjList.get(maxIndex).getAppVersionName()));
-					TextView tvContent = view.findViewById(R.id.tvContent);
-					tvContent.setVisibility(View.GONE);
-					//					tvContent.setText("1、新增某某功能、\n2、修改某某问题、\n3、优化某某BUG、");
-					View btnCancel = view.findViewById(R.id.btnCancel);
-					btnCancel.setOnClickListener(v -> AppDialog.INSTANCE.dismissDialog());
-					View btnConfirm = view.findViewById(R.id.btnConfirm);
-					btnConfirm.setOnClickListener(v -> {
-						showToast(getString(R.string.toast_downloading_background));
-						mAppUpdater =
-								new AppUpdater.Builder().setUrl(DYConstants.UPDATE_DOWNLOAD_API + updateObjList.get(maxIndex).getPackageName())
-								//                        .setApkMD5
-								//                        ("3df5b1c1d2bbd01b4a7ddb3f2722ccca")
-								// 支持MD5校验，如果缓存APK的MD5与此MD5相同，则直接取本地缓存安装，推荐使用MD5校验的方式
-								.setVersionCode(updateObjList.get(maxIndex).getAppVersionCode())
-								//支持versionCode校验，设置versionCode之后，新版本versionCode相同的apk只下载一次,
-								// 优先取本地缓存,推荐使用MD5校验的方式
-								.setFilename(updateObjList.get(maxIndex).getPackageName() + ".apk").setVibrate(true).build(mContext.get());
-						mAppUpdater.setHttpManager(OkHttpManager.getInstance()).start();
-						AppDialog.INSTANCE.dismissDialog();
-					});
-					AppDialog.INSTANCE.showDialog(mContext.get(), view, 0.5f);
+//					updateObjList = (List<UpdateObj>) msg.obj;
+//
+//					View view = LayoutInflater.from(mContext.get()).inflate(R.layout.dialog_custom, null);
+//					TextView tvTitle = view.findViewById(R.id.tvTitle);
+//					tvTitle.setText(String.format(getString(R.string.pop_version) + "V%s",
+//							updateObjList.get(maxIndex).getAppVersionName()));
+//					TextView tvContent = view.findViewById(R.id.tvContent);
+//					tvContent.setVisibility(View.GONE);
+//					//					tvContent.setText("1、新增某某功能、\n2、修改某某问题、\n3、优化某某BUG、");
+//					View btnCancel = view.findViewById(R.id.btnCancel);
+//					btnCancel.setOnClickListener(v -> AppDialog.INSTANCE.dismissDialog());
+//					View btnConfirm = view.findViewById(R.id.btnConfirm);
+//					btnConfirm.setOnClickListener(v -> {
+//						showToast(getString(R.string.toast_downloading_background));
+//						mAppUpdater =
+//								new AppUpdater.Builder().setUrl(DYConstants.UPDATE_DOWNLOAD_API + updateObjList.get(maxIndex).getPackageName())
+//								//                        .setApkMD5
+//								//                        ("3df5b1c1d2bbd01b4a7ddb3f2722ccca")
+//								// 支持MD5校验，如果缓存APK的MD5与此MD5相同，则直接取本地缓存安装，推荐使用MD5校验的方式
+//								.setVersionCode(updateObjList.get(maxIndex).getAppVersionCode())
+//								//支持versionCode校验，设置versionCode之后，新版本versionCode相同的apk只下载一次,
+//								// 优先取本地缓存,推荐使用MD5校验的方式
+//								.setFilename(updateObjList.get(maxIndex).getPackageName() + ".apk").setVibrate(true).build(mContext.get());
+//						mAppUpdater.setHttpManager(OkHttpManager.getInstance()).start();
+//						AppDialog.INSTANCE.dismissDialog();
+//					});
+//					AppDialog.INSTANCE.showDialog(mContext.get(), view, 0.5f);
 					break;
 				case MSG_CAMERA_PARAMS:
 					View pop_View = LayoutInflater.from(mContext.get()).inflate(R.layout.pop_setting, null);
@@ -311,51 +302,52 @@ public class PreviewActivity extends BaseActivity<ActivityPreviewBinding> implem
 						popSettingBinding.tvCameraSettingHumidity.setVisibility(View.GONE);
 					}
 					popSettingBinding.btCheckVersion.setVisibility(View.GONE);
-					if (DYConstants.COMPANY_DYT.equals(BuildConfig.FLAVOR)) {
-						popSettingBinding.btCheckVersion.setVisibility(View.VISIBLE);
-						popSettingBinding.btCheckVersion.setOnClickListener(v1 -> {
-							OkHttpClient client = new OkHttpClient();
-							new Thread(() -> {
-								Request request = new Request.Builder().url(DYConstants.UPDATE_CHECK_INFO).get().build();
-								try {
-									Response response = client.newCall(request).execute();
-									byte[] responseByte = response.body().bytes();
-									String checkAPIData = new String(responseByte, StandardCharsets.UTF_8);
-									if (isDebug)
-										Log.i(TAG, "run:responseByte ==========>  " + checkAPIData);
-									getVersionCodeArray(checkAPIData);
 
-									//if (isDebug)Log.i(TAG, "run: 最大的 VersionCode 为： " + maxCode
-									// + " codeIndex = " + maxIndex + " 完成版本为： " +
-									// AppVersionNameList[maxIndex]);
-									//if (isDebug)Log.i(TAG, "run: ======AppVersionCodeList===" +
-									// Arrays.toString(AppVersionCodeList));
-									int thisVersionCode =
-									 Integer.parseInt(mContext.get().getPackageManager().getPackageInfo(mContext.get().getPackageName(),
-0).versionName.split("-")[0].replace(".", ""));
-									//									if (isDebug)Log.i(TAG,
-									//									"run: versionName === 》" +
-									//									thisVersionCode);
-									//判断是否需要更新
-									if (thisVersionCode < updateObjList.get(maxIndex).getAppVersionCode()) {
-										Message message = mHandler.obtainMessage();
-										message.what = MSG_CHECK_UPDATE;
-										message.obj = updateObjList;
-										mHandler.sendMessage(message);
-									} else {//已经为最新版本
-										runOnUiThread(new Runnable() {
-											@Override
-											public void run () {
-												showToast(R.string.toast_already_latest_version);
-											}
-										});
-									}
-								} catch (IOException | PackageManager.NameNotFoundException e) {
-									e.printStackTrace();
-								}
-							}).start();
-						});
-					}
+//					if (DYConstants.COMPANY_DYT.equals(BuildConfig.FLAVOR)) {
+//						popSettingBinding.btCheckVersion.setVisibility(View.VISIBLE);
+//						popSettingBinding.btCheckVersion.setOnClickListener(v1 -> {
+//							OkHttpClient client = new OkHttpClient();
+//							new Thread(() -> {
+//								Request request = new Request.Builder().url(DYConstants.UPDATE_CHECK_INFO).get().build();
+//								try {
+//									Response response = client.newCall(request).execute();
+//									byte[] responseByte = response.body().bytes();
+//									String checkAPIData = new String(responseByte, StandardCharsets.UTF_8);
+//									if (isDebug)
+//										Log.i(TAG, "run:responseByte ==========>  " + checkAPIData);
+//									getVersionCodeArray(checkAPIData);
+//
+//									//if (isDebug)Log.i(TAG, "run: 最大的 VersionCode 为： " + maxCode
+//									// + " codeIndex = " + maxIndex + " 完成版本为： " +
+//									// AppVersionNameList[maxIndex]);
+//									//if (isDebug)Log.i(TAG, "run: ======AppVersionCodeList===" +
+//									// Arrays.toString(AppVersionCodeList));
+//									int thisVersionCode =
+//									 Integer.parseInt(mContext.get().getPackageManager().getPackageInfo(mContext.get().getPackageName(),
+//0).versionName.split("-")[0].replace(".", ""));
+//									//									if (isDebug)Log.i(TAG,
+//									//									"run: versionName === 》" +
+//									//									thisVersionCode);
+//									//判断是否需要更新
+//									if (thisVersionCode < updateObjList.get(maxIndex).getAppVersionCode()) {
+//										Message message = mHandler.obtainMessage();
+//										message.what = MSG_CHECK_UPDATE;
+//										message.obj = updateObjList;
+//										mHandler.sendMessage(message);
+//									} else {//已经为最新版本
+//										runOnUiThread(new Runnable() {
+//											@Override
+//											public void run () {
+//												showToast(R.string.toast_already_latest_version);
+//											}
+//										});
+//									}
+//								} catch (IOException | PackageManager.NameNotFoundException e) {
+//									e.printStackTrace();
+//								}
+//							}).start();
+//						});
+//					}
 
 
 					//第二步：将获取的数据 展示在输入框内
@@ -1185,6 +1177,13 @@ Math.round(getBorderValue(DYConstants.ENVIRONMENT_MAX))));
 
 	@Override
 	protected void onRestart () {
+		Locale locale = new Locale(sp.getString(DYConstants.LANGUAGE_SETTING,mLanguageFactory.getDefaultLanguageStr()).split("-r")[0]);
+		Configuration configuration = getResources().getConfiguration();
+		DisplayMetrics dm = getResources().getDisplayMetrics();
+		configuration.setLocale(locale);
+		getResources().updateConfiguration(configuration,dm);
+
+
 		if (isDebug)
 			Log.e(TAG, "onRestart: ");
 		//		mDataBinding.textureViewPreviewActivity.onResume();
@@ -1710,6 +1709,7 @@ DYConstants.SETTING_EMITTANCE_INT), 150);
 			sp.edit().putString(DYConstants.LANGUAGE_SETTING, language_country_str).apply();
 
 		}
+
 
 		highTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_high);
 		lowTempBt = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_higlowtemp_draw_widget_low);
@@ -2361,16 +2361,16 @@ getBackgroundColor());
 					customizeCompany = new MSTI256CompanyView();
 					view = customizeCompany.getCompanyView(mContext.get());
 
-					TextView msti256_type = view.findViewById(R.id.tv_about_devices_type_radifeel);
+//					TextView msti256_type = view.findViewById(R.id.tv_about_devices_type_radifeel);
 
-					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
-						msti256_type.setText("TI256");
-					}
-					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 160 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 120) {
-						msti256_type.setText("TI160");
-					}
+//					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 256 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 192) {
+//						msti256_type.setText("TI256");
+//					}
+//					if (mDataBinding.dragTempContainerPreviewActivity.getFrameWidth() == 160 && mDataBinding.dragTempContainerPreviewActivity.getFrameHeight() == 120) {
+//						msti256_type.setText("TI160");
+//					}
 
-					view.findViewById(R.id.tv_about_main_user_manual_info_mileseey).setOnClickListener(v3 -> {
+					view.findViewById(R.id.tv_about_main_user_manual_info_ms_ti256).setOnClickListener(v3 -> {
 						if (companyPopWindows != null && companyPopWindows.isShowing()) {
 							companyPopWindows.dismiss();
 						}

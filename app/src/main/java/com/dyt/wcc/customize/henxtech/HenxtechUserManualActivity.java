@@ -2,10 +2,7 @@ package com.dyt.wcc.customize.henxtech;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
-import android.os.Handler;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.viewpager.widget.ViewPager;
 
@@ -18,8 +15,6 @@ import java.io.File;
 import java.util.Locale;
 
 import es.voghdev.pdfviewpager.library.adapter.PDFPagerAdapter;
-import es.voghdev.pdfviewpager.library.asset.CopyAsset;
-import es.voghdev.pdfviewpager.library.asset.CopyAssetThreadImpl;
 
 
 public class HenxtechUserManualActivity extends BaseActivity<ActivityPdfBinding> {
@@ -48,15 +43,15 @@ public class HenxtechUserManualActivity extends BaseActivity<ActivityPdfBinding>
 		((PDFPagerAdapter) mDataBinding.pdfViewPager.getAdapter()).close();
 	}
 
-	final String[] sampleAssets = {"HenxtechReadMeCN.pdf", "HenxtechReadMeEN.pdf"};
+//	final String[] sampleAssets = {"HenxtechReadMeCN.pdf", "HenxtechReadMeEN.pdf"};
 	File pdfFolder;
 
 	private int pdfCurrentIndex = 0;
 
 	protected void copyAssetsOnSDCard () {
-		CopyAsset copyAsset = new CopyAssetThreadImpl(getApplicationContext(), new Handler(), new CopyAsset.Listener() {
-			@Override
-			public void success (String assetName, String destinationPath) {
+//		CopyAsset copyAsset = new CopyAssetThreadImpl(getApplicationContext(), new Handler(), new CopyAsset.Listener() {
+//			@Override
+//			public void success (String assetName, String destinationPath) {
 				mDataBinding.pdfViewPager.setPdfPath(getPdfPathOnSDCard());
 
 				mDataBinding.ivLeft.setVisibility(View.GONE);
@@ -96,18 +91,18 @@ public class HenxtechUserManualActivity extends BaseActivity<ActivityPdfBinding>
 						mDataBinding.pdfViewPager.setCurrentItem(pdfCurrentIndex + 1);
 					}
 				});
-			}
-
-			@Override
-			public void failure (Exception e) {
-				e.printStackTrace();
-				Toast.makeText(mContext.get(), e.getMessage(), Toast.LENGTH_LONG).show();
-			}
-		});
-
-		for (String asset : sampleAssets) {
-			copyAsset.copy(asset, new File(pdfFolder, asset).getAbsolutePath());
-		}
+//			}
+//
+//			@Override
+//			public void failure (Exception e) {
+//				e.printStackTrace();
+//				Toast.makeText(mContext.get(), e.getMessage(), Toast.LENGTH_LONG).show();
+//			}
+//		});
+//
+//		for (String asset : sampleAssets) {
+//			copyAsset.copy(asset, new File(pdfFolder, asset).getAbsolutePath());
+//		}
 	}
 
 	protected String getPdfPathOnSDCard () {
@@ -116,14 +111,15 @@ public class HenxtechUserManualActivity extends BaseActivity<ActivityPdfBinding>
 		if (sp.getInt(DYConstants.LANGUAGE_SETTING_INDEX, 0) == 1) {
 			fileName = "HenxtechReadMeEN.pdf";
 		}
-		mDataBinding.tvTitlePdf.setText(fileName);
+//		mDataBinding.tvTitlePdf.setText(fileName);
 		File f = new File(pdfFolder, fileName);
 		return f.getAbsolutePath();
 	}
 
 	@Override
 	protected void initView () {
-		pdfFolder = Environment.getExternalStorageDirectory();
+		pdfFolder = this.getExternalFilesDir(null);
+//		pdfFolder = Environment.getExternalStorageDirectory();
 		copyAssetsOnSDCard();
 
 		mDataBinding.ivPreviewBackPdf.setOnClickListener(v -> {

@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" /> <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- 安装包更新 -->
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+<!--    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- Bugly -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -73,21 +73,21 @@
         </provider>
 
         <!-- 配置APP ID -->
-        <meta-data
+   <!--     <meta-data
             android:name="BUGLY_APPID"
             android:value="${BUGLYAPPID}" />
-        <!-- 配置APP版本号 -->
+        &lt;!&ndash; 配置APP版本号 &ndash;&gt;
         <meta-data
             android:name="BUGLY_APP_VERSION"
             android:value="${BUGLYAPPVersion}" />
-        <!-- 配置APP渠道号 -->
+        &lt;!&ndash; 配置APP渠道号 &ndash;&gt;
         <meta-data
             android:name="BUGLY_APP_CHANNEL"
             android:value="${BUGLYAPPChannel}" />
-        <!-- 配置Bugly调试模式（true或者false）-->
+        &lt;!&ndash; 配置Bugly调试模式（true或者false）&ndash;&gt;
         <meta-data
             android:name="BUGLY_ENABLE_DEBUG"
-            android:value="${BUGLYENABLEDEBUG}" />
+            android:value="${BUGLYENABLEDEBUG}" />-->
     </application>
 
 </manifest>

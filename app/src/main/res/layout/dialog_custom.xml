@@ -4,8 +4,9 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:layout_margin="@dimen/dimen_20dp"
-    android:background="@drawable/app_dialog_bg"
+
     android:orientation="vertical">
+<!--     android:background="@drawable/app_dialog_bg"-->
 
     <TextView
         android:id="@+id/tvTitle"

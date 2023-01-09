@@ -324,7 +324,7 @@ android {
             versionName rootProject.ext.envInfo.DYTConfig.VName
             buildConfigField "String", "CONFIGS_NAME", '"configs_ms_ti256"'
             buildConfigField "String", "SP_NAME", '"DYT_IR_SP_ACEGTI256"'
-            buildConfigField "int", "COMPANY_H", '165'
+            buildConfigField "int", "COMPANY_H", '120'
             manifestPlaceholders = [CHANNEL_VALUE         : "ms_ti256"
                                     , app_icon            :  "@mipmap/ic_logo_ms_ti256_round"
                                     , BUGLYAPPID          : "86672f42dd"
@@ -497,13 +497,13 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
 
     //app-updater
-    implementation 'com.github.jenly1314.AppUpdater:app-updater:1.1.2'
-    //app-dialog
-    implementation 'com.github.jenly1314.AppUpdater:app-dialog:1.1.2'
+//    implementation 'com.github.jenly1314.AppUpdater:app-updater:1.1.2'
+//    //app-dialog
+//    implementation 'com.github.jenly1314.AppUpdater:app-dialog:1.1.2'
     //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.1.9
-    implementation 'com.tencent.bugly:crashreport:3.4.4'
+//    implementation 'com.tencent.bugly:crashreport:3.4.4'
     //其中latest.release指代最新Bugly NDK版本号，也可以指定明确的版本号，例如3.0
-    implementation 'com.tencent.bugly:nativecrashreport:3.9.2'
+//    implementation 'com.tencent.bugly:nativecrashreport:3.9.2'
     //查看PDF文件 三方库
 //    implementation 'com.tom-roush:pdfbox-android:2.0.23.0'
 //    implementation 'es.voghdev.pdfviewpager:library:1.1.2'
