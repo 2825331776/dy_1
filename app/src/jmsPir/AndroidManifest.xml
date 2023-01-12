@@ -9,14 +9,14 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" /> <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- 安装包更新 -->
-<!--    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />-->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- Bugly -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-<!--    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />-->
-    <uses-permission android:name="android.permission.READ_LOGS" />
+    <!--    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> &lt;!&ndash; 安装包更新 &ndash;&gt;
+ &lt;!&ndash;    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />&ndash;&gt;
+     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> &lt;!&ndash; Bugly &ndash;&gt;
+     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+     <uses-permission android:name="android.permission.INTERNET" />
+     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+ &lt;!&ndash;    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />&ndash;&gt;
+     <uses-permission android:name="android.permission.READ_LOGS" />-->
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" /> <!-- Android usb 主机模式 -->
