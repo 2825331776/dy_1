@@ -28,7 +28,7 @@
     <string name="about_contactEmail_content_qianli">shenzhenpotential@gmail.com</string>
     <!--    泰视朗 定制版-->
     <string name="about_companyName_teslong">Shenzhen Teslong Technology Co., Ltd</string>
-    <string name="about_companyWebsite_content_teslong">www.teslong.com</string>
+    <string name="about_companyWebsite_content_teslong">https://www.teslong.com</string>
     <string name="about_contactEmail_content_teslong">support@teslong.com</string>
 
     <!--    迈测 定制版-->

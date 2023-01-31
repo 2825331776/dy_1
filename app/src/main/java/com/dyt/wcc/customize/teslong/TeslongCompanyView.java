@@ -1,9 +1,6 @@
 package com.dyt.wcc.customize.teslong;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Paint;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -11,7 +8,6 @@ import androidx.databinding.DataBindingUtil;
 
 import com.dyt.wcc.R;
 import com.dyt.wcc.customize.CustomizeCompany;
-import com.dyt.wcc.databinding.PopCompanyInfoBinding;
 import com.dyt.wcc.databinding.PopCompanyTeslongBinding;
 
 /**
@@ -38,12 +34,12 @@ public class TeslongCompanyView extends CustomizeCompany {
 	public void initListener (View view) {
 		PopCompanyTeslongBinding teslongBinding = DataBindingUtil.bind(view);
 		//根据是中文还是因为 区分是主营/邮箱反馈
-		teslongBinding.tvAboutContactUsEmail.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
-		teslongBinding.tvAboutContactUsEmail.setOnClickListener(v19 -> {
-			Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-			emailIntent.setData(Uri.parse(mContext.getResources().getString(R.string.contactus_email_head) + mContext.getResources().getString(R.string.preview_about_contact_email_content)));
-			//没有默认的发送邮件应用
-			mContext.startActivity(Intent.createChooser(emailIntent, mContext.getResources().getString(R.string.contactus_choice_email)));
-		});
+//		teslongBinding.tvAboutContactUsEmail.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+//		teslongBinding.tvAboutContactUsEmail.setOnClickListener(v19 -> {
+//			Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+//			emailIntent.setData(Uri.parse(mContext.getResources().getString(R.string.contactus_email_head) + mContext.getResources().getString(R.string.preview_about_contact_email_content)));
+//			//没有默认的发送邮件应用
+//			mContext.startActivity(Intent.createChooser(emailIntent, mContext.getResources().getString(R.string.contactus_choice_email)));
+//		});
 	}
 }

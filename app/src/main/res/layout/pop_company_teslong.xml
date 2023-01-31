@@ -33,7 +33,7 @@
         <!--网址-->
         <!--        超链接颜色设置-->
         <!--        android:textColorLink="@color/white"-->
-        <TextView
+        <!--<TextView
             android:id="@+id/tv_website"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -56,8 +56,8 @@
             app:layout_constraintLeft_toRightOf="@id/tv_website"
             app:layout_constraintTop_toTopOf="@id/tv_website" />
 
-        <!--        主营 链接-->
-        <!--        胜利定制版 改为联系我们-->
+        &lt;!&ndash;        主营 链接&ndash;&gt;
+        &lt;!&ndash;        胜利定制版 改为联系我们&ndash;&gt;
         <TextView
             android:id="@+id/tv_about_contact_us"
             android:layout_width="wrap_content"
@@ -84,7 +84,7 @@
             android:textSize="@dimen/dimen_16sp"
             app:layout_constraintBottom_toBottomOf="@id/tv_about_contact_us"
             app:layout_constraintLeft_toRightOf="@id/tv_about_contact_us"
-            app:layout_constraintTop_toTopOf="@id/tv_about_contact_us" />
+            app:layout_constraintTop_toTopOf="@id/tv_about_contact_us" />-->
 
         <!--&lt;!&ndash;     泰视朗 定制版 设备类型&ndash;&gt;
         <TextView
