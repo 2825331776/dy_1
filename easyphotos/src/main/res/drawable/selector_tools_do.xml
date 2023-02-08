@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_selected="true" android:drawable="@mipmap/photo_detail_tools_do_select"/>
-    <item android:state_selected="false" android:drawable="@mipmap/photo_detail_tools_do_unselect"/>
-</selector>

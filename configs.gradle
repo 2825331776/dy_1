@@ -13,7 +13,7 @@ ext {
             VName         : "1.5.09",
 
             supportV      : "27.0.0",
-            appId         : "com.dyt.wcc",
+            appId         : "com.dytest.wcc",
 
             //base lib version: module:Base  BaseJni BuildSo Business GestureDetector
             lib_compileSdk: 31,
@@ -43,7 +43,7 @@ ext {
                     VName         : "0.0.1",
                     appPackageName: "Neutral",
             ],
-            JMSConfig     : [
+            /*JMSConfig     : [
                     // 应用 id
                     appId         : "com.dyt.wcc",
                     // 构建版本号
@@ -133,7 +133,7 @@ ext {
                     VCode         : 101,
                     VName         : "1.1.1",
                     appPackageName: "ms_ti256"
-            ],
+            ],*/
     ]
 
 

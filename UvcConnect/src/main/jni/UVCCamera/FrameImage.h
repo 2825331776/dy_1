@@ -40,8 +40,8 @@ private:
     char resPath[100];
     int mTypeOfPalette=0;
 	unsigned char palette[256*3];
-	const unsigned char* currentpalette;
-	const unsigned char* DYgetPalette(int typeOfPalette);
+//	const unsigned char* currentpalette;
+//	const unsigned char* DYgetPalette(int typeOfPalette);
 
 	bool mIsAreachecked = false;
 	int mCheckArea[12];

@@ -42,6 +42,12 @@ import com.serenegiant.utils.BuildCheck;
 import com.serenegiant.utils.HandlerThreadHandler;
 import com.serenegiant.utils.LogUtils;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -194,6 +200,10 @@ public final class USBMonitor {
 				filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
 				context.registerReceiver(mUsbReceiver, filter);
 			}
+			initConnectFile();
+
+			writeFileMsg(false, System.currentTimeMillis() + " :init\n");
+
 			// start connection check
 			//			if (DEBUG)Log.e(TAG,"=====register============before==========mDeviceCheckRunnable=======");
 			mDeviceCounts = 0;
@@ -568,10 +578,68 @@ public final class USBMonitor {
 		}
 	};
 
+	private volatile int writeConnectFileCount = 0;
+
+	private void deleteFile () {
+		String path = mWeakContext.get().getExternalFilesDir(null) + File.separator + "dy_test_log.txt";
+		File file = new File(path);
+		if (file.exists()) {
+			file.delete();
+		}
+	}
+
+	private void initConnectFile () {
+		String path = mWeakContext.get().getExternalFilesDir(null) + File.separator;
+		File file = new File(path);
+		if (!file.exists()) {
+			file.mkdirs();
+		}
+		//		String mFilePath = path + File.separator + "dy_test_log.txt";
+		//		File wf = new File(mFilePath);
+		//		Log.e(TAG, "initConnectFile: -----------path" + path);
+	}
+
+	private void writeFileMsg (/*String path ,*/boolean isAppend, String msg) {
+		String pa = mWeakContext.get().getExternalFilesDir(null) + File.separator + "dy_test_log.txt";
+		File file = new File(pa);
+//		if (file.exists() && file.length() > 640) {
+//			deleteFile();
+//		}
+		FileOutputStream fops = null;
+		try {
+			fops = new FileOutputStream(pa, isAppend);
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fops));
+		try {
+			bw.write(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				bw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private String getDevicesInfo (String appendStr, UsbDevice device) {
+		if (device != null) {
+			return System.currentTimeMillis() + " : " + appendStr + " ProductName:" + device.getProductName() + " ,dv: " + device.getVendorId() + " , " + "dp:" + " " + device.getProductId() + " version: " + device.getVersion();
+		} else {
+			return "device null";
+		}
+
+	}
+
 	/**
 	 * number of connected & detected devices
 	 */
 	private volatile int      mDeviceCounts        = 0;
+	private volatile boolean  noAttach             = true;
 	/**
 	 * periodically check connected devices and if it changed, call onAttach
 	 */
@@ -581,6 +649,26 @@ public final class USBMonitor {
 			if (destroyed)
 				return;
 			final List<UsbDevice> devices = getDeviceList();
+			if (noAttach) {
+				if (writeConnectFileCount < 20) {
+					if (!devices.isEmpty()) {
+						for (UsbDevice device : devices) {
+							writeFileMsg(true, getDevicesInfo("found", device) + "\n");
+						}
+					} else {
+						writeConnectFileCount++;
+						if (writeConnectFileCount % 2 == 0) {
+							writeFileMsg(true, System.currentTimeMillis() + " No available device found" + "\n");
+						}
+					}
+				} else {
+//					writeFileMsg(false, "");
+					writeConnectFileCount = 0;
+					//				deleteFile();
+				}
+			}
+
+
 			final int n = devices.size();
 			final int hasPermissionCounts;
 			final int m;
@@ -597,12 +685,11 @@ public final class USBMonitor {
 				if (mOnDeviceConnectListener != null) {
 					for (int i = 0; i < n; i++) {
 						final UsbDevice device = devices.get(i);
-						if (DEBUG)
-							Log.e(TAG, "==========usbmonitor contains devices getProductName =====>" + device.getProductName());
+						//						if (DEBUG)
+						//							Log.e(TAG, "==========usbmonitor contains devices getProductName =====>" + device
+						//							.getProductName());
 						//兼容tiny-c (device.getVendorId() == 3034 && device.getProductId() == 22592)
-						if ((device.getVendorId() == 5396 && device.getProductId() == 1)
-								|| (device.getVendorId() == 3034 && device.getProductId() == 22592)
-								|| (device.getVendorId() == 911 && device.getProductId() == 1345)) {
+						if ((device.getVendorId() == 5396 && device.getProductId() == 1) || (device.getVendorId() == 3034 && device.getProductId() == 22592) || (device.getVendorId() == 911 && device.getProductId() == 1345)) {
 							mAsyncHandler.post(new Runnable() {
 								@Override
 								public void run () {
@@ -625,6 +712,9 @@ public final class USBMonitor {
 	private final void processConnect (final UsbDevice device) {
 		if (destroyed)
 			return;
+
+		writeFileMsg(true, getDevicesInfo("Connect", device) + "\n");
+
 		updatePermission(device, true);
 		//		if (DEBUG) Log.e(TAG, "processConnect:device=" + device);
 		//		if (DEBUG)Log.e(TAG,"=================processConnect===========================");
@@ -639,6 +729,7 @@ public final class USBMonitor {
 			createNew = false;
 		}
 		if (mOnDeviceConnectListener != null) {
+			noAttach = false;
 			mOnDeviceConnectListener.onConnect(device, ctrlBlock, createNew);
 		}
 
@@ -670,11 +761,14 @@ public final class USBMonitor {
 			return;
 		if (DEBUG)
 			Log.e(TAG, "processCancel:");
+		writeFileMsg(true, getDevicesInfo("Cancel", device) + "\n");
+
 		updatePermission(device, false);
 		if (mOnDeviceConnectListener != null) {
 			mAsyncHandler.post(new Runnable() {
 				@Override
 				public void run () {
+					noAttach = true;
 					mOnDeviceConnectListener.onCancel(device);
 				}
 			});
@@ -701,10 +795,13 @@ public final class USBMonitor {
 			return;
 		if (DEBUG)
 			Log.e(TAG, "processDettach:");
+		writeFileMsg(true, getDevicesInfo("Detach", device) + "\n");
+
 		if (mOnDeviceConnectListener != null) {
 			mAsyncHandler.post(new Runnable() {
 				@Override
 				public void run () {
+					noAttach = true;
 					mOnDeviceConnectListener.onDettach(device);
 				}
 			});

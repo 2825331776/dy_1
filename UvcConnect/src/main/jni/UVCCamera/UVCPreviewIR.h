@@ -80,6 +80,7 @@ private:
     volatile int UVC_STATUS = -1;
     jobject mUvcStatusCallbackObj = NULL;//java 回调接口的对象
     Fields_iUVCStatusCallback iUvcStatusCallback;
+    char dyt_flag[3];
 
 //更新媒体库
     jobject mUpdateMediaObj = NULL;//java 回调接口的对象
@@ -120,6 +121,7 @@ private:
 //	//SN 校验
     volatile bool mIsVerifySn = true; // 是否去刷新 SN
     inline const bool isVerifySN() const;
+    int sn_verify_count = 0;
 
     volatile bool snIsRight = false;//是否显示画面的标识
     inline const bool isSnRight() const;
@@ -128,9 +130,14 @@ private:
     char machine_sn[32];//设备的SN号
     char user_sn[20];//用户区的 SN号
 
+    const char * app_private_file_path_log = "/storage/emulated/0/Android/data/com.dytest.wcc/files/dy_test_log.txt";
+
     unsigned char dytTinyCSn[15];
     unsigned char TinyUserSN[15];
     unsigned char TinyRobotSn[15];
+
+    //tinyc 加密之后的 机器sn号
+    unsigned char encryption_robot_sn[15];
 
 //	Tinyc使用锁 相关变量
 //    pthread_t tinyC_send_order_thread; //tinyc发送指令的线程
@@ -155,18 +162,6 @@ private:
     volatile bool is_first_run ;
 
 
-    //TinyC 发送指令专用线程
-//    static void *tinyC_sendOrder_thread_func(void *vptr_args);//
-//    void signal_tiny_send_order();
-//    void sendTinyCOrder();
-//	uint8_t tinyC_order_request_type;
-//	uint8_t tinyC_order_bRequest;
-//	uint16_t tinyC_order_wValue;
-//	uint16_t tinyC_order_wIndex;
-//	unsigned char *tinyC_order_data;
-//	uint16_t tinyC_order_wLength;
-//	unsigned int tinyC_order_timeout;
-
     int mPixelFormat;
     /*****************************录制 拍照相关,不负责具体实现 ********************************/
 //    pthread_mutex_t data_callback_mutex;//初始化数据 互斥锁 互斥量
@@ -185,6 +180,8 @@ private:
 
     volatile bool mIsCapturing;
     int OutPixelFormat;
+
+    void doRobotSnEncryption();
 
 /*****************************预览画面相关  函数**********************************************/
     static void *preview_thread_func(void *vptr_args);//preview_thread 线程的具体定义

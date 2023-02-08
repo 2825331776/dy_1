@@ -48,27 +48,27 @@
     *** get*();
     void set*(***);
 }
--keep class com.dyt.wcc.cameracommon.** {*;}
+-keep class com.dytest.wcc.cameracommon.** {*;}
 
 #不混淆某个类的构造方法
--keepclassmembers class com.dyt.wcc.cameracommon.usbcameracommon.AbstractUVCCameraHandler {
+-keepclassmembers class com.dytest.wcc.cameracommon.usbcameracommon.AbstractUVCCameraHandler {
     public <init>();
 }
 
 #不混淆某个类的构造方法
--keepclassmembers class com.dyt.wcc.cameracommon.usbcameracommon.UVCCameraHandler {
+-keepclassmembers class com.dytest.wcc.cameracommon.usbcameracommon.UVCCameraHandler {
     public <init>();
 }
 
--keep class com.dyt.wcc.cameracommon.entity.** {*;}
+-keep class com.dytest.wcc.cameracommon.entity.** {*;}
 
 #不混淆某个接口的实现
--keep class * implements com.dyt.wcc.cameracommon.usbcameracommon.AbstractUVCCameraHandler$CameraCallback { *; }
+-keep class * implements com.dytest.wcc.cameracommon.usbcameracommon.AbstractUVCCameraHandler$CameraCallback { *; }
 
 #不混淆某个类的内部类
--keep class com.dyt.wcc.cameracommon.usbcameracommon.AbstractUVCCameraHandler$* {
+-keep class com.dytest.wcc.cameracommon.usbcameracommon.AbstractUVCCameraHandler$* {
         *;
  }
- -keep class com.dyt.wcc.cameracommon.widget.UVCCameraTextureView$* {
+ -keep class com.dytest.wcc.cameracommon.widget.UVCCameraTextureView$* {
          *;
   }
